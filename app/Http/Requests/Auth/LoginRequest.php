@@ -39,17 +39,18 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        $this->ensureIsNotRateLimited(); // ログイン試行がレートリミットに達していないことを確認します。
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        // ユーザー名とパスワードで認証を試みます。`remember`オプションがtrueの場合、セッションを永続化します。
+        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey()); // 認証に失敗した場合、レートリミットカウンターを増やします。
 
+             // 認証に失敗したことをユーザーに通知します。エラーメッセージは`username`フィールドに関連付けられます。
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
-
-        RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->throttleKey()); // 認証に成功した場合、レートリミットカウンターをリセットします。
     }
 
     /**

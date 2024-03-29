@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'username',
     ];
 
     /**
@@ -43,15 +44,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    /**
- * Get the name of the unique identifier for the user.
- *
- * @return string
- */
-    public function getAuthIdentifierName()
-    {
-        return 'username';
     }
 }
