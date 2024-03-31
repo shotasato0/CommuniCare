@@ -2,14 +2,14 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ForumController;
+use App\Http\Controllers\PostController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/forum', [ForumController::class, 'forum'])
-    ->name('layouts.forum');
+Route::get('/index', [PostController::class, 'index'])
+    ->name('index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
