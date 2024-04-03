@@ -1,6 +1,5 @@
 <x-app-layout>
     <div class="w-11/12 max-w-screen-md m-auto">
-
         {{-- タイトル --}}
         <h1 class="text-xl font-bold mt-5">{{ env('app_name') }}</h1>
 
@@ -47,7 +46,7 @@
             <div class="bg-white rounded-md mt-1 mb-5 p-3">
                 {{-- スレッド --}}
                 <div>
-                    <p class="mb-2 text-xs">{{ $post->created_at }} ＠{{ $post->user->name}}</p>
+                    <p class="mb-2 text-xs">{{ $post->created_at }} ＠{{ $post->user->name }}</p>
                     <p class="mb-2 text-xl font-bold">{{ $post->title }}</p>
                     <p class="mb-2">{{ $post->message }}</p>
                 </div>
@@ -64,12 +63,15 @@
                 <hr class="mt-2 m-auto">
                 <div class="flex justify-end">
                     <div class="w-11/12">
-                        <div>
-                            <p class="mt-2 text-xs">2021/11/20 19:00 ＠Noname</p>
-                            <p class="my-2 text-sm">
-                                これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。
-                            </p>
-                        </div>
+                        @foreach ($comments as $comment)
+                            <div>
+                                {{-- <p class="mt-2 text-xs">2021/11/20 19:00 ＠Noname</p> --}}
+                                <p class="mt-2 text-xs">{{ $comment->created_at }} @{{ $comment->user->name }}</p>
+                                <p class="my-2 text-sm">
+                                    {{ $comment->message }}
+                                </p>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
