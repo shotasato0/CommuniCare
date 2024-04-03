@@ -17,6 +17,7 @@ class CommentsTableSeeder extends Seeder
             'user_id' => 3,
             'post_id' => 1,
             'message' => 'テストコメントです。',
+            'parent_comment_id' => 1,
         ]);
     }
 }
