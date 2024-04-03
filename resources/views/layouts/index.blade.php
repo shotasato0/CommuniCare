@@ -65,8 +65,7 @@
                     <div class="w-11/12">
                         @foreach ($comments as $comment)
                             <div>
-                                {{-- <p class="mt-2 text-xs">2021/11/20 19:00 ＠Noname</p> --}}
-                                <p class="mt-2 text-xs">{{ $comment->created_at }} @{{ $comment->user->name }}</p>
+                                <p class="mt-2 text-xs">{{ $comment->created_at }} ＠{{ $comment->user->name }}</p>
                                 <p class="my-2 text-sm">
                                     {{ $comment->message }}
                                 </p>
