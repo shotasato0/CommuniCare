@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Auth; // Authファサードをインポート
 
 class PostController extends Controller
 {
@@ -30,7 +31,12 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $posts = new Post;
+        $form = $request->all();
+        $form['user_id'] = Auth::id();
+        $posts->fill($form)->save();
+
+        return redirect('/index');
     }
 
     /**
