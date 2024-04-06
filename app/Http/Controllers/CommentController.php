@@ -28,7 +28,11 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $comments = new Comment();
+        $form = $request->all();
+        $form['user_id'] = $request->user()->id;
+        $comments->fill($form)->save();
+        return redirect('/index');
     }
 
     /**

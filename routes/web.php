@@ -15,6 +15,8 @@ Route::get('/index', [PostController::class, 'index'])
 Route::post('/posts', [PostController::class, 'store'])
     ->name('posts.store');
 
+Route::resource('/comment', CommentController::class);
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
