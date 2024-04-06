@@ -31,11 +31,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $posts = new Post;
-        $form = $request->all();
-        $form['user_id'] = Auth::id();
-        $posts->fill($form)->save();
-
+        $post = new Post;
+        // ユーザー入力から受け取ったデータをモデルに設定
+        $post->fill($request->except('_token')); // '_token' を除外して安全にデータを扱う
+        
+        // 現在認証されているユーザーのIDを直接設定
+        $post->user_id = Auth::id();
+    
+        $post->save();
+    
         return redirect('/index');
     }
 
