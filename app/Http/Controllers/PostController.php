@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
+use Illuminate\Support\Facades\Auth; // Authファサードをインポート
 
 class PostController extends Controller
 {
@@ -30,7 +31,14 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $post = new Post;
+        
+         // ユーザー入力から受け取ったデータと、現在認証されているユーザーのIDを使用してデータを保存
+        $post->saveWithUser($request->except('_token'), Auth::id());
+    
+        $post->save();
+    
+        return redirect('/index');
     }
 
     /**
