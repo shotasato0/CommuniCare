@@ -32,11 +32,9 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $post = new Post;
-        // ユーザー入力から受け取ったデータをモデルに設定
-        $post->fill($request->except('_token')); // '_token' を除外して安全にデータを扱う
         
-        // 現在認証されているユーザーのIDを直接設定
-        $post->user_id = Auth::id();
+         // ユーザー入力から受け取ったデータと、現在認証されているユーザーのIDを使用してデータを保存
+        $post->saveWithUser($request->except('_token'), Auth::id());
     
         $post->save();
     

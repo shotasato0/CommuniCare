@@ -23,4 +23,13 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function saveWithUser(array $data, $userId)
+    {
+        $this->fill($data); //ユーザー入力から受け取ったデータをモデルに設定（$fillableで指定されているフィールドのみ）
+        $this->user_id = $userId; //ユーザーidを定義
+        $this->save(); //DBに保存
+
+        return $this; //保存したPostインスタンスを返す
+    }
 }
