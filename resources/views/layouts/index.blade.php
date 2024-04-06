@@ -4,24 +4,23 @@
         <h1 class="text-xl font-bold mt-5">{{ env('app_name') }}</h1>
 
         {{-- 入力フォーム --}}
-            <div class="bg-white rounded-md mt-5 p-3">
-                <form action="{{ route('posts.store') }}" method="POST">
-                    @csrf
-                    <div class="flex mt-2">
-                        <p class="font-bold">件名</p>
-                        <input class="border rounded px-2 ml-2 flex-auto" type="text" name="title" required>
-                    </div>
-                    <div class="flex flex-col mt-2">
-                        <p class="font-bold">本文</p>
-                        <textarea class="border rounded px-2" name="message" required></textarea>
-                    </div>
-                    <div class="flex justify-end mt-2">
-                        <input
-                            class="my-2 px-2 py-1 rounded bg-blue-300 text-blue-900 font-bold link-hover cursor-pointer"
-                            type="submit" value="投稿">
-                    </div>
-                </form>
-            </div>
+        <div class="bg-white rounded-md mt-5 p-3">
+            <form action="{{ route('posts.store') }}" method="POST">
+                @csrf
+                <div class="flex mt-2">
+                    <p class="font-bold">件名</p>
+                    <input class="border rounded px-2 ml-2 flex-auto" type="text" name="title" required>
+                </div>
+                <div class="flex flex-col mt-2">
+                    <p class="font-bold">本文</p>
+                    <textarea class="border rounded px-2" name="message" required></textarea>
+                </div>
+                <div class="flex justify-end mt-2">
+                    <input class="my-2 px-2 py-1 rounded bg-blue-300 text-blue-900 font-bold link-hover cursor-pointer"
+                        type="submit" value="投稿">
+                </div>
+            </form>
+        </div>
         {{-- 検索フォーム --}}
         <div class="bg-white rounded-md mt-3 p-3">
             <form action="/" method="post">
@@ -47,13 +46,17 @@
                     <p class="mb-2">{{ $post->message }}</p>
                 </div>
                 {{-- 削除ボタン --}}
-                <form class="flex justify-end mt-5" action="/" method="POST">
+                {{-- <form class="flex justify-end mt-5" action="/" method="POST"> --}}
+                <form class="flex justify-end mt-5" action="{{ route('comment.store') }}" method="POST">
                     @csrf
-                    <input class="border rounded px-2 flex-auto" type="text" name="reply_message">
+                    <input type="hidden" name="post_id" value="{{ $post->id }}">
+                    {{-- <input class="border rounded px-2 flex-auto" type="text" name="reply_message"> --}}
+                    {{-- <input class="border rounded px-2 flex-initial" type="text" name="user_name" placeholder="UserName" required> --}}
+                    <input class="border rounded px-2 ml-2 flex-auto" type="text" name="message" placeholder="Comment" required>
                     <input class="px-2 py-1 ml-2 rounded bg-green-600 text-white font-bold link-hover cursor-pointer"
                         type="submit" value="返信">
                     <input class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        type="submit" value="削除">
+                        type="button" value="削除">
                 </form>
                 {{-- 返信 --}}
                 <hr class="mt-2 m-auto">
