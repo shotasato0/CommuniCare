@@ -70,6 +70,8 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        // スレッド情報をデータベースから削除
+       $Post = Post::find($id)->delete();
+       return redirect('/index');
     }
 }

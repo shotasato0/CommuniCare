@@ -45,19 +45,26 @@
                     <p class="mb-2 text-xl font-bold">{{ $post->title }}</p>
                     <p class="mb-2">{{ $post->message }}</p>
                 </div>
-                {{-- 削除ボタン --}}
-                {{-- <form class="flex justify-end mt-5" action="/" method="POST"> --}}
-                <form class="flex justify-end mt-5" action="{{ route('comment.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="post_id" value="{{ $post->id }}">
-                    {{-- <input class="border rounded px-2 flex-auto" type="text" name="reply_message"> --}}
-                    {{-- <input class="border rounded px-2 flex-initial" type="text" name="user_name" placeholder="UserName" required> --}}
-                    <input class="border rounded px-2 ml-2 flex-auto" type="text" name="message" placeholder="Comment" required>
-                    <input class="px-2 py-1 ml-2 rounded bg-green-600 text-white font-bold link-hover cursor-pointer"
-                        type="submit" value="返信">
-                    <input class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        type="button" value="削除">
-                </form>
+                {{-- ボタン --}}
+                <div class="flex mt-5">
+                    {{-- 返信 --}}
+                    <form class="flex justify-end flex-auto" action="{{ route('comment.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="post_id" value="{{ $post->id }}">
+                        <input class="border rounded px-2 ml-2 flex-auto" type="text" name="message"
+                            placeholder="Comment" required>
+                        <input
+                            class="px-2 py-1 ml-2 rounded bg-green-600 text-white font-bold link-hover cursor-pointer"
+                            type="submit" value="返信">
+                    </form>
+                    {{-- 削除 --}}
+                    <form action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="post">
+                        @csrf
+                        @method('DELETE')
+                        <input class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                            type="submit" value="削除" onclick="Check(event)">
+                    </form>
+                </div>
                 {{-- 返信 --}}
                 <hr class="mt-2 m-auto">
                 <div class="flex justify-end">
@@ -73,45 +80,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- 投稿 --}}
-            <div class="bg-white rounded-md mt-1 mb-1 p-3">
-                {{-- スレッド --}}
-                <div>
-                    <p class="mb-2 text-xs">2021/11/20 18:00 ＠Noname</p>
-                    <p class="mb-2 text-xl font-bold">●●について</p>
-                    <p class="mb-2">これは本文です。これは本文です。これは本文です。これは本文です。これは本文です。これは本文です。これは本文です。これは本文です。これは本文です。</p>
-                </div>
-                {{-- 削除ボタン --}}
-                <form class="flex justify-end mt-5" action="/" method="POST">
-                    @csrf
-                    <input class="border rounded px-2 flex-auto" type="text" name="reply_message">
-                    <input class="px-2 py-1 ml-2 rounded bg-green-600 text-white font-bold link-hover cursor-pointer"
-                        type="submit" value="返信">
-                    <input class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        type="submit" value="削除">
-                </form>
-                {{-- 返信 --}}
-                <hr class="mt-2 m-auto">
-                <div class="flex justify-end">
-                    <div class="w-11/12">
-                        <div>
-                            <p class="mt-2 text-xs">2021/11/20 19:00 ＠Noname</p>
-                            <p class="my-2 text-sm">
-                                これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。
-                            </p>
-                        </div>
-                        <hr class="mt-2 m-auto">
-                        <div>
-                            <p class="mt-2 text-xs">2021/11/20 19:00 ＠Noname</p>
-                            <p class="my-2 text-sm">
-                                これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。これは返信です。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {{-- ページネーション --}}
             <p class="flex justify-center text-blue-300 mt-1 mb-5 link-hover cursor-pointer">prev 1 2 3 4 next</p>
         @endforeach
