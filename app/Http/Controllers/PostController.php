@@ -14,7 +14,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('created_at', 'desc')->get();
+        $posts = Post::orderBy('created_at', 'desc')->paginate(5); //データベースから5件ずつ取得されるように変更
         $comments = Comment::all();
         return view('layouts.index', compact('posts', 'comments'));
     }
