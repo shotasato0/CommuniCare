@@ -74,4 +74,16 @@ class PostController extends Controller
        $Post = Post::find($id)->delete();
        return redirect('/index');
     }
+
+    public function search(Request $request)
+    {
+        $search_message = '%' .addcslashes($request->search_message, '%_\\') . '%';
+
+        $posts = Post::where('message', 'LIKE', $search_message)->orderBy('created_at', 'desc')->Paginate(5);
+
+        // 検索結果を表示するビューを返す
+        // compact関数は、指定された変数名に対応する変数の値を持つ連想配列を作成します。
+        // この場合、'posts'変数の値をビューに渡すために使用されています。
+        return view('layouts.index', compact('posts'));
+    }
 }

@@ -18,6 +18,9 @@ Route::post('/posts', [PostController::class, 'store'])
 Route::delete('/posts/{post}', [PostController::class, 'destroy'])
     ->name('posts.destroy');
 
+Route::post('/posts/search', [PostController::class, 'search'])
+    ->name('posts.search');
+
 Route::resource('/comment', CommentController::class);
 
 Route::get('/dashboard', function () {
