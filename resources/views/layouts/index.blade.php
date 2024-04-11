@@ -23,10 +23,10 @@
         </div>
         {{-- 検索フォーム --}}
         <div class="bg-white rounded-md mt-3 p-3">
-            <form action="/" method="post">
+            <form action="{{ route('posts.search')}}" method="post">
                 @csrf
                 <div class="mx-1 flex">
-                    <input class="border rounded px-2 flex-auto" type="text" name="serch_message">
+                    <input class="border rounded px-2 flex-auto" type="text" name="search_message" required>
                     <input class="ml-2 px-2 py-1 rounded bg-gray-500 text-white font-bold link-hover cursor-pointer"
                         type="submit" value="検索">
                 </div>
@@ -69,7 +69,7 @@
                 <hr class="mt-2 m-auto">
                 <div class="flex justify-end">
                     <div class="w-11/12">
-                        @foreach ($comments as $comment)
+                        @foreach ($post->comments as $comment)
                             <div>
                                 <p class="mt-2 text-xs">{{ $comment->created_at }} ＠{{ $comment->user->name }}</p>
                                 <p class="my-2 text-sm">
