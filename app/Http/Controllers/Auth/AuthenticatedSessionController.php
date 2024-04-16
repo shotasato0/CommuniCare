@@ -47,6 +47,6 @@ class AuthenticatedSessionController extends Controller
 
     public function username(): string
     {
-        return 'username_id';
+        return 'username';
     }
 }
