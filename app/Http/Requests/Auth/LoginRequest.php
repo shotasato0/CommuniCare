@@ -27,7 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string'],
+            'username_id' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -42,7 +42,7 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited(); // ログイン試行がレートリミットに達していないことを確認します。
 
         // ユーザー名とパスワードで認証を試みます。`remember`オプションがtrueの場合、セッションを永続化します。
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('username_id', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey()); // 認証に失敗した場合、レートリミットカウンターを増やします。
 
              // 認証に失敗したことをユーザーに通知します。エラーメッセージは`username`フィールドに関連付けられます。
