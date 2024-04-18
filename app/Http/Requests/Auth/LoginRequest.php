@@ -47,7 +47,7 @@ class LoginRequest extends FormRequest
 
              // 認証に失敗したことをユーザーに通知します。エラーメッセージは`username`フィールドに関連付けられます。
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'username_id' => trans('auth.failed'),
             ]);
         }
         RateLimiter::clear($this->throttleKey()); // 認証に成功した場合、レートリミットカウンターをリセットします。
