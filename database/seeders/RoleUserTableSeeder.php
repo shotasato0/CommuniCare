@@ -15,10 +15,10 @@ class RoleUserTableSeeder extends Seeder
     public function run()
     {
         // ユーザーをユーザーidで検索
-        $user = User::where('username_id', 'shota')->first();
+        $user = User::where('username_id', 'admin')->first();
 
         // ロールを名前で検索
-        $role = Role::where('name', '佐藤翔太')->first();
+        $role = Role::where('name', 'admin')->first();
 
         // ユーザーにロールを割り当てる
         if ($user && $role) {
