@@ -2,6 +2,11 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
+            @auth
+                @if (auth()->user()->hasRole('admin'))
+                    - 管理者
+                @endif
+            @endauth
         </h2>
     </x-slot>
 
@@ -10,6 +15,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}
+                    @auth
+                        @if (auth()->user()->hasRole('admin'))
+                            <p>あなたは管理者です。</p>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </div>
@@ -35,5 +45,4 @@
             </div>
         </div>
     </div>
-
 </x-app-layout>
