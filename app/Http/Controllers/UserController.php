@@ -11,6 +11,6 @@ class UserController extends Controller
     {
         $user = new User();
         $users = $user->all();
-        return view('layouts.users', ['users' => $users]);
+        return view('users.index', ['users' => $users]);
     }
 }
