@@ -9,9 +9,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = new User();
-        $users = $user->all();
-        return view('users.index', ['users' => $users]);
+        // $user = new User();
+        // $users = $user->all();
+        $users = User::orderBy('created_at', 'desc')->paginate(16);
+        return view('users.index', compact('users'));
     }
 
     public function show($id)
