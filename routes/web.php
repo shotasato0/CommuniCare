@@ -24,8 +24,12 @@ Route::post('/posts/search', [PostController::class, 'search'])
 
 Route::resource('/comment', CommentController::class);
 
+//users
 Route::get('/users', [UserController::class, 'index'])
     ->name('users.index');
+
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->name('users.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
