@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,13 @@ Route::post('/posts/search', [PostController::class, 'search'])
     ->name('posts.search');
 
 Route::resource('/comment', CommentController::class);
+
+//users
+Route::get('/users', [UserController::class, 'index'])
+    ->name('users.index');
+
+Route::get('/users/{user}', [UserController::class, 'show'])
+    ->name('users.show');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
