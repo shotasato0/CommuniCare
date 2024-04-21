@@ -9,8 +9,6 @@ class UserController extends Controller
 {
     public function index()
     {
-        // $user = new User();
-        // $users = $user->all();
         $users = User::orderBy('created_at', 'desc')->paginate(16);
         return view('users.index', compact('users'));
     }

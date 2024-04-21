@@ -9,7 +9,6 @@
                             <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:bg-gray-100">
                                 <div class="p-4">
                                     <h3 class="text-xl font-medium text-gray-800">{{ $user->name }}</h3>
-                                    {{-- <p class="text-gray-600">Email: {{ $user->email }}</p> --}}
                                     @if ($user->hasRole('admin'))
                                         <span
                                             class="inline-block bg-blue-500 text-white rounded-full px-3 py-1 mt-2 text-sm font-semibold">管理者</span>
