@@ -6,11 +6,13 @@
 Alpine.start();
 window.Alpine = Alpine;
 
+
 import "./bootstrap";
 import "./delete";
 import Alpine from "alpinejs";
 import { createApp } from "vue";
 import ExampleComponent from "./components/ExampleComponent.vue";
+import UnitIndex from "./components/Unit/Index.vue";
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -21,6 +23,7 @@ import ExampleComponent from "./components/ExampleComponent.vue";
 const app = createApp({});
 
 app.component("example-component", ExampleComponent);
+app.component("unit-index", UnitIndex);
 
 /**
  * The following block of code may be used to automatically register your
@@ -40,4 +43,4 @@ app.component("example-component", ExampleComponent);
  * scaffolding. Otherwise, you will need to add an element yourself.
  */
 
-app.mount("#app");
+app.mount("#unit-sidebar");
