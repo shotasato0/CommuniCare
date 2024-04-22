@@ -3,9 +3,14 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+Alpine.start();
+window.Alpine = Alpine;
 
-import './bootstrap';
-import { createApp } from 'vue';
+import "./bootstrap";
+import "./delete";
+import Alpine from "alpinejs";
+import { createApp } from "vue";
+import ExampleComponent from "./components/ExampleComponent.vue";
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -15,8 +20,7 @@ import { createApp } from 'vue';
 
 const app = createApp({});
 
-import ExampleComponent from './components/ExampleComponent.vue';
-app.component('example-component', ExampleComponent);
+app.component("example-component", ExampleComponent);
 
 /**
  * The following block of code may be used to automatically register your
@@ -36,4 +40,4 @@ app.component('example-component', ExampleComponent);
  * scaffolding. Otherwise, you will need to add an element yourself.
  */
 
-app.mount('#app');
+app.mount("#app");
