@@ -11,6 +11,7 @@ import "./delete";
 import Alpine from "alpinejs";
 import { createApp } from "vue";
 import ExampleComponent from "./components/ExampleComponent.vue";
+import router from "./router/index.js";
 
 /**
  * Next, we will create a fresh Vue application instance. You may then begin
@@ -21,6 +22,7 @@ import ExampleComponent from "./components/ExampleComponent.vue";
 const app = createApp({});
 
 app.component("example-component", ExampleComponent);
+app.use(router);
 
 /**
  * The following block of code may be used to automatically register your

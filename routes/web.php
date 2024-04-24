@@ -9,9 +9,9 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/{any}', function () {
+Route::get('app/{any}', function () {
     return view('layouts.app');
-})->where('any', '.*');
+})->where('any', '.*')->middleware('auth');
 
 Route::get('/index', [PostController::class, 'index'])
     ->name('index');
