@@ -1,45 +1,36 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-Alpine.start();
-window.Alpine = Alpine;
-
+// Alpine.jsとその他のJavaScript依存関係を読み込みます。これにはBootstrapなどのライブラリも含まれます。
+import Alpine from "alpinejs";
 import "./bootstrap";
 import "./delete";
-import Alpine from "alpinejs";
+
+window.Alpine = Alpine;
+Alpine.start();
+
+// Vueと関連コンポーネントをインポートします。
 import { createApp } from "vue";
 import ExampleComponent from "./components/ExampleComponent.vue";
 import router from "./router/index.js";
 
 /**
- * Next, we will create a fresh Vue application instance. You may then begin
- * registering components with the application instance so they are ready
- * to use in your application's views. An example is included for you.
+ * 新しいVueアプリケーションインスタンスを作成し、コンポーネントを登録します。
+ * これにより、アプリケーションのビューで使用する準備が整います。
+ * <example-component></example-component>のようにコンポーネントを使用できます。
  */
-
 const app = createApp({});
-
 app.component("example-component", ExampleComponent);
 app.use(router);
 
 /**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ * Vueコンポーネントを自動的に登録するためのコードです。ディレクトリを再帰的にスキャンし、
+ * 見つかったコンポーネントを自動的にアプリケーションに登録します。
+ * （この機能を使いたい場合はコメントを外してください）
  */
-
 // Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
 //     app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
 // });
 
 /**
- * Finally, we will attach the application instance to a HTML element with
- * an "id" attribute of "app". This element is included with the "auth"
- * scaffolding. Otherwise, you will need to add an element yourself.
+ * アプリケーションインスタンスをHTML要素にアタッチします。
+ * "id"属性が"app"の要素にVueアプリケーションをマウントします。
  */
-
 app.mount("#app");

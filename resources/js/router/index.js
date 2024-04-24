@@ -1,17 +1,17 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import ExampleComponent from '../components/ExampleComponent.vue';
+import { createRouter, createWebHistory } from 'vue-router'; // vue-routerからcreateRouterとcreateWebHistoryをインポート
+import ExampleComponent from '../components/ExampleComponent.vue'; // ExampleComponentをcomponentsディレクトリからインポート
 
-const routes = [
+const routes = [ // ルーティングの設定を配列で定義
     {
-        path: '/',
-        name: 'Home',
-        component: ExampleComponent
+        path: '/', // URLのパス
+        name: 'Home', // ルートの名前
+        component: ExampleComponent // このパスに対応するコンポーネント
     }
 ];
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes
+const router = createRouter({ // ルーターインスタンスを作成
+    history: createWebHistory(), // ブラウザの履歴をWebヒストリーモードで使用
+    routes // 上で定義したルート設定をルーターに適用
 });
 
-export default router;
+export default router; // 作成したルーターインスタンスをエクスポート
