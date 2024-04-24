@@ -1,11 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'; // vue-routerからcreateRouterとcreateWebHistoryをインポート
-import ExampleComponent from '../components/ExampleComponent.vue'; // ExampleComponentをcomponentsディレクトリからインポート
+import { ExampleComponent, DashboardComponent } from '../components'; //
 
 const routes = [ // ルーティングの設定を配列で定義
     {
         path: '/', // URLのパス
         name: 'Home', // ルートの名前
         component: ExampleComponent // このパスに対応するコンポーネント
+    },
+    {
+        path: '/dashboard', // URLのパス
+        name: 'Dashboard', // ルートの名前
+        component: DashboardComponent // このパスに対応するコンポーネント
     }
 ];
 

@@ -18,6 +18,7 @@
 <body class="font-sans antialiased">
     <div id="app">
         <!-- Vue Router will handle all the pages rendering here -->
+        <dashboard-component></dashboard-component>
         <example-component></example-component>
     </div>
 </body>
