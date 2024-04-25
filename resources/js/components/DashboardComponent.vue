@@ -33,12 +33,11 @@
                     class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-5"
                 >
                     <div class="flex items-center pr-6 py-6 text-gray-900">
-                        <router-link
-                            to="/users"
+                        <a href="/users"
                             class="ml-4 inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg"
                         >
                             社員一覧
-                        </router-link>
+                        </a>
                     </div>
                 </div>
             </div>
