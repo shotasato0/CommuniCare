@@ -100,6 +100,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     data() {
         return {
@@ -115,18 +117,49 @@ export default {
     methods: {
         submitPost() {
             // ここで新規投稿を処理するAPI呼び出しを行う
+            axios
+                .post("/api/posts", this.newPost)
+                .then((response) => {
+                    // 成功時の処理
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    // エラー処理
+                    console.error(error);
+                });
         },
         searchPosts() {
             // ここで検索を処理するAPI呼び出しを行う
+            axios
+                .post("/api/posts/search", { query: this.searchQuery })
+                .then((response) => {
+                    // 検索結果を処理
+                    this.posts = response.data;
+                })
+                .catch((error) => {
+                    // エラー処理
+                    console.error(error);
+                });
+        },
+        deletePost(post) {
+            if (confirm("この投稿を削除しますか？")) {
+                axios
+                    .delete(`/api/posts/${post.id}`)
+                    .then((response) => {
+                        // 削除後の処理
+                        this.removePostFromList(post.id);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        },
+        // 投稿リストから削除するヘルパーメソッド
+        removePostFromList(postId) {
+            this.posts = this.posts.filter((post) => post.id !== postId);
         },
         updatePosts(newData) {
             this.posts = newData;
-        },
-        deletePost(post) {
-            // ここで投稿の削除を処理するAPI呼び出しを行う
-            if (confirm("この投稿を削除しますか？")) {
-                // 削除処理
-            }
         },
     },
 };
