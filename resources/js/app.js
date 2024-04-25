@@ -8,7 +8,7 @@ Alpine.start();
 
 // Vueと関連コンポーネントをインポートします。
 import { createApp } from "vue";
-import { ExampleComponent, DashboardComponent } from "./components";
+import { ExampleComponent, DashboardComponent, IndexComponent } from "./components";
 import router from "./router";
 
 /**
@@ -19,6 +19,7 @@ import router from "./router";
 const app = createApp({});
 app.component("example-component", ExampleComponent);
 app.component("dashboard-component", DashboardComponent);
+app.component("index-component", IndexComponent);
 app.use(router);
 
 /**

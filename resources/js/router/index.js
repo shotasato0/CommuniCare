@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'; // vue-routerからcreateRouterとcreateWebHistoryをインポート
-import { ExampleComponent, DashboardComponent } from '../components'; //
+import { ExampleComponent, DashboardComponent, IndexComponent } from '../components'; //
 
 const routes = [ // ルーティングの設定を配列で定義
     {
@@ -11,6 +11,11 @@ const routes = [ // ルーティングの設定を配列で定義
         path: '/dashboard', // URLのパス
         name: 'Dashboard', // ルートの名前
         component: DashboardComponent // このパスに対応するコンポーネント
+    },
+    {
+        path: '/index', // URLのパス
+        name: 'Index', // ルートの名前
+        component: IndexComponent // このパスに対応するコンポーネント
     }
 ];
 

@@ -30,7 +30,8 @@
 
         <div id="app">
             <!-- Vue Router will handle all the pages rendering here -->
-            <dashboard-component></dashboard-component>
+            {{-- <dashboard-component></dashboard-component> --}}
+            <index-component></index-component>
         </div>
 </body>
 
