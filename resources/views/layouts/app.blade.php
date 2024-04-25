@@ -6,20 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Vue Laravel SPA') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased">
-    <div id="unit-sidebar">
-        <unit-index></unit-index>
-    </div>
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 
@@ -32,11 +28,12 @@
             </header>
         @endif
 
-        <!-- Page Content -->
-        <main>
+        <div id="app">
             {{ $slot }}
-        </main>
-    </div>
+            <!-- Vue Router will handle all the pages rendering here -->
+            <dashboard-component></dashboard-component>
+            <index-component></index-component>
+        </div>
 </body>
 
 </html>
