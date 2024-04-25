@@ -14,9 +14,12 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    <router-link :to="{ name: 'dashboard' }"
+                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                        v-slot="{ isActive }">
+                        <span
+                            :class="{ 'text-gray-900': isActive, 'text-gray-500': !isActive }">{{ __('Dashboard') }}</span>
+                    </router-link>
                 </div>
             </div>
 
@@ -77,9 +80,15 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            <router-link :to="{ name: 'dashboard' }" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                v-slot="{ isActive }">
+                <span
+                    :class="{
+                        'border-blue-400 text-blue-700 bg-blue-50': isActive,
+                        'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300':
+                            !isActive
+                    }">{{ __('Dashboard') }}</span>
+            </router-link>
         </div>
 
         <!-- Responsive Settings Options -->
