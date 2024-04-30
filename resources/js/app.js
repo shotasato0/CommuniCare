@@ -8,30 +8,7 @@ Alpine.start();
 
 // Vueと関連コンポーネントをインポートします。
 import { createApp } from "vue";
-import { ExampleComponent, DashboardComponent, IndexComponent } from "./components";
 import router from "./router";
 
-/**
- * 新しいVueアプリケーションインスタンスを作成し、コンポーネントを登録します。
- * これにより、アプリケーションのビューで使用する準備が整います。
- * <example-component></example-component>のようにコンポーネントを使用できます。
- */
 const app = createApp({});
-app.component("example-component", ExampleComponent);
-app.component("dashboard-component", DashboardComponent);
-app.component("index-component", IndexComponent);
-app.use(router);
-
-/**
- * Vueコンポーネントを自動的に登録するためのコードです。ディレクトリを再帰的にスキャンし、
- * 見つかったコンポーネントを自動的にアプリケーションに登録します。
- */
-Object.entries(import.meta.glob('./**/*.vue', { eager: true })).forEach(([path, definition]) => {
-    app.component(path.split('/').pop().replace(/\.\w+$/, ''), definition.default);
-});
-
-/**
- * アプリケーションインスタンスをHTML要素にアタッチします。
- * "id"属性が"app"の要素にVueアプリケーションをマウントします。
- */
-app.mount("#app");
+app.use(router).mount("#app");

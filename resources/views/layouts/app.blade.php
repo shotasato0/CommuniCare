@@ -30,9 +30,7 @@
 
         <div id="app">
             {{ $slot }}
-            <!-- Vue Router will handle all the pages rendering here -->
-            <dashboard-component></dashboard-component>
-            <index-component></index-component>
+            <example-component></example-component>
         </div>
 </body>
 
