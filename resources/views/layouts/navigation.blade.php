@@ -77,15 +77,9 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <a href="{{ route('dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                v-slot="{ isActive }">
-                <span
-                    :class="{
-                        'border-blue-400 text-blue-700 bg-blue-50': isActive,
-                        'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300':
-                            !isActive
-                    }">{{ __('Dashboard') }}</span>
-            </a>
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                {{ __('Dashboard') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
