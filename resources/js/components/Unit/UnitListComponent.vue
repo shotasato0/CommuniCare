@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     data() {
         return {
@@ -20,9 +22,15 @@ export default {
         };
     },
     mounted() {
-        axios.get("/api/units").then((response) => {
-            this.units = response.data;
-        });
+        const apiUrl = import.meta.env.VITE_API_URL;
+        axios
+            .get(`${apiUrl}/units`)
+            .then((response) => {
+                this.units = response.data;
+            })
+            .catch((error) => {
+                console.error("Error fetching units:", error);
+            });
     },
     methods: {
         selectUnit(unitId) {

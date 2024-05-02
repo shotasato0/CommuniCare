@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UnitController;
-use App\Http\Controllers\ResidentController;
 
-Route::middleware('auth:api')->get('/units', [UnitController::class, 'index']);
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
-Route::middleware('auth:api')->get('/residents', [ResidentController::class, 'index']);
+Route::apiResource('units', UnitController::class);
 
