@@ -27,11 +27,15 @@
                 </div>
             </header>
         @endif
-
-        <div id="app">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             {{ $slot }}
-            <example-component></example-component>
         </div>
+        <!-- Vue -->
+        <div id="app">
+            <unit-list-component></unit-list-component>
+            <router-view></router-view>
+        </div>
+    </div>
 </body>
 
 </html>

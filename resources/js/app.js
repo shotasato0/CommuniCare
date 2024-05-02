@@ -9,6 +9,10 @@ Alpine.start();
 // Vueと関連コンポーネントをインポートします。
 import { createApp } from "vue";
 import router from "./router";
+import UnitListComponent from "./components/Unit/UnitListComponent.vue";
 
 const app = createApp({});
+
+app.component('unit-list-component', UnitListComponent);
+
 app.use(router).mount("#app");

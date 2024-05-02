@@ -1,3 +1,4 @@
-import ExampleComponent from './ExampleComponent.vue';
+import ExampleComponent from "./ExampleComponent.vue";
+import UnitListComponent from "./Unit/UnitListComponent.vue";
 
-export { ExampleComponent };
+export { ExampleComponent, UnitListComponent };
