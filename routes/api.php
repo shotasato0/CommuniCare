@@ -10,3 +10,5 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('units', UnitController::class);
 
+Route::apiResource('residents', ResidentController::class);
+

@@ -85,4 +85,9 @@
         @endforeach
         <p class="mt-5">{{ $posts->links() }}</p>
     </div>
+    <!-- Vue -->
+    <div id="app">
+        <unit-list-component></unit-list-component>
+        <router-view></router-view>
+    </div>
 </x-app-layout>
