@@ -27,13 +27,10 @@
                 </div>
             </header>
         @endif
-
-        <div id="app">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             {{ $slot }}
-            <!-- Vue Router will handle all the pages rendering here -->
-            <dashboard-component></dashboard-component>
-            <index-component></index-component>
         </div>
+    </div>
 </body>
 
 </html>
