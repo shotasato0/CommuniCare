@@ -3,10 +3,10 @@
         <ul>
             <li
                 v-for="unit in units"
-                :key="unit.unit_id"
-                @click="selectUnit(unit.unit_id)"
+                :key="unit.id"
+                @click="selectUnit(unit.id)"
             >
-                {{ unit.unit_name }}
+                {{ unit.name }}
             </li>
         </ul>
     </div>
