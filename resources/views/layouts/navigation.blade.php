@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('index') }}">
+                    <a href="/index">
                         <h1 class="title-font sm:text-3xl text-1xl font-light text-blue-900 tracking-widest">
                             CommuniCare
                         </h1>

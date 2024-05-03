@@ -13,8 +13,8 @@ Route::get('app/{any}', function () {
     return view('layouts.app');
 })->where('any', '.*')->middleware('auth');
 
-Route::get('/index', [PostController::class, 'index'])
-    ->name('index');
+Route::get('/index', [PostController::class, 'showPostsPage'])
+    ->name('home');
 
 Route::post('/posts', [PostController::class, 'store'])
     ->name('posts.store');

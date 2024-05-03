@@ -37,7 +37,7 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-        //
+    return $unit;
     }
 
     /**

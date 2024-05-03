@@ -6,7 +6,10 @@
                 :key="unit.id"
                 @click="selectUnit(unit.id)"
             >
-                {{ unit.name }}
+                <!-- router-linkを使用して動的なリンクを作成 -->
+                <router-link :to="`/units/${unit.id}`">
+                    {{ unit.name }}
+                </router-link>
             </li>
         </ul>
     </div>
@@ -35,6 +38,7 @@ export default {
     methods: {
         selectUnit(unitId) {
             // 選択されたユニットに基づいて何かをする
+            // この例では何もしていませんが、必要に応じて何か処理を追加できます
         },
     },
 };
