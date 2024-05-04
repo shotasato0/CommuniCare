@@ -1,36 +1,40 @@
 <template>
     <div>
-        <h1>{{ unit.name }}の掲示板</h1>
-        <div v-for="post in posts" :key="post.id">
-            <h3>{{ post.title }}</h3>
-            <p>{{ post.message }}</p>
-            <!-- コメントと削除ボタンなど -->
-        </div>
+        <post-form-component @add-post="handleAddPost"></post-form-component>
+        <search-form-component
+            @search-posts="handleSearchPosts"
+        ></search-form-component>
+        <post-component
+            v-for="post in posts"
+            :key="post.id"
+            :post="post"
+        ></post-component>
     </div>
 </template>
 
 <script>
-import axios from "axios";
+import PostFormComponent from "./post/PostFormComponent.vue";
+import SearchFormComponent from "./search/SearchFormComponent.vue";
+import PostComponent from "./post/PostComponent.vue";
 
 export default {
-    props: ["unitId"],
+    components: {
+        PostFormComponent,
+        SearchFormComponent,
+        PostComponent,
+    },
     data() {
         return {
             posts: [],
-            unit: {},
+            searchResults: [],
         };
     },
-    mounted() {
-        this.fetchPosts();
-    },
     methods: {
-        fetchPosts() {
-            axios
-                .get(`/api/units/${this.unitId}/posts`)
-                .then((response) => {
-                    this.posts = response.data;
-                })
-                .catch((error) => console.error("Error:", error));
+        handleAddPost(newPost) {
+            // API call to add post
+        },
+        handleSearchPosts(searchTerm) {
+            // API call to search posts
         },
     },
 };
