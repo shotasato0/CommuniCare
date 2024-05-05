@@ -9,12 +9,9 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('app/{any}', function () {
-    return view('layouts.app');
-})->where('any', '.*')->middleware('auth');
 
-Route::get('/index', [PostController::class, 'showPostsPage'])
-    ->name('home');
+Route::get('/index', [PostController::class, 'index'])
+    ->name('index');
 
 Route::post('/posts', [PostController::class, 'store'])
     ->name('posts.store');

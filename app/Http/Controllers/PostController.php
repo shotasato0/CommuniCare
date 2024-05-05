@@ -9,17 +9,15 @@ use Illuminate\Support\Facades\Auth; // Authファサードをインポート
 
 class PostController extends Controller
 {
-    
-    public function showPostsPage()
-    {
-        return view('layouts.index');  // このview('index')はVueアプリケーションのマウントポイントとなるindex.blade.phpを指します
-    }
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
-{
-    $posts = Post::with('comments')->orderBy('created_at', 'desc')->paginate(10);
-    return response()->json($posts);
-}
+    {
+        $posts = Post::orderBy('created_at', 'desc')->paginate(5); //データベースから5件ずつ取得されるように変更
+        $comments = Comment::all();
+        return view('layouts.index', compact('posts', 'comments'));
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -32,12 +30,16 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-{
-    $post = new Post($request->all());
-    $post->user_id = Auth::id();  // 現在認証されているユーザーのIDを設定
-    $post->save();
-    return response()->json($post, 201);
-}
+    {
+        $post = new Post;
+        
+         // ユーザー入力から受け取ったデータと、現在認証されているユーザーのIDを使用してデータを保存
+        $post->saveWithUser($request->except('_token'), Auth::id());
+    
+        $post->save();
+    
+        return redirect('/index');
+    }
 
     /**
      * Display the specified resource.
@@ -66,11 +68,12 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-{
-    Post::findOrFail($id)->delete();
-    return response()->json(null, 204);
-}
+    public function destroy(string $id)
+    {
+        // スレッド情報をデータベースから削除
+       $Post = Post::find($id)->delete();
+       return redirect('/index');
+    }
 
 
     public function search(Request $request)
@@ -85,9 +88,8 @@ class PostController extends Controller
         return view('layouts.index', compact('posts'));
     }
 
-    public function forUnit($unitId)
-{
-    $posts = Post::where('unit_id', $unitId)->get();
-    return response()->json($posts);
-}
+    public function forUnit(Unit $unit)
+    {
+    return $unit->posts;
+    }
 }
