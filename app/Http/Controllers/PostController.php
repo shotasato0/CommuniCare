@@ -75,6 +75,7 @@ class PostController extends Controller
        return redirect('/index');
     }
 
+
     public function search(Request $request)
     {
         $search_message = '%' .addcslashes($request->search_message, '%_\\') . '%';
@@ -85,5 +86,10 @@ class PostController extends Controller
         // compact関数は、指定された変数名に対応する変数の値を持つ連想配列を作成します。
         // この場合、'posts'変数の値をビューに渡すために使用されています。
         return view('layouts.index', compact('posts'));
+    }
+
+    public function forUnit(Unit $unit)
+    {
+    return $unit->posts;
     }
 }
