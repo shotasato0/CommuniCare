@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('residents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('unit_id')->constrained('units');
             $table->foreignId('user_id')->constrained('users');
             $table->string('name');
             $table->index('name'); // nameフィールドにインデックスを追加
