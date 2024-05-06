@@ -1,10 +1,4 @@
 <x-app-layout>
-    <!-- Vue -->
-    <div id="app">
-        <unit-list-component></unit-list-component>
-        <Bulletin-Board></Bulletin-Board>
-        <router-view></router-view>
-    </div>
     <div class="w-11/12 max-w-screen-md m-auto">
         {{-- タイトル --}}
         <h1 class="text-xl font-bold mt-5">{{ env('app_name') }}</h1>
@@ -90,5 +84,10 @@
             {{-- ページネーション --}}
         @endforeach
         <p class="mt-5">{{ $posts->links() }}</p>
+    </div>
+    <!-- Vue -->
+    <div id="app">
+        <unit-list-component></unit-list-component>
+        <router-view></router-view>
     </div>
 </x-app-layout>

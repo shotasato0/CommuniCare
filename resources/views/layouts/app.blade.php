@@ -16,6 +16,9 @@
 </head>
 
 <body class="font-sans antialiased">
+    <div>
+        @include('layouts.sidebar')
+    </div>
     <div class="min-h-screen bg-gray-100">
         @include('layouts.navigation')
 

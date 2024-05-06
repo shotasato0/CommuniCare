@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class UnitController extends Controller
@@ -12,8 +13,8 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $units = Unit::all();
-        return response()->json($units);
+        $posts = Post::with('user', 'comments.user')->paginate();
+        return view('layouts.index', compact('posts'));
     }
 
     /**
