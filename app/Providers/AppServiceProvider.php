@@ -25,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
             $units = DB::table('units')->select('name')->get();
             $view->with('units', $units);
         });
+        
     }
 }
