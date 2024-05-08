@@ -41,7 +41,7 @@
             <div class="bg-white rounded-md mt-1 mb-5 p-3">
                 {{-- スレッド --}}
                 <div>
-                    <p class="mb-2 text-xs">{{ $post->created_at }} ＠{{ $post->user->name }}</p>
+                    <p class="mb-2 text-xs">{{ $post->created_at->format('Y-m-d H:i') }} ＠{{ $post->user->name }}</p>
                     <p class="mb-2 text-xl font-bold">{{ $post->title }}</p>
                     <p class="mb-2">{{ $post->message }}</p>
                 </div>
@@ -57,13 +57,15 @@
                             type="submit" value="返信">
                     </form>
                     {{-- 削除 --}}
-                    <form action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="post"
-                        class="flex items-center">
-                        @csrf
-                        @method('DELETE')
-                        <input class="h-10 px-4 ml-2 rounded bg-red-500 text-white font-bold cursor-pointer"
-                            type="submit" value="削除" onclick="Check(event)">
-                    </form>
+                    @if (Auth::check() && Auth::id() == $post->user_id)
+                        <form action="{{ route('posts.destroy', ['post' => $post->id]) }}" method="post"
+                            class="flex items-center">
+                            @csrf
+                            @method('DELETE')
+                            <input class="h-10 px-4 ml-2 rounded bg-red-500 text-white font-bold cursor-pointer"
+                                type="submit" value="削除" onclick="return confirm('本当に削除しますか？');">
+                        </form>
+                    @endif
                 </div>
 
                 {{-- 返信 --}}
@@ -72,7 +74,8 @@
                     <div class="w-11/12">
                         @foreach ($post->comments as $comment)
                             <div>
-                                <p class="mt-2 text-xs">{{ $comment->created_at }} ＠{{ $comment->user->name }}</p>
+                                <p class="mt-2 text-xs">{{ $comment->created_at->format('Y-m-d H:i') }}
+                                    ＠{{ $comment->user->name }}</p>
                                 <p class="my-2 text-sm">
                                     {{ $comment->message }}
                                 </p>
@@ -81,8 +84,8 @@
                     </div>
                 </div>
             </div>
-            {{-- ページネーション --}}
         @endforeach
+        {{-- ページネーション --}}
         <p class="mt-5">{{ $posts->links() }}</p>
     </div>
     <!-- Vue -->

@@ -21,10 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        View::composer('layouts.sidebar', function ($view) {
-            $units = DB::table('units')->select('name')->get();
-            $view->with('units', $units);
-        });
-        
+        //
     }
 }

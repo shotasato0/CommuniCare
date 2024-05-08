@@ -3,9 +3,9 @@
         <div class="container mx-auto">
             <div class="flex flex-col -mx-4"> <!-- flex-wrap を flex-col に変更し、flex-direction を column に設定 -->
                 @foreach ($users as $user)
-                    <div class="w-full px-4 my-2"> <!-- 横幅クラスを w-full に統一 -->
-                        <!-- リンクをカード全体に適用 -->
-                        <a href="{{ route('users.show', ['user' => $user->id]) }}" class="block">
+                    <div class="w-full px-4 my-2 flex items-center"> <!-- flexとitems-centerを追加して横並びと中央揃えを実現 -->
+                        <a href="{{ route('users.show', ['user' => $user->id]) }}" class="block flex-grow">
+                            <!-- flex-growを追加して、リンクカードが可能な限りの幅を取るように設定 -->
                             <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:bg-gray-100">
                                 <div class="p-4">
                                     <h3 class="text-xl font-medium text-gray-800">{{ $user->name }}</h3>
@@ -19,6 +19,16 @@
                                 </div>
                             </div>
                         </a>
+                        <!-- 削除ボタン -->
+                        <form action="{{ route('users.destroy', $user->id) }}" method="POST"
+                            onsubmit="return confirm('本当に削除しますか？');" class="ml-4"> <!-- ml-4を追加してマージンを設定 -->
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                削除
+                            </button>
+                        </form>
                     </div>
                 @endforeach
             </div>

@@ -34,6 +34,9 @@ Route::get('/users', [UserController::class, 'index'])
 Route::get('/users/{user}', [UserController::class, 'show'])
     ->name('users.show');
 
+Route::delete('/users/{user}', [UserController::class, 'destroy'])
+    ->name('users.destroy');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
