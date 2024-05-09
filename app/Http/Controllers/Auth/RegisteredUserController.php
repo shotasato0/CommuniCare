@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\NursingHome;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,12 +32,14 @@ class RegisteredUserController extends Controller
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'username_id' => ['required', 'string', 'max:255'],
+            'username_id' => ['required', 'string', 'max:255', 'unique:users,username_id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
+        
 
+        // Check if the registration is for an administrator and require nursing home name
         if ($request->input('is_admin', false)) {
-            $rules['nursing_home_name'] = ['required', 'string', 'max:255'];
+            $rules['nursing_home_name'] = ['required', 'string', 'max:255', 'unique:nursing_homes,name'];
         }
 
         $request->validate($rules);
@@ -45,11 +48,17 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
-            'nursing_home_name' => $request->nursing_home_name ?? null,
         ]);
 
-        Auth::login($user); // ユーザーをログイン状態にする
+        // If registering as an admin, create the nursing home record
+        if ($request->input('is_admin', false)) {
+            $nursingHome = NursingHome::create([
+                'name' => $request->nursing_home_name,
+            ]);
+        }
 
-        return redirect(route('dashboard', absolute: false))->with('success', '新しいユーザーが正常に登録されました。');
+        Auth::login($user); // Log in the newly created user
+
+        return redirect(route('dashboard'))->with('success', '新しいユーザーが正常に登録されました。');
     }
 }
