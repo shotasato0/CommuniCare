@@ -29,17 +29,26 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'username_id' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ];
+
+        if ($request->input('is_admin', false)) {
+            $rules['nursing_home_name'] = ['required', 'string', 'max:255'];
+        }
+
+        $request->validate($rules);
 
         $user = User::create([
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
+            'nursing_home_name' => $request->nursing_home_name ?? null,
         ]);
+
+        Auth::login($user); // ユーザーをログイン状態にする
 
         return redirect(route('dashboard', absolute: false))->with('success', '新しいユーザーが正常に登録されました。');
     }

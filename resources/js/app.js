@@ -2,6 +2,7 @@
 import Alpine from "alpinejs";
 import "./bootstrap";
 import "./delete";
+import "./toggleNursingHomeInput";
 
 window.Alpine = Alpine;
 Alpine.start();

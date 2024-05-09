@@ -139,5 +139,7 @@
     "to": "から",
     "Showing": "表示中：",
     "Username": "ユーザー名",
-    "Username ID": "ユーザーID"
+    "Username ID": "ユーザーID",
+    "Nursing Home Name": "介護施設名",
+    "Register as administrator?": "管理者として登録する"
 }
