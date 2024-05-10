@@ -255,6 +255,7 @@ return [
         'username' => 'ユーザー名',
         'year' => '年',
         'username_id' => 'ユーザーID',
+        'nursing_home_name' => '介護施設名',
     ],
 
 ];

@@ -3,6 +3,7 @@ import Alpine from "alpinejs";
 import "./bootstrap";
 import "./delete";
 import "./toggleNursingHomeInput";
+import "./persistAdminCheckboxState";
 
 window.Alpine = Alpine;
 Alpine.start();
