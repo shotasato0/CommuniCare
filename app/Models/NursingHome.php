@@ -16,4 +16,8 @@ class NursingHome extends Model
         return $this->hasMany(User::class);
     }
 
+    public static function getNames()
+    {
+        return self::select('name')->get();
+    }
 }

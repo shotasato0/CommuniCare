@@ -20,6 +20,13 @@
                 </div>
             </div>
 
+
+            <div class="flex space-x-4">
+                @foreach ($nursingHomes as $nursingHome)
+                    <div>{{ $nursingHome->name }}</div>
+                @endforeach
+            </div>
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
