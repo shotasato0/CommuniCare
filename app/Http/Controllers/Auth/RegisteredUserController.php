@@ -36,7 +36,6 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
         
-
         // Check if the registration is for an administrator and require nursing home name
         if ($request->input('is_admin', false)) {
             $rules['nursing_home_name'] = ['required', 'string', 'max:255', 'unique:nursing_homes,name'];
@@ -44,17 +43,22 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
+        // Create user
         $user = User::create([
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
         ]);
 
-        // If registering as an admin, create the nursing home record
+        // If registering as an admin, create the nursing home record and associate it
         if ($request->input('is_admin', false)) {
             $nursingHome = NursingHome::create([
                 'name' => $request->nursing_home_name,
             ]);
+
+            // Associate the user with the newly created nursing home
+            $user->nursing_home_id = $nursingHome->id;
+            $user->save();
         }
 
         Auth::login($user); // Log in the newly created user
