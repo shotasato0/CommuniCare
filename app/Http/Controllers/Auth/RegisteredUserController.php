@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\NursingHome;
+use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class RegisteredUserController extends Controller
         ];
         
         // Check if the registration is for an administrator and require nursing home name
-        if ($request->input('is_admin', false)) {
+        if ($request->boolean('is_admin')) {  // Change to boolean check for clarity
             $rules['nursing_home_name'] = ['required', 'string', 'max:255', 'unique:nursing_homes,name'];
         }
 
@@ -51,7 +52,7 @@ class RegisteredUserController extends Controller
         ]);
 
         // If registering as an admin, create the nursing home record and associate it
-        if ($request->input('is_admin', false)) {
+        if ($request->boolean('is_admin')) {
             $nursingHome = NursingHome::create([
                 'name' => $request->nursing_home_name,
             ]);
@@ -59,6 +60,10 @@ class RegisteredUserController extends Controller
             // Associate the user with the newly created nursing home
             $user->nursing_home_id = $nursingHome->id;
             $user->save();
+
+            // Find the admin role and assign it to the user
+            $adminRole = Role::findByName('admin');
+            $user->assignRole($adminRole);
         }
 
         Auth::login($user); // Log in the newly created user
