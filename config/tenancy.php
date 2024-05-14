@@ -74,5 +74,16 @@ return [
         'create_tenants_table',
     ],
 
-    // Additional configurations...
+    'tenant' => [
+        'database' => [
+            'suffix' => 'tenant_', // テナントDBの接頭辞
+            'driver' => 'mysql',
+            'host' => env('TENANCY_DB_HOST', '127.0.0.1'),
+            'port' => env('TENANCY_DB_PORT', '3306'),
+            'username' => env('TENANCY_DB_USERNAME', 'root'),
+            'password' => env('TENANCY_DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+    ],
 ];
