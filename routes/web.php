@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UnitController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,8 +23,6 @@ Route::post('/posts/search', [PostController::class, 'search'])
     ->name('posts.search');
 
 Route::resource('/comment', CommentController::class);
-
-Route::resource('/sidebar', UnitController::class);
 
 //users
 Route::get('/users', [UserController::class, 'index'])
