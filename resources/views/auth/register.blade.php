@@ -11,10 +11,10 @@
 
         <!-- Nursing Home Name -->
         <div id="nursing_home_container" style="display: none;" class="mt-4">
-            <x-input-label for="nursing_home_name" :value="__('Nursing Home Name')" />
-            <x-text-input id="nursing_home_name" class="block mt-1 w-full" type="text" name="nursing_home_name"
-                :value="old('nursing_home_name')" autofocus autocomplete="nursing_home_name" />
-            <x-input-error :messages="$errors->get('nursing_home_name')" class="mt-2" />
+            <x-input-label for="tenant_name" :value="__('介護施設名')" />
+            <x-text-input id="tenant_name" class="block mt-1 w-full" type="text" name="tenant_name" :value="old('tenant_name')"
+                autofocus autocomplete="tenant_name" />
+            <x-input-error :messages="$errors->get('tenant_name')" class="mt-2" />
         </div>
 
         <!-- Name -->

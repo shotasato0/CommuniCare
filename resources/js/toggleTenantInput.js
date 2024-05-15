@@ -4,8 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
         adminCheckbox.addEventListener("change", function () {
             const container = document.getElementById("nursing_home_container");
             container.style.display = this.checked ? "block" : "none";
-            document.getElementById("nursing_home_name").required =
-                this.checked; // 施設名を必須にするかどうか
+            document.getElementById("tenant_name").required = this.checked; // 施設名を必須にするかどうか
         });
     }
 });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\NursingHome;
+use App\Models\Tenant;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
@@ -37,9 +38,9 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
         
-        // Check if the registration is for an administrator and require nursing home name
+        // Check if the registration is for an administrator and require tenant name
         if ($request->boolean('is_admin')) {  // Change to boolean check for clarity
-            $rules['nursing_home_name'] = ['required', 'string', 'max:255', 'unique:nursing_homes,name'];
+            $rules['tenant_name'] = ['required', 'string', 'max:255', 'unique:tenants,name'];
         }
 
         $request->validate($rules);
@@ -51,14 +52,18 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // If registering as an admin, create the nursing home record and associate it
+        // If registering as an admin, create the tenant record and associate it
         if ($request->boolean('is_admin')) {
-            $nursingHome = NursingHome::create([
-                'name' => $request->nursing_home_name,
+            $tenantName = $request->tenant_name;
+            $domain = $this->generateUniqueDomain($tenantName);
+
+            $tenant = Tenant::create([
+                'name' => $tenantName,
+                'domain' => $domain,
             ]);
 
-            // Associate the user with the newly created nursing home
-            $user->nursing_home_id = $nursingHome->id;
+            // Associate the user with the newly created tenant
+            $user->tenant_id = $tenant->id;
             $user->save();
 
             // Find the admin role and assign it to the user
@@ -69,5 +74,25 @@ class RegisteredUserController extends Controller
         Auth::login($user); // Log in the newly created user
 
         return redirect(route('dashboard'))->with('success', '新しいユーザーが正常に登録されました。');
+    }
+
+    /**
+     * Generate a unique domain for the tenant.
+     *
+     * @param string $tenantName
+     * @return string
+     */
+    private function generateUniqueDomain(string $tenantName): string
+    {
+        $baseDomain = Str::slug($tenantName) . '.example.com';
+        $domain = $baseDomain;
+        $counter = 1;
+
+        while (Tenant::where('domain', $domain)->exists()) {
+            $domain = Str::slug($tenantName) . $counter . '.example.com';
+            $counter++;
+        }
+
+        return $domain;
     }
 }

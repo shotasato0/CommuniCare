@@ -7,18 +7,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (storedIsAdmin === "true") {
         adminCheckbox.checked = true;
         container.style.display = "block";
-        document.getElementById("nursing_home_name").required = true;
+        document.getElementById("tenant_name").required = true;
     } else {
         adminCheckbox.checked = false;
         container.style.display = "none";
-        document.getElementById("nursing_home_name").required = false;
+        document.getElementById("tenant_name").required = false;
     }
 
     // チェックボックスの変更を監視し、ローカルストレージに保存
     adminCheckbox.addEventListener("change", function () {
         localStorage.setItem("isAdmin", adminCheckbox.checked);
         container.style.display = adminCheckbox.checked ? "block" : "none";
-        document.getElementById("nursing_home_name").required =
-            adminCheckbox.checked;
+        document.getElementById("tenant_name").required = adminCheckbox.checked;
     });
 });

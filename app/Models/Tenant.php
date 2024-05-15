@@ -14,6 +14,7 @@ class Tenant extends Model implements TenantContract
 
     protected $fillable = [
         'name',
+        'domain',
         // その他のカスタムフィールド
     ];
 
