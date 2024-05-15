@@ -4,8 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\DB;
-use App\Models\NursingHome;
 use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             if (Auth::check()) {
-                $nursingHome = Auth::user()->nursingHome;
-                $view->with('nursingHome', $nursingHome);
+                $tenant = Auth::user()->tenant;
+                $view->with('tenant', $tenant);
             } else {
-                $view->with('nursingHome', null);
+                $view->with('tenant', null);
             }
         });
     }

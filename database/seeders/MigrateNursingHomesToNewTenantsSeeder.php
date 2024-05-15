@@ -13,7 +13,7 @@ class MigrateNursingHomesToNewTenantsSeeder extends Seeder
         $nursingHomes = DB::table('nursing_homes')->get();
 
         foreach ($nursingHomes as $nursingHome) {
-            DB::table('new_tenants')->insert([
+            DB::table('tenants')->insert([
                 'name' => $nursingHome->name,
                 'domain' => $this->generateUniqueDomain($nursingHome->name),
                 'created_at' => now(),
@@ -27,7 +27,7 @@ class MigrateNursingHomesToNewTenantsSeeder extends Seeder
         $domain = Str::slug($name, '-') . '.example.com';
         $count = 1;
 
-        while (DB::table('new_tenants')->where('domain', $domain)->exists()) {
+        while (DB::table('tenants')->where('domain', $domain)->exists()) {
             $domain = Str::slug($name, '-') . $count . '.example.com';
             $count++;
         }
@@ -35,4 +35,3 @@ class MigrateNursingHomesToNewTenantsSeeder extends Seeder
         return $domain;
     }
 }
-

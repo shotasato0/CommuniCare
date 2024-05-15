@@ -20,16 +20,16 @@
                 </div>
             </div>
 
-            <!-- Nursing Home Names -->
-            @if ($nursingHome)
+            <!-- Tenant Names -->
+            @if ($tenant)
                 <div
                     class="flex items-center text-gray-500 hover:text-gray-700 bg-white px-3 py-2 text-sm font-medium rounded-md">
-                    {{ $nursingHome->name }}
+                    {{ $tenant->name }}
                 </div>
             @else
                 <div
                     class="flex items-center text-gray-500 hover:text-gray-700 bg-white px-3 py-2 text-sm font-medium rounded-md">
-                    No Nursing Home associated.
+                    No Tenant associated.
                 </div>
             @endif
 

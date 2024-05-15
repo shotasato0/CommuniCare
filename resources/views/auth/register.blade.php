@@ -9,7 +9,7 @@
                 class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
         </div>
 
-        <!-- Nursing Home Name -->
+        <!-- Tenant Name -->
         <div id="nursing_home_container" style="display: none;" class="mt-4">
             <x-input-label for="tenant_name" :value="__('介護施設名')" />
             <x-text-input id="tenant_name" class="block mt-1 w-full" type="text" name="tenant_name" :value="old('tenant_name')"
