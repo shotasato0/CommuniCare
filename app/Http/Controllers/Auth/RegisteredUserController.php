@@ -14,23 +14,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $rules = [
@@ -39,21 +30,18 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
         
-        // Check if the registration is for an administrator and require tenant name
-        if ($request->boolean('is_admin')) {  // Change to boolean check for clarity
+        if ($request->boolean('is_admin')) {
             $rules['tenant_name'] = ['required', 'string', 'max:255', 'unique:tenants,name'];
         }
 
         $request->validate($rules);
 
-        // Create user
         $user = User::create([
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
         ]);
 
-        // If registering as an admin, create the tenant record and associate it
         if ($request->boolean('is_admin')) {
             $tenantName = $request->tenant_name;
             $domain = $this->generateUniqueDomain($tenantName);
@@ -63,28 +51,18 @@ class RegisteredUserController extends Controller
                 'domain' => $domain,
             ]);
 
-            // Associate the user with the newly created tenant
             $user->tenant_id = $tenant->id;
             $user->save();
 
-            // Find the admin role and assign it to the user
             $adminRole = Role::findByName('admin');
             $user->assignRole($adminRole);
-
-            Log::info('Admin user created and associated with tenant', ['user_id' => $user->id, 'tenant_id' => $tenant->id]);
         }
 
-        Auth::login($user); // Log in the newly created user
+        Auth::login($user);
 
         return redirect(route('dashboard'))->with('success', '新しいユーザーが正常に登録されました。');
     }
 
-    /**
-     * Generate a unique domain for the tenant.
-     *
-     * @param string $tenantName
-     * @return string
-     */
     private function generateUniqueDomain(string $tenantName): string
     {
         $baseDomain = Str::slug($tenantName) . '.example.com';
