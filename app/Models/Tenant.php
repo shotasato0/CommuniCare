@@ -49,5 +49,8 @@ class Tenant extends Model implements TenantContract
         $this->setAttribute($key, $value);
     }
 
-    // 必要に応じて、その他のメソッドやプロパティを追加します。
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

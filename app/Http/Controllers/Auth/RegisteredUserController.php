@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class RegisteredUserController extends Controller
 {
@@ -69,6 +70,8 @@ class RegisteredUserController extends Controller
             // Find the admin role and assign it to the user
             $adminRole = Role::findByName('admin');
             $user->assignRole($adminRole);
+
+            Log::info('Admin user created and associated with tenant', ['user_id' => $user->id, 'tenant_id' => $tenant->id]);
         }
 
         Auth::login($user); // Log in the newly created user
