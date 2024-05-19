@@ -6,6 +6,11 @@ return [
 
     'tenant_model' => \App\Models\Tenant::class,
 
+    'central_domains' => [
+        '127.0.0.1',
+        'localhost',
+    ],
+
     'tenant_id_column' => 'id',
 
     'cache_store' => 'default',

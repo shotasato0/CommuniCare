@@ -1,60 +1,37 @@
 <?php
 
-use Tenancy\Affects\Connections\Events\Resolving;
-use Tenancy\Hooks\Database\Events\Drivers\Configuring;
-use Tenancy\Identification\Contracts\Tenant;
-use Tenancy\Lifecycle\ConfigurableHooks;
-use Tenancy\Lifecycle\Events\Updated;
-use Tenancy\Tenant\Events\Created;
-use Tenancy\Tenant\Events\Deleted;
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Stancl\Tenancy\Events\TenantCreated;
+use Stancl\Tenancy\JobPipeline;
+use Stancl\Tenancy\Jobs\CreateDatabase;
+use Stancl\Tenancy\Jobs\MigrateDatabase;
+use Stancl\Tenancy\Tenancy;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class TenancyServiceProvider extends ServiceProvider
 {
     public function register()
     {
-        // その他の設定
+        //
     }
 
     public function boot()
     {
-        // その他の設定
+        Tenancy::event(TenantCreated::class, function (TenantCreated $event) {
+            $databaseName = 'tenant_' . $event->tenant->id;
 
-        ConfigurableHooks::register(
-            Configuring::class,
-            function (Configuring $event) {
-                if ($event->tenant instanceof Tenant) {
-                    $event->useConnection('tenant', [
-                        'driver' => 'mysql',
-                        'host' => env('TENANCY_DB_HOST', '127.0.0.1'),
-                        'port' => env('TENANCY_DB_PORT', '3306'),
-                        'database' => 'tenant_' . $event->tenant->getTenantKey(),
-                        'username' => env('TENANCY_DB_USERNAME', 'root'),
-                        'password' => env('TENANCY_DB_PASSWORD', ''),
-                        'charset' => 'utf8mb4',
-                        'collation' => 'utf8mb4_unicode_ci',
-                    ]);
-                }
-            }
-        );
+            // データベースの作成
+            DB::statement("CREATE DATABASE IF NOT EXISTS `$databaseName`");
 
-        ConfigurableHooks::register(
-            Updated::class,
-            function (Updated $event) {
-                if ($event->tenant instanceof Tenant) {
-                    // テナントのデータベースを作成
-                    DB::statement('CREATE DATABASE IF NOT EXISTS tenant_' . $event->tenant->getTenantKey());
-                }
-            }
-        );
-
-        ConfigurableHooks::register(
-            Deleted::class,
-            function (Deleted $event) {
-                if ($event->tenant instanceof Tenant) {
-                    // テナントのデータベースを削除
-                    DB::statement('DROP DATABASE IF EXISTS tenant_' . $event->tenant->getTenantKey());
-                }
-            }
-        );
+            // テナント用のマイグレーションを実行
+            tenancy()->initialize($event->tenant);
+            Artisan::call('tenants:migrate', [
+                '--tenants' => [$event->tenant->id],
+                '--path' => 'database/migrations/tenant',
+            ]);
+        });
     }
 }

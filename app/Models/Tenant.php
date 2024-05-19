@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 use Stancl\Tenancy\Contracts\Tenant as TenantContract;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 use Stancl\Tenancy\Database\Concerns\TenantRun;
+use Stancl\Tenancy\Database\Concerns\HasDatabase;
 
 class Tenant extends Model implements TenantContract
 {
-    use HasFactory, HasDomains, TenantRun;
+    use HasFactory, HasDomains, TenantRun, HasDatabase;
 
     protected $fillable = [
         'name',
         'domain',
-        // その他のカスタムフィールド
+        'database',
     ];
 
-    // インターフェースの必要なメソッドを実装
     public function getTenantKeyName(): string
     {
         return 'id';
