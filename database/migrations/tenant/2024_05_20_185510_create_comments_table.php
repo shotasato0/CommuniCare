@@ -1,4 +1,3 @@
-// database/migrations/tenant/yyyy_mm_dd_hhmmss_create_comments_table.php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -17,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('message');
+            $table->string('message', 200);
             $table->timestamps();
 
             $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');

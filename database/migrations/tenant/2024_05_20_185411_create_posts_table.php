@@ -1,3 +1,4 @@
+
 // database/migrations/tenant/yyyy_mm_dd_hhmmss_create_posts_table.php
 <?php
 
