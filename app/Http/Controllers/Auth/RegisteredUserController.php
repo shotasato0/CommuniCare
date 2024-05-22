@@ -14,6 +14,8 @@ use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Stancl\Tenancy\Database\DatabaseManager;
+use Illuminate\Http\RedirectResponse;
 
 class RegisteredUserController extends Controller
 {
@@ -36,22 +38,27 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
+        $user = User::create([
+            'name' => $request->name,
+            'username_id' => $request->username_id,
+            'password' => Hash::make($request->password),
+        ]);
+
         if ($request->boolean('is_admin')) {
             $tenantName = $request->tenant_name;
             $domain = $this->generateUniqueDomain($tenantName);
+            $databaseName = 'tenant_' . Str::random(10);
 
             // テナントの作成
             $tenant = Tenant::create([
                 'name' => $tenantName,
                 'domain' => $domain,
-                'database' => 'tenant_' . Str::slug($tenantName),
+                'database' => $databaseName,
             ]);
 
             // テナントデータベースの作成
-            $databaseName = 'tenant_' . Str::slug($tenantName);
             DB::statement("CREATE DATABASE IF NOT EXISTS $databaseName");
 
-            // データベース接続設定の追加
             config([
                 'database.connections.tenant' => [
                     'driver' => 'mysql',
@@ -68,11 +75,9 @@ class RegisteredUserController extends Controller
                 ],
             ]);
 
+            // テナント用のマイグレーションを実行
             DB::purge('tenant');
             DB::reconnect('tenant');
-            tenancy()->initialize($tenant);
-
-            // テナント用のマイグレーションを実行
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
@@ -80,24 +85,12 @@ class RegisteredUserController extends Controller
             ]);
 
             // テナントのコンテキストでユーザーを作成
-            $user = User::create([
-                'name' => $request->name,
-                'username_id' => $request->username_id,
-                'password' => Hash::make($request->password),
-                'tenant_id' => $tenant->id,
-            ]);
+            tenancy()->initialize($tenant);
+            $user->tenant_id = $tenant->id;
+            $user->save();
 
             $adminRole = Role::findByName('admin');
             $user->assignRole($adminRole);
-
-        } else {
-            // 通常ユーザーの作成
-            $user = User::create([
-                'name' => $request->name,
-                'username_id' => $request->username_id,
-                'password' => Hash::make($request->password),
-                'tenant_id' => Auth::user()->tenant_id, // 認証ユーザーのテナントIDを使用
-            ]);
         }
 
         Auth::login($user);
