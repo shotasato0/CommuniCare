@@ -11,7 +11,8 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "spatie/laravel-permission": "^6.4",
-        "stancl/tenancy": "^3.8"
+        "stancl/tenancy": "^3.8",
+        "true/punycode": "^2.1"
     },
     "require-dev": {
         "askdkc/breezejp": "^1.8",
