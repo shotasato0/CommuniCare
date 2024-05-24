@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Stancl\Tenancy\Database\DatabaseManager;
 use Illuminate\Http\RedirectResponse;
 
 class RegisteredUserController extends Controller
@@ -46,7 +47,8 @@ class RegisteredUserController extends Controller
         if ($request->boolean('is_admin')) {
             $tenantName = $request->tenant_name;
             $domain = $this->generateUniqueDomain($tenantName);
-            $databaseName = 'tenant_' . Str::slug($tenantName, '_');
+            // 日本語をラテン文字に変換
+            $databaseName = 'tenant_' . transliterator_transliterate('Any-Latin; Latin-ASCII', $tenantName);
 
             // テナントの作成
             $tenant = Tenant::create([

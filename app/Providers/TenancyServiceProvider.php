@@ -33,15 +33,17 @@ class TenancyServiceProvider extends ServiceProvider
 
         // カスタムイベントリスナーを登録してデータベースの作成を確認
         Tenancy::event(TenantCreated::class, function (TenantCreated $event) {
-            $databaseName = 'tenant_' . $event->tenant->id;
-            DB::statement("CREATE DATABASE IF NOT EXISTS $databaseName");
+            // 日本語をラテン文字に変換
+            $encodedName = 'tenant_' . transliterator_transliterate('Any-Latin; Latin-ASCII', $event->tenant->name);
+
+            DB::statement("CREATE DATABASE IF NOT EXISTS $encodedName");
 
             config([
                 'database.connections.tenant' => [
                     'driver' => 'mysql',
                     'host' => env('DB_HOST', '127.0.0.1'),
                     'port' => env('DB_PORT', '3306'),
-                    'database' => $databaseName,
+                    'database' => $encodedName,
                     'username' => env('DB_USERNAME', 'root'),
                     'password' => env('DB_PASSWORD', ''),
                     'charset' => 'utf8mb4',
