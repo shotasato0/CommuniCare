@@ -14,8 +14,10 @@ use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
-use Stancl\Tenancy\Database\DatabaseManager;
+use Illuminate\Support\Facades\Log;
+use Stancl\Tenancy\Tenancy;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 
 class RegisteredUserController extends Controller
 {
@@ -38,17 +40,17 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
-        ]);
+        ];
 
         if ($request->boolean('is_admin')) {
             $tenantName = $request->tenant_name;
             $domain = $this->generateUniqueDomain($tenantName);
-            // 日本語をラテン文字に変換
             $databaseName = 'tenant_' . transliterator_transliterate('Any-Latin; Latin-ASCII', $tenantName);
+            $databaseName = preg_replace('/[^A-Za-z0-9_]/', '_', $databaseName);
 
             // テナントの作成
             $tenant = Tenant::create([
@@ -58,27 +60,14 @@ class RegisteredUserController extends Controller
             ]);
 
             // テナントデータベースの作成
-            DB::statement("CREATE DATABASE IF NOT EXISTS $databaseName");
+            DB::statement("CREATE DATABASE IF NOT EXISTS `$databaseName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
-            config([
-                'database.connections.tenant' => [
-                    'driver' => 'mysql',
-                    'host' => env('DB_HOST', '127.0.0.1'),
-                    'port' => env('DB_PORT', '3306'),
-                    'database' => $databaseName,
-                    'username' => env('DB_USERNAME', 'root'),
-                    'password' => env('DB_PASSWORD', ''),
-                    'charset' => 'utf8mb4',
-                    'collation' => 'utf8mb4_unicode_ci',
-                    'prefix' => '',
-                    'strict' => true,
-                    'engine' => null,
-                ],
-            ]);
+            Config::set("database.connections.tenant.database", $databaseName);
 
             // テナント用のマイグレーションを実行
             DB::purge('tenant');
             DB::reconnect('tenant');
+            Log::info("Migrating tenant database: $databaseName");
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--path' => 'database/migrations/tenant',
@@ -87,14 +76,39 @@ class RegisteredUserController extends Controller
 
             // テナントのコンテキストでユーザーを作成
             tenancy()->initialize($tenant);
-            $user->tenant_id = $tenant->id;
-            $user->save();
+            Log::info("Creating user in tenant database: $databaseName");
 
-            $adminRole = Role::findByName('admin');
-            $user->assignRole($adminRole);
+            // テナントデータベースにテナントのレコードを追加
+            DB::connection('tenant')->table('tenants')->insert([
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'domain' => $tenant->domain,
+                'database' => $tenant->database,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // テナントデータベースにユーザーを追加
+            DB::connection('tenant')->table('users')->insert([
+                'name' => $request->name,
+                'username_id' => $request->username_id,
+                'password' => Hash::make($request->password),
+                'tenant_id' => $tenant->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // ユーザーモデルを取得
+            $user = DB::connection('tenant')->table('users')->where('username_id', $request->username_id)->first();
+            $userModel = new User((array) $user);
+            $userModel->setConnection('tenant');
+            $userModel->assignRole('admin');
+
+            Auth::login($userModel);
+        } else {
+            $user = User::create($userData);
+            Auth::login($user);
         }
-
-        Auth::login($user);
 
         return redirect(route('dashboard'))->with('success', '新しいユーザーが正常に登録されました。');
     }
