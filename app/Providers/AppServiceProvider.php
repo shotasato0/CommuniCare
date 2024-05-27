@@ -3,25 +3,18 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\CustomCachedTenantResolver;
+use Stancl\Tenancy\Resolvers\Contracts\CachedTenantResolver;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    public function register()
     {
-        //
+        $this->app->singleton(CachedTenantResolver::class, CustomCachedTenantResolver::class);
     }
 
     public function boot()
     {
-        View::composer('*', function ($view) {
-            if (Auth::check()) {
-                $tenant = Auth::user()->tenant;
-                $view->with('tenant', $tenant);
-            } else {
-                $view->with('tenant', null);
-            }
-        });
+        //
     }
 }

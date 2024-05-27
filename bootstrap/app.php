@@ -12,7 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-    
+        // 他のミドルウェア設定...
+        
+        // カスタムミドルウェアの登録
+        $middleware->append(\App\Http\Middleware\InitializeTenancyMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
