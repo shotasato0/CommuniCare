@@ -53,5 +53,8 @@ return [
             ],
         ],
     ],
-    
+
+    'tenant_finder' => [
+        App\Resolvers\CustomCachedTenantResolver::class,
+    ],
 ];
