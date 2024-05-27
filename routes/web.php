@@ -5,29 +5,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
-use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
+use App\Http\Middleware\InitializeTenancyMiddleware;
 use App\Models\Tenant;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/check-tenant', function () {
-//     $tenant = Tenant::where('domain', 'localhost')->first();
-//     dd($tenant);
-// });
-
 // 認証関連のルートはテナント識別の対象外にします
 require __DIR__.'/auth.php';
 
-Route::group([
-    'prefix' => '/{tenant}',
-    'middleware' => [InitializeTenancyByPath::class],
-], function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
-
+Route::middleware([InitializeTenancyMiddleware::class])->group(function () {
     Route::get('/index', [PostController::class, 'index'])
         ->name('index');
 
@@ -61,4 +49,9 @@ Route::group([
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
+
+    // check-tenant ルートの追加
+    Route::get('/check-tenant', function () {
+        return 'Tenant identified: ' . tenant('id');
+    })->name('check-tenant');
 });

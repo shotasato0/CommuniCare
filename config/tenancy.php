@@ -54,7 +54,12 @@ return [
         ],
     ],
 
-    'tenant_finder' => [
-        App\Resolvers\CustomCachedTenantResolver::class,
+    'identification_middleware' => [
+        \App\Http\Middleware\InitializeTenancyMiddleware::class,
+    ],
+
+    'tenant_resolver' => [
+        \App\Resolvers\CustomCachedTenantResolver::class,
     ],
 ];
+
