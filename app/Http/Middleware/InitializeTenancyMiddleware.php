@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Resolvers\CustomCachedTenantResolver;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class InitializeTenancyMiddleware
 {
@@ -27,7 +28,13 @@ class InitializeTenancyMiddleware
         try {
             $tenant = $this->tenantResolver->resolve($request);
             Log::info('Tenant identified: ' . $tenant->id);
+
             $this->tenancy->initialize($tenant);
+
+            // データベース接続情報をログに記録
+            $connectionName = DB::getDefaultConnection();
+            $databaseName = DB::connection($connectionName)->getDatabaseName();
+            Log::info('Using database connection: ' . $connectionName . ' with database: ' . $databaseName);
 
             return $next($request);
         } catch (TenantCouldNotBeIdentifiedException $e) {

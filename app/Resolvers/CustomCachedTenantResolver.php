@@ -6,6 +6,7 @@ use App\Models\Tenant as TenantModel;
 use Stancl\Tenancy\Contracts\Tenant;
 use Stancl\Tenancy\Resolvers\Contracts\CachedTenantResolver;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CustomCachedTenantResolver extends CachedTenantResolver
 {
@@ -40,6 +41,12 @@ class CustomCachedTenantResolver extends CachedTenantResolver
         $tenant = TenantModel::where('domain', $domain)->firstOrFail();
         Log::info('Tenant resolved: ' . $tenant->id);
 
+        // データベース接続情報を設定
+        $databaseName = 'tenant_' . $tenant->id;
+        config(['database.connections.tenant.database' => $databaseName]);
+        DB::purge('tenant');  // キャッシュされた接続をクリア
+        DB::reconnect('tenant');  // 新しい接続を確立
+
         return $tenant;
     }
 
@@ -56,4 +63,3 @@ class CustomCachedTenantResolver extends CachedTenantResolver
         return [$tenant->domain];
     }
 }
-

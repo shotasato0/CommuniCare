@@ -104,6 +104,10 @@ class RegisteredUserController extends Controller
             $userModel->setConnection('tenant');
             $userModel->assignRole('admin');
 
+            // テナント初期化後にデフォルトデータベースを切り替える
+            Tenancy::initialize($tenant);
+            Config::set("database.connections.mysql.database", $databaseName);
+
             Auth::login($userModel);
         } else {
             $user = User::create($userData);
