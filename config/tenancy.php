@@ -50,6 +50,9 @@ return [
                 'port' => env('TENANT_DB_PORT', '3306'),
                 'username' => env('TENANT_DB_USERNAME', 'root'),
                 'password' => env('TENANT_DB_PASSWORD', ''),
+                'database' => null, // テナントごとに動的に設定
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
             ],
         ],
     ],
@@ -58,8 +61,5 @@ return [
         \App\Http\Middleware\InitializeTenancyMiddleware::class,
     ],
 
-    'tenant_resolver' => [
-        \App\Resolvers\CustomCachedTenantResolver::class,
-    ],
+    'tenant_resolver' => \App\Resolvers\CustomCachedTenantResolver::class,
 ];
-

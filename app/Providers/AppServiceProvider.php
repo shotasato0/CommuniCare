@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Http\Middleware\CustomCachedTenantResolver;
+use App\Resolvers\CustomCachedTenantResolver; // ここを修正
 use Stancl\Tenancy\Resolvers\Contracts\CachedTenantResolver;
 use Illuminate\Support\Facades\DB;
 

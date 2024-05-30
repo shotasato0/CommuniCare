@@ -31,24 +31,26 @@ class CustomCachedTenantResolver extends CachedTenantResolver
     }
 
     public function resolveWithoutCache(...$args): Tenant
-    {
-        Log::info('CustomCachedTenantResolver::resolveWithoutCache called');
+{
+    Log::info('CustomCachedTenantResolver::resolveWithoutCache called');
 
-        $request = $args[0];
-        $domain = $request->getHost();
-        Log::info('Resolving tenant for domain: ' . $domain);
+    $request = $args[0];
+    $domain = $request->getHost();
+    Log::info('Resolving tenant for domain: ' . $domain);
 
-        $tenant = TenantModel::where('domain', $domain)->firstOrFail();
-        Log::info('Tenant resolved: ' . $tenant->id);
+    $tenant = TenantModel::where('domain', $domain)->firstOrFail();
+    Log::info('Tenant resolved: ' . $tenant->id);
 
-        // データベース接続情報を設定
-        $databaseName = 'tenant_' . $tenant->id;
-        config(['database.connections.tenant.database' => $databaseName]);
-        DB::purge('tenant');  // キャッシュされた接続をクリア
-        DB::reconnect('tenant');  // 新しい接続を確立
+    // データベース接続情報を設定
+    $databaseName = $tenant->database; // データベース名を直接使用
+    config(['database.connections.tenant.database' => $databaseName]);
+    DB::purge('tenant');  // キャッシュされた接続をクリア
+    DB::reconnect('tenant');  // 新しい接続を確立
 
-        return $tenant;
-    }
+    return $tenant;
+}
+
+
 
     public function getCacheKey(...$args): string
     {

@@ -21,6 +21,13 @@ use Illuminate\Support\Facades\Config;
 
 class RegisteredUserController extends Controller
 {
+    protected $tenancy;
+
+    public function __construct(Tenancy $tenancy)
+    {
+        $this->tenancy = $tenancy;
+    }
+
     public function create(): View
     {
         return view('auth.register');
@@ -75,7 +82,7 @@ class RegisteredUserController extends Controller
             ]);
 
             // テナントのコンテキストでユーザーを作成
-            tenancy()->initialize($tenant);
+            $this->tenancy->initialize($tenant);
             Log::info("Creating user in tenant database: $databaseName");
 
             // テナントデータベースにテナントのレコードを追加
@@ -105,7 +112,7 @@ class RegisteredUserController extends Controller
             $userModel->assignRole('admin');
 
             // テナント初期化後にデフォルトデータベースを切り替える
-            Tenancy::initialize($tenant);
+            $this->tenancy->initialize($tenant);
             Config::set("database.connections.mysql.database", $databaseName);
 
             Auth::login($userModel);

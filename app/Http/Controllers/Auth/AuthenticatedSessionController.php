@@ -8,9 +8,22 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Stancl\Tenancy\Resolvers\DomainTenantResolver;
+use Stancl\Tenancy\Tenancy;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedSessionController extends Controller
 {
+    protected $tenancy;
+    protected $tenantResolver;
+
+    public function __construct(Tenancy $tenancy, DomainTenantResolver $tenantResolver)
+    {
+        $this->tenancy = $tenancy;
+        $this->tenantResolver = $tenantResolver;
+    }
+
     /**
      * Display the login view.
      */
@@ -24,11 +37,24 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('username_id', 'password');
+        $tenant = $this->tenantResolver->resolve($request);
 
-        $request->session()->regenerate();
+        if ($tenant) {
+            $this->tenancy->initialize($tenant);
+            Log::info('Tenant initialized: ' . $tenant->id);
 
-        return redirect()->intended(route('dashboard'));
+            if (Auth::attempt($credentials, $request->boolean('remember'))) {
+                $request->session()->regenerate();
+                return redirect()->intended(route('dashboard'));
+            }
+        } else {
+            Log::info('No tenant identified for host: ' . $request->getHost());
+        }
+
+        throw ValidationException::withMessages([
+            'username_id' => __('auth.failed'),
+        ]);
     }
 
     /**
