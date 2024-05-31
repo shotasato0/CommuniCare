@@ -13,7 +13,7 @@ return [
 
     'tenant_id_column' => 'id',
 
-    'cache_store' => 'default',
+    'cache_store' => 'database',
 
     'central_database' => [
         'default' => 'central',
@@ -26,12 +26,12 @@ return [
 
     'tenant' => [
         'database' => [
-            'suffix' => 'tenant_', // テナントDBの接頭辞
+            'suffix' => 'tenant_',
             'driver' => 'mysql',
-            'host' => env('TENANCY_DB_HOST', '127.0.0.1'),
-            'port' => env('TENANCY_DB_PORT', '3306'),
-            'username' => env('TENANCY_DB_USERNAME', 'root'),
-            'password' => env('TENANCY_DB_PASSWORD', ''),
+            'host' => env('TENANCY_DATABASE_HOST', '127.0.0.1'),
+            'port' => env('TENANCY_DATABASE_PORT', '3306'),
+            'username' => env('TENANCY_DATABASE_USERNAME', 'root'),
+            'password' => env('TENANCY_DATABASE_PASSWORD', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
         ],
@@ -46,11 +46,11 @@ return [
         'connections' => [
             'tenant' => [
                 'driver' => 'mysql',
-                'host' => env('TENANT_DB_HOST', '127.0.0.1'),
-                'port' => env('TENANT_DB_PORT', '3306'),
-                'username' => env('TENANT_DB_USERNAME', 'root'),
-                'password' => env('TENANT_DB_PASSWORD', ''),
-                'database' => null, // テナントごとに動的に設定
+                'host' => env('TENANCY_DATABASE_HOST', 'mysql'),
+                'port' => env('TENANCY_DATABASE_PORT', '3306'),
+                'username' => env('TENANCY_DATABASE_USERNAME', 'sail'),
+                'password' => env('TENANCY_DATABASE_PASSWORD', 'password'),
+                'database' => null,
                 'charset' => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci',
             ],
@@ -63,3 +63,4 @@ return [
 
     'tenant_resolver' => \App\Resolvers\CustomCachedTenantResolver::class,
 ];
+

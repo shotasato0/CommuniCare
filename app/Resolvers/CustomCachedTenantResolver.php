@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class CustomCachedTenantResolver extends CachedTenantResolver
 {
-    // キャッシュの有効期限（秒）
     protected int $cacheTtl = 3600;
 
     public function resolve(...$args): Tenant
@@ -38,16 +37,35 @@ class CustomCachedTenantResolver extends CachedTenantResolver
     $domain = $request->getHost();
     Log::info('Resolving tenant for domain: ' . $domain);
 
-    $tenant = TenantModel::where('domain', $domain)->firstOrFail();
-    Log::info('Tenant resolved: ' . $tenant->id);
+    // デバッグ用ログを追加
+    Log::info('Executing query to find tenant for domain: ' . $domain);
+    
+    try {
+        $tenant = TenantModel::where('domain', $domain)->first();
+        if (!$tenant) {
+            Log::error('Tenant not found for domain: ' . $domain);
+            throw new \Exception('Tenant not found');
+        }
+        Log::info('Tenant resolved: ' . $tenant->id);
 
-    // データベース接続情報を設定
-    $databaseName = $tenant->database; // データベース名を直接使用
-    config(['database.connections.tenant.database' => $databaseName]);
-    DB::purge('tenant');  // キャッシュされた接続をクリア
-    DB::reconnect('tenant');  // 新しい接続を確立
+        // データベース接続情報を設定
+        $databaseName = $tenant->database; // データベース名を直接使用
+        config(['database.connections.tenant.database' => $databaseName]);
+        
+        // デバッグ用ログを追加
+        Log::info('Configuring tenant database connection: ' . $databaseName);
+        
+        DB::purge('tenant');  // キャッシュされた接続をクリア
+        DB::reconnect('tenant');  // 新しい接続を確立
+        
+        // デバッグ用ログを追加
+        Log::info('Tenant database connection configured: ' . $databaseName);
 
-    return $tenant;
+        return $tenant;
+    } catch (\Exception $e) {
+        Log::error('Error resolving tenant: ' . $e->getMessage());
+        throw $e;
+    }
 }
 
 
@@ -65,3 +83,4 @@ class CustomCachedTenantResolver extends CachedTenantResolver
         return [$tenant->domain];
     }
 }
+

@@ -6,9 +6,19 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\InitializeTenancyMiddleware;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/db-test', function () {
+    try {
+        DB::connection()->getPdo();
+        return 'Database connection is working!';
+    } catch (\Exception $e) {
+        return 'Could not connect to the database. Please check your configuration. Error: ' . $e->getMessage();
+    }
 });
 
 // 認証関連のルートはテナント識別の対象外にします
