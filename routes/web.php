@@ -7,10 +7,18 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\InitializeTenancyMiddleware;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\CacheTestController;
+
+Route::get('/test', function () {
+    return 'Test page is working';
+});
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/cache-put', [CacheTestController::class, 'put']);
+Route::get('/cache-get', [CacheTestController::class, 'get']);
 
 Route::get('/db-test', function () {
     try {

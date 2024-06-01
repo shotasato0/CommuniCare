@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // 他のミドルウェア設定...
 
+        // Tenancy Middlewareの登録
+        $middleware->prepend(\Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class);
+        $middleware->prepend(\Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class);
+
         // カスタムミドルウェアの登録
         $middleware->prepend(\App\Http\Middleware\InitializeTenancyMiddleware::class);
     })
