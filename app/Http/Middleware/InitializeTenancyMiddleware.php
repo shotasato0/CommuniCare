@@ -33,9 +33,10 @@ class InitializeTenancyMiddleware
         Log::info('InitializeTenancyMiddleware::handle called for URL: ' . $request->fullUrl());
 
         // 特定のルートをスキップ
-        if ($request->is('login') || $request->is('register') || $request->is('password/*')) {
-            return $next($request);
-        }
+        // if ($request->is('login') || $request->is('register') || $request->is('password/*')) {
+        //     Log::info('Skipping tenant identification for route: ' . $request->path());
+        //     return $next($request);
+        // }
 
         try {
             Log::info('Resolving tenant for domain: ' . $request->getHost());
@@ -59,10 +60,9 @@ class InitializeTenancyMiddleware
                 Log::info('No tenant identified');
             }
         } catch (\Exception $e) {
-                Log::error('Tenant identification failed: ' . $e->getMessage());
-                abort(404, 'Tenant not found');
+            Log::error('Tenant identification failed: ' . $e->getMessage());
+            abort(404, 'Tenant not found');
         }
-        
 
         return $next($request);
     }

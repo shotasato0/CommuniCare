@@ -35,27 +35,34 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        $credentials = $request->only('username_id', 'password');
-        $tenant = $this->tenantResolver->resolve($request);
+    public function store(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if ($tenant) {
-            $this->tenancy->initialize($tenant);
-            Log::info('Tenant initialized: ' . $tenant->id);
-
-            if (Auth::attempt($credentials, $request->boolean('remember'))) {
-                $request->session()->regenerate();
-                return redirect()->intended(route('dashboard'));
-            }
-        } else {
-            Log::info('No tenant identified for host: ' . $request->getHost());
-        }
-
-        throw ValidationException::withMessages([
-            'username_id' => __('auth.failed'),
+    if (!Auth::attempt($request->only('email', 'password'))) {
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
+    // ここでテナント識別を再確認
+    $tenant = app(CachedTenantResolver::class)->resolve($request);
+    if ($tenant) {
+        // データベース接続情報を設定
+        $databaseName = $tenant->database;
+        config(['database.connections.tenant.database' => $databaseName]);
+        DB::purge('tenant');  // キャッシュされた接続をクリア
+        DB::reconnect('tenant');  // 新しい接続を確立
+    }
+
+    $request->session()->regenerate();
+
+    return redirect()->intended(RouteServiceProvider::HOME);
+}
+
 
     /**
      * Destroy an authenticated session.
