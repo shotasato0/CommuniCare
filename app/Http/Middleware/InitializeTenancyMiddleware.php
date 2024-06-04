@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Stancl\Tenancy\Resolvers\Contracts\CachedTenantResolver;
 use Stancl\Tenancy\Tenancy;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class InitializeTenancyMiddleware
 {
@@ -27,29 +29,41 @@ class InitializeTenancyMiddleware
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
-{
-    Log::info('InitializeTenancyMiddleware::handle called for URL: ' . $request->fullUrl());
+    {
+        Log::info('InitializeTenancyMiddleware::handle called for URL: ' . $request->fullUrl());
 
-    // 特定のルートをスキップ
-    if ($request->is('login') || $request->is('register') || $request->is('password/*')) {
+        // 特定のルートをスキップ
+        if ($request->is('login') || $request->is('register') || $request->is('password/*')) {
+            return $next($request);
+        }
+
+        try {
+            Log::info('Resolving tenant for domain: ' . $request->getHost());
+            $tenant = $this->tenantResolver->resolve($request);
+            if ($tenant) {
+                Log::info('Tenant identified: ' . $tenant->id);
+                
+                // データベース接続情報を設定
+                $databaseName = $tenant->database;
+                Log::info('Tenant database name: ' . $databaseName);
+                
+                config(['database.connections.tenant.database' => $databaseName]);
+        
+                DB::purge('tenant');  // キャッシュされた接続をクリア
+                DB::reconnect('tenant');  // 新しい接続を確立
+        
+                Log::info('Connected to tenant database: ' . $databaseName);
+                
+                $this->tenancy->initialize($tenant);
+            } else {
+                Log::info('No tenant identified');
+            }
+        } catch (\Exception $e) {
+                Log::error('Tenant identification failed: ' . $e->getMessage());
+                abort(404, 'Tenant not found');
+        }
+        
+
         return $next($request);
     }
-
-    try {
-        Log::info('Resolving tenant for domain: ' . $request->getHost());
-        $tenant = $this->tenantResolver->resolve($request);
-        if ($tenant) {
-            Log::info('Tenant identified: ' . $tenant->id);
-            $this->tenancy->initialize($tenant);
-        } else {
-            Log::info('No tenant identified');
-        }
-    } catch (\Exception $e) {
-        Log::error('Tenant identification failed: ' . $e->getMessage());
-        abort(404, 'Tenant not found');
-    }
-
-    return $next($request);
-}
-
 }
