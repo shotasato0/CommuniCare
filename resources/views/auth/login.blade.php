@@ -5,7 +5,7 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- id -->
+        <!-- Username ID -->
         <div>
             <x-input-label for="username_id" :value="__('Username ID')" />
             <x-text-input id="username_id" class="block mt-1 w-full" type="text" name="username_id" :value="old('username_id')"
@@ -16,10 +16,8 @@
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-
             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required
                 autocomplete="current-password" />
-
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
