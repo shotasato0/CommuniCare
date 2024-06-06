@@ -6,7 +6,7 @@ return [
 
     'driver' => env('SESSION_DRIVER', 'database'),
 
-    'lifetime' => env('SESSION_LIFETIME', 1440),  // ここを変更
+    'lifetime' => env('SESSION_LIFETIME', 1440),
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
@@ -29,9 +29,9 @@ return [
 
     'path' => env('SESSION_PATH', '/'),
 
-    'domain' => env('SESSION_DOMAIN', null),  // ここを変更
+    'domain' => env('SESSION_DOMAIN', null),
 
-    'secure' => env('SESSION_SECURE_COOKIE', false),  // ここを変更
+    'secure' => env('SESSION_SECURE_COOKIE', false),
 
     'http_only' => env('SESSION_HTTP_ONLY', true),
 
