@@ -4,7 +4,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -19,11 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->prepend(\App\Http\Middleware\EncryptCookies::class);
 
         // Tenancy Middlewareの登録
-        $middleware->prepend(\Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class);
         $middleware->prepend(\Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class);
-
-        // カスタムミドルウェアの登録
-        $middleware->prepend(\App\Http\Middleware\InitializeTenancyMiddleware::class);
+        $middleware->prepend(\App\Http\Middleware\InitializeTenancyMiddleware::class); // Custom Middleware
+        $middleware->prepend(\Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class);
 
         // 追加ミドルウェア
         $middleware->prepend(\Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class);
