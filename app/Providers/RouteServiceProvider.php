@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/check-tenant';
+    public const HOME = '/index';
 
     /**
      * Register any application services.
