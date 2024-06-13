@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Providers\RouteServiceProvider;
-use Stancl\Tenancy\Resolvers\CachedTenantResolver;
 use Illuminate\Support\Facades\Session;
 
 class AuthenticatedSessionController extends Controller
@@ -27,41 +26,41 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(Request $request)
-{
-    Log::info('Login request received', ['username_id' => $request->input('username_id')]);
+    {
+        Log::info('ログインリクエストを受信しました', ['username_id' => $request->input('username_id')]);
 
-    $request->validate([
-        'username_id' => 'required|string',
-        'password' => 'required|string',
-    ]);
-
-    Log::info('Attempting to authenticate user with username_id: ' . $request->input('username_id'));
-
-    // デバッグ情報の追加
-    Log::info('Current database connection: ' . DB::connection('tenant')->getDatabaseName());
-
-    $user = DB::connection('tenant')->table('users')->where('username_id', $request->input('username_id'))->first();
-    Log::info('User query result:', ['user' => $user]);
-
-    if (!$user || !Hash::check($request->input('password'), $user->password)) {
-        Log::warning('Authentication failed for username_id: ' . $request->input('username_id'));
-        return back()->withErrors([
-            'username_id' => 'The provided credentials do not match our records.',
+        $request->validate([
+            'username_id' => 'required|string',
+            'password' => 'required|string',
         ]);
+
+        Log::info('ユーザー名IDで認証を試みています: ' . $request->input('username_id'));
+
+        // デバッグ情報の追加
+        Log::info('現在のデータベース接続: ' . DB::connection('tenant')->getDatabaseName());
+
+        $user = DB::connection('tenant')->table('users')->where('username_id', $request->input('username_id'))->first();
+        Log::info('ユーザーのクエリ結果:', ['user' => $user]);
+
+        if (!$user || !Hash::check($request->input('password'), $user->password)) {
+            Log::warning('ユーザー名IDで認証に失敗しました: ' . $request->input('username_id'));
+            return back()->withErrors([
+                'username_id' => '提供された認証情報は当社の記録と一致しません。',
+            ]);
+        }
+
+        Auth::loginUsingId($user->id);
+        Log::info('ユーザー名IDで認証に成功しました: ' . $request->input('username_id'));
+
+        $request->session()->regenerate();
+        Log::info('ユーザーのセッションが再生成されました: ' . $request->input('username_id'));
+
+        // セッションデータをログに出力
+        Log::info('ログイン後のセッションデータ', ['session' => Session::all()]);
+
+        Log::info('意図したURLにリダイレクトしています');
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
-
-    Auth::loginUsingId($user->id);
-    Log::info('Authentication successful for username_id: ' . $request->input('username_id'));
-
-    $request->session()->regenerate();
-    Log::info('Session regenerated for user: ' . $request->input('username_id'));
-
-    // セッションデータをログに出力
-    Log::info('Session data after login', ['session' => Session::all()]);
-
-    return redirect()->intended(RouteServiceProvider::HOME);
-}
-
 
     /**
      * Destroy an authenticated session.
