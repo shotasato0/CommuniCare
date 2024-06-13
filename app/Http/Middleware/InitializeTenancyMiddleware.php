@@ -30,37 +30,37 @@ class InitializeTenancyMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        Log::info('InitializeTenancyMiddleware::handle called for URL: ' . $request->fullUrl());
+        Log::info('InitializeTenancyMiddleware::handle が呼び出されました。URL: ' . $request->fullUrl());
 
         try {
-            Log::info('Resolving tenant for domain: ' . $request->getHost());
+            Log::info('ドメインに対してテナントを解決しています: ' . $request->getHost());
             $tenant = $this->tenantResolver->resolve($request);
             if ($tenant) {
-                Log::info('Tenant identified: ' . $tenant->id);
+                Log::info('テナントが特定されました: ' . $tenant->id);
                 
                 // データベース接続情報を設定
                 $databaseName = $tenant->database;
-                Log::info('Tenant database name: ' . $databaseName);
+                Log::info('テナントデータベース名: ' . $databaseName);
                 
                 config(['database.connections.tenant.database' => $databaseName]);
         
                 DB::purge('tenant');  // キャッシュされた接続をクリア
                 DB::reconnect('tenant');  // 新しい接続を確立
         
-                Log::info('Connected to tenant database: ' . $databaseName);
+                Log::info('テナントデータベースに接続しました: ' . $databaseName);
                 
                 $this->tenancy->initialize($tenant);
             } else {
-                Log::info('No tenant identified');
+                Log::info('テナントが特定されませんでした');
             }
         } catch (\Exception $e) {
-            Log::error('Tenant identification failed: ' . $e->getMessage());
-            abort(404, 'Tenant not found');
+            Log::error('テナントの識別に失敗しました: ' . $e->getMessage());
+            abort(404, 'テナントが見つかりません');
         }
 
         // テナントの初期化をログに記録
         $databaseName = DB::connection('tenant')->getDatabaseName();
-        Log::info('Database connection after initialization: ' . $databaseName);
+        Log::info('初期化後のデータベース接続: ' . $databaseName);
 
         return $next($request);
     }

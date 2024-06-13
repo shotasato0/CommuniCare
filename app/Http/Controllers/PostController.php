@@ -15,13 +15,17 @@ class PostController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        Log::info('インデックス内の現在のセッションID:', ['id' => Session::getId()]);
+{
+    Log::info('PostController::index 呼び出し');
+    Log::info('インデックス内の現在のセッションID:', ['id' => Session::getId()]);
+    Log::info('インデックス内の現在のテナント:', ['tenant' => tenant()]);
 
-        $posts = Post::orderBy('created_at', 'desc')->paginate(5);
-        $comments = Comment::all();
-        return view('layouts.index', compact('posts', 'comments'));
-    }
+    $posts = Post::orderBy('created_at', 'desc')->paginate(5);
+    $comments = Comment::all();
+    return view('layouts.index', compact('posts', 'comments'));
+}
+
+
     /**
      * Show the form for creating a new resource.
      */

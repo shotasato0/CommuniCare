@@ -26,41 +26,40 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(Request $request)
-    {
-        Log::info('ログインリクエストを受信しました', ['username_id' => $request->input('username_id')]);
+{
+    Log::info('ログインリクエスト受信', ['username_id' => $request->input('username_id')]);
 
-        $request->validate([
-            'username_id' => 'required|string',
-            'password' => 'required|string',
+    $request->validate([
+        'username_id' => 'required|string',
+        'password' => 'required|string',
+    ]);
+
+    Log::info('ユーザー認証試行中: ' . $request->input('username_id'));
+
+    // デバッグ情報の追加
+    Log::info('現在のデータベース接続: ' . DB::connection('tenant')->getDatabaseName());
+
+    $user = DB::connection('tenant')->table('users')->where('username_id', $request->input('username_id'))->first();
+    Log::info('ユーザークエリ結果:', ['user' => $user]);
+
+    if (!$user || !Hash::check($request->input('password'), $user->password)) {
+        Log::warning('認証失敗: ' . $request->input('username_id'));
+        return back()->withErrors([
+            'username_id' => '入力された資格情報が記録と一致しません。',
         ]);
-
-        Log::info('ユーザー名IDで認証を試みています: ' . $request->input('username_id'));
-
-        // デバッグ情報の追加
-        Log::info('現在のデータベース接続: ' . DB::connection('tenant')->getDatabaseName());
-
-        $user = DB::connection('tenant')->table('users')->where('username_id', $request->input('username_id'))->first();
-        Log::info('ユーザーのクエリ結果:', ['user' => $user]);
-
-        if (!$user || !Hash::check($request->input('password'), $user->password)) {
-            Log::warning('ユーザー名IDで認証に失敗しました: ' . $request->input('username_id'));
-            return back()->withErrors([
-                'username_id' => '提供された認証情報は当社の記録と一致しません。',
-            ]);
-        }
-
-        Auth::loginUsingId($user->id);
-        Log::info('ユーザー名IDで認証に成功しました: ' . $request->input('username_id'));
-
-        $request->session()->regenerate();
-        Log::info('ユーザーのセッションが再生成されました: ' . $request->input('username_id'));
-
-        // セッションデータをログに出力
-        Log::info('ログイン後のセッションデータ', ['session' => Session::all()]);
-
-        Log::info('意図したURLにリダイレクトしています');
-        return redirect()->intended(RouteServiceProvider::HOME);
     }
+
+    Auth::loginUsingId($user->id);
+    Log::info('認証成功: ' . $request->input('username_id'));
+
+    $request->session()->regenerate();
+    Log::info('セッション再生成後のユーザー: ' . $request->input('username_id'));
+    Log::info('ログイン後の現在のセッションID:', ['id' => Session::getId()]);
+
+    return redirect()->intended(RouteServiceProvider::HOME);
+}
+
+
 
     /**
      * Destroy an authenticated session.
