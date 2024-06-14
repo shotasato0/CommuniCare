@@ -14,15 +14,15 @@ class CustomCachedTenantResolver extends CachedTenantResolver
 
     public function resolve(...$args): Tenant
     {
-        Log::info('CustomCachedTenantResolver::resolve called');
+        Log::info('CustomCachedTenantResolver::resolveが呼び出されました');
 
         if (!isset($args[0])) {
-            throw new \InvalidArgumentException('The request object is missing.');
+            throw new \InvalidArgumentException('リクエストオブジェクトがありません');
         }
 
         $request = $args[0];
         $cacheKey = $this->getCacheKey($request);
-        Log::info('Resolving tenant for cache key: ' . $cacheKey);
+        Log::info('キャッシュキーでテナントを解決中: ' . $cacheKey);
 
         return $this->cache->remember($cacheKey, $this->cacheTtl, function () use ($request) {
             return $this->resolveWithoutCache($request);
@@ -31,43 +31,43 @@ class CustomCachedTenantResolver extends CachedTenantResolver
 
     public function resolveWithoutCache(...$args): Tenant
     {
-        Log::info('CustomCachedTenantResolver::resolveWithoutCache called');
+        Log::info('CustomCachedTenantResolver::resolveWithoutCacheが呼び出されました');
 
         $request = $args[0];
         $domain = $request->getHost();
-        Log::info('Resolving tenant for domain: ' . $domain);
+        Log::info('ドメインでテナントを解決中: ' . $domain);
 
         try {
             $tenant = TenantModel::where('domain', $domain)->first();
             if (!$tenant) {
-                Log::error('Tenant not found for domain: ' . $domain);
-                throw new \Exception('Tenant not found');
+                Log::error('ドメインに対するテナントが見つかりませんでした: ' . $domain);
+                throw new \Exception('テナントが見つかりません');
             }
-            Log::info('Tenant resolved: ' . $tenant->id);
+            Log::info('テナントが解決されました: ' . $tenant->id);
 
             // データベース接続情報を設定
             $databaseName = $tenant->database; // データベース名を直接使用
             config(['database.connections.tenant.database' => $databaseName]);
 
             // デバッグ用ログを追加
-            Log::info('Configuring tenant database connection: ' . $databaseName);
+            Log::info('テナントデータベース接続を設定中: ' . $databaseName);
 
             DB::purge('tenant');  // キャッシュされた接続をクリア
             DB::reconnect('tenant');  // 新しい接続を確立
 
             // デバッグ用ログを追加
-            Log::info('Tenant database connection configured: ' . $databaseName);
+            Log::info('テナントデータベース接続が設定されました: ' . $databaseName);
 
             return $tenant;
         } catch (\Exception $e) {
-            Log::error('Error resolving tenant: ' . $e->getMessage());
+            Log::error('テナントの解決中にエラーが発生しました: ' . $e->getMessage());
             throw $e;
         }
     }
 
     public function getCacheKey(...$args): string
     {
-        Log::info('CustomCachedTenantResolver::getCacheKey called');
+        Log::info('CustomCachedTenantResolver::getCacheKeyが呼び出されました');
 
         $request = $args[0];
         return 'tenant_' . $request->getHost();
