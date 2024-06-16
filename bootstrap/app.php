@@ -17,7 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class);
         $middleware->prepend(\Illuminate\Foundation\Http\Middleware\TrimStrings::class);
         $middleware->prepend(\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class);
-        $middleware->prepend(\Illuminate\Session\Middleware\StartSession::class);
         $middleware->prepend(\Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class);
         $middleware->prepend(\App\Http\Middleware\InitializeTenancyMiddleware::class);
         $middleware->prepend(\Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class);

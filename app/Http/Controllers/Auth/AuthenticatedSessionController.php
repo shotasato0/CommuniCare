@@ -50,13 +50,18 @@ class AuthenticatedSessionController extends Controller
     }
 
     Auth::loginUsingId($user->id);
-    Log::info('認証成功: ' . $request->input('username_id'));
+Log::info('認証成功: ' . $request->input('username_id'));
 
-    $request->session()->regenerate();
-    Log::info('セッション再生成後のユーザー: ' . $request->input('username_id'));
-    Log::info('ログイン後の現在のセッションID:', ['id' => Session::getId()]);
+$request->session()->regenerate();
+Log::info('セッション再生成後のユーザー: ' . $request->input('username_id'));
+Log::info('ログイン後の現在のセッションID:', ['id' => Session::getId()]);
 
-    return redirect()->intended(RouteServiceProvider::HOME);
+// セッションにユーザーIDを設定する
+$request->session()->put('user_id', $user->id);
+Log::info('セッションにユーザーIDを設定しました: ' . $user->id);
+
+return redirect()->intended(RouteServiceProvider::HOME);
+
 }
 
 
