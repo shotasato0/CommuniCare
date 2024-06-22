@@ -3,25 +3,40 @@
 namespace App\Providers;
 
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap services.
+     * The path to the "home" route for your application.
+     *
+     * This is used by Laravel authentication to redirect users after login.
+     *
+     * @var string
+     */
+    public const HOME = '/'; // この定数は今後変更される可能性があります
+
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+    }
+
+    /**
+     * Define your route model bindings, pattern filters, etc.
      */
     public function boot(): void
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        $this->configureRateLimiting();
 
         $this->routes(function () {
-            $this->mapApiRoutes();
             $this->mapWebRoutes();
+            $this->mapApiRoutes();
         });
     }
 
@@ -30,7 +45,6 @@ class RouteServiceProvider extends ServiceProvider
         foreach ($this->centralDomains() as $domain) {
             Route::middleware('web')
                 ->domain($domain)
-                ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         }
     }
@@ -41,7 +55,6 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('api')
                 ->domain($domain)
                 ->middleware('api')
-                ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
         }
     }
@@ -49,5 +62,15 @@ class RouteServiceProvider extends ServiceProvider
     protected function centralDomains(): array
     {
         return config('tenancy.central_domains');
+    }
+
+    /**
+     * Configure the rate limiters for the application.
+     */
+    protected function configureRateLimiting(): void
+    {
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+        });
     }
 }
