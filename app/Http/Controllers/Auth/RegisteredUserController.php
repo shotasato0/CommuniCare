@@ -4,31 +4,35 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\NursingHome;
+use App\Models\Tenant;
 use Spatie\Permission\Models\Role;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Stancl\Tenancy\Tenancy;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
+    protected $tenancy;
+
+    public function __construct(Tenancy $tenancy)
+    {
+        $this->tenancy = $tenancy;
+    }
+
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $rules = [
@@ -36,38 +40,101 @@ class RegisteredUserController extends Controller
             'username_id' => ['required', 'string', 'max:255', 'unique:users,username_id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
-        
-        // Check if the registration is for an administrator and require nursing home name
-        if ($request->boolean('is_admin')) {  // Change to boolean check for clarity
-            $rules['nursing_home_name'] = ['required', 'string', 'max:255', 'unique:nursing_homes,name'];
+
+        if ($request->boolean('is_admin')) {
+            $rules['tenant_name'] = ['required', 'string', 'max:255', 'unique:tenants,name'];
         }
 
         $request->validate($rules);
 
-        // Create user
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
-        ]);
+        ];
 
-        // If registering as an admin, create the nursing home record and associate it
         if ($request->boolean('is_admin')) {
-            $nursingHome = NursingHome::create([
-                'name' => $request->nursing_home_name,
+            $tenantName = $request->tenant_name;
+            $domain = $this->generateUniqueDomain($tenantName);
+            $databaseName = 'tenant_' . transliterator_transliterate('Any-Latin; Latin-ASCII', $tenantName);
+            $databaseName = preg_replace('/[^A-Za-z0-9_]/', '_', $databaseName);
+
+            // テナントの作成
+            $tenant = Tenant::create([
+                'name' => $tenantName,
+                'domain' => $domain,
+                'database' => $databaseName,
             ]);
 
-            // Associate the user with the newly created nursing home
-            $user->nursing_home_id = $nursingHome->id;
-            $user->save();
+            // テナントデータベースの作成
+            DB::statement("CREATE DATABASE IF NOT EXISTS `$databaseName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 
-            // Find the admin role and assign it to the user
-            $adminRole = Role::findByName('admin');
-            $user->assignRole($adminRole);
+            Config::set("database.connections.tenant.database", $databaseName);
+
+            // テナント用のマイグレーションを実行
+            DB::purge('tenant');
+            DB::reconnect('tenant');
+            Log::info("Migrating tenant database: $databaseName");
+            Artisan::call('migrate', [
+                '--database' => 'tenant',
+                '--path' => 'database/migrations/tenant',
+                '--force' => true,
+            ]);
+
+            // テナントのコンテキストでユーザーを作成
+            $this->tenancy->initialize($tenant);
+            Log::info("Creating user in tenant database: $databaseName");
+
+            // テナントデータベースにテナントのレコードを追加
+            DB::connection('tenant')->table('tenants')->insert([
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'domain' => $tenant->domain,
+                'database' => $tenant->database,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // テナントデータベースにユーザーを追加
+            DB::connection('tenant')->table('users')->insert([
+                'name' => $request->name,
+                'username_id' => $request->username_id,
+                'password' => Hash::make($request->password),
+                'tenant_id' => $tenant->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // ユーザーモデルを取得
+            $user = DB::connection('tenant')->table('users')->where('username_id', $request->username_id)->first();
+            $userModel = new User((array) $user);
+            $userModel->setConnection('tenant');
+            $userModel->assignRole('admin');
+
+            // テナント初期化後にデフォルトデータベースを切り替える
+            $this->tenancy->initialize($tenant);
+            Config::set("database.connections.mysql.database", $databaseName);
+
+            Auth::login($userModel);
+        } else {
+            $user = User::create($userData);
+            Auth::login($user);
         }
 
-        Auth::login($user); // Log in the newly created user
-
         return redirect(route('dashboard'))->with('success', '新しいユーザーが正常に登録されました。');
+    }
+
+    private function generateUniqueDomain(string $tenantName): string
+    {
+        $baseDomain = Str::slug($tenantName) . '.example.com';
+        $domain = $baseDomain;
+        $counter = 1;
+
+        while (Tenant::where('domain', $domain)->exists()) {
+            $domain = Str::slug($tenantName) . $counter . '.example.com';
+            $counter++;
+        }
+
+        return $domain;
     }
 }

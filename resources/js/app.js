@@ -2,7 +2,7 @@
 import Alpine from "alpinejs";
 import "./bootstrap";
 import "./delete";
-import "./toggleNursingHomeInput";
+import "./toggleTenantInput";
 import "./persistAdminCheckboxState";
 
 window.Alpine = Alpine;

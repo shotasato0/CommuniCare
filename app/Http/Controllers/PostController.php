@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Models\Comment;
 use Illuminate\Support\Facades\Auth; // Authファサードをインポート
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class PostController extends Controller
 {
@@ -13,11 +15,17 @@ class PostController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $posts = Post::orderBy('created_at', 'desc')->paginate(5); //データベースから5件ずつ取得されるように変更
-        $comments = Comment::all();
-        return view('layouts.index', compact('posts', 'comments'));
-    }
+{
+    Log::info('PostController::index 呼び出し');
+    Log::info('インデックス内の現在のセッションID:', ['id' => Session::getId()]);
+    Log::info('インデックス内の現在のテナント:', ['tenant' => tenant()]);
+
+    $posts = Post::orderBy('created_at', 'desc')->paginate(5);
+    $comments = Comment::all();
+    return view('layouts.index', compact('posts', 'comments'));
+}
+
+
     /**
      * Show the form for creating a new resource.
      */

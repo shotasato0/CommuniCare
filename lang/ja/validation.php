@@ -25,6 +25,7 @@ return [
     'boolean' => ':attributeは、trueかfalseを指定してください。',
     'can' => ':attributeに権限のない値が含まれています。',
     'confirmed' => ':attributeと確認フィールドが一致していません。',
+    'contains' => ':attributeに必須の値がありません。',
     'current_password' => 'パスワードが正しくありません。',
     'date' => ':attributeには有効な日付を指定してください。',
     'date_equals' => ':attributeには、:dateと同じ日付けを指定してください。',
@@ -128,6 +129,7 @@ return [
     'required_array_keys' => ':attributeは、:valuesの項目を含めてください。',
     'required_if' => ':otherが:valueの場合、:attributeも指定してください。',
     'required_if_accepted' => ':attributeは、:otherが承認された場合は、必ず指定してください。',
+    'required_if_declined' => ':attributeは、:otherが拒否された場合は、必ず指定してください。',
     'required_unless' => ':otherが:valuesでない場合、:attributeを指定してください。',
     'required_with' => ':valuesを指定する場合は、:attributeも指定してください。',
     'required_with_all' => ':valuesを指定する場合は、:attributeも指定してください。',
@@ -254,8 +256,6 @@ return [
         'updated_at' => '更新日',
         'username' => 'ユーザー名',
         'year' => '年',
-        'username_id' => 'ユーザーID',
-        'nursing_home_name' => '介護施設名',
     ],
 
 ];

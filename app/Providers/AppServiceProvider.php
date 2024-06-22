@@ -2,34 +2,33 @@
 
 namespace App\Providers;
 
+namespace App\Providers;
+
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
+use App\Resolvers\CustomCachedTenantResolver;
+use Stancl\Tenancy\Resolvers\Contracts\CachedTenantResolver;
 use Illuminate\Support\Facades\DB;
-use App\Models\NursingHome;
-use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    protected $booted = false; // クエリリスナー登録のフラグ
+
+    public function register()
     {
-        //
+        $this->app->singleton(CachedTenantResolver::class, CustomCachedTenantResolver::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot()
-    {
-        View::composer('*', function ($view) {
-            if (Auth::check()) {
-                $nursingHome = Auth::user()->nursingHome;
-                $view->with('nursingHome', $nursingHome);
-            } else {
-                $view->with('nursingHome', null);
-            }
+{
+    if (!$this->app->bound('query.listening')) {
+        DB::listen(function ($query) {
+            info("クエリを実行しています: {$query->sql} with バインディング: " . implode(', ', $query->bindings));
         });
+        $this->app->instance('query.listening', true);
+        info("クエリリスナーが登録されました");
     }
 }
+
+
+}
+

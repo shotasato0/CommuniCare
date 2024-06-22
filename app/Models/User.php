@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'username_id',
+        'tenant_id',
     ];
 
     /**
@@ -48,8 +49,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function nursingHome()
-{
-    return $this->belongsTo(NursingHome::class);
-}
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function username()
+    {
+        return 'username_id';
+    }
 }
