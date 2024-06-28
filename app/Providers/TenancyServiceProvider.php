@@ -121,11 +121,17 @@ class TenancyServiceProvider extends ServiceProvider
     protected function mapRoutes()
     {
         $this->app->booted(function () {
-            if (file_exists(base_path('routes/tenant.php'))) {
+            // セントラルドメインの場合、tenant.phpのルートをロードしない
+            if (!$this->isCentralDomain(request()->getHost()) && file_exists(base_path('routes/tenant.php'))) {
                 Route::namespace(static::$controllerNamespace)
                     ->group(base_path('routes/tenant.php'));
             }
         });
+    }
+
+    protected function isCentralDomain(string $host): bool
+    {
+        return in_array($host, config('tenancy.central_domains', []));
     }
 
     protected function makeTenancyMiddlewareHighestPriority()
