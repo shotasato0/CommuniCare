@@ -9,7 +9,7 @@ class TenantController extends Controller
 {
     public function showRegistrationForm()
     {
-        return inertia('TenantRegister');
+        return inertia('Auth/TenantRegister');
     }
 
     public function register(Request $request)
@@ -18,10 +18,17 @@ class TenantController extends Controller
             'tenant_name' => 'required|string|max:255',
         ]);
 
-        Tenant::create([
+        \Log::info('Validated Tenant name:', ['tenant_name' => $request->tenant_name]);
+
+        $tenant = Tenant::create([
             'name' => $request->tenant_name,
         ]);
 
-        return redirect()->route('register'); // 新規登録ビューに遷移
+        \Log::info('Tenant created:', ['tenant' => $tenant]);
+
+        session(['tenant_id' => $tenant->id]);
+
+        return redirect()->route('register');
     }
 }
+
