@@ -10,7 +10,7 @@ class AddNameToTenantsTable extends Migration
     public function up()
     {
         Schema::table('tenants', function (Blueprint $table) {
-            $table->string('name')->after('id'); // 'id' カラムの後に 'name' カラムを追加
+            $table->string('name')->nullable()->after('id');
         });
     }
 
@@ -21,4 +21,3 @@ class AddNameToTenantsTable extends Migration
         });
     }
 }
-
