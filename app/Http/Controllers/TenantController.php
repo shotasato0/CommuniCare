@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use Illuminate\Support\Facades\Log;
 use Stancl\Tenancy\Database\Models\Domain;
 use Stancl\Tenancy\Resolvers\DomainTenantResolver;
+use Inertia\Inertia;
 
 class TenantController extends Controller
 {
@@ -41,6 +42,6 @@ class TenantController extends Controller
         session(['tenant_id' => $tenant->id]);
 
         // テナント初期化後にリダイレクト
-        return redirect()->to('http://' . $domain . '/register'); // リダイレクト先を新しいドメインに設定
+        return Inertia::location('http://' . $domain . '/register'); // リダイレクト先を新しいドメインに設定
     }
 }
