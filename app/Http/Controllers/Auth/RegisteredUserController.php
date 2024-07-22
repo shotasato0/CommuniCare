@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,6 +21,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
+        Log::info('Displaying registration view');
         return Inertia::render('Auth/Register');
     }
 
@@ -30,11 +32,15 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Log::info('Registration request received', ['request' => $request->all()]);
+
         $request->validate([
             'name' => 'required|string|max:255',
-            'username_id' => 'required|string|max:255|unique:'.User::class,
+            'username_id' => 'required|string|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        Log::info('Validation passed');
 
         $user = User::create([
             'name' => $request->name,
@@ -42,10 +48,16 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        Log::info('User created', ['user' => $user]);
+
         event(new Registered($user));
+
+        Log::info('Registered event dispatched');
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        Log::info('User logged in', ['user' => $user]);
+
+        return redirect()->route('dashboard');
     }
 }
