@@ -60,7 +60,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="username_id" value="Username_id" />
+                <InputLabel for="username_id" value="Username_ID" />
                 <TextInput
                     id="username_id"
                     type="text"
