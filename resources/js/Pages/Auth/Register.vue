@@ -23,7 +23,7 @@ const form = useForm({
 
 const submit = () => {
     console.log("Submitting form with data:", form);
-    form.post(route("register"), {
+    form.post(route("register.post"), {
         onFinish: () => {
             console.log("Form submission finished");
             form.reset("password", "password_confirmation");
