@@ -57,4 +57,9 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
     {
         return $this->hasOne(Domain::class);
     }
+
+    public function users()
+{
+    return $this->hasMany(User::class);
+}
 }
