@@ -64,6 +64,8 @@ class RegisteredUserController extends Controller
 
         Log::info('User logged in', ['user' => $user]);
 
+        Log::info('User data:', ['user' => $request->user()]);
+
         return redirect()->route('dashboard')->with(['redirect' => true]);
     }
 }
