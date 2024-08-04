@@ -18,7 +18,7 @@ Route::middleware([])->group(function () {
 });
 
 // テナント識別を行うルート
-Route::middleware(['initializeTenancyCustom'])->group(function () {
+Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');

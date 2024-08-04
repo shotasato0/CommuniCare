@@ -47,4 +47,19 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
     {
         return 'tenant_password_' . $this->id;
     }
+
+    /**
+     * Get the domain associated with the tenant.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function domain()
+    {
+        return $this->hasOne(Domain::class);
+    }
+
+    public function users()
+{
+    return $this->hasMany(User::class);
+}
 }
