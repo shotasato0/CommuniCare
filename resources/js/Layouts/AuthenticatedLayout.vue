@@ -76,6 +76,7 @@ const showingNavigationDropdown = ref(false);
                                     <template #content>
                                         <DropdownLink
                                             :href="route('profile.edit')"
+                                            class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                         >
                                             Profile
                                         </DropdownLink>
@@ -91,7 +92,7 @@ const showingNavigationDropdown = ref(false);
                                             />
                                             <button
                                                 type="submit"
-                                                class="w-full text-left"
+                                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                             >
                                                 Log Out
                                             </button>
@@ -173,7 +174,10 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
+                            <ResponsiveNavLink
+                                :href="route('profile.edit')"
+                                class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                            >
                                 Profile
                             </ResponsiveNavLink>
                             <form
@@ -186,7 +190,10 @@ const showingNavigationDropdown = ref(false);
                                     name="_token"
                                     :value="csrfToken"
                                 />
-                                <button type="submit" class="w-full text-left">
+                                <button
+                                    type="submit"
+                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                >
                                     Log Out
                                 </button>
                             </form>
