@@ -17,6 +17,15 @@ Route::middleware([])->group(function () {
     })->name('welcome');
 });
 
+Route::get('/tenant-welcome', function () {
+    return Inertia::render('TenantWelcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+})->name('tenant-home');
+
 // テナント識別を行うルート
 Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
     Route::get('/dashboard', function () {
