@@ -29,15 +29,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('username_id', 'password');
 
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-        // 現在のリクエストからホスト名を取得し、セッションに保存
-        $domain = $request->getHost();
-        session(['tenant_domain' => $domain]);
+            // 現在のリクエストからホスト名を取得し、セッションに保存
+            $domain = $request->getHost();
+            session(['tenant_domain' => $domain]);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        return back()->withErrors([
+            'username_id' => 'The provided credentials do not match our records.',
+        ]);
     }
 
     /**
@@ -54,7 +60,6 @@ class AuthenticatedSessionController extends Controller
         // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
         $domain = session('tenant_domain', $request->getHost());
 
-        // 通常のリダイレクトを使用
         return redirect('http://' . $domain . '/tenant-welcome');
     }
 }
