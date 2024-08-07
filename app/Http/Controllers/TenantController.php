@@ -48,6 +48,6 @@ class TenantController extends Controller
         session(['tenant_id' => $tenant->id]);
 
         // テナント初期化後にリダイレクト
-        return Inertia::location('http://' . $domain . '/register'); // リダイレクト先を新しいドメインに設定
+        return Inertia::location('http://' . $domain . '/tenant-welcome');
     }
 }
