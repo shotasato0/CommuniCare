@@ -28,23 +28,25 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $credentials = $request->only('username_id', 'password');
+{
+    $credentials = $request->only('username_id', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+    if (Auth::attempt($credentials)) {
+        // セッションの再生成を一時的にコメントアウトしてみる
+        // $request->session()->regenerate();
 
-            // 現在のリクエストからホスト名を取得し、セッションに保存
-            $domain = $request->getHost();
-            session(['tenant_domain' => $domain]);
+        // 現在のリクエストからホスト名を取得し、セッションに保存
+        $domain = $request->getHost();
+        session(['tenant_domain' => $domain]);
 
-            return redirect()->intended(route('dashboard', absolute: false));
-        }
-
-        return back()->withErrors([
-            'username_id' => 'The provided credentials do not match our records.',
-        ]);
+        return redirect()->intended(route('dashboard', absolute: false));
     }
+
+    return back()->withErrors([
+        'username_id' => 'The provided credentials do not match our records.',
+    ]);
+}
+
 
     /**
      * Destroy an authenticated session.
