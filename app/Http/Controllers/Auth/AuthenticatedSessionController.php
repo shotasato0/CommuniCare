@@ -42,7 +42,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors([
-            'username_id' => 'The provided credentials do not match our records.',
+            'username_id' => '入力された情報が一致しません。',
         ]);
     }
 
