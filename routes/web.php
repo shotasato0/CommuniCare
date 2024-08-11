@@ -16,8 +16,8 @@ Route::middleware([])->group(function () {
     })->name('welcome');
 });
 
-Route::get('/tenant-welcome', function () {
-    return Inertia::render('TenantWelcome', [
+Route::get('/home', function () {
+    return Inertia::render('TenantHome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
