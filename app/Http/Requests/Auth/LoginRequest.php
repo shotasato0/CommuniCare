@@ -28,7 +28,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'username_id' => ['required', 'string', 'exists:users,username_id'], // username_idのバリデーションルール
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8'],
         ];
     }
 
