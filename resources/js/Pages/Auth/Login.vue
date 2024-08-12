@@ -1,6 +1,6 @@
 <script setup>
 import Checkbox from "@/Components/Checkbox.vue";
-import GuestLayout from "@/Layouts/GuestLayout.vue";
+import TenantGuestLayout from "@/Layouts/TenantGuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -21,7 +21,9 @@ const form = useForm({
     username_id: "", // 修正: emailをusername_idに変更
     password: "",
     remember: false,
-    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // CSRFトークンを追加
+    _token: document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content"), // CSRFトークンを追加
 });
 
 const submit = () => {
@@ -32,7 +34,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <TenantGuestLayout>
         <Head title="Log in" />
 
         <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
@@ -92,5 +94,5 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
-    </GuestLayout>
+    </TenantGuestLayout>
 </template>
