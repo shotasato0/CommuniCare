@@ -21,7 +21,9 @@ const form = useForm({
     username_id: "", // 修正: emailをusername_idに変更
     password: "",
     remember: false,
-    _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // CSRFトークンを追加
+    _token: document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content"), // CSRFトークンを追加
 });
 
 const submit = () => {
