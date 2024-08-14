@@ -54,6 +54,9 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
+        $domain = session('tenant_domain', $request->getHost());
+
+        return Redirect::to('http://' . $domain . '/home');
     }
 }
