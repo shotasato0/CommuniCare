@@ -47,6 +47,9 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
+        $domain = session('tenant_domain', $request->getHost());
+
         Auth::logout();
 
         $user->delete();
@@ -54,9 +57,7 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
-        $domain = session('tenant_domain', $request->getHost());
-
-        return Redirect::to('http://' . $domain . '/home');
+        return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
     }
+
 }
