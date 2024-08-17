@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +18,6 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
@@ -29,12 +27,10 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        // リクエストから 'name' と 'username_id' のデータを抽出。only メソッドは、指定されたキーに対応するデータを配列で返す。
+        $request->user()->fill($request->only('name', 'username_id'));
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
+        // モデルの変更をデータベースに保存
         $request->user()->save();
 
         return Redirect::route('profile.edit');
@@ -51,6 +47,9 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
+        $domain = session('tenant_domain', $request->getHost());
+
         Auth::logout();
 
         $user->delete();
@@ -61,4 +60,5 @@ class ProfileController extends Controller
         \Log::info('リダイレクト時にリフレッシュフラグを設定しています。');
         return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
     }
+
 }
