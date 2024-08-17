@@ -57,7 +57,8 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
+        \Log::info('リダイレクト時にリフレッシュフラグを設定しています。');
+        return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
     }
 
 }
