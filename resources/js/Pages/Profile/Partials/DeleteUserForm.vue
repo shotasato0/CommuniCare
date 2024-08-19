@@ -13,9 +13,6 @@ const passwordInput = ref(null);
 
 const form = useForm({
     password: "",
-    _token: document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content"),
 });
 
 const confirmUserDeletion = () => {
