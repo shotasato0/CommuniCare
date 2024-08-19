@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -40,25 +41,33 @@ class ProfileController extends Controller
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
+{
+    $request->validate([
+        'password' => ['required', 'current_password'],
+    ]);
 
-        $user = $request->user();
+    $user = $request->user();
 
-        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
-        $domain = session('tenant_domain', $request->getHost());
+    // セッションからドメイン情報を取得
+    $domain = session('tenant_domain', $request->getHost());
 
-        Auth::logout();
+    // トークンA（無効化前のトークン）を取得
+    $csrfTokenA = $request->session()->token();
+    \Log::info('トークンA: ' . $csrfTokenA);
 
-        $user->delete();
+    Auth::logout();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    // セッションを無効化し、トークンAが削除される
+    $request->session()->invalidate();
 
-        \Log::info('リダイレクト時にリフレッシュフラグを設定しています。');
-        return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
-    }
+    // トークンB（再生成されたトークン）を生成
+    $request->session()->regenerateToken();
+
+    // トークンBを取得
+    $csrfTokenB = $request->session()->token();
+    \Log::info('トークンB: ' . $csrfTokenB);
+
+    return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
+}
 
 }
