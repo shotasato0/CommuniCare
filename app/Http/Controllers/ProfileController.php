@@ -67,7 +67,7 @@ class ProfileController extends Controller
     $csrfTokenB = $request->session()->token();
     \Log::info('トークンB: ' . $csrfTokenB);
 
-    return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
+    return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
 }
 
 }
