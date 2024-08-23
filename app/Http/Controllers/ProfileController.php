@@ -41,33 +41,25 @@ class ProfileController extends Controller
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
-{
-    $request->validate([
-        'password' => ['required', 'current_password'],
-    ]);
+    {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
 
-    $user = $request->user();
+        $user = $request->user();
 
-    // セッションからドメイン情報を取得
-    $domain = session('tenant_domain', $request->getHost());
+        // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
+        $domain = session('tenant_domain', $request->getHost());
 
-    // トークンA（無効化前のトークン）を取得
-    $csrfTokenA = $request->session()->token();
-    \Log::info('トークンA: ' . $csrfTokenA);
+        Auth::logout();
 
-    Auth::logout();
+        $user->delete();
 
-    // セッションを無効化し、トークンAが削除される
-    $request->session()->invalidate();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        Log::info('セッションが再生成されました');
 
-    // トークンB（再生成されたトークン）を生成
-    $request->session()->regenerateToken();
-
-    // トークンBを取得
-    $csrfTokenB = $request->session()->token();
-    \Log::info('トークンB: ' . $csrfTokenB);
-
-    return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
-}
+        return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
+    }
 
 }
