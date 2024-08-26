@@ -36,10 +36,7 @@ createInertiaApp({
                         console.log(
                             "URLが 'localhost/home' を含んでいます。ページをリロードします。"
                         );
-                        // 2秒後にページをリロード
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 2000);
+                        window.location.reload();
                     }
                 }
             });
