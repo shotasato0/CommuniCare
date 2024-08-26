@@ -5,6 +5,13 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
+
+// CSRFトークンを取得
+const csrfToken = ref(
+    document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+);
+console.log("CSRF Token:", csrfToken.value);
 
 // フォームの初期データを定義
 const form = useForm({
@@ -12,6 +19,7 @@ const form = useForm({
     username_id: "",
     password: "",
     password_confirmation: "",
+    _token: csrfToken.value, // フォームデータにCSRFトークンを含める
 });
 
 const submit = () => {
@@ -24,6 +32,9 @@ const submit = () => {
         onError: (errors) => {
             console.error("Form submission errors:", errors);
         },
+        headers: {
+            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにCSRFトークンを含める
+        },
     });
 };
 </script>
@@ -33,6 +44,7 @@ const submit = () => {
         <Head title="Register" />
 
         <form @submit.prevent="submit">
+            <input type="hidden" name="_token" :value="csrfToken" />
             <div>
                 <InputLabel for="name" value="Name" />
                 <TextInput
