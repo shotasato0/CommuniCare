@@ -26,18 +26,23 @@ createInertiaApp({
         document.addEventListener("inertia:finish", (event) => {
             console.log("Inertia:finish イベントが発火しました");
 
-            if (event.detail && event.detail.page && event.detail.page.props) {
-                console.log("プロパティが存在します:", event.detail.page.props);
+            document.addEventListener("inertia:finish", (event) => {
+                if (event.detail && event.detail.visit) {
+                    // 現在のURLを取得
+                    const currentUrl = window.location.href;
 
-                if (event.detail.page.props.refresh) {
-                    console.log(
-                        "リフレッシュフラグによりページがリロードされます。"
-                    );
-                    window.location.reload();
+                    // URLに 'localhost/home' が含まれているかチェック
+                    if (currentUrl.includes("localhost/home")) {
+                        console.log(
+                            "URLが 'localhost/home' を含んでいます。ページをリロードします。"
+                        );
+                        // 2秒後にページをリロード
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
                 }
-            } else {
-                console.log("event.detail.page にプロパティが存在しません。");
-            }
+            });
         });
     },
     progress: {
