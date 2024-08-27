@@ -8,14 +8,17 @@ import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import { nextTick, ref } from "vue";
 
+// CSRFトークンを取得
+const csrfToken = ref(
+    document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+);
+
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
 
 const form = useForm({
     password: "",
-    _token: document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content"),
+    _token: csrfToken.value, // フォームデータにCSRFトークンを含める
 });
 
 const confirmUserDeletion = () => {
@@ -30,6 +33,9 @@ const deleteUser = () => {
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value.focus(),
         onFinish: () => form.reset(),
+        headers: {
+            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにCSRFトークンを含める
+        },
     });
 };
 

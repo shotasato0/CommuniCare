@@ -13,12 +13,13 @@ const csrfToken = ref(
 );
 console.log("CSRF Token:", csrfToken.value);
 
+// フォームの初期データを定義
 const form = useForm({
     name: "",
     username_id: "",
     password: "",
     password_confirmation: "",
-    _token: csrfToken.value, // フォームデータにトークンを含める
+    _token: csrfToken.value, // フォームデータにCSRFトークンを含める
 });
 
 const submit = () => {
@@ -32,7 +33,7 @@ const submit = () => {
             console.error("Form submission errors:", errors);
         },
         headers: {
-            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにトークンを含める
+            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにCSRFトークンを含める
         },
     });
 };
@@ -43,8 +44,7 @@ const submit = () => {
         <Head title="Register" />
 
         <form @submit.prevent="submit">
-            <input type="hidden" name="_token" :value="csrfToken.value" />
-
+            <input type="hidden" name="_token" :value="csrfToken" />
             <div>
                 <InputLabel for="name" value="Name" />
                 <TextInput
