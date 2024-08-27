@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -56,9 +57,9 @@ class ProfileController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        Log::info('セッションが再生成されました');
 
-        \Log::info('リダイレクト時にリフレッシュフラグを設定しています。');
-        return Redirect::to('http://' . $domain . '/home')->with(['refresh' => true]);
+        return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
     }
 
 }
