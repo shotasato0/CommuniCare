@@ -32,9 +32,12 @@ createInertiaApp({
                     const currentUrl = window.location.href;
 
                     // URLに 'localhost/home' が含まれているかチェック
-                    if (currentUrl.includes("localhost/home")) {
+                    if (
+                        currentUrl.includes("localhost/home") ||
+                        currentUrl.includes("localhost/dashboard")
+                    ) {
                         console.log(
-                            "URLが 'localhost/home' を含んでいます。ページをリロードします。"
+                            "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
                         );
                         window.location.reload();
                     }
