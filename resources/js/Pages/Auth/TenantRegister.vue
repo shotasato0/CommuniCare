@@ -4,7 +4,7 @@
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="tenant_name" value="Tenant Name" />
+                <InputLabel for="tenant_name" :value="$t('Tenant Name')" />
 
                 <TextInput
                     id="tenant_name"
@@ -24,7 +24,7 @@
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Register Tenant
+                    {{ $t('Tenant Register') }}
                 </PrimaryButton>
             </div>
         </form>
