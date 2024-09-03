@@ -4,6 +4,20 @@
 
         <form @submit.prevent="submit">
             <div>
+                <InputLabel for="business_name" :value="$t('Business Name')" />
+
+                <TextInput
+                    id="business_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.business_name"
+                    required
+                    autofocus
+                />
+
+                <InputError class="mt-2" :message="form.errors.business_name" />
+            </div>
+            <div>
                 <InputLabel for="tenant_name" :value="$t('Tenant Name')" />
 
                 <TextInput
@@ -41,6 +55,7 @@ import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
     tenant_name: "",
+    business_name: "",
 });
 
 const submit = () => {
