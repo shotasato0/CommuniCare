@@ -40,7 +40,7 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
-                                    Dashboard
+                                    {{ $t('Dashboard') }}
                                 </NavLink>
                             </div>
                         </div>
@@ -78,7 +78,7 @@ const showingNavigationDropdown = ref(false);
                                             :href="route('profile.edit')"
                                             class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                         >
-                                            Profile
+                                            {{ $t('Profile') }}
                                         </DropdownLink>
                                         <form
                                             :action="route('logout')"
@@ -94,7 +94,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="submit"
                                                 class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                             >
-                                                Log Out
+                                                {{ $t('Log Out') }}
                                             </button>
                                         </form>
                                     </template>
@@ -158,7 +158,7 @@ const showingNavigationDropdown = ref(false);
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            Dashboard
+                            {{ $t('Dashboard') }}
                         </ResponsiveNavLink>
                     </div>
 
@@ -178,7 +178,7 @@ const showingNavigationDropdown = ref(false);
                                 :href="route('profile.edit')"
                                 class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                             >
-                                Profile
+                                {{ $t('Profile') }}
                             </ResponsiveNavLink>
                             <form
                                 :action="route('logout')"
@@ -194,7 +194,7 @@ const showingNavigationDropdown = ref(false);
                                     type="submit"
                                     class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                 >
-                                    Log Out
+                                    {{ $t('Log Out') }}
                                 </button>
                             </form>
                         </div>
