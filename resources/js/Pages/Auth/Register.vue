@@ -46,7 +46,7 @@ const submit = () => {
         <form @submit.prevent="submit">
             <input type="hidden" name="_token" :value="csrfToken" />
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" :value="$t('Name')" />
                 <TextInput
                     id="name"
                     type="text"
@@ -60,7 +60,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="username_id" value="Username_ID" />
+                <InputLabel for="username_id" :value="$t('Username_ID')" />
                 <TextInput
                     id="username_id"
                     type="text"
@@ -72,7 +72,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" :value="$t('Password')" />
                 <TextInput
                     id="password"
                     type="password"
@@ -87,7 +87,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    :value="$t('Confirm Password')"
                 />
                 <TextInput
                     id="password_confirmation"
@@ -108,14 +108,14 @@ const submit = () => {
                     :href="route('login')"
                     class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                    Already registered?
+                    {{ $t('Already registered?') }}
                 </Link>
                 <PrimaryButton
                     class="ms-4"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Register
+                    {{ $t('Register') }}
                 </PrimaryButton>
             </div>
         </form>
