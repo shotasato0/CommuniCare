@@ -5,8 +5,18 @@ import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
+import { createI18n } from "vue-i18n"; // vue-i18nをインポート
+import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja.jsonを読み込み
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+
+// vue-i18nの設定
+const i18n = createI18n({
+    locale: "ja", // デフォルトの言語を日本語に設定
+    messages: {
+        ja,
+    },
+});
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -18,7 +28,8 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue);
+            .use(ZiggyVue)
+            .use(i18n); // vue-i18nを使用するように設定
 
         app.mount(el);
 
