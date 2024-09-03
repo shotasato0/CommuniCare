@@ -3,7 +3,7 @@
         <Head title="Tenant Registration" />
 
         <form @submit.prevent="submit">
-            <div>
+            <!-- <div>
                 <InputLabel for="business_name" :value="$t('Business Name')" />
 
                 <TextInput
@@ -16,20 +16,20 @@
                 />
 
                 <InputError class="mt-2" :message="form.errors.business_name" />
-            </div>
+            </div> -->
             <div>
-                <InputLabel for="tenant_name" :value="$t('Tenant Name')" />
+                <InputLabel for="tenant_domain_id" :value="$t('Tenant Domain ID')" />
 
                 <TextInput
-                    id="tenant_name"
+                    id="tenant_domain_id"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.tenant_name"
+                    v-model="form.tenant_domain_id"
                     required
                     autofocus
                 />
 
-                <InputError class="mt-2" :message="form.errors.tenant_name" />
+                <InputError class="mt-2" :message="form.errors.tenant_domain_id" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
@@ -54,8 +54,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-    tenant_name: "",
-    business_name: "",
+    tenant_domain_id: "",
+    // business_name: "",
 });
 
 const submit = () => {
