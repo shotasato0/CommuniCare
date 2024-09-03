@@ -44,7 +44,7 @@ const form = useForm({
             <input type="hidden" name="_token" :value="form._token" />
 
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" :value="$t('Name')" />
 
                 <TextInput
                     id="name"
@@ -60,7 +60,7 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="username_id" value="Username" />
+                <InputLabel for="username_id" :value="$t('Username_ID')" />
 
                 <TextInput
                     id="username_id"
