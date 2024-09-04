@@ -26,7 +26,6 @@
                     class="mt-1 block w-full"
                     v-model="form.tenant_domain_id"
                     required
-                    autofocus
                 />
 
                 <InputError class="mt-2" :message="form.errors.tenant_domain_id" />
