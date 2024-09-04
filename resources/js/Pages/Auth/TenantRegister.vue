@@ -17,7 +17,7 @@
 
                 <InputError class="mt-2" :message="form.errors.business_name" />
             </div>
-            <div>
+            <div class="mt-4">
                 <InputLabel for="tenant_domain_id" :value="$t('Tenant Domain ID')" />
 
                 <TextInput
