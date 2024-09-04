@@ -20,7 +20,13 @@ class TenantController extends Controller
     {
         $validatedData = $request->validate([
             'business_name' => 'required|string|max:255',
-            'tenant_domain_id' => 'required|string|max:255',
+            'tenant_domain_id' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[a-zA-Z0-9]+$/',
+                'unique:tenants,tenant_domain_id',
+            ],
         ]);
 
         // テナントの作成
