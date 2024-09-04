@@ -19,12 +19,14 @@ class TenantController extends Controller
     public function register(Request $request)
     {
         $validatedData = $request->validate([
+            'business_name' => 'required|string|max:255',
             'tenant_domain_id' => 'required|string|max:255',
         ]);
 
         // テナントの作成
         $tenant = Tenant::create([
-            'name' => $validatedData['tenant_domain_id'],
+            'business_name' => $validatedData['business_name'],
+            'tenant_domain_id' => $validatedData['tenant_domain_id'],
         ]);
 
         // ドメインの自動生成
