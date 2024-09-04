@@ -15,7 +15,7 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
 
     // 'data' カラムを JSON としてキャスト
     protected $casts = [
-        'data' => 'array',
+        'data' => 'json',
     ];
 
     /**
