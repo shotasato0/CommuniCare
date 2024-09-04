@@ -3,7 +3,7 @@
         <Head title="Tenant Registration" />
 
         <form @submit.prevent="submit">
-            <!-- <div>
+            <div>
                 <InputLabel for="business_name" :value="$t('Business Name')" />
 
                 <TextInput
@@ -16,7 +16,7 @@
                 />
 
                 <InputError class="mt-2" :message="form.errors.business_name" />
-            </div> -->
+            </div>
             <div>
                 <InputLabel for="tenant_domain_id" :value="$t('Tenant Domain ID')" />
 
@@ -55,7 +55,7 @@ import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
     tenant_domain_id: "",
-    // business_name: "",
+    business_name: "",
 });
 
 const submit = () => {
