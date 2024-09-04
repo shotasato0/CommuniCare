@@ -54,8 +54,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-    tenant_domain_id: "",
     business_name: "",
+    tenant_domain_id: "",
 });
 
 const submit = () => {
