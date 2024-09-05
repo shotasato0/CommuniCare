@@ -9,7 +9,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 
-class TenantController extends Controller
+class TenantRegisterController extends Controller
 {
     public function showRegistrationForm()
     {
