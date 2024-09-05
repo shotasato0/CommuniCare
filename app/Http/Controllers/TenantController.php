@@ -58,4 +58,9 @@ class TenantController extends Controller
         // テナント初期化後にリダイレクト
         return Inertia::location('http://' . $domain . '/home');
     }
+
+    public function showLoginForm()
+    {
+        return Inertia::render('Auth/TenantLogin');
+    }
 }
