@@ -11,11 +11,11 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
 {
     use HasDatabase, HasDomains;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['business_name', 'tenant_domain_id'];
 
     // 'data' カラムを JSON としてキャスト
     protected $casts = [
-        'data' => 'array',
+        'data' => 'json',
     ];
 
     /**
