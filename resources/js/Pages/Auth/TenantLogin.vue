@@ -1,3 +1,25 @@
+<script setup>
+import GuestLayout from "@/Layouts/TenantGuestLayout.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import TextInput from "@/Components/TextInput.vue";
+import InputError from "@/Components/InputError.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Checkbox from "@/Components/Checkbox.vue";
+import { Head, useForm } from "@inertiajs/vue3";
+
+const form = useForm({
+    business_name: "",
+    tenant_domain_id: "",
+    remember: false,
+});
+
+const submit = () => {
+    form.post(route("tenant.login"), {
+        onFinish: () => form.reset("password"),
+    });
+};
+</script>
+
 <template>
     <GuestLayout>
         <Head :title="$t('Tenant Login')" />
@@ -55,25 +77,3 @@
         </form>
     </GuestLayout>
 </template>
-
-<script setup>
-import GuestLayout from "@/Layouts/TenantGuestLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputError from "@/Components/InputError.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import { Head, useForm } from "@inertiajs/vue3";
-
-const form = useForm({
-    business_name: "",
-    tenant_domain_id: "",
-    remember: false,
-});
-
-const submit = () => {
-    form.post(route("tenant.login"), {
-        onFinish: () => form.reset("password"),
-    });
-};
-</script>
