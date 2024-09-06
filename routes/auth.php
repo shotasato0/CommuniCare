@@ -20,7 +20,7 @@ Route::middleware('guest')->group(function () {
 
     // テナントログインルート
     Route::get('/tenant/login', [TenantLoginController::class, 'showLoginForm'])->name('tenant.login');
-    Route::post('/tenant/login', [TenantLoginController::class, 'login'])->name('tenant.login.post');
+    Route::post('/tenant/login', [TenantLoginController::class, 'store'])->name('tenant.login.post');
 
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');
