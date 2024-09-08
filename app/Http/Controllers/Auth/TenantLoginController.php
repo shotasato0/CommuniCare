@@ -23,8 +23,8 @@ class TenantLoginController extends Controller
         $credentials = $request->validated();
 
         // テナントを取得
-        $tenant = Tenant::where('business_name', $credentials['business_name'])
-            ->where('tenant_domain_id', $credentials['tenant_domain_id'])
+        $tenant = Tenant::whereJsonContains('data->business_name', $credentials['business_name'])
+            ->whereJsonContains('data->tenant_domain_id', $credentials['tenant_domain_id'])
             ->first();
 
         if (!$tenant) {
