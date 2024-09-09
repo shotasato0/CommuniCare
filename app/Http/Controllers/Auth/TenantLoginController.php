@@ -20,9 +20,9 @@ class TenantLoginController extends Controller
         return Inertia::render('Auth/TenantLogin');
     }
 
-    public function store(TenantLoginRequest $request): Response
-{
-    // バリデーション済みのデータを取得
+    public function store(TenantLoginRequest $request): Response|RedirectResponse
+    {
+        // バリデーション済みのデータを取得
     $credentials = $request->validated();
 
     // テナントを取得
