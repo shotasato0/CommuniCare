@@ -2,8 +2,6 @@
 
 return [
 
-    /* メッセージの内容がご自身のアプリに適さない場合には、必要に応じて修正願います */
-
     'accepted' => ':attributeを承認してください。',
     'accepted_if' => ':otherが:valueの場合、:attributeを承認してください。',
     'active_url' => ':attributeが有効なURLではありません。',
@@ -173,8 +171,13 @@ return [
         'tenant_domain_id' => [
             'regex' => 'テナントIDはアルファベットと数字で指定してください。',
         ],
+        'business_name' => [
+            'exists' => 'この:attributeは存在しません。',
+        ],
+        'tenant_domain_id' => [
+            'correct' => ':attributeは正しくありません。',
+        ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes
@@ -259,6 +262,7 @@ return [
         'updated_at' => '更新日',
         'username' => 'ユーザー名',
         'year' => '年',
+        'business_name' => '事業所名',
+        'tenant_domain_id' => 'テナントID',
     ],
-
 ];
