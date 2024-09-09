@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
@@ -9,7 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 
-class TenantController extends Controller
+class TenantRegisterController extends Controller
 {
     public function showRegistrationForm()
     {

@@ -142,5 +142,6 @@
     "You're logged in": "ログインしました",
     "Tenant Register": "テナント登録",
     "Tenant Domain ID": "テナントID",
-    "Business Name": "事業者名"
+    "Business Name": "事業所名",
+    "Tenant Login": "テナントログイン"
 }
