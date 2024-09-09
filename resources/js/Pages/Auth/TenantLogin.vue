@@ -28,10 +28,11 @@ const submit = () => {
             <div>
                 <InputLabel for="business_name" :value="$t('Business Name')" />
                 <TextInput
-                    id="business_name"
+                id="business_name"
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.business_name"
+                    title="事業所の名前を入力してください。"
                     required
                     autofocus
                 />
@@ -44,10 +45,11 @@ const submit = () => {
                     :value="$t('Tenant Domain ID')"
                 />
                 <TextInput
-                    id="tenant_domain_id"
+                id="tenant_domain_id"
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.tenant_domain_id"
+                    title="事業所のIDを英数字で入力してください。URLに使用されます。"
                     required
                 />
                 <InputError
