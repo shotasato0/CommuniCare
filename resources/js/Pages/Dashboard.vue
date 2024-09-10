@@ -9,7 +9,7 @@ console.log("User data:", props.auth.user);
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="$t('Dashboard')" />
 
     <AuthenticatedLayout>
         <template #header>
