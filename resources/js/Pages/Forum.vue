@@ -1,11 +1,14 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 // usePage から props を取得し、posts が存在しない場合のフォールバックを設定
 const pageProps = usePage().props.value || {};
+console.log("Initial pageProps:", pageProps); // デバッグ用: 初期propsの確認
+
 const posts = ref(pageProps.posts || []); // 初期投稿データが渡されない場合は空の配列
+console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsの確認
 
 // アプリ名とフォームデータ
 const appName = "CommuniCare";
@@ -16,9 +19,12 @@ const postData = ref({
 
 // 投稿データの送信
 const submitPost = () => {
+    console.log("Sending post data:", postData.value); // デバッグ用: 送信前の投稿データ確認
+
     router.post(route("forum.store"), postData.value, {
         onSuccess: () => {
-            postData.value = { title: "", message: ""};
+            console.log("Post submitted successfully"); // デバッグ用: 投稿成功時のメッセージ
+            postData.value = { title: "", message: "" }; // フォームリセット
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
@@ -28,8 +34,11 @@ const submitPost = () => {
 
 // 投稿の削除
 const deletePost = (postId) => {
+    console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
+
     router.delete(`/forum/post/${postId}`, {
         onSuccess: () => {
+            console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
             posts.value = posts.value.filter((post) => post.id !== postId); // 削除後の投稿をリフレッシュ
         },
         onError: (errors) => {
@@ -37,6 +46,11 @@ const deletePost = (postId) => {
         },
     });
 };
+
+// watchEffect を使ってpostsの更新を監視し、デバッグ情報を表示
+watchEffect(() => {
+    console.log("Updated posts data:", posts.value); // デバッグ用: postsが更新されるたびに表示
+});
 </script>
 
 <template>
