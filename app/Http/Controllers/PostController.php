@@ -8,51 +8,35 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     public function index()
-{
-    $posts = Post::with('user', 'comments', 'likes')->paginate(10);
-    
-    // InertiaでForumコンポーネントをレンダリングし、データを渡す
-    return inertia('Forum', [
-        'posts' => $posts,
-    ]);
-}
-
+    {
+        // ユーザー情報を含めた投稿データを取得
+        $posts = Post::with('user')->latest()->get();
+        return inertia('Forum', [
+            'posts' => $posts,
+        ]);
+    }
 
     public function store(Request $request)
     {
-        if (!auth()->check()) {
-            return response()->json(['error' => 'ログインしていません'], 401);
-        }
+        // バリデーション
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
 
-        try {
-            $validated = $request->validate([
-                'title' => 'required|string|max:255',
-                'message' => 'required|string',
-            ]);
+        // 投稿者のuser_idと投稿内容を保存
+        Post::create([
+            'user_id' => auth()->id(),  // ログイン中のユーザーのIDを保存
+            'title' => $validated['title'],
+            'message' => $validated['message'],
+        ]);
 
-            Post::create([
-                'user_id' => auth()->id(),
-                'title' => $validated['title'],
-                'message' => $validated['message'],
-            ]);
-
-            return response()->json(['status' => '投稿が完了しました']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => '投稿に失敗しました'], 500);
-        }
+        return redirect()->route('forum.index');
     }
 
     public function destroy($id)
     {
-        if (!auth()->check()) {
-            return response()->json(['error' => 'ログインしていません'], 401);
-        }
-
-        try {
-            Post::findOrFail($id)->delete();
-            return response()->json(['status' => '投稿を削除しました']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => '削除に失敗しました'], 500);
-        }
+        Post::findOrFail($id)->delete();
+        return redirect()->route('forum.index');
     }
 }
