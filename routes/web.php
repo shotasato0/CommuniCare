@@ -33,6 +33,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
     })->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
+    Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
