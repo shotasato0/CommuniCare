@@ -3,11 +3,11 @@ import { ref, watchEffect } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
-// usePage から props を取得し、posts が存在しない場合のフォールバックを設定
-const pageProps = usePage().props.value || {};
-console.log("Initial pageProps:", pageProps); // デバッグ用: 初期propsの確認
+// usePage から props を取得し、propsが正しく渡されているか確認
+const pageProps = usePage().props;
 
-const posts = ref(pageProps.posts || []); // 初期投稿データが渡されない場合は空の配列
+// postsのデータをpropsから取得
+const posts = ref(pageProps.posts || []);
 console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsの確認
 
 // アプリ名とフォームデータ
