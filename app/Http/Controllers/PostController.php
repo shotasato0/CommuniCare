@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -25,13 +26,16 @@ class PostController extends Controller
         ]);
 
         // 投稿者のuser_idと投稿内容を保存
-        Post::create([
+        $post = Post::create([
             'user_id' => auth()->id(),  // ログイン中のユーザーのIDを保存
             'title' => $validated['title'],
             'message' => $validated['message'],
         ]);
 
-        return redirect()->route('forum.index');
+        // 正しいInertiaレスポンスで新しい投稿を返す
+        return Inertia::render('Forum', [
+            'post' => $post,  // 新しい投稿をレスポンスとして返す
+        ]);
     }
 
     public function destroy($id)

@@ -35,7 +35,7 @@ const submitPost = () => {
             console.log("Post submitted successfully", response); // デバッグ用: 投稿成功時のメッセージ
 
             // サーバーから返された新しい投稿データを追加
-            const newPost = response.props.flash?.post || {
+            const newPost = response.props.post || {
                 id: Date.now(), // 一時的にIDを作成（後でサーバーから返された本物のIDに置き換える）
                 user: response.props.auth.user, // ログイン中のユーザー情報を使用
                 title: postData.value.title,
