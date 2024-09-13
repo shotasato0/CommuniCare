@@ -18,25 +18,27 @@ class PostController extends Controller
     }
 
     public function store(Request $request)
-    {
-        // バリデーション
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'message' => 'required|string',
-        ]);
+{
+    // バリデーション
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'message' => 'required|string',
+    ]);
 
-        // 投稿者のuser_idと投稿内容を保存
-        $post = Post::create([
-            'user_id' => auth()->id(),  // ログイン中のユーザーのIDを保存
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-        ]);
+    // 投稿者のuser_idと投稿内容を保存
+    $post = Post::create([
+        'user_id' => auth()->id(),  // ログイン中のユーザーのIDを保存
+        'title' => $validated['title'],
+        'message' => $validated['message'],
+    ]);
 
-        // 正しいInertiaレスポンスで新しい投稿を返す
-        return Inertia::render('Forum', [
-            'post' => $post,  // 新しい投稿をレスポンスとして返す
-        ]);
-    }
+    // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
+    return back()->with([
+        'newPost' => $post,
+        'auth' => auth()->user(), // ログインユーザー情報も渡す
+    ]);
+}
+
 
     public function destroy($id)
     {
