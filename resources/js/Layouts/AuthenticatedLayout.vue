@@ -5,7 +5,7 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
 
 // CSRFトークンを取得
 const csrfToken = ref(
@@ -13,6 +13,9 @@ const csrfToken = ref(
 );
 
 const showingNavigationDropdown = ref(false);
+
+// Inertiaからpropsを取得
+const auth = usePage().props.auth || {};
 </script>
 
 <template>
@@ -40,7 +43,7 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
-                                    {{ $t('Dashboard') }}
+                                    {{ $t("Dashboard") }}
                                 </NavLink>
                             </div>
                         </div>
@@ -55,7 +58,11 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.name }}
+                                                <!-- user.nameがnullでないことを確認 -->
+                                                <span v-if="auth.user">
+                                                    {{ auth.user.name }}
+                                                </span>
+                                                <span v-else> ゲスト </span>
 
                                                 <svg
                                                     class="ms-2 -me-0.5 h-4 w-4"
@@ -78,7 +85,7 @@ const showingNavigationDropdown = ref(false);
                                             :href="route('profile.edit')"
                                             class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                         >
-                                            {{ $t('Profile') }}
+                                            {{ $t("Profile") }}
                                         </DropdownLink>
                                         <form
                                             :action="route('logout')"
@@ -94,7 +101,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="submit"
                                                 class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                             >
-                                                {{ $t('Log Out') }}
+                                                {{ $t("Log Out") }}
                                             </button>
                                         </form>
                                     </template>
@@ -158,18 +165,30 @@ const showingNavigationDropdown = ref(false);
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            {{ $t('Dashboard') }}
+                            {{ $t("Dashboard") }}
                         </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">
                         <div class="px-4">
-                            <div class="font-medium text-base text-gray-800">
-                                {{ $page.props.auth.user.name }}
+                            <!-- user.nameがnullでないことを確認 -->
+                            <div v-if="auth.user">
+                                <div
+                                    class="font-medium text-base text-gray-800"
+                                >
+                                    {{ auth.user.name }}
+                                </div>
+                                <div class="font-medium text-sm text-gray-500">
+                                    {{ auth.user.email }}
+                                </div>
                             </div>
-                            <div class="font-medium text-sm text-gray-500">
-                                {{ $page.props.auth.user.email }}
+                            <div v-else>
+                                <div
+                                    class="font-medium text-base text-gray-800"
+                                >
+                                    ゲスト
+                                </div>
                             </div>
                         </div>
 
@@ -178,7 +197,7 @@ const showingNavigationDropdown = ref(false);
                                 :href="route('profile.edit')"
                                 class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                             >
-                                {{ $t('Profile') }}
+                                {{ $t("Profile") }}
                             </ResponsiveNavLink>
                             <form
                                 :action="route('logout')"
@@ -194,7 +213,7 @@ const showingNavigationDropdown = ref(false);
                                     type="submit"
                                     class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                 >
-                                    {{ $t('Log Out') }}
+                                    {{ $t("Log Out") }}
                                 </button>
                             </form>
                         </div>
