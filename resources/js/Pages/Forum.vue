@@ -1,14 +1,23 @@
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watch } from "vue";
 import { usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
-// usePage から props を取得し、propsが正しく渡されているか確認
+// propsからページのデータを取得
 const pageProps = usePage().props;
 
-// postsのデータをpropsから取得
+// postsのデータをpropsから取得し、リアクティブに保持
 const posts = ref(pageProps.posts || []);
-console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsの確認
+console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsデータを確認
+
+// propsの更新をリアクティブに監視し、postsに反映
+watch(
+    () => pageProps.posts,
+    (newPosts) => {
+        posts.value = [...newPosts]; // 新しい投稿データをリアクティブに追加
+        console.log("Updated posts data:", posts.value); // デバッグ用: 更新されたpostsデータ
+    }
+);
 
 // アプリ名とフォームデータ
 const appName = "CommuniCare";
@@ -17,40 +26,46 @@ const postData = ref({
     message: "",
 });
 
-// 投稿データの送信
+// 投稿データの送信処理
 const submitPost = () => {
     console.log("Sending post data:", postData.value); // デバッグ用: 送信前の投稿データ確認
 
     router.post(route("forum.store"), postData.value, {
-        onSuccess: () => {
-            console.log("Post submitted successfully"); // デバッグ用: 投稿成功時のメッセージ
-            postData.value = { title: "", message: "" }; // フォームリセット
+        onSuccess: (response) => {
+            console.log("Post submitted successfully", response); // デバッグ用: 投稿成功時のメッセージ
+
+            // サーバーから返された新しい投稿データを追加
+            const newPost = response.props.flash?.post || {
+                id: Date.now(), // 一時的にIDを作成（後でサーバーから返された本物のIDに置き換える）
+                user: response.props.auth.user, // ログイン中のユーザー情報を使用
+                title: postData.value.title,
+                message: postData.value.message,
+                created_at: new Date().toISOString(), // 現在の時間を使用
+            };
+
+            posts.value = [newPost, ...posts.value]; // 新しい投稿をリストの先頭に追加
+            postData.value = { title: "", message: "" }; // フォームのリセット
         },
         onError: (errors) => {
-            console.error("投稿に失敗しました:", errors);
+            console.error("投稿に失敗しました:", errors); // デバッグ用: 投稿失敗時のエラーメッセージ
         },
     });
 };
 
-// 投稿の削除
+// 投稿の削除処理
 const deletePost = (postId) => {
     console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
 
     router.delete(`/forum/post/${postId}`, {
         onSuccess: () => {
             console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
-            posts.value = posts.value.filter((post) => post.id !== postId); // 削除後の投稿をリフレッシュ
+            posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
         },
         onError: (errors) => {
-            console.error("削除に失敗しました:", errors);
+            console.error("削除に失敗しました:", errors); // デバッグ用: 削除失敗時のエラーメッセージ
         },
     });
 };
-
-// watchEffect を使ってpostsの更新を監視し、デバッグ情報を表示
-watchEffect(() => {
-    console.log("Updated posts data:", posts.value); // デバッグ用: postsが更新されるたびに表示
-});
 </script>
 
 <template>
@@ -91,31 +106,30 @@ watchEffect(() => {
             <!-- 投稿一覧 -->
             <div
                 v-for="(post, index) in posts"
-                :key="index"
+                :key="post.id"
                 class="bg-white rounded-md mt-1 mb-5 p-3"
             >
                 <!-- スレッド -->
                 <div>
                     <p class="mb-2 text-xs">
-                        {{ post.created_at }} ＠{{ post.user.name }}
+                        {{ post.created_at }}
+                        <span v-if="post.user">＠{{ post.user.name }}</span>
+                        <span v-else>＠Unknown</span>
+                        <!-- user が存在しない場合のフォールバック -->
                     </p>
-                    <p class="mb-2 text-xl font-bold">
-                        {{ post.title }}
-                    </p>
+                    <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
                 <!-- 削除ボタン -->
-                <form
-                    class="flex justify-end mt-5"
-                    @submit.prevent="deletePost(post.id)"
-                >
+                <div class="flex justify-end mt-5">
                     <button
+                        @click.prevent="deletePost(post.id)"
                         class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                     >
                         削除
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>
