@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from "vue";
-import { usePage, router } from "@inertiajs/vue3";
+import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 // propsからページのデータを取得
@@ -69,6 +69,8 @@ const deletePost = (postId) => {
 </script>
 
 <template>
+    <Head :title="$t('Forum')" />
+
     <AuthenticatedLayout>
         <div class="w-11/12 max-w-screen-md m-auto">
             <h1 class="text-xl font-bold mt-5">{{ appName }}</h1>
