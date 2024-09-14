@@ -10,15 +10,6 @@ const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []);
 console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsデータを確認
 
-// propsの更新をリアクティブに監視し、postsに反映
-watch(
-    () => pageProps.posts,
-    (newPosts) => {
-        posts.value = [...newPosts]; // 新しい投稿データをリアクティブに追加
-        console.log("Updated posts data:", posts.value); // デバッグ用: 更新されたpostsデータ
-    }
-);
-
 // アプリ名とフォームデータ
 const appName = "CommuniCare";
 const postData = ref({
@@ -35,19 +26,13 @@ const submitPost = () => {
             console.log("Post submitted successfully", response); // デバッグ用: 投稿成功時のメッセージ
 
             // サーバーから返された新しい投稿データを追加
-            const newPost = response.props.post || {
-                id: Date.now(), // 一時的にIDを作成（後でサーバーから返された本物のIDに置き換える）
-                user: response.props.auth.user, // ログイン中のユーザー情報を使用
-                title: postData.value.title,
-                message: postData.value.message,
-                created_at: new Date().toISOString(), // 現在の時間を使用
-            };
-
+            const newPost = response.props.newPost; // サーバーから返された正しい投稿IDを使用
+            console.log("New post data:", newPost); // デバッグ用: 新しい投稿データ確認
             posts.value = [newPost, ...posts.value]; // 新しい投稿をリストの先頭に追加
             postData.value = { title: "", message: "" }; // フォームのリセット
         },
         onError: (errors) => {
-            console.error("投稿に失敗しました:", errors); // デバッグ用: 投稿失敗時のエラーメッセージ
+            console.error("投稿に失敗しました:", errors); // 投稿失敗時のエラーメッセージ
         },
     });
 };
@@ -56,7 +41,7 @@ const submitPost = () => {
 const deletePost = (postId) => {
     console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
 
-    router.delete(`/forum/post/${postId}`, {
+    router.delete(route("forum.destroy", postId), {
         onSuccess: () => {
             console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
             posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
@@ -117,7 +102,6 @@ const deletePost = (postId) => {
                         {{ post.created_at }}
                         <span v-if="post.user">＠{{ post.user.name }}</span>
                         <span v-else>＠Unknown</span>
-                        <!-- user が存在しない場合のフォールバック -->
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
