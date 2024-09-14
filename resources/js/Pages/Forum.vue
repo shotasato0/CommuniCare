@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs"; // dayjsをインポート
@@ -13,6 +13,13 @@ console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpo
 
 // ログインしているユーザー情報
 const auth = pageProps.auth;
+
+// ログインしていない場合はログイン画面にリダイレクト
+onMounted(() => {
+    if (!auth || !auth.user) {
+        Inertia.visit("/login");
+    }
+});
 
 // アプリ名とフォームデータ
 const appName = "CommuniCare";
