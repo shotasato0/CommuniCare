@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -9,6 +9,9 @@ const pageProps = usePage().props;
 // postsのデータをpropsから取得し、リアクティブに保持
 const posts = ref(pageProps.posts || []);
 console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsデータを確認
+
+// ログインしているユーザー情報
+const auth = pageProps.auth;
 
 // アプリ名とフォームデータ
 const appName = "CommuniCare";
@@ -40,6 +43,7 @@ const submitPost = () => {
 // 投稿の削除処理
 const deletePost = (postId) => {
     console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
+
     if (confirm("本当に削除しますか？")) {
         router.delete(route("forum.destroy", postId), {
             onSuccess: () => {
@@ -47,11 +51,9 @@ const deletePost = (postId) => {
                 posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
             },
             onError: (errors) => {
-            console.error("削除に失敗しました:", errors); // デバッグ用: 削除失敗時のエラーメッセージ
+                console.error("削除に失敗しました:", errors); // デバッグ用: 削除失敗時のエラーメッセージ
             },
         });
-    } else {
-        console.log("Post deletion cancelled"); // デバッグ用: 削除キャンセル時のメッセージ
     }
 };
 </script>
@@ -110,8 +112,11 @@ const deletePost = (postId) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
-                <!-- 削除ボタン -->
-                <div class="flex justify-end mt-5">
+                <!-- ログインユーザーが投稿者の場合のみ削除ボタンを表示 -->
+                <div
+                    v-if="post.user && post.user.id === auth.user.id"
+                    class="flex justify-end mt-5"
+                >
                     <button
                         @click.prevent="deletePost(post.id)"
                         class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
