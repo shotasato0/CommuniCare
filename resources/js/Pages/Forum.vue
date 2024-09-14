@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import dayjs from "dayjs"; // dayjsをインポート
 
 // propsからページのデータを取得
 const pageProps = usePage().props;
@@ -19,6 +20,10 @@ const postData = ref({
     title: "",
     message: "",
 });
+
+const formatDate = (date) => {
+    return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+};
 
 // 投稿データの送信処理
 const submitPost = () => {
@@ -104,7 +109,7 @@ const deletePost = (postId) => {
                 <!-- スレッド -->
                 <div>
                     <p class="mb-2 text-xs">
-                        {{ post.created_at }}
+                        {{ formatDate(post.created_at) }}
                         <span v-if="post.user">＠{{ post.user.name }}</span>
                         <span v-else>＠Unknown</span>
                     </p>
