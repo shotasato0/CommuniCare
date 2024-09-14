@@ -32,6 +32,9 @@ class PostController extends Controller
         'message' => $validated['message'],
     ]);
 
+    // 新しい投稿にユーザー情報をロードして返す
+    $post->load('user'); // リレーションをロードする
+
        // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
        return Inertia::render('Forum', [
         'newPost' => $post,
