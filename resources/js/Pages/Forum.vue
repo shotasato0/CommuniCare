@@ -40,16 +40,19 @@ const submitPost = () => {
 // 投稿の削除処理
 const deletePost = (postId) => {
     console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
-
-    router.delete(route("forum.destroy", postId), {
-        onSuccess: () => {
-            console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
-            posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
-        },
-        onError: (errors) => {
+    if (confirm("本当に削除しますか？")) {
+        router.delete(route("forum.destroy", postId), {
+            onSuccess: () => {
+                console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
+                posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
+            },
+            onError: (errors) => {
             console.error("削除に失敗しました:", errors); // デバッグ用: 削除失敗時のエラーメッセージ
-        },
-    });
+            },
+        });
+    } else {
+        console.log("Post deletion cancelled"); // デバッグ用: 削除キャンセル時のメッセージ
+    }
 };
 </script>
 
