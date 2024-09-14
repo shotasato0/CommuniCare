@@ -32,8 +32,8 @@ class PostController extends Controller
         'message' => $validated['message'],
     ]);
 
-    // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
-    return back()->with([
+       // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
+       return Inertia::render('Forum', [
         'newPost' => $post,
         'auth' => auth()->user(), // ログインユーザー情報も渡す
     ]);
