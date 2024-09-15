@@ -32,19 +32,20 @@ const formatDate = (date) => {
     return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 };
 
-// 投稿データの送信処理
 const submitPost = () => {
     console.log("Sending post data:", postData.value); // デバッグ用: 送信前の投稿データ確認
 
     router.post(route("forum.store"), postData.value, {
         onSuccess: (response) => {
-            console.log("Post submitted successfully", response); // デバッグ用: 投稿成功時のメッセージ
+            console.log("投稿に成功しました", response); // デバッグ用: 投稿成功時のメッセージ
 
             // サーバーから返された新しい投稿データを追加
             const newPost = response.props.newPost; // サーバーから返された正しい投稿IDを使用
-            console.log("New post data:", newPost); // デバッグ用: 新しい投稿データ確認
             posts.value = [newPost, ...posts.value]; // 新しい投稿をリストの先頭に追加
             postData.value = { title: "", message: "" }; // フォームのリセット
+
+            // Inertia.replace() の代わりに Inertia.get() を使用して履歴を更新
+            router.get(route("forum.index"), {}, { replace: true });
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors); // 投稿失敗時のエラーメッセージ
