@@ -17,17 +17,18 @@ Route::middleware([])->group(function () {
     })->name('welcome');
 });
 
-Route::get('/home', function () {
-    return Inertia::render('TenantHome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('tenant-home');
 
 // テナント識別を行うルート
 Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
+    Route::get('/home', function () {
+        return Inertia::render('TenantHome', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
+    })->name('tenant-home');
+
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
