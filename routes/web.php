@@ -17,7 +17,6 @@ Route::middleware([])->group(function () {
     })->name('welcome');
 });
 
-
 // テナント識別を行うルート
 Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
     Route::get('/home', function () {
@@ -29,19 +28,20 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         ]);
     })->name('tenant-home');
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/dashboard', function () {
+            return Inertia::render('Dashboard');
+        })->name('dashboard');
 
-    Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
-    Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
-    Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
-
-    Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
+        Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
+        Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
     });
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
 
 require __DIR__.'/auth.php';
