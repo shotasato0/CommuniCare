@@ -38,7 +38,10 @@ class AuthenticatedSessionController extends Controller
             $domain = $request->getHost();
             session(['tenant_domain' => $domain]);
 
-            return redirect()->intended(route('dashboard', absolute: false));
+            // セッションにリロードフラグを設定
+            session()->flash('reload_page', true);
+
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
