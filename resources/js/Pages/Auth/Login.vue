@@ -18,12 +18,12 @@ defineProps({
 
 // フォームデータにusername_idを使用
 const form = useForm({
-    username_id: "", // 修正: emailをusername_idに変更
+    username_id: "", // emailをusername_idに変更
     password: "",
     remember: false,
     _token: document
         .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content"), // CSRFトークンを追加
+        .getAttribute("content"), // 初期表示時にCSRFトークンを設定
 });
 
 const submit = () => {
@@ -72,7 +72,9 @@ const submit = () => {
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{ $t('Remember me') }}</span>
+                    <span class="ms-2 text-sm text-gray-600">{{
+                        $t("Remember me")
+                    }}</span>
                 </label>
             </div>
 
@@ -82,7 +84,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                    {{ $t('Forgot your password?') }}
+                    {{ $t("Forgot your password?") }}
                 </Link>
 
                 <PrimaryButton
@@ -90,7 +92,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $t('Login') }}
+                    {{ $t("Login") }}
                 </PrimaryButton>
             </div>
         </form>
