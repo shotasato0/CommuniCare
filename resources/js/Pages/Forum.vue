@@ -13,12 +13,13 @@ const auth = pageProps.auth; // ログインユーザー情報
 const getCsrfToken = () =>
     document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
-// ログインしていない場合はログイン画面にリダイレクト
-onMounted(() => {
-    if (!auth || !auth.user) {
-        Inertia.visit("/login");
-    }
-});
+// コメントフォーム表示状態を管理するためのオブジェクト
+const commentFormVisibility = ref({});
+
+// 投稿がクリックされたときにコメントフォームを表示する
+const toggleCommentForm = (postId) => {
+    commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
+};
 
 const appName = "CommuniCare"; // アプリ名
 const postData = ref({
@@ -53,7 +54,6 @@ const commentToPost = (postId) => {
     commentData.value.post_id = postId;
 };
 
-// コメントの送信処理
 const submitComment = () => {
     commentData.value._token = getCsrfToken();
     router.post(route("comments.store"), commentData.value, {
@@ -170,8 +170,25 @@ const deletePost = (postId) => {
                     </div>
                 </div>
 
+                <!-- 返信と削除ボタン -->
+                <div class="flex justify-end mt-2 space-x-2">
+                    <button
+                        @click="toggleCommentForm(post.id)"
+                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                    >
+                        返信
+                    </button>
+                    <button
+                        v-if="post.user && post.user.id === auth.user.id"
+                        @click.prevent="deletePost(post.id)"
+                        class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                    >
+                        削除
+                    </button>
+                </div>
+
                 <!-- コメントフォーム -->
-                <div class="mt-4">
+                <div v-if="commentFormVisibility[post.id]" class="mt-4">
                     <form @submit.prevent="submitComment">
                         <textarea
                             v-model="commentData.message"
@@ -180,21 +197,12 @@ const deletePost = (postId) => {
                             placeholder="コメントを入力してください"
                             @focus="commentToPost(post.id)"
                         ></textarea>
-                        <div class="flex justify-end mt-2 space-x-2">
+                        <div class="flex justify-end mt-2">
                             <button
                                 type="submit"
                                 class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
                             >
-                                返信
-                            </button>
-                            <button
-                                v-if="
-                                    post.user && post.user.id === auth.user.id
-                                "
-                                @click.prevent="deletePost(post.id)"
-                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                            >
-                                削除
+                                送信
                             </button>
                         </div>
                     </form>
