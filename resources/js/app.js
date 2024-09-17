@@ -37,23 +37,19 @@ createInertiaApp({
         document.addEventListener("inertia:finish", (event) => {
             console.log("Inertia:finish イベントが発火しました");
 
-            document.addEventListener("inertia:finish", (event) => {
-                if (event.detail && event.detail.visit) {
-                    // 現在のURLを取得
-                    const currentUrl = window.location.href;
+            // 現在のURLを取得
+            const currentUrl = window.location.href;
 
-                    // URLに 'localhost/home' が含まれているかチェック
-                    if (
-                        currentUrl.includes("localhost/home") ||
-                        currentUrl.includes("localhost/dashboard")
-                    ) {
-                        console.log(
-                            "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
-                        );
-                        window.location.reload();
-                    }
-                }
-            });
+            // ログイン後またはダッシュボードでのリダイレクトを処理
+            if (
+                currentUrl.includes("localhost/home") ||
+                currentUrl.includes("localhost/dashboard")
+            ) {
+                console.log(
+                    "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
+                );
+                window.location.reload();
+            }
         });
     },
     progress: {
