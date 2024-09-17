@@ -20,8 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
             InitializeTenancyCustom::class,
             SetTenantCookie::class,
         ]);
-
-        //
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
