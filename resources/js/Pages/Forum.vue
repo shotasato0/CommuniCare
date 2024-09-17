@@ -26,6 +26,11 @@ const postData = ref({
     message: "",
 });
 
+const commentData = ref({
+    post_id: null,
+    message: "",
+});
+
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
 // 投稿の送信処理
@@ -40,6 +45,33 @@ const submitPost = () => {
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
+        },
+    });
+};
+
+const commentToPost = (postId) => {
+    commentData.value.post_id = postId;
+};
+
+// コメントの送信処理
+const submitComment = () => {
+    commentData.value._token = getCsrfToken();
+    router.post(route("comments.store"), commentData.value, {
+        onSuccess: (response) => {
+            const newComment = response.props.newComment;
+            const postIndex = posts.value.findIndex(
+                (post) => post.id === newComment.post_id
+            );
+            if (postIndex !== -1) {
+                if (!posts.value[postIndex].comments) {
+                    posts.value[postIndex].comments = [];
+                }
+                posts.value[postIndex].comments.push(newComment);
+            }
+            commentData.value = { post_id: null, message: "" };
+        },
+        onError: (errors) => {
+            console.error("コメントの投稿に失敗しました:", errors);
         },
     });
 };
@@ -116,17 +148,56 @@ const deletePost = (postId) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
-                <!-- ログインユーザーが投稿者の場合のみ削除ボタンを表示 -->
+                <!-- コメント一覧 -->
                 <div
-                    v-if="post.user && post.user.id === auth.user.id"
-                    class="flex justify-end mt-5"
+                    v-if="post.comments && post.comments.length > 0"
+                    class="mt-4"
                 >
-                    <button
-                        @click.prevent="deletePost(post.id)"
-                        class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                    <h3 class="font-bold mb-2">コメント</h3>
+                    <div
+                        v-for="comment in post.comments"
+                        :key="comment.id"
+                        class="ml-4 mb-2"
                     >
-                        削除
-                    </button>
+                        <p class="text-xs">
+                            {{ formatDate(comment.created_at) }}
+                            <span v-if="comment.user"
+                                >＠{{ comment.user.name }}</span
+                            >
+                            <span v-else>＠Unknown</span>
+                        </p>
+                        <p>{{ comment.message }}</p>
+                    </div>
+                </div>
+
+                <!-- コメントフォーム -->
+                <div class="mt-4">
+                    <form @submit.prevent="submitComment">
+                        <textarea
+                            v-model="commentData.message"
+                            class="border rounded px-2 w-full"
+                            required
+                            placeholder="コメントを入力してください"
+                            @focus="commentToPost(post.id)"
+                        ></textarea>
+                        <div class="flex justify-end mt-2 space-x-2">
+                            <button
+                                type="submit"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
+                            >
+                                返信
+                            </button>
+                            <button
+                                v-if="
+                                    post.user && post.user.id === auth.user.id
+                                "
+                                @click.prevent="deletePost(post.id)"
+                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                            >
+                                削除
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
