@@ -2,17 +2,16 @@
 import { ref, onMounted } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import dayjs from "dayjs"; // dayjsをインポート
+import dayjs from "dayjs";
 
 // propsからページのデータを取得
 const pageProps = usePage().props;
+const posts = ref(pageProps.posts || []); // 投稿のデータ
+const auth = pageProps.auth; // ログインユーザー情報
 
-// postsのデータをpropsから取得し、リアクティブに保持
-const posts = ref(pageProps.posts || []);
-console.log("Initial posts data:", posts.value); // デバッグ用: 初期のpostsデータを確認
-
-// ログインしているユーザー情報
-const auth = pageProps.auth;
+// CSRFトークンを取得する関数
+const getCsrfToken = () =>
+    document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
 // ログインしていない場合はログイン画面にリダイレクト
 onMounted(() => {
@@ -21,50 +20,42 @@ onMounted(() => {
     }
 });
 
-// アプリ名とフォームデータ
-const appName = "CommuniCare";
+const appName = "CommuniCare"; // アプリ名
 const postData = ref({
     title: "",
     message: "",
 });
 
-const formatDate = (date) => {
-    return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-};
+const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
+// 投稿の送信処理
 const submitPost = () => {
-    console.log("Sending post data:", postData.value); // デバッグ用: 送信前の投稿データ確認
-
+    postData.value._token = getCsrfToken(); // CSRFトークンを設定
     router.post(route("forum.store"), postData.value, {
         onSuccess: (response) => {
-            console.log("投稿に成功しました", response); // デバッグ用: 投稿成功時のメッセージ
-
-            // サーバーから返された新しい投稿データを追加
-            const newPost = response.props.newPost; // サーバーから返された正しい投稿IDを使用
-            posts.value = [newPost, ...posts.value]; // 新しい投稿をリストの先頭に追加
-            postData.value = { title: "", message: "" }; // フォームのリセット
-
-            // Inertia.replace() の代わりに Inertia.get() を使用して履歴を更新
+            const newPost = response.props.newPost; // 新しい投稿を取得
+            posts.value.unshift(newPost); // 投稿をリストの先頭に追加
+            postData.value = { title: "", message: "" }; // フォームをリセット
             router.get(route("forum.index"), {}, { replace: true });
         },
         onError: (errors) => {
-            console.error("投稿に失敗しました:", errors); // 投稿失敗時のエラーメッセージ
+            console.error("投稿に失敗しました:", errors);
         },
     });
 };
 
 // 投稿の削除処理
 const deletePost = (postId) => {
-    console.log("Deleting post with ID:", postId); // デバッグ用: 削除対象の投稿ID確認
-
     if (confirm("本当に削除しますか？")) {
         router.delete(route("forum.destroy", postId), {
+            headers: {
+                "X-CSRF-TOKEN": getCsrfToken(), // CSRFトークンを設定
+            },
             onSuccess: () => {
-                console.log("Post deleted successfully"); // デバッグ用: 削除成功時のメッセージ
-                posts.value = posts.value.filter((post) => post.id !== postId); // リストから削除
+                posts.value = posts.value.filter((post) => post.id !== postId); // 投稿を削除
             },
             onError: (errors) => {
-                console.error("削除に失敗しました:", errors); // デバッグ用: 削除失敗時のエラーメッセージ
+                console.error("削除に失敗しました:", errors);
             },
         });
     }
