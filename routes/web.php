@@ -28,7 +28,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         ]);
     })->name('tenant-home');
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
