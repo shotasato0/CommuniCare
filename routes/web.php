@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -40,6 +41,8 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
+
+        Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
