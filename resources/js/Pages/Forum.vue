@@ -17,8 +17,10 @@ const getCsrfToken = () =>
 const commentFormVisibility = ref({});
 
 // 投稿がクリックされたときにコメントフォームを表示する
-const toggleCommentForm = (postId) => {
+const toggleCommentForm = (postId, parentId = null) => {
     commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
+    commentData.value.post_id = postId;
+    commentData.value.parent_id = parentId;
 };
 
 const appName = "CommuniCare"; // アプリ名
@@ -27,8 +29,10 @@ const postData = ref({
     message: "",
 });
 
+// ユーザーがコメントを送信する際にバックエンドに送信されるデータを格納
 const commentData = ref({
     post_id: null,
+    parent_id: null, // 初期値はnull、通常のコメントの場合はそのまま
     message: "",
 });
 
@@ -42,7 +46,9 @@ const submitPost = () => {
             const newPost = response.props.newPost; // 新しい投稿を取得
             posts.value.unshift(newPost); // 投稿をリストの先頭に追加
             postData.value = { title: "", message: "" }; // フォームをリセット
-            router.get(route("forum.index"), {}, { replace: true });
+
+            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
+            router.replace(route("forum.index")); // replaceで履歴を置き換え
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
@@ -50,15 +56,16 @@ const submitPost = () => {
     });
 };
 
-const commentToPost = (postId) => {
-    commentData.value.post_id = postId;
-};
-
 const submitComment = () => {
+    // CSRFトークンを設定
     commentData.value._token = getCsrfToken();
-    router.post(route("comments.store"), commentData.value, {
+
+    // コメントデータをサーバーに送信
+    router.post(route("comment.store"), commentData.value, {
         onSuccess: (response) => {
             const newComment = response.props.newComment;
+
+            // 新しいコメントを投稿に追加
             const postIndex = posts.value.findIndex(
                 (post) => post.id === newComment.post_id
             );
@@ -68,7 +75,12 @@ const submitComment = () => {
                 }
                 posts.value[postIndex].comments.push(newComment);
             }
-            commentData.value = { post_id: null, message: "" };
+
+            // フォームのリセット
+            commentData.value = { post_id: null, parent_id: null, message: "" };
+
+            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
+            router.replace(route("forum.index")); // replaceで履歴を置き換え
         },
         onError: (errors) => {
             console.error("コメントの投稿に失敗しました:", errors);
@@ -167,6 +179,14 @@ const deletePost = (postId) => {
                             <span v-else>＠Unknown</span>
                         </p>
                         <p>{{ comment.message }}</p>
+
+                        <!-- 返信ボタン -->
+                        <button
+                            @click="toggleCommentForm(post.id, comment.id)"
+                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            返信
+                        </button>
                     </div>
                 </div>
 
@@ -195,7 +215,6 @@ const deletePost = (postId) => {
                             class="border rounded px-2 w-full"
                             required
                             placeholder="コメントを入力してください"
-                            @focus="commentToPost(post.id)"
                         ></textarea>
                         <div class="flex justify-end mt-2">
                             <button
