@@ -11,7 +11,10 @@ class PostController extends Controller
     public function index()
     {
         // ユーザー情報を含めた投稿データを取得
-        $posts = Post::with('user')->latest()->get();
+        $posts = Post::with(['user','comments.user'])
+        ->latest()
+        ->get();
+
         return inertia('Forum', [
             'posts' => $posts,
         ]);
