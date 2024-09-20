@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
@@ -48,7 +48,7 @@ const submitPost = () => {
             postData.value = { title: "", message: "" }; // フォームをリセット
 
             // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
-            router.replace(route("forum.index")); // replaceで履歴を置き換え
+            router.get(route("forum.index")); // getで履歴を置き換え
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
@@ -56,12 +56,14 @@ const submitPost = () => {
     });
 };
 
-const submitComment = () => {
+// コメントの送信処理
+const submitComment = (postId) => {
     // CSRFトークンを設定
     commentData.value._token = getCsrfToken();
+    commentData.value.post_id = postId; // 送信対象の投稿IDをセット
 
     // コメントデータをサーバーに送信
-    router.post(route("comment.store"), commentData.value, {
+    router.post(route("comment.store", { post: postId }), commentData.value, {
         onSuccess: (response) => {
             const newComment = response.props.newComment;
 
@@ -80,7 +82,7 @@ const submitComment = () => {
             commentData.value = { post_id: null, parent_id: null, message: "" };
 
             // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
-            router.replace(route("forum.index")); // replaceで履歴を置き換え
+            router.get(route("forum.index")); // getで履歴を置き換え
         },
         onError: (errors) => {
             console.error("コメントの投稿に失敗しました:", errors);
@@ -209,7 +211,7 @@ const deletePost = (postId) => {
 
                 <!-- コメントフォーム -->
                 <div v-if="commentFormVisibility[post.id]" class="mt-4">
-                    <form @submit.prevent="submitComment">
+                    <form @submit.prevent="submitComment(post.id)">
                         <textarea
                             v-model="commentData.message"
                             class="border rounded px-2 w-full"
