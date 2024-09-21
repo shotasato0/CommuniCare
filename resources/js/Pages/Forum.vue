@@ -17,10 +17,11 @@ const getCsrfToken = () =>
 const commentFormVisibility = ref({});
 
 // 投稿がクリックされたときにコメントフォームを表示する
-const toggleCommentForm = (postId, parentId = null) => {
+const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
     commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
     commentData.value.post_id = postId;
     commentData.value.parent_id = parentId;
+    commentData.value.replyToName = replyToName;
 };
 
 const appName = "CommuniCare"; // アプリ名
@@ -34,6 +35,7 @@ const commentData = ref({
     post_id: null,
     parent_id: null, // 初期値はnull、通常のコメントの場合はそのまま
     message: "",
+    replyToName: "", // 返信相手の名前を保存するフィールド
 });
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
@@ -154,6 +156,7 @@ const isCommentAuthor = (comment) => {
                             class="border rounded px-2 ml-2 flex-auto"
                             type="text"
                             required
+                            placeholder="件名を入力してください"
                         />
                     </div>
                     <div class="flex flex-col mt-2">
@@ -162,6 +165,7 @@ const isCommentAuthor = (comment) => {
                             v-model="postData.message"
                             class="border rounded px-2"
                             required
+                            placeholder="本文を入力してください"
                         ></textarea>
                     </div>
                     <div class="flex justify-end mt-2">
@@ -213,7 +217,13 @@ const isCommentAuthor = (comment) => {
 
                         <!-- 返信ボタン -->
                         <button
-                            @click="toggleCommentForm(post.id, comment.id)"
+                            @click="
+                                toggleCommentForm(
+                                    post.id,
+                                    comment.id,
+                                    comment.user ? comment.user.name : 'Unknown'
+                                )
+                            "
                             class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
                         >
                             <i class="bi bi-reply"></i>
@@ -232,12 +242,20 @@ const isCommentAuthor = (comment) => {
 
                 <!-- 返信と削除ボタン -->
                 <div class="flex justify-end mt-2 space-x-2">
+                    <!-- 投稿に対する返信ボタン -->
                     <button
-                        @click="toggleCommentForm(post.id)"
+                        @click="
+                            toggleCommentForm(
+                                post.id,
+                                null,
+                                post.user ? post.user.name : 'Unknown'
+                            )
+                        "
                         class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
                     >
                         <i class="bi bi-reply"></i>
                     </button>
+                    <!-- 投稿の削除ボタン -->
                     <button
                         v-if="post.user && post.user.id === auth.user.id"
                         @click.prevent="deletePost(post.id)"
@@ -254,7 +272,11 @@ const isCommentAuthor = (comment) => {
                             v-model="commentData.message"
                             class="border rounded px-2 w-full"
                             required
-                            placeholder="コメントを入力してください"
+                            :placeholder="
+                                commentData.replyToName
+                                    ? `@${commentData.replyToName} にメッセージを送信`
+                                    : 'メッセージを入力してください'
+                            "
                         ></textarea>
                         <div class="flex justify-end mt-2">
                             <button
