@@ -168,7 +168,7 @@ const isCommentAuthor = (comment) => {
                         <button
                             class="my-2 px-2 py-1 rounded bg-blue-300 text-blue-900 font-bold link-hover cursor-pointer"
                         >
-                            投稿
+                            <i class="bi bi-send"></i>
                         </button>
                     </div>
                 </form>
@@ -216,7 +216,7 @@ const isCommentAuthor = (comment) => {
                             @click="toggleCommentForm(post.id, comment.id)"
                             class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
                         >
-                            返信
+                            <i class="bi bi-reply"></i>
                         </button>
 
                         <!-- コメント削除ボタン -->
@@ -225,7 +225,7 @@ const isCommentAuthor = (comment) => {
                             @click="deleteComment(post.id, comment.id)"
                             class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                         >
-                            削除
+                            <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 </div>
@@ -236,14 +236,14 @@ const isCommentAuthor = (comment) => {
                         @click="toggleCommentForm(post.id)"
                         class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
                     >
-                        返信
+                        <i class="bi bi-reply"></i>
                     </button>
                     <button
                         v-if="post.user && post.user.id === auth.user.id"
                         @click.prevent="deletePost(post.id)"
                         class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                     >
-                        削除
+                        <i class="bi bi-trash"></i>
                     </button>
                 </div>
 
@@ -261,7 +261,7 @@ const isCommentAuthor = (comment) => {
                                 type="submit"
                                 class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
                             >
-                                送信
+                                <i class="bi bi-send"></i>
                             </button>
                         </div>
                     </form>
