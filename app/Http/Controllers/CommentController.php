@@ -35,4 +35,16 @@ class CommentController extends Controller
             'newComment' => $comment,
         ]);
     }
+
+    public function destroy($id)
+    {
+        $comment = Comment::find($id);
+        if (!$comment) {
+            return redirect()->back()->withErrors(['comment_not_found' => 'コメントが見つかりません']);
+        }
+
+        $comment->delete();
+
+        return redirect()->back();
+    }
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
@@ -106,6 +106,35 @@ const deletePost = (postId) => {
         });
     }
 };
+
+// コメントの削除処理
+const deleteComment = (postId, commentId) => {
+    if (confirm("本当にコメントを削除しますか？")) {
+        router.delete(route("comment.destroy", commentId), {
+            headers: {
+                "X-CSRF-TOKEN": getCsrfToken(), // CSRFトークンを設定
+            },
+            onSuccess: () => {
+                const postIndex = posts.value.findIndex(
+                    (post) => post.id === postId
+                );
+                if (postIndex !== -1) {
+                    posts.value[postIndex].comments = posts.value[
+                        postIndex
+                    ].comments.filter((comment) => comment.id !== commentId);
+                }
+            },
+            onError: (errors) => {
+                console.error("コメントの削除に失敗しました:", errors);
+            },
+        });
+    }
+};
+
+// ユーザーがコメントの作成者かどうかを確認
+const isCommentAuthor = (comment) => {
+    return auth.user && comment.user && auth.user.id === comment.user.id;
+};
 </script>
 
 <template>
@@ -188,6 +217,15 @@ const deletePost = (postId) => {
                             class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
                         >
                             返信
+                        </button>
+
+                        <!-- コメント削除ボタン -->
+                        <button
+                            v-if="isCommentAuthor(comment)"
+                            @click="deleteComment(post.id, comment.id)"
+                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            削除
                         </button>
                     </div>
                 </div>
