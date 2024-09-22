@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
-
+import PostForm from "@/Components/PostForm.vue";
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
@@ -25,10 +25,6 @@ const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
 };
 
 const appName = "CommuniCare"; // アプリ名
-const postData = ref({
-    title: "",
-    message: "",
-});
 
 // ユーザーがコメントを送信する際にバックエンドに送信されるデータを格納
 const commentData = ref({
@@ -39,24 +35,6 @@ const commentData = ref({
 });
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-
-// 投稿の送信処理
-const submitPost = () => {
-    postData.value._token = getCsrfToken(); // CSRFトークンを設定
-    router.post(route("forum.store"), postData.value, {
-        onSuccess: (response) => {
-            const newPost = response.props.newPost; // 新しい投稿を取得
-            posts.value.unshift(newPost); // 投稿をリストの先頭に追加
-            postData.value = { title: "", message: "" }; // フォームをリセット
-
-            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
-            router.get(route("forum.index")); // getで履歴を置き換え
-        },
-        onError: (errors) => {
-            console.error("投稿に失敗しました:", errors);
-        },
-    });
-};
 
 // コメントの送信処理
 const submitComment = (postId) => {
@@ -146,38 +124,8 @@ const isCommentAuthor = (comment) => {
         <div class="w-11/12 max-w-screen-md m-auto">
             <h1 class="text-xl font-bold mt-5">{{ appName }}</h1>
 
-            <!-- 投稿フォーム -->
-            <div class="bg-white rounded-md mt-5 p-3">
-                <form @submit.prevent="submitPost">
-                    <div class="flex mt-2">
-                        <p class="font-bold">件名</p>
-                        <input
-                            v-model="postData.title"
-                            class="border rounded px-2 ml-2 flex-auto"
-                            type="text"
-                            required
-                            placeholder="件名を入力してください"
-                        />
-                    </div>
-                    <div class="flex flex-col mt-2">
-                        <p class="font-bold">本文</p>
-                        <textarea
-                            v-model="postData.message"
-                            class="border rounded px-2"
-                            required
-                            placeholder="本文を入力してください"
-                        ></textarea>
-                    </div>
-                    <div class="flex justify-end mt-2">
-                        <button
-                            class="my-2 px-2 py-1 rounded bg-blue-300 text-blue-900 font-bold link-hover cursor-pointer"
-                        >
-                            <i class="bi bi-send"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
+            <PostForm />
+            
             <!-- 投稿一覧 -->
             <div
                 v-for="(post, index) in posts"
