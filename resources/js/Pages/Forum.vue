@@ -13,17 +13,29 @@ const auth = pageProps.auth; // ログインユーザー情報
 const getCsrfToken = () =>
     document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
-// ログインしていない場合はログイン画面にリダイレクト
-onMounted(() => {
-    if (!auth || !auth.user) {
-        Inertia.visit("/login");
-    }
-});
+// コメントフォーム表示状態を管理するためのオブジェクト
+const commentFormVisibility = ref({});
+
+// 投稿がクリックされたときにコメントフォームを表示する
+const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
+    commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
+    commentData.value.post_id = postId;
+    commentData.value.parent_id = parentId;
+    commentData.value.replyToName = replyToName;
+};
 
 const appName = "CommuniCare"; // アプリ名
 const postData = ref({
     title: "",
     message: "",
+});
+
+// ユーザーがコメントを送信する際にバックエンドに送信されるデータを格納
+const commentData = ref({
+    post_id: null,
+    parent_id: null, // 初期値はnull、通常のコメントの場合はそのまま
+    message: "",
+    replyToName: "", // 返信相手の名前を保存するフィールド
 });
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
@@ -36,10 +48,46 @@ const submitPost = () => {
             const newPost = response.props.newPost; // 新しい投稿を取得
             posts.value.unshift(newPost); // 投稿をリストの先頭に追加
             postData.value = { title: "", message: "" }; // フォームをリセット
-            router.get(route("forum.index"), {}, { replace: true });
+
+            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
+            router.get(route("forum.index")); // getで履歴を置き換え
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
+        },
+    });
+};
+
+// コメントの送信処理
+const submitComment = (postId) => {
+    // CSRFトークンを設定
+    commentData.value._token = getCsrfToken();
+    commentData.value.post_id = postId; // 送信対象の投稿IDをセット
+
+    // コメントデータをサーバーに送信
+    router.post(route("comment.store", { post: postId }), commentData.value, {
+        onSuccess: (response) => {
+            const newComment = response.props.newComment;
+
+            // 新しいコメントを投稿に追加
+            const postIndex = posts.value.findIndex(
+                (post) => post.id === newComment.post_id
+            );
+            if (postIndex !== -1) {
+                if (!posts.value[postIndex].comments) {
+                    posts.value[postIndex].comments = [];
+                }
+                posts.value[postIndex].comments.push(newComment);
+            }
+
+            // フォームのリセット
+            commentData.value = { post_id: null, parent_id: null, message: "" };
+
+            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
+            router.get(route("forum.index")); // getで履歴を置き換え
+        },
+        onError: (errors) => {
+            console.error("コメントの投稿に失敗しました:", errors);
         },
     });
 };
@@ -60,6 +108,35 @@ const deletePost = (postId) => {
         });
     }
 };
+
+// コメントの削除処理
+const deleteComment = (postId, commentId) => {
+    if (confirm("本当にコメントを削除しますか？")) {
+        router.delete(route("comment.destroy", commentId), {
+            headers: {
+                "X-CSRF-TOKEN": getCsrfToken(), // CSRFトークンを設定
+            },
+            onSuccess: () => {
+                const postIndex = posts.value.findIndex(
+                    (post) => post.id === postId
+                );
+                if (postIndex !== -1) {
+                    posts.value[postIndex].comments = posts.value[
+                        postIndex
+                    ].comments.filter((comment) => comment.id !== commentId);
+                }
+            },
+            onError: (errors) => {
+                console.error("コメントの削除に失敗しました:", errors);
+            },
+        });
+    }
+};
+
+// ユーザーがコメントの作成者かどうかを確認
+const isCommentAuthor = (comment) => {
+    return auth.user && comment.user && auth.user.id === comment.user.id;
+};
 </script>
 
 <template>
@@ -79,6 +156,7 @@ const deletePost = (postId) => {
                             class="border rounded px-2 ml-2 flex-auto"
                             type="text"
                             required
+                            placeholder="件名を入力してください"
                         />
                     </div>
                     <div class="flex flex-col mt-2">
@@ -87,13 +165,14 @@ const deletePost = (postId) => {
                             v-model="postData.message"
                             class="border rounded px-2"
                             required
+                            placeholder="本文を入力してください"
                         ></textarea>
                     </div>
                     <div class="flex justify-end mt-2">
                         <button
                             class="my-2 px-2 py-1 rounded bg-blue-300 text-blue-900 font-bold link-hover cursor-pointer"
                         >
-                            投稿
+                            <i class="bi bi-send"></i>
                         </button>
                     </div>
                 </form>
@@ -116,17 +195,98 @@ const deletePost = (postId) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
-                <!-- ログインユーザーが投稿者の場合のみ削除ボタンを表示 -->
+                <!-- コメント一覧 -->
                 <div
-                    v-if="post.user && post.user.id === auth.user.id"
-                    class="flex justify-end mt-5"
+                    v-if="post.comments && post.comments.length > 0"
+                    class="mt-4"
                 >
+                    <h3 class="font-bold mb-2">コメント</h3>
+                    <div
+                        v-for="comment in post.comments"
+                        :key="comment.id"
+                        class="ml-4 mb-2"
+                    >
+                        <p class="text-xs">
+                            {{ formatDate(comment.created_at) }}
+                            <span v-if="comment.user"
+                                >＠{{ comment.user.name }}</span
+                            >
+                            <span v-else>＠Unknown</span>
+                        </p>
+                        <p>{{ comment.message }}</p>
+
+                        <!-- 返信ボタン -->
+                        <button
+                            @click="
+                                toggleCommentForm(
+                                    post.id,
+                                    comment.id,
+                                    comment.user ? comment.user.name : 'Unknown'
+                                )
+                            "
+                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-reply"></i>
+                        </button>
+
+                        <!-- コメント削除ボタン -->
+                        <button
+                            v-if="isCommentAuthor(comment)"
+                            @click="deleteComment(post.id, comment.id)"
+                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 返信と削除ボタン -->
+                <div class="flex justify-end mt-2 space-x-2">
+                    <!-- 投稿に対する返信ボタン -->
                     <button
+                        @click="
+                            toggleCommentForm(
+                                post.id,
+                                null,
+                                post.user ? post.user.name : 'Unknown'
+                            )
+                        "
+                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                    >
+                        <i class="bi bi-reply"></i>
+                    </button>
+                    <!-- 投稿の削除ボタン -->
+                    <button
+                        v-if="post.user && post.user.id === auth.user.id"
                         @click.prevent="deletePost(post.id)"
                         class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                     >
-                        削除
+                        <i class="bi bi-trash"></i>
                     </button>
+                </div>
+
+                <!-- コメントフォーム -->
+                <div v-if="commentFormVisibility[post.id]" class="mt-4">
+                    <form @submit.prevent="submitComment(post.id)">
+                        <textarea
+                            v-model="commentData.message"
+                            class="border rounded px-2 w-full"
+                            required
+                            :placeholder="
+                                commentData.replyToName
+                                    ? `@${commentData.replyToName} にメッセージを送信`
+                                    : 'メッセージを入力してください'
+                            "
+                        ></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button
+                                type="submit"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
+                            >
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
