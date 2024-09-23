@@ -5,6 +5,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
+import CommentList from "@/Components/CommentList.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 
 // propsからページのデータを取得
@@ -97,50 +98,13 @@ const isCommentAuthor = (comment) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
-                <!-- コメント一覧 -->
-                <div
-                    v-if="post.comments && post.comments.length > 0"
-                    class="mt-4"
-                >
-                    <h3 class="font-bold mb-2">コメント</h3>
-                    <div
-                        v-for="comment in post.comments"
-                        :key="comment.id"
-                        class="ml-4 mb-2"
-                    >
-                        <p class="text-xs">
-                            {{ formatDate(comment.created_at) }}
-                            <span v-if="comment.user"
-                                >＠{{ comment.user.name }}</span
-                            >
-                            <span v-else>＠Unknown</span>
-                        </p>
-                        <p>{{ comment.message }}</p>
-
-                        <!-- 返信ボタン -->
-                        <button
-                            @click="
-                                toggleCommentForm(
-                                    post.id,
-                                    comment.id,
-                                    comment.user ? comment.user.name : 'Unknown'
-                                )
-                            "
-                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
-                        >
-                            <i class="bi bi-reply"></i>
-                        </button>
-
-                        <!-- コメント削除ボタン -->
-                        <button
-                            v-if="isCommentAuthor(comment)"
-                            @click="deleteComment(post.id, comment.id)"
-                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        >
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                </div>
+                <CommentList
+                    :comments="post.comments"
+                    :postId="post.id"
+                    :isCommentAuthor="isCommentAuthor"
+                    :deleteComment="deleteComment"
+                    :toggleCommentForm="toggleCommentForm"
+                />
 
                 <!-- 返信と削除ボタン -->
                 <div class="flex justify-end mt-2 space-x-2">
