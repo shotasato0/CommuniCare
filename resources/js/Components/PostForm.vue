@@ -1,14 +1,12 @@
 <script setup>
 import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import { getCsrfToken } from "@/Utils/csrf";
 
 const postData = ref({
     title: "",
     message: "",
 });
-
-const getCsrfToken = () =>
-    document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
 // 投稿の送信処理
 const submitPost = () => {

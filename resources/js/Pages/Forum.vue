@@ -4,14 +4,12 @@ import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
+import { getCsrfToken } from "@/Utils/csrf";
+
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
-
-// CSRFトークンを取得する関数
-const getCsrfToken = () =>
-    document.querySelector('meta[name="csrf-token"]').getAttribute("content");
 
 // コメントフォーム表示状態を管理するためのオブジェクト
 const commentFormVisibility = ref({});
