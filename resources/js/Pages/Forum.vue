@@ -16,9 +16,16 @@ const auth = pageProps.auth; // ログインユーザー情報
 // コメントフォーム表示状態を管理するためのオブジェクト
 const commentFormVisibility = ref({});
 
-// 投稿がクリックされたときにコメントフォームを表示する
+// コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
-    commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
+    // 既存のフォームの状態があるかチェック
+    const currentVisibility = commentFormVisibility.value[postId] || {};
+    // フォームの表示・非表示を切り替えつつ、parentIdとreplyToNameを保持する
+    commentFormVisibility.value[postId] = {
+        isVisible: !currentVisibility.isVisible, // 表示状態を反転
+        parentId: parentId, // 返信元のコメントID
+        replyToName: replyToName, // 返信相手の名前
+    };
 };
 
 const appName = "CommuniCare"; // アプリ名
@@ -132,10 +139,10 @@ const isCommentAuthor = (comment) => {
 
                 <!-- コメントフォーム -->
                 <CommentForm
-                    v-if="commentFormVisibility[post.id]"
+                    v-if="commentFormVisibility[post.id]?.isVisible"
                     :postId="post.id"
-                    :parentId="null"
-                    :replyToName="post.user ? post.user.name : 'Unknown'"
+                    :parentId="commentFormVisibility[post.id]?.parentId"
+                    :replyToName="commentFormVisibility[post.id]?.replyToName"
                 />
             </div>
         </div>
