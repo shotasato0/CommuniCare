@@ -26,14 +26,15 @@ const appName = "CommuniCare"; // アプリ名
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
 const deleteItem = (type, id) => {
-    // 削除の確認メッセージ
-    const confirmMessage = type === "post" ? "本当に投稿を削除しますか？" : "本当にコメントを削除しますか？";
+    const confirmMessage =
+        type === "post"
+            ? "本当に投稿を削除しますか？"
+            : "本当にコメントを削除しますか？";
 
     // ユーザーが確認した場合のみ削除
     if (confirm(confirmMessage)) {
         // 削除対象が投稿かコメントかでルートを変更
         const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
-
         // Inertiaのdeleteメソッドを使用して削除
         router.delete(route(routeName, id), {
             headers: {
@@ -46,10 +47,14 @@ const deleteItem = (type, id) => {
                     posts.value = posts.value.filter((post) => post.id !== id);
                 } else {
                     // 削除対象がコメントの場合
-                    const postIndex = posts.value.findIndex(post => post.comments.some(comment => comment.id === id));
+                    const postIndex = posts.value.findIndex((post) =>
+                        post.comments.some((comment) => comment.id === id)
+                    );
                     if (postIndex !== -1) {
                         // 削除対象のコメントを削除
-                        posts.value[postIndex].comments = posts.value[postIndex].comments.filter(comment => comment.id !== id);
+                        posts.value[postIndex].comments = posts.value[
+                            postIndex
+                        ].comments.filter((comment) => comment.id !== id);
                     }
                 }
             },
@@ -60,47 +65,6 @@ const deleteItem = (type, id) => {
         });
     }
 };
-
-// 投稿の削除処理
-// const deletePost = (postId) => {
-//     if (confirm("本当に削除しますか？")) {
-//         router.delete(route("forum.destroy", postId), {
-//             headers: {
-//                 "X-CSRF-TOKEN": getCsrfToken(),
-//             },
-//             onSuccess: () => {
-//                 posts.value = posts.value.filter((post) => post.id !== postId);
-//             },
-//             onError: (errors) => {
-//                 console.error("削除に失敗しました:", errors);
-//             },
-//         });
-//     }
-// };
-
-// コメントの削除処理
-// const deleteComment = (postId, commentId) => {
-//     if (confirm("本当にコメントを削除しますか？")) {
-//         router.delete(route("comment.destroy", commentId), {
-//             headers: {
-//                 "X-CSRF-TOKEN": getCsrfToken(),
-//             },
-//             onSuccess: () => {
-//                 const postIndex = posts.value.findIndex(
-//                     (post) => post.id === postId
-//                 );
-//                 if (postIndex !== -1) {
-//                     posts.value[postIndex].comments = posts.value[
-//                         postIndex
-//                     ].comments.filter((comment) => comment.id !== commentId);
-//                 }
-//             },
-//             onError: (errors) => {
-//                 console.error("コメントの削除に失敗しました:", errors);
-//             },
-//         });
-//     }
-// };
 
 // ユーザーがコメントの作成者かどうかを確認
 const isCommentAuthor = (comment) => {
@@ -142,7 +106,6 @@ const isCommentAuthor = (comment) => {
                     :toggleCommentForm="toggleCommentForm"
                 />
 
-                <!-- 返信と削除ボタン -->
                 <div class="flex justify-end mt-2 space-x-2">
                     <!-- 投稿に対する返信ボタン -->
                     <button
