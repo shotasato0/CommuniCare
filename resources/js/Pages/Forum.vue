@@ -4,6 +4,7 @@ import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
+import CommentForm from "@/Components/CommentForm.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 
 // propsからページのデータを取得
@@ -17,56 +18,11 @@ const commentFormVisibility = ref({});
 // 投稿がクリックされたときにコメントフォームを表示する
 const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
     commentFormVisibility.value[postId] = !commentFormVisibility.value[postId];
-    commentData.value.post_id = postId;
-    commentData.value.parent_id = parentId;
-    commentData.value.replyToName = replyToName;
 };
 
 const appName = "CommuniCare"; // アプリ名
 
-// ユーザーがコメントを送信する際にバックエンドに送信されるデータを格納
-const commentData = ref({
-    post_id: null,
-    parent_id: null, // 初期値はnull、通常のコメントの場合はそのまま
-    message: "",
-    replyToName: "", // 返信相手の名前を保存するフィールド
-});
-
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-
-// コメントの送信処理
-const submitComment = (postId) => {
-    // CSRFトークンを設定
-    commentData.value._token = getCsrfToken();
-    commentData.value.post_id = postId; // 送信対象の投稿IDをセット
-
-    // コメントデータをサーバーに送信
-    router.post(route("comment.store", { post: postId }), commentData.value, {
-        onSuccess: (response) => {
-            const newComment = response.props.newComment;
-
-            // 新しいコメントを投稿に追加
-            const postIndex = posts.value.findIndex(
-                (post) => post.id === newComment.post_id
-            );
-            if (postIndex !== -1) {
-                if (!posts.value[postIndex].comments) {
-                    posts.value[postIndex].comments = [];
-                }
-                posts.value[postIndex].comments.push(newComment);
-            }
-
-            // フォームのリセット
-            commentData.value = { post_id: null, parent_id: null, message: "" };
-
-            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
-            router.get(route("forum.index")); // getで履歴を置き換え
-        },
-        onError: (errors) => {
-            console.error("コメントの投稿に失敗しました:", errors);
-        },
-    });
-};
 
 // 投稿の削除処理
 const deletePost = (postId) => {
@@ -123,7 +79,7 @@ const isCommentAuthor = (comment) => {
             <h1 class="text-xl font-bold mt-5">{{ appName }}</h1>
 
             <PostForm />
-            
+
             <!-- 投稿一覧 -->
             <div
                 v-for="(post, index) in posts"
@@ -212,28 +168,12 @@ const isCommentAuthor = (comment) => {
                 </div>
 
                 <!-- コメントフォーム -->
-                <div v-if="commentFormVisibility[post.id]" class="mt-4">
-                    <form @submit.prevent="submitComment(post.id)">
-                        <textarea
-                            v-model="commentData.message"
-                            class="border rounded px-2 w-full"
-                            required
-                            :placeholder="
-                                commentData.replyToName
-                                    ? `@${commentData.replyToName} にメッセージを送信`
-                                    : 'メッセージを入力してください'
-                            "
-                        ></textarea>
-                        <div class="flex justify-end mt-2">
-                            <button
-                                type="submit"
-                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
-                            >
-                                <i class="bi bi-send"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                <CommentForm
+                    v-if="commentFormVisibility[post.id]"
+                    :postId="post.id"
+                    :parentId="null"
+                    :replyToName="post.user ? post.user.name : 'Unknown'"
+                />
             </div>
         </div>
     </AuthenticatedLayout>
