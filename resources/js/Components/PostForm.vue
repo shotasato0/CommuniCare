@@ -13,10 +13,7 @@ const submitPost = () => {
     postData.value._token = getCsrfToken(); // CSRFトークンを設定
     router.post(route("forum.store"), postData.value, {
         onSuccess: (response) => {
-            const newPost = response.props.newPost; // 新しい投稿を取得
             postData.value = { title: "", message: "" }; // フォームをリセット
-
-            // ページの履歴を更新して、リロード時に誤ったGETリクエストを防ぐ
             router.get(route("forum.index")); // getで履歴を置き換え
         },
         onError: (errors) => {
