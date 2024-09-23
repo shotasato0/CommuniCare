@@ -25,16 +25,35 @@ const appName = "CommuniCare"; // アプリ名
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
-// 投稿の削除処理
-const deletePost = (postId) => {
-    if (confirm("本当に削除しますか？")) {
-        router.delete(route("forum.destroy", postId), {
+const deleteItem = (type, id) => {
+    // 削除の確認メッセージ
+    const confirmMessage = type === "post" ? "本当に投稿を削除しますか？" : "本当にコメントを削除しますか？";
+
+    // ユーザーが確認した場合のみ削除
+    if (confirm(confirmMessage)) {
+        // 削除対象が投稿かコメントかでルートを変更
+        const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
+
+        // Inertiaのdeleteメソッドを使用して削除
+        router.delete(route(routeName, id), {
             headers: {
-                "X-CSRF-TOKEN": getCsrfToken(), // CSRFトークンを設定
+                "X-CSRF-TOKEN": getCsrfToken(),
             },
+            // 削除成功時の処理
             onSuccess: () => {
-                posts.value = posts.value.filter((post) => post.id !== postId); // 投稿を削除
+                // 削除対象が投稿の場合
+                if (type === "post") {
+                    posts.value = posts.value.filter((post) => post.id !== id);
+                } else {
+                    // 削除対象がコメントの場合
+                    const postIndex = posts.value.findIndex(post => post.comments.some(comment => comment.id === id));
+                    if (postIndex !== -1) {
+                        // 削除対象のコメントを削除
+                        posts.value[postIndex].comments = posts.value[postIndex].comments.filter(comment => comment.id !== id);
+                    }
+                }
             },
+            // 削除失敗時の処理
             onError: (errors) => {
                 console.error("削除に失敗しました:", errors);
             },
@@ -42,29 +61,46 @@ const deletePost = (postId) => {
     }
 };
 
+// 投稿の削除処理
+// const deletePost = (postId) => {
+//     if (confirm("本当に削除しますか？")) {
+//         router.delete(route("forum.destroy", postId), {
+//             headers: {
+//                 "X-CSRF-TOKEN": getCsrfToken(),
+//             },
+//             onSuccess: () => {
+//                 posts.value = posts.value.filter((post) => post.id !== postId);
+//             },
+//             onError: (errors) => {
+//                 console.error("削除に失敗しました:", errors);
+//             },
+//         });
+//     }
+// };
+
 // コメントの削除処理
-const deleteComment = (postId, commentId) => {
-    if (confirm("本当にコメントを削除しますか？")) {
-        router.delete(route("comment.destroy", commentId), {
-            headers: {
-                "X-CSRF-TOKEN": getCsrfToken(), // CSRFトークンを設定
-            },
-            onSuccess: () => {
-                const postIndex = posts.value.findIndex(
-                    (post) => post.id === postId
-                );
-                if (postIndex !== -1) {
-                    posts.value[postIndex].comments = posts.value[
-                        postIndex
-                    ].comments.filter((comment) => comment.id !== commentId);
-                }
-            },
-            onError: (errors) => {
-                console.error("コメントの削除に失敗しました:", errors);
-            },
-        });
-    }
-};
+// const deleteComment = (postId, commentId) => {
+//     if (confirm("本当にコメントを削除しますか？")) {
+//         router.delete(route("comment.destroy", commentId), {
+//             headers: {
+//                 "X-CSRF-TOKEN": getCsrfToken(),
+//             },
+//             onSuccess: () => {
+//                 const postIndex = posts.value.findIndex(
+//                     (post) => post.id === postId
+//                 );
+//                 if (postIndex !== -1) {
+//                     posts.value[postIndex].comments = posts.value[
+//                         postIndex
+//                     ].comments.filter((comment) => comment.id !== commentId);
+//                 }
+//             },
+//             onError: (errors) => {
+//                 console.error("コメントの削除に失敗しました:", errors);
+//             },
+//         });
+//     }
+// };
 
 // ユーザーがコメントの作成者かどうかを確認
 const isCommentAuthor = (comment) => {
@@ -102,7 +138,7 @@ const isCommentAuthor = (comment) => {
                     :comments="post.comments"
                     :postId="post.id"
                     :isCommentAuthor="isCommentAuthor"
-                    :deleteComment="deleteComment"
+                    :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
                 />
 
@@ -124,7 +160,7 @@ const isCommentAuthor = (comment) => {
                     <!-- 投稿の削除ボタン -->
                     <button
                         v-if="post.user && post.user.id === auth.user.id"
-                        @click.prevent="deletePost(post.id)"
+                        @click.prevent="deleteItem('post', post.id)"
                         class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                     >
                         <i class="bi bi-trash"></i>

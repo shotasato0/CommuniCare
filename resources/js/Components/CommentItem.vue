@@ -3,7 +3,7 @@ const props = defineProps({
     comment: Object, // 親コンポーネントから渡される単一のコメントデータ（オブジェクト型）
     postId: Number, // 親コンポーネントから渡される投稿ID（数値型）。コメントが属する投稿を特定するために使用
     isCommentAuthor: Function, // コメントの作成者かどうかを判定する関数。親コンポーネントから渡される
-    deleteComment: Function, // コメントを削除する関数。親コンポーネントから渡される
+    deleteItem: Function, // コメントを削除する関数。親コンポーネントから渡される
     toggleCommentForm: Function, // コメントフォームの表示/非表示を切り替える関数。親コンポーネントから渡される
 });
 </script>
@@ -32,7 +32,7 @@ const props = defineProps({
         <!-- コメント削除ボタン -->
         <button
             v-if="isCommentAuthor(comment)"
-            @click="deleteComment(postId, comment.id)"
+            @click="deleteItem('comment', comment.id)"
             class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
         >
             <i class="bi bi-trash"></i>

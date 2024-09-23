@@ -5,7 +5,7 @@ const props = defineProps({
     comments: Array, // 親コンポーネントからコメント一覧を受け取る
     postId: Number, // 投稿のIDを受け取る
     isCommentAuthor: Function, // コメントの作者かどうかを確認する関数
-    deleteComment: Function, // コメント削除の関数を親から受け取る
+    deleteItem: Function, // コメント削除の関数を親から受け取る
     toggleCommentForm: Function, // コメントフォーム表示の関数を親から受け取る
 });
 </script>
@@ -19,7 +19,7 @@ const props = defineProps({
             :comment="comment"
             :postId="postId"
             :isCommentAuthor="isCommentAuthor"
-            :deleteComment="deleteComment"
+            :deleteItem="deleteItem"
             :toggleCommentForm="toggleCommentForm"
         />
     </div>
