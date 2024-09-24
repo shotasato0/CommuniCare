@@ -31,9 +31,7 @@ class CommentController extends Controller
         $comment->load('user');
 
          // Inertiaレスポンスを返す
-        return Inertia::render('Forum', [
-            'newComment' => $comment,
-        ]);
+        return Inertia::render('Forum');
     }
 
     public function destroy($id)
