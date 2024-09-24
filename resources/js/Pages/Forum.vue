@@ -108,6 +108,7 @@ const isCommentAuthor = (comment) => {
                 <CommentList
                     :comments="post.comments"
                     :postId="post.id"
+                    :formatDate="formatDate"
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
