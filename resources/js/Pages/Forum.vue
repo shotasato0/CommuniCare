@@ -90,7 +90,7 @@ const isCommentAuthor = (comment) => {
 
             <!-- 投稿一覧 -->
             <div
-                v-for="(post, index) in posts"
+                v-for="post in posts"
                 :key="post.id"
                 class="bg-white rounded-md mt-1 mb-5 p-3"
             >
