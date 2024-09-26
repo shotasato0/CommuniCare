@@ -144,6 +144,7 @@ const isCommentAuthor = (comment) => {
                     :postId="post.id"
                     :parentId="commentFormVisibility[post.id]?.parentId"
                     :replyToName="commentFormVisibility[post.id]?.replyToName"
+                    :users="pageProps.users"
                 />
             </div>
         </div>
