@@ -12,6 +12,9 @@ import { getCsrfToken } from "@/Utils/csrf";
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
+const users = ref(pageProps.users || []); // ユーザー情報
+
+console.log("users:", users.value);
 
 // コメントフォーム表示状態を管理するためのオブジェクト
 const commentFormVisibility = ref({});
@@ -144,7 +147,7 @@ const isCommentAuthor = (comment) => {
                     :postId="post.id"
                     :parentId="commentFormVisibility[post.id]?.parentId"
                     :replyToName="commentFormVisibility[post.id]?.replyToName"
-                    :users="pageProps.users"
+                    :users="users"
                 />
             </div>
         </div>
