@@ -7,7 +7,6 @@ use App\Models\Comment;  // Commentモデル
 use App\Models\Post;     // Postモデル
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use App\Models\User;
 
 class CommentController extends Controller
 {
@@ -31,13 +30,8 @@ class CommentController extends Controller
           // コメントに関連するユーザー情報をロードする
         $comment->load('user');
 
-         // メンションのための全ユーザーリストを取得
-         $users = User::all(['id', 'name']); // 必要なフィールドだけを取得
-
          // Inertiaレスポンスを返す
-        return Inertia::render('Forum', [
-            'users' => $users,
-        ]);
+        return Inertia::render('Forum');
     }
 
     public function destroy($id)
