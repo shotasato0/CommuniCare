@@ -5,6 +5,7 @@ const props = defineProps({
     formatDate: Function, // 日付をフォーマットする関数を親から受け取る
     isCommentAuthor: Function, // コメントの作者かどうかを確認する関数
     deleteItem: Function, // コメント削除の関数を親から受け取る
+    toggleCommentForm: Function, // コメントフォームを表示する関数を親から受け取る
 });
 </script>
 
@@ -16,6 +17,20 @@ const props = defineProps({
             }}
         </p>
         <p>{{ comment.message }}</p>
+
+        <!-- 返信ボタン -->
+        <button
+            @click="
+                toggleCommentForm(
+                    postId,
+                    comment.id,
+                    comment.user?.name || 'Unknown'
+                )
+            "
+            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+        >
+            <i class="bi bi-reply"></i>
+        </button>
 
         <!-- コメント削除ボタン -->
         <button
