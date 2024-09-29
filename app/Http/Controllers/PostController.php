@@ -15,7 +15,7 @@ class PostController extends Controller
         ->latest()
         ->get();
 
-        return inertia('Forum', [
+        return Inertia::render('Forum', [
             'posts' => $posts,
         ]);
     }
