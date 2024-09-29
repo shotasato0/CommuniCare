@@ -47,6 +47,7 @@ const submitComment = () => {
 
 <template>
     <form @submit.prevent="submitComment">
+        <!-- メッセージ入力 -->
         <textarea
             v-model="commentData.message"
             class="border rounded mt-4 px-2 w-full"
@@ -57,10 +58,12 @@ const submitComment = () => {
                     : 'メッセージを入力してください'
             "
         ></textarea>
+
+        <!-- 送信ボタン -->
         <div class="flex justify-end mt-2">
             <button
                 type="submit"
-                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
+                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"    
             >
                 <i class="bi bi-send"></i>
             </button>
