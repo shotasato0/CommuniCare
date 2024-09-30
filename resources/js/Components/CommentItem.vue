@@ -13,7 +13,8 @@ const props = defineProps({
 
 // コンポーネントがマウントされたときにcomment.childrenの内容をログに表示
 onMounted(() => {
-    console.log('子コメント:', props.comment.children);
+//    console.log(props.comment);
+   console.log(props.comment.user);
 });
 </script>
 
