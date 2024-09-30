@@ -105,6 +105,7 @@ const isCommentAuthor = (comment) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
+                <h3 class="font-bold mb-2">コメント一覧</h3>
                 <CommentList
                     :comments="post.comments"
                     :postId="post.id"

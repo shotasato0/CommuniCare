@@ -10,15 +10,21 @@ class PostController extends Controller
 {
     public function index()
     {
-        // ユーザー情報を含めた投稿データを取得
-        $posts = Post::with(['user','comments.user'])
-        ->latest()
-        ->get();
+        // 投稿と親コメント、その子コメントを取得
+        $posts = Post::with([
+            'user',
+            'comments' => function($query) {
+                $query->whereNull('parent_id') // 親コメントのみ取得
+                  ->with('children', 'user'); // 子コメントもEager Loading
+        },
+        'comments.children.user' // 子コメントのユーザー情報も取得
+        ])->latest()->get();
 
         return Inertia::render('Forum', [
-            'posts' => $posts,
+            'posts' => $posts
         ]);
     }
+
 
     public function store(Request $request)
 {

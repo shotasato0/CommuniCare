@@ -1,4 +1,7 @@
 <script setup>
+import CommentList from "@/Components/CommentList.vue";
+import { onMounted } from "vue";
+
 const props = defineProps({
     comment: Object, // 親コンポーネントから渡される単一のコメントデータ（オブジェクト型）
     postId: Number, // 投稿のIDを受け取る
@@ -7,10 +10,15 @@ const props = defineProps({
     deleteItem: Function, // コメント削除の関数を親から受け取る
     toggleCommentForm: Function, // コメントフォームを表示する関数を親から受け取る
 });
+
+// コンポーネントがマウントされたときにcomment.childrenの内容をログに表示
+onMounted(() => {
+    console.log('子コメント:', props.comment.children);
+});
 </script>
 
 <template>
-    <div class="ml-4 mb-2">
+    <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
         <p class="text-xs">
             {{ formatDate(comment.created_at) }} ＠{{
                 comment.user?.name || "Unknown"
@@ -40,5 +48,20 @@ const props = defineProps({
         >
             <i class="bi bi-trash"></i>
         </button>
+
+        <!-- 子コメントの表示 -->
+        <div
+            v-if="comment.children && comment.children.length"
+            class="ml-6 mt-2"
+        >
+            <CommentList
+                :comments="comment.children"
+                :postId="postId"
+                :formatDate="formatDate"
+                :isCommentAuthor="isCommentAuthor"
+                :deleteItem="deleteItem"
+                :toggleCommentForm="toggleCommentForm"
+            />
+        </div>
     </div>
 </template>

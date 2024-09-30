@@ -13,16 +13,15 @@ const props = defineProps({
 
 <template>
     <div v-if="comments.length">
-        <h3 class="font-bold mb-2">コメント一覧</h3>
-        <CommentItem
-            v-for="comment in comments"
-            :key="comment.id"
-            :comment="comment"
-            :postId="postId"
-            :formatDate="formatDate"
-            :isCommentAuthor="isCommentAuthor"
-            :deleteItem="deleteItem"
-            :toggleCommentForm="toggleCommentForm"
-        />
+        <div v-for="comment in comments" :key="comment.id" class="mb-4">
+            <CommentItem
+                :comment="comment"
+                :postId="postId"
+                :formatDate="formatDate"
+                :isCommentAuthor="isCommentAuthor"
+                :deleteItem="deleteItem"
+                :toggleCommentForm="toggleCommentForm"
+            />
+        </div>
     </div>
 </template>
