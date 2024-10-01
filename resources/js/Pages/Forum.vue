@@ -32,6 +32,25 @@ const appName = "CommuniCare"; // アプリ名
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
+// 再帰的にコメントを検索する関数
+const findCommentRecursive = (comments, commentId) => {
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === commentId) {
+            return comments[i]; // 削除対象のコメントを見つけた場合に返す
+        }
+        if (comments[i].children && comments[i].children.length > 0) {
+            const foundComment = findCommentRecursive(
+                comments[i].children,
+                commentId
+            );
+            if (foundComment) {
+                return foundComment;
+            }
+        }
+    }
+    return null;
+};
+
 const deleteItem = (type, id) => {
     const confirmMessage =
         type === "post"
@@ -40,28 +59,57 @@ const deleteItem = (type, id) => {
 
     // ユーザーが確認した場合のみ削除
     if (confirm(confirmMessage)) {
-        // 削除対象が投稿かコメントかでルートを変更
         const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
-        // Inertiaのdeleteメソッドを使用して削除
         router.delete(route(routeName, id), {
             headers: {
                 "X-CSRF-TOKEN": getCsrfToken(),
             },
-            // 削除成功時の処理
             onSuccess: () => {
-                // 削除対象が投稿の場合
                 if (type === "post") {
                     posts.value = posts.value.filter((post) => post.id !== id);
                 } else {
-                    // 削除対象がコメントの場合
                     const postIndex = posts.value.findIndex((post) =>
-                        post.comments.some((comment) => comment.id === id)
+                        findCommentRecursive(post.comments, id)
                     );
+
+                    console.log("postIndex:", postIndex); // postIndexが-1かどうかを確認
+
                     if (postIndex !== -1) {
-                        // 削除対象のコメントを削除
-                        posts.value[postIndex].comments = posts.value[
-                            postIndex
-                        ].comments.filter((comment) => comment.id !== id);
+                        let comments = posts.value[postIndex].comments;
+
+                        // 再帰的にコメントを削除
+                        const deleteCommentRecursive = (comments, id) => {
+                            for (let i = 0; i < comments.length; i++) {
+                                if (comments[i].id === id) {
+                                    comments.splice(i, 1); // 削除対象のコメントを配列から削除
+                                    return;
+                                }
+                                if (
+                                    comments[i].children &&
+                                    comments[i].children.length > 0
+                                ) {
+                                    deleteCommentRecursive(
+                                        comments[i].children,
+                                        id
+                                    ); // 子コメントがあれば再帰的に削除
+                                }
+                            }
+                        };
+
+                        deleteCommentRecursive(comments, id); // 削除処理の実行
+
+                        // 手動でVueに変更を知らせる
+                        posts.value[postIndex].comments = [...comments];
+
+                        // 削除後のコメントデータを確認
+                        console.log(
+                            "削除後のコメントデータ:",
+                            posts.value[postIndex].comments
+                        );
+                    } else {
+                        console.error(
+                            "削除対象のコメントが見つかりませんでした。"
+                        );
                     }
                 }
             },
