@@ -121,6 +121,11 @@ const deleteItem = (type, id) => {
     }
 };
 
+// 現在のコメント数を取得する
+const getCurrentCommentCount = (post) => {
+    return post.comments.length;
+};
+
 // ユーザーがコメントの作成者かどうかを確認
 const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
@@ -153,7 +158,9 @@ const isCommentAuthor = (comment) => {
                     <p class="mb-2">{{ post.message }}</p>
                 </div>
 
-                <h3 class="font-bold mb-2">コメント一覧</h3>
+                <h3 class="font-bold mt-8 mb-2">
+                    {{ getCurrentCommentCount(post) }}件のコメント
+                </h3>
                 <CommentList
                     :comments="post.comments"
                     :postId="post.id"
