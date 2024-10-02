@@ -1,6 +1,6 @@
 <script setup>
 import CommentList from "@/Components/CommentList.vue";
-import { onMounted } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
     comment: Object, // 親コンポーネントから渡される単一のコメントデータ（オブジェクト型）
@@ -11,11 +11,26 @@ const props = defineProps({
     toggleCommentForm: Function, // コメントフォームを表示する関数を親から受け取る
 });
 
-// コンポーネントがマウントされたときにcomment.childrenの内容をログに表示
-onMounted(() => {
-//    console.log(props.comment);
-   console.log(props.comment.user);
-});
+// 折りたたみ状態を管理するための状態をコメントごとに保持
+const collapsedComments = ref({});
+
+// コメントを折りたたむ・展開する関数
+const toggleCollapse = (commentId) => {
+    collapsedComments.value[commentId] = !collapsedComments.value[commentId];
+};
+
+// 再帰的にすべての子コメントをカウントする関数
+const getCommentCountRecursive = (comments) => {
+    let count = comments.length;
+
+    comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            count += getCommentCountRecursive(comment.children); // 再帰的に子コメントをカウント
+        }
+    });
+
+    return count;
+};
 </script>
 
 <template>
@@ -26,6 +41,37 @@ onMounted(() => {
             }}
         </p>
         <p>{{ comment.message }}</p>
+
+        <!-- 子コメントの数を表示し、折りたたみ機能を追加 -->
+        <div
+            v-if="comment.children && comment.children.length > 0"
+            class="mt-2"
+        >
+            <!-- メッセージの件数を表示 -->
+            <button @click="toggleCollapse(comment.id)" class="text-blue-500">
+                <!-- 折りたたみ状態に応じてアイコンとテキストを切り替える -->
+                <span v-if="collapsedComments[comment.id]">
+                    <i class="bi bi-caret-up-fill"></i>
+                    {{ getCommentCountRecursive(comment.children) }}件の返信
+                </span>
+                <span v-else>
+                    <i class="bi bi-caret-down-fill"></i>
+                    {{ getCommentCountRecursive(comment.children) }}件の返信
+                </span>
+            </button>
+
+            <!-- 子コメントを折りたたむ・展開 -->
+            <div v-if="collapsedComments[comment.id]" class="ml-4">
+                <CommentList
+                    :comments="comment.children"
+                    :postId="postId"
+                    :formatDate="formatDate"
+                    :isCommentAuthor="isCommentAuthor"
+                    :deleteItem="deleteItem"
+                    :toggleCommentForm="toggleCommentForm"
+                />
+            </div>
+        </div>
 
         <!-- 返信ボタン -->
         <button
@@ -49,20 +95,5 @@ onMounted(() => {
         >
             <i class="bi bi-trash"></i>
         </button>
-
-        <!-- 子コメントの表示 -->
-        <div
-            v-if="comment.children && comment.children.length"
-            class="ml-6 mt-2"
-        >
-            <CommentList
-                :comments="comment.children"
-                :postId="postId"
-                :formatDate="formatDate"
-                :isCommentAuthor="isCommentAuthor"
-                :deleteItem="deleteItem"
-                :toggleCommentForm="toggleCommentForm"
-            />
-        </div>
     </div>
 </template>
