@@ -121,9 +121,22 @@ const deleteItem = (type, id) => {
     }
 };
 
+// 再帰的にすべての子コメントを含めてコメント数を取得する関数
+const getCommentCountRecursive = (comments) => {
+    let count = comments.length;
+
+    comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            count += getCommentCountRecursive(comment.children); // 再帰的に子コメントをカウント
+        }
+    });
+
+    return count;
+};
+
 // 現在のコメント数を取得する
 const getCurrentCommentCount = (post) => {
-    return post.comments.length;
+    return getCommentCountRecursive(post.comments);
 };
 
 // ユーザーがコメントの作成者かどうかを確認
