@@ -169,6 +169,30 @@ const isCommentAuthor = (comment) => {
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
+
+                    <div class="flex justify-end space-x-2 mt-2">
+                        <!-- 投稿に対する返信ボタン -->
+                        <button
+                            @click="
+                                toggleCommentForm(
+                                    post.id,
+                                    null,
+                                    post.user ? post.user.name : 'Unknown'
+                                )
+                            "
+                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-reply"></i>
+                        </button>
+                        <!-- 投稿の削除ボタン -->
+                        <button
+                            v-if="post.user && post.user.id === auth.user.id"
+                            @click.prevent="deleteItem('post', post.id)"
+                            class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <h3 class="font-bold mt-8 mb-2">
@@ -182,30 +206,6 @@ const isCommentAuthor = (comment) => {
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
                 />
-
-                <div class="flex justify-end mt-2 space-x-2">
-                    <!-- 投稿に対する返信ボタン -->
-                    <button
-                        @click="
-                            toggleCommentForm(
-                                post.id,
-                                null,
-                                post.user ? post.user.name : 'Unknown'
-                            )
-                        "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
-                    >
-                        <i class="bi bi-reply"></i>
-                    </button>
-                    <!-- 投稿の削除ボタン -->
-                    <button
-                        v-if="post.user && post.user.id === auth.user.id"
-                        @click.prevent="deleteItem('post', post.id)"
-                        class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                    >
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
 
                 <!-- コメントフォーム -->
                 <CommentForm
