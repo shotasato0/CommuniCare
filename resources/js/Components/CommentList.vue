@@ -8,6 +8,7 @@ const props = defineProps({
     isCommentAuthor: Function, // コメントの作者かどうかを確認する関数
     deleteItem: Function, // コメント削除の関数を親から受け取る
     toggleCommentForm: Function, // コメントフォーム表示の関数を親から受け取る
+    commentFormVisibility: Object, // コメントフォームの表示状態を親から受け取る
 });
 </script>
 
@@ -21,6 +22,7 @@ const props = defineProps({
                 :isCommentAuthor="isCommentAuthor"
                 :deleteItem="deleteItem"
                 :toggleCommentForm="toggleCommentForm"
+                :commentFormVisibility="commentFormVisibility"
             />
         </div>
     </div>

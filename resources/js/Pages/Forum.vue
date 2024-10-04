@@ -17,15 +17,24 @@ const auth = pageProps.auth; // ログインユーザー情報
 const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
-const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
-    // 既存のフォームの状態があるかチェック
-    const currentVisibility = commentFormVisibility.value[postId] || {};
-    // フォームの表示・非表示を切り替えつつ、parentIdとreplyToNameを保持する
-    commentFormVisibility.value[postId] = {
-        isVisible: !currentVisibility.isVisible, // 表示状態を反転
-        parentId: parentId, // 返信元のコメントID
-        replyToName: replyToName, // 返信相手の名前
-    };
+const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
+    // postIdでコメントフォームの状態が初期化されているか確認
+    if (!commentFormVisibility.value[postId]) {
+        commentFormVisibility.value[postId] = {};
+    }
+
+    // コメントフォームがparentIdで初期化されているか確認
+    if (!commentFormVisibility.value[postId][parentId]) {
+        commentFormVisibility.value[postId][parentId] = {
+            isVisible: false,
+            replyToName: "",
+        };
+    }
+
+    // コメントフォームの表示・非表示を切り替え
+    commentFormVisibility.value[postId][parentId].isVisible =
+        !commentFormVisibility.value[postId][parentId].isVisible;
+    commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
 const appName = "CommuniCare"; // アプリ名
@@ -66,8 +75,10 @@ const deleteItem = (type, id) => {
             },
             onSuccess: () => {
                 if (type === "post") {
+                    // 投稿を削除したら、postIdで該当の投稿をフィルタリングして削除
                     posts.value = posts.value.filter((post) => post.id !== id);
                 } else {
+                    // コメントの削除処理
                     const postIndex = posts.value.findIndex((post) =>
                         findCommentRecursive(post.comments, id)
                     );
@@ -113,7 +124,6 @@ const deleteItem = (type, id) => {
                     }
                 }
             },
-            // 削除失敗時の処理
             onError: (errors) => {
                 console.error("削除に失敗しました:", errors);
             },
@@ -177,7 +187,7 @@ const isCommentAuthor = (comment) => {
                             @click="
                                 toggleCommentForm(
                                     post.id,
-                                    null,
+                                    'post',
                                     post.user ? post.user.name : 'Unknown'
                                 )
                             "
@@ -198,13 +208,13 @@ const isCommentAuthor = (comment) => {
                     <!-- 投稿へのコメントフォーム -->
                     <CommentForm
                         v-if="
-                            commentFormVisibility[post.id]?.isVisible &&
-                            !commentFormVisibility[post.id]?.parentId
+                            commentFormVisibility[post.id]?.['post']?.isVisible
                         "
                         :postId="post.id"
-                        :parentId="commentFormVisibility[post.id]?.parentId"
+                        :parentId="null"
                         :replyToName="
-                            commentFormVisibility[post.id]?.replyToName
+                            commentFormVisibility[post.id]?.['post']
+                                ?.replyToName
                         "
                         class="mt-4"
                     />
@@ -222,18 +232,7 @@ const isCommentAuthor = (comment) => {
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
-                />
-
-                <!-- コメントに対する返信フォーム -->
-                <CommentForm
-                    v-if="
-                        commentFormVisibility[post.id]?.isVisible &&
-                        commentFormVisibility[post.id]?.parentId
-                    "
-                    :postId="post.id"
-                    :parentId="commentFormVisibility[post.id]?.parentId"
-                    :replyToName="commentFormVisibility[post.id]?.replyToName"
-                    class="mt-4"
+                    :commentFormVisibility="commentFormVisibility"
                 />
             </div>
         </div>

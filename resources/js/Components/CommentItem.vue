@@ -1,5 +1,6 @@
 <script setup>
 import CommentList from "@/Components/CommentList.vue";
+import CommentForm from "@/Components/CommentForm.vue";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -9,6 +10,7 @@ const props = defineProps({
     isCommentAuthor: Function, // コメントの作者かどうかを確認する関数
     deleteItem: Function, // コメント削除の関数を親から受け取る
     toggleCommentForm: Function, // コメントフォームを表示する関数を親から受け取る
+    commentFormVisibility: Object, // コメントフォームの表示状態を親から受け取る
 });
 
 // 折りたたみ状態を管理するための状態をコメントごとに保持
@@ -69,6 +71,7 @@ const getCommentCountRecursive = (comments) => {
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
+                    :commentFormVisibility="commentFormVisibility"
                 />
             </div>
         </div>
@@ -95,5 +98,19 @@ const getCommentCountRecursive = (comments) => {
         >
             <i class="bi bi-trash"></i>
         </button>
+
+        <!-- コメントに対する返信フォーム -->
+        <CommentForm
+            v-if="
+                commentFormVisibility[postId] &&
+                commentFormVisibility[postId][comment.id]?.isVisible
+            "
+            :postId="postId"
+            :parentId="comment.id"
+            :replyToName="
+                commentFormVisibility[postId]?.[comment.id]?.replyToName
+            "
+            class="mt-4"
+        />
     </div>
 </template>
