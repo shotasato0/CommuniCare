@@ -170,6 +170,7 @@ const isCommentAuthor = (comment) => {
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
 
+                    <!-- ボタンを投稿の下、右端に配置 -->
                     <div class="flex justify-end space-x-2 mt-2">
                         <!-- 投稿に対する返信ボタン -->
                         <button
@@ -188,16 +189,29 @@ const isCommentAuthor = (comment) => {
                         <button
                             v-if="post.user && post.user.id === auth.user.id"
                             @click.prevent="deleteItem('post', post.id)"
-                            class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                         >
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
+
+                    <!-- コメントフォームを投稿の直下に表示 -->
+                    <CommentForm
+                        v-if="commentFormVisibility[post.id]?.isVisible"
+                        :postId="post.id"
+                        :parentId="commentFormVisibility[post.id]?.parentId"
+                        :replyToName="
+                            commentFormVisibility[post.id]?.replyToName
+                        "
+                        class="mt-4"
+                    />
                 </div>
 
                 <h3 class="font-bold mt-8 mb-2">
                     {{ getCurrentCommentCount(post) }}件のコメント
                 </h3>
+
+                <!-- コメントリスト -->
                 <CommentList
                     :comments="post.comments"
                     :postId="post.id"
@@ -205,14 +219,6 @@ const isCommentAuthor = (comment) => {
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
-                />
-
-                <!-- コメントフォーム -->
-                <CommentForm
-                    v-if="commentFormVisibility[post.id]?.isVisible"
-                    :postId="post.id"
-                    :parentId="commentFormVisibility[post.id]?.parentId"
-                    :replyToName="commentFormVisibility[post.id]?.replyToName"
                 />
             </div>
         </div>
