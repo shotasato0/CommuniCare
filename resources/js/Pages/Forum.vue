@@ -195,9 +195,12 @@ const isCommentAuthor = (comment) => {
                         </button>
                     </div>
 
-                    <!-- コメントフォームを投稿の直下に表示 -->
+                    <!-- 投稿へのコメントフォーム -->
                     <CommentForm
-                        v-if="commentFormVisibility[post.id]?.isVisible"
+                        v-if="
+                            commentFormVisibility[post.id]?.isVisible &&
+                            !commentFormVisibility[post.id]?.parentId
+                        "
                         :postId="post.id"
                         :parentId="commentFormVisibility[post.id]?.parentId"
                         :replyToName="
@@ -219,6 +222,18 @@ const isCommentAuthor = (comment) => {
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
+                />
+
+                <!-- コメントに対する返信フォーム -->
+                <CommentForm
+                    v-if="
+                        commentFormVisibility[post.id]?.isVisible &&
+                        commentFormVisibility[post.id]?.parentId
+                    "
+                    :postId="post.id"
+                    :parentId="commentFormVisibility[post.id]?.parentId"
+                    :replyToName="commentFormVisibility[post.id]?.replyToName"
+                    class="mt-4"
                 />
             </div>
         </div>
