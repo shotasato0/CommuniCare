@@ -219,7 +219,7 @@ const isCommentAuthor = (comment) => {
     </AuthenticatedLayout>
 </template>
 
-<style scoped>
+<style>
 .link-hover:hover {
     opacity: 70%;
 }
