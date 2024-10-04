@@ -44,6 +44,31 @@ const getCommentCountRecursive = (comments) => {
         </p>
         <p>{{ comment.message }}</p>
 
+        <div class="flex justify-end space-x-2 mt-2">
+            <!-- 返信ボタン -->
+            <button
+                @click="
+                    toggleCommentForm(
+                        postId,
+                        comment.id,
+                        comment.user?.name || 'Unknown'
+                    )
+                "
+                class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+            >
+                <i class="bi bi-reply"></i>
+            </button>
+
+            <!-- コメント削除ボタン -->
+            <button
+                v-if="isCommentAuthor(comment)"
+                @click="deleteItem('comment', comment.id)"
+                class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+            >
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+
         <!-- 子コメントの数を表示し、折りたたみ機能を追加 -->
         <div
             v-if="comment.children && comment.children.length > 0"
@@ -76,35 +101,9 @@ const getCommentCountRecursive = (comments) => {
             </div>
         </div>
 
-        <!-- 返信ボタン -->
-        <button
-            @click="
-                toggleCommentForm(
-                    postId,
-                    comment.id,
-                    comment.user?.name || 'Unknown'
-                )
-            "
-            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
-        >
-            <i class="bi bi-reply"></i>
-        </button>
-
-        <!-- コメント削除ボタン -->
-        <button
-            v-if="isCommentAuthor(comment)"
-            @click="deleteItem('comment', comment.id)"
-            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-        >
-            <i class="bi bi-trash"></i>
-        </button>
-
         <!-- コメントに対する返信フォーム -->
         <CommentForm
-            v-if="
-                commentFormVisibility[postId] &&
-                commentFormVisibility[postId][comment.id]?.isVisible
-            "
+            v-if="commentFormVisibility[postId]?.[comment.id]?.isVisible"
             :postId="postId"
             :parentId="comment.id"
             :replyToName="
