@@ -29,7 +29,8 @@ class Comment extends Model
 
     public function children()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        // 再帰的にすべての階層の子コメントを取得
+        return $this->hasMany(Comment::class, 'parent_id')->with('children.user');
     }
 
     public function likes()
