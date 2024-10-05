@@ -17,20 +17,48 @@ const auth = pageProps.auth; // ログインユーザー情報
 const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
-const toggleCommentForm = (postId, parentId = null, replyToName = "") => {
-    // 既存のフォームの状態があるかチェック
-    const currentVisibility = commentFormVisibility.value[postId] || {};
-    // フォームの表示・非表示を切り替えつつ、parentIdとreplyToNameを保持する
-    commentFormVisibility.value[postId] = {
-        isVisible: !currentVisibility.isVisible, // 表示状態を反転
-        parentId: parentId, // 返信元のコメントID
-        replyToName: replyToName, // 返信相手の名前
-    };
+const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
+    // postIdでコメントフォームの状態が初期化されているか確認
+    if (!commentFormVisibility.value[postId]) {
+        commentFormVisibility.value[postId] = {};
+    }
+
+    // コメントフォームがparentIdで初期化されているか確認
+    if (!commentFormVisibility.value[postId][parentId]) {
+        commentFormVisibility.value[postId][parentId] = {
+            isVisible: false,
+            replyToName: "",
+        };
+    }
+
+    // コメントフォームの表示・非表示を切り替え
+    commentFormVisibility.value[postId][parentId].isVisible =
+        !commentFormVisibility.value[postId][parentId].isVisible;
+    commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
 const appName = "CommuniCare"; // アプリ名
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+
+// 再帰的にコメントを検索する関数
+const findCommentRecursive = (comments, commentId) => {
+    for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === commentId) {
+            return comments[i]; // 削除対象のコメントを見つけた場合に返す
+        }
+        if (comments[i].children && comments[i].children.length > 0) {
+            const foundComment = findCommentRecursive(
+                comments[i].children,
+                commentId
+            );
+            if (foundComment) {
+                return foundComment;
+            }
+        }
+    }
+    return null;
+};
 
 const deleteItem = (type, id) => {
     const confirmMessage =
@@ -40,37 +68,85 @@ const deleteItem = (type, id) => {
 
     // ユーザーが確認した場合のみ削除
     if (confirm(confirmMessage)) {
-        // 削除対象が投稿かコメントかでルートを変更
         const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
-        // Inertiaのdeleteメソッドを使用して削除
         router.delete(route(routeName, id), {
             headers: {
                 "X-CSRF-TOKEN": getCsrfToken(),
             },
-            // 削除成功時の処理
             onSuccess: () => {
-                // 削除対象が投稿の場合
                 if (type === "post") {
+                    // 投稿を削除したら、postIdで該当の投稿をフィルタリングして削除
                     posts.value = posts.value.filter((post) => post.id !== id);
                 } else {
-                    // 削除対象がコメントの場合
+                    // コメントの削除処理
                     const postIndex = posts.value.findIndex((post) =>
-                        post.comments.some((comment) => comment.id === id)
+                        findCommentRecursive(post.comments, id)
                     );
+
+                    console.log("postIndex:", postIndex); // postIndexが-1かどうかを確認
+
                     if (postIndex !== -1) {
-                        // 削除対象のコメントを削除
-                        posts.value[postIndex].comments = posts.value[
-                            postIndex
-                        ].comments.filter((comment) => comment.id !== id);
+                        let comments = posts.value[postIndex].comments;
+
+                        // 再帰的にコメントを削除
+                        const deleteCommentRecursive = (comments, id) => {
+                            for (let i = 0; i < comments.length; i++) {
+                                if (comments[i].id === id) {
+                                    comments.splice(i, 1); // 削除対象のコメントを配列から削除
+                                    return;
+                                }
+                                if (
+                                    comments[i].children &&
+                                    comments[i].children.length > 0
+                                ) {
+                                    deleteCommentRecursive(
+                                        comments[i].children,
+                                        id
+                                    ); // 子コメントがあれば再帰的に削除
+                                }
+                            }
+                        };
+
+                        deleteCommentRecursive(comments, id); // 削除処理の実行
+
+                        // 手動でVueに変更を知らせる
+                        posts.value[postIndex].comments = [...comments];
+
+                        // 削除後のコメントデータを確認
+                        console.log(
+                            "削除後のコメントデータ:",
+                            posts.value[postIndex].comments
+                        );
+                    } else {
+                        console.error(
+                            "削除対象のコメントが見つかりませんでした。"
+                        );
                     }
                 }
             },
-            // 削除失敗時の処理
             onError: (errors) => {
                 console.error("削除に失敗しました:", errors);
             },
         });
     }
+};
+
+// 再帰的にすべての子コメントを含めてコメント数を取得する関数
+const getCommentCountRecursive = (comments) => {
+    let count = comments.length;
+
+    comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            count += getCommentCountRecursive(comment.children); // 再帰的に子コメントをカウント
+        }
+    });
+
+    return count;
+};
+
+// 現在のコメント数を取得する
+const getCurrentCommentCount = (post) => {
+    return getCommentCountRecursive(post.comments);
 };
 
 // ユーザーがコメントの作成者かどうかを確認
@@ -103,8 +179,52 @@ const isCommentAuthor = (comment) => {
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
+
+                    <!-- ボタンを投稿の下、右端に配置 -->
+                    <div class="flex justify-end space-x-2 mt-2">
+                        <!-- 投稿に対する返信ボタン -->
+                        <button
+                            @click="
+                                toggleCommentForm(
+                                    post.id,
+                                    'post',
+                                    post.user ? post.user.name : 'Unknown'
+                                )
+                            "
+                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-reply"></i>
+                        </button>
+                        <!-- 投稿の削除ボタン -->
+                        <button
+                            v-if="post.user && post.user.id === auth.user.id"
+                            @click.prevent="deleteItem('post', post.id)"
+                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+
+                    <!-- 投稿へのコメントフォーム -->
+                    <CommentForm
+                        v-if="
+                            commentFormVisibility[post.id]?.['post']?.isVisible
+                        "
+                        :postId="post.id"
+                        :parentId="null"
+                        :replyToName="
+                            commentFormVisibility[post.id]?.['post']
+                                ?.replyToName
+                        "
+                        class="mt-4"
+                    />
                 </div>
 
+                <h3 class="font-bold mt-8 mb-2">
+                    {{ getCurrentCommentCount(post) }}件のコメント
+                </h3>
+
+                <!-- コメントリスト -->
                 <CommentList
                     :comments="post.comments"
                     :postId="post.id"
@@ -112,45 +232,14 @@ const isCommentAuthor = (comment) => {
                     :isCommentAuthor="isCommentAuthor"
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
-                />
-
-                <div class="flex justify-end mt-2 space-x-2">
-                    <!-- 投稿に対する返信ボタン -->
-                    <button
-                        @click="
-                            toggleCommentForm(
-                                post.id,
-                                null,
-                                post.user ? post.user.name : 'Unknown'
-                            )
-                        "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
-                    >
-                        <i class="bi bi-reply"></i>
-                    </button>
-                    <!-- 投稿の削除ボタン -->
-                    <button
-                        v-if="post.user && post.user.id === auth.user.id"
-                        @click.prevent="deleteItem('post', post.id)"
-                        class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                    >
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-
-                <!-- コメントフォーム -->
-                <CommentForm
-                    v-if="commentFormVisibility[post.id]?.isVisible"
-                    :postId="post.id"
-                    :parentId="commentFormVisibility[post.id]?.parentId"
-                    :replyToName="commentFormVisibility[post.id]?.replyToName"
+                    :commentFormVisibility="commentFormVisibility"
                 />
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
 
-<style scoped>
+<style>
 .link-hover:hover {
     opacity: 70%;
 }
