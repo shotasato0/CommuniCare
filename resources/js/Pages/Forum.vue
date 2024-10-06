@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
 import CommentList from "@/Components/CommentList.vue";
+import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 
 // propsからページのデータを取得
@@ -166,7 +167,7 @@ const isCommentAuthor = (comment) => {
 
             <!-- 投稿一覧 -->
             <div
-                v-for="post in posts"
+                v-for="post in posts.data"
                 :key="post.id"
                 class="bg-white rounded-md mt-1 mb-5 p-3"
             >
@@ -236,6 +237,9 @@ const isCommentAuthor = (comment) => {
                 />
             </div>
         </div>
+
+        <!-- ページネーションコンポーネント -->
+        <Pagination :links="posts.links" />
     </AuthenticatedLayout>
 </template>
 
