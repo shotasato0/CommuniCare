@@ -16,7 +16,7 @@ class PostController extends Controller
             $query->whereNull('parent_id') // 親コメントのみ取得
                   ->with(['children.user', 'user']); // 子コメントと再帰的に子コメントを取得
         }
-    ])->latest()->get();
+    ])->latest()->paginate(5);
 
     return Inertia::render('Forum', [
         'posts' => $posts
