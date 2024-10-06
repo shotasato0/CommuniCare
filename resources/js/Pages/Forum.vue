@@ -163,6 +163,9 @@ const isCommentAuthor = (comment) => {
         <div class="w-11/12 max-w-screen-md m-auto">
             <h1 class="text-xl font-bold mt-5">{{ appName }}</h1>
 
+            <!-- 上部ページネーション -->
+            <Pagination :links="posts.links" />
+
             <PostForm />
 
             <!-- 投稿一覧 -->
@@ -238,7 +241,7 @@ const isCommentAuthor = (comment) => {
             </div>
         </div>
 
-        <!-- ページネーションコンポーネント -->
+        <!-- 下部ページネーション -->
         <Pagination :links="posts.links" />
     </AuthenticatedLayout>
 </template>
