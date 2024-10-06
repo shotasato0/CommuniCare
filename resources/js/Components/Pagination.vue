@@ -1,6 +1,14 @@
+<script setup>
+import { Link } from "@inertiajs/vue3";
+
+defineProps({
+    links: Array,
+});
+</script>
+
 <template>
     <div v-if="links.length > 3">
-        <div class="flex flex-wrap -mb-1">
+        <div class="flex flex-wrap -mb-1 justify-center">
             <template v-for="(link, key) in links" :key="key">
                 <div
                     v-if="link.url === null"
@@ -18,11 +26,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { Link } from "@inertiajs/vue3";
-
-defineProps({
-    links: Array,
-});
-</script>
