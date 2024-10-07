@@ -5,7 +5,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
-import CommentList from "@/Components/CommentList.vue";
+import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
 import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 
@@ -231,7 +231,7 @@ const isCommentAuthor = (comment) => {
                 </h3>
 
                 <!-- コメントリスト -->
-                <CommentList
+                <ParentComment
                     :comments="post.comments"
                     :postId="post.id"
                     :formatDate="formatDate"
