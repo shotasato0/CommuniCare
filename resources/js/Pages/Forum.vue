@@ -77,17 +77,19 @@ const deleteItem = (type, id) => {
             onSuccess: () => {
                 if (type === "post") {
                     // 投稿を削除したら、postIdで該当の投稿をフィルタリングして削除
-                    posts.value = posts.value.filter((post) => post.id !== id);
+                    posts.value.data = posts.value.data.filter(
+                        (post) => post.id !== id
+                    );
                 } else {
                     // コメントの削除処理
-                    const postIndex = posts.value.findIndex((post) =>
+                    const postIndex = posts.value.data.findIndex((post) =>
                         findCommentRecursive(post.comments, id)
                     );
 
                     console.log("postIndex:", postIndex); // postIndexが-1かどうかを確認
 
                     if (postIndex !== -1) {
-                        let comments = posts.value[postIndex].comments;
+                        let comments = posts.value.data[postIndex].comments;
 
                         // 再帰的にコメントを削除
                         const deleteCommentRecursive = (comments, id) => {
@@ -111,12 +113,12 @@ const deleteItem = (type, id) => {
                         deleteCommentRecursive(comments, id); // 削除処理の実行
 
                         // 手動でVueに変更を知らせる
-                        posts.value[postIndex].comments = [...comments];
+                        posts.value.data[postIndex].comments = [...comments];
 
                         // 削除後のコメントデータを確認
                         console.log(
                             "削除後のコメントデータ:",
-                            posts.value[postIndex].comments
+                            posts.value.data[postIndex].comments
                         );
                     } else {
                         console.error(
