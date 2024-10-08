@@ -49,7 +49,7 @@ const props = defineProps({
                     </button>
                 </div>
 
-                <!-- 子コメントリスト -->
+                <!-- 子コメントビュー -->
                 <ChildComment
                     v-if="comment.children && comment.children.length"
                     :child-comments="comment.children"

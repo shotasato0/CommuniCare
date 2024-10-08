@@ -230,7 +230,7 @@ const isCommentAuthor = (comment) => {
                     {{ getCurrentCommentCount(post) }}件のコメント
                 </h3>
 
-                <!-- コメントリスト -->
+                <!-- 親コメントビュー -->
                 <ParentComment
                     :comments="post.comments"
                     :postId="post.id"
