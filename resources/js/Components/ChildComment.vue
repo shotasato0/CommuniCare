@@ -30,6 +30,7 @@ const props = defineProps({
                     @click="
                         toggleCommentForm(
                             postId,
+                            comment.parent_id,
                             comment.id,
                             comment.user?.name || 'Unknown'
                         )
