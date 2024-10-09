@@ -49,6 +49,18 @@ const props = defineProps({
                     </button>
                 </div>
 
+                <!-- 返信フォーム -->
+                <CommentForm
+                    v-if="
+                        commentFormVisibility[postId]?.[comment.id]?.isVisible
+                    "
+                    :postId="postId"
+                    :parentId="comment.id"
+                    :replyToName="
+                        commentFormVisibility[postId]?.[comment.id]?.replyToName
+                    "
+                    class="mt-4"
+                />
                 <!-- 子コメントビュー -->
                 <ChildComment
                     v-if="comment.children && comment.children.length"
@@ -61,17 +73,6 @@ const props = defineProps({
                     :commentFormVisibility="commentFormVisibility"
                 />
             </div>
-
-            <!-- 返信フォーム -->
-            <CommentForm
-                v-if="commentFormVisibility[postId]?.[comment.id]?.isVisible"
-                :postId="postId"
-                :parentId="comment.id"
-                :replyToName="
-                    commentFormVisibility[postId]?.[comment.id]?.replyToName
-                "
-                class="mt-4"
-            />
         </div>
     </div>
 </template>
