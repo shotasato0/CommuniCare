@@ -55,14 +55,12 @@ const props = defineProps({
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :replyToName="
-                        commentFormVisibility[postId]?.[comment.id]?.replyToName
-                    "
+                    :replyToName="comment.parent_id ? comment.user?.name : ''"
                     class="mt-4"
                 />
             </div>
 
-            <!-- 子コメントがさらにある場合もフラットに表示 -->
+            <!-- 子コメントをフラットに表示-->
             <div v-if="comment.children && comment.children.length">
                 <ChildComment
                     :child-comments="comment.children"
