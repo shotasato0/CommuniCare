@@ -44,6 +44,8 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
 
         Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
         Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+
+        Route::resource('users', UserController::class);
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
