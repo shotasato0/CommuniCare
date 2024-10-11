@@ -21,7 +21,12 @@ class User extends Authenticatable
         'username_id',
         'password',
         'tenant_id',
+        'tel',          // 電話番号フィールドの追加
+        'email',        // メールアドレスフィールドの追加
+        'icon',         // プロフィール写真用のURLフィールド
+        'unit_id',      // 担当入居者の関連ID
     ];
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -49,5 +54,10 @@ class User extends Authenticatable
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 }
