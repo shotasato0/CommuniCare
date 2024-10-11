@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from "vue";
 import ChildComment from "./ChildComment.vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
 
@@ -11,6 +12,27 @@ const props = defineProps({
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
 });
+
+// 子コメントの折りたたみ状態を管理
+const collapsedComments = ref({});
+
+// 子コメントの表示・非表示を切り替える関数
+const toggleCollapse = (commentId) => {
+    collapsedComments.value[commentId] = !collapsedComments.value[commentId];
+};
+
+// 再帰的にすべての子コメントを含めてコメント数を取得する関数
+const getCommentCountRecursive = (comments) => {
+    let count = comments.length;
+
+    comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            count += getCommentCountRecursive(comment.children); // 再帰的に子コメントをカウント
+        }
+    });
+
+    return count;
+};
 </script>
 
 <template>
@@ -23,6 +45,32 @@ const props = defineProps({
                     }}
                 </p>
                 <p>{{ comment.message }}</p>
+
+                <!-- 子コメントの数を表示し、折りたたみ機能を追加 -->
+                <div
+                    v-if="comment.children && comment.children.length > 0"
+                    class="mt-2"
+                >
+                    <!-- メッセージの件数を表示 -->
+                    <button
+                        @click="toggleCollapse(comment.id)"
+                        class="text-blue-500"
+                    >
+                        <!-- 折りたたみ状態に応じてアイコンとテキストを切り替える -->
+                        <span v-if="collapsedComments[comment.id]">
+                            <i class="bi bi-caret-up-fill"></i>
+                            {{
+                                getCommentCountRecursive(comment.children)
+                            }}件の返信
+                        </span>
+                        <span v-else>
+                            <i class="bi bi-caret-down-fill"></i>
+                            {{
+                                getCommentCountRecursive(comment.children)
+                            }}件の返信
+                        </span>
+                    </button>
+                </div>
 
                 <div class="flex justify-end space-x-2 mt-2">
                     <!-- 返信ボタン -->
@@ -49,29 +97,36 @@ const props = defineProps({
                     </button>
                 </div>
 
-                <!-- 返信フォーム -->
+                <!-- 子コメントに対する返信フォーム -->
                 <CommentForm
                     v-if="
                         commentFormVisibility[postId]?.[comment.id]?.isVisible
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :replyToName="
-                        commentFormVisibility[postId]?.[comment.id]?.replyToName
-                    "
+                    :replyToName="comment.parent_id ? comment.user?.name : ''"
                     class="mt-4"
                 />
-                <!-- 子コメントビュー -->
-                <ChildComment
-                    v-if="comment.children && comment.children.length"
-                    :child-comments="comment.children"
-                    :postId="postId"
-                    :formatDate="formatDate"
-                    :isCommentAuthor="isCommentAuthor"
-                    :deleteItem="deleteItem"
-                    :toggleCommentForm="toggleCommentForm"
-                    :commentFormVisibility="commentFormVisibility"
-                />
+
+                <!-- 子コメントを折りたたみ・展開 -->
+                <div
+                    v-if="
+                        comment.children &&
+                        comment.children.length &&
+                        collapsedComments[comment.id]
+                    "
+                    class="ml-4"
+                >
+                    <ChildComment
+                        :child-comments="comment.children"
+                        :postId="postId"
+                        :formatDate="formatDate"
+                        :isCommentAuthor="isCommentAuthor"
+                        :deleteItem="deleteItem"
+                        :toggleCommentForm="toggleCommentForm"
+                        :commentFormVisibility="commentFormVisibility"
+                    />
+                </div>
             </div>
         </div>
     </div>
