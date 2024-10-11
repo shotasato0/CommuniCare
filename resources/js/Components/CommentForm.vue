@@ -1,13 +1,12 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 
-// propsでpostIdとcommentDataを受け取る
 const props = defineProps({
-    postId: Number,
-    parentId: { type: Number, default: null },
-    replyToName: { type: String, default: "" },
+    postId: Number, // 親投稿のID
+    parentId: { type: Number, default: null }, // 親コメントのID
+    replyToName: { type: String, default: "" }, // 返信先のユーザー名
 });
 
 // コメントデータを管理するref
@@ -16,6 +15,13 @@ const commentData = ref({
     parent_id: props.parentId,
     message: "",
     replyToName: props.replyToName,
+});
+
+onMounted(() => {
+    // コメントに対する返信の場合のみメンションを追加
+    if (props.replyToName && props.parentId) {
+        commentData.value.message = `@${props.replyToName} `;
+    }
 });
 
 // コメントの送信処理
@@ -31,8 +37,8 @@ const submitComment = () => {
             onSuccess: () => {
                 // フォームのリセット
                 commentData.value = {
-                    post_id: null,
-                    parent_id: null,
+                    post_id: props.postId,
+                    parent_id: props.parentId,
                     message: "",
                 };
                 router.get(route("forum.index")); // getで履歴を置き換え
@@ -63,7 +69,7 @@ const submitComment = () => {
         <div class="flex justify-end mt-2">
             <button
                 type="submit"
-                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"    
+                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
             >
                 <i class="bi bi-send"></i>
             </button>
