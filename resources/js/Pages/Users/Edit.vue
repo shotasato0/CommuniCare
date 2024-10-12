@@ -72,7 +72,9 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="tel">電話番号</label>
+                    <label class="block font-bold mb-2" for="tel"
+                        >電話番号</label
+                    >
                     <input
                         v-model="form.tel"
                         id="tel"
@@ -81,7 +83,9 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="email">メールアドレス</label>
+                    <label class="block font-bold mb-2" for="email"
+                        >メールアドレス</label
+                    >
                     <input
                         v-model="form.email"
                         id="email"
@@ -90,21 +94,15 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="unit_name">担当入居者</label>
+                    <label class="block font-bold mb-2" for="unit_name"
+                        >担当入居者</label
+                    >
                     <input
                         v-model="form.unit_name"
                         id="unit_name"
                         type="text"
                         class="w-full border border-gray-300 p-2 rounded"
                     />
-                </div>
-                <div class="mb-4">
-                    <label class="block font-bold mb-2" for="memo">メモ</label>
-                    <textarea
-                        v-model="form.memo"
-                        id="memo"
-                        class="w-full border border-gray-300 p-2 rounded"
-                    ></textarea>
                 </div>
                 <div class="flex justify-between">
                     <button
