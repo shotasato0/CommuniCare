@@ -60,7 +60,6 @@ class UserController extends Controller
         'tel' => 'nullable|string|max:20',
         'email' => 'required|email|max:255',
         'unit_name' => 'nullable|string|max:255',
-        'memo' => 'nullable|string',
     ]);
 
     $user->update($validatedData);

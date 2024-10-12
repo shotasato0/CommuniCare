@@ -60,14 +60,6 @@ export default {
                     {{ user.unit_name }}
                 </div>
             </div>
-            <div class="info mb-4 text-left">
-                <label class="font-bold">メモ</label>
-                <div class="border border-gray-300 p-2 rounded bg-gray-100">
-                    {{ user.memo }}
-                </div>
-            </div>
         </div>
     </div>
 </template>
-
-<style scoped></style>
