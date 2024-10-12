@@ -15,8 +15,7 @@ export default {
             name: props.user.name,
             tel: props.user.tel,
             email: props.user.email,
-            unit_name: props.user.unit_name,
-            memo: props.user.memo,
+            unit_id: props.user.unit_id,
         });
 
         // usePageからページのプロパティを取得
@@ -44,7 +43,7 @@ export default {
         };
 
         // setup関数から必要なデータを返す
-        return { form, submit, successMessage };
+        return { form, submit, successMessage, page };
     },
 };
 </script>
@@ -94,15 +93,22 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="unit_name"
-                        >担当入居者</label
+                    <label class="block font-bold mb-2" for="unit_id"
+                        >所属部署</label
                     >
-                    <input
-                        v-model="form.unit_name"
-                        id="unit_name"
-                        type="text"
+                    <select
+                        v-model="form.unit_id"
+                        id="unit_id"
                         class="w-full border border-gray-300 p-2 rounded"
-                    />
+                    >
+                        <option
+                            v-for="unit in page.props.units"
+                            :key="unit.id"
+                            :value="unit.id"
+                        >
+                            {{ unit.name }}
+                        </option>
+                    </select>
                 </div>
                 <div class="flex justify-between">
                     <button

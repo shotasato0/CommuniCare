@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Unit;
 
 class UserController extends Controller
 {
@@ -35,11 +36,17 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
-    {
-        return Inertia::render('Users/Show', compact('user'));
-    }
-    
+
+     public function show(User $user)
+     {
+         $user->load('unit'); // ユニット情報をロードする
+         return Inertia::render('Users/Show', [
+             'user' => $user,
+         ]);
+     }
+
+
+
 
 
     /**
@@ -47,7 +54,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return Inertia::render('Users/Edit', compact('user'));
+        $units = Unit::all();
+        return Inertia::render('Users/Edit', compact('user', 'units'));
     }
 
     /**
@@ -59,14 +67,14 @@ class UserController extends Controller
         'name' => 'required|string|max:255',
         'tel' => 'nullable|string|max:20',
         'email' => 'required|email|max:255',
-        'unit_name' => 'nullable|string|max:255',
+        'unit_id' => 'nullable|exists:units,id',
     ]);
 
     $user->update($validatedData);
 
     return redirect()->route('users.edit', $user->id)
-                     ->with('success', 'ユーザー情報が更新されました。');
-}
+            ->with('success', 'ユーザー情報が更新されました。');
+    }
 
 
 

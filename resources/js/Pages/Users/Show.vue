@@ -55,9 +55,9 @@ export default {
                 </div>
             </div>
             <div class="info mb-4 text-left">
-                <label class="font-bold">担当入居者</label>
+                <label class="font-bold">所属部署</label>
                 <div class="border border-gray-300 p-2 rounded bg-gray-100">
-                    {{ user.unit_name }}
+                    {{ user.unit ? user.unit.name : "未所属" }}
                 </div>
             </div>
         </div>
