@@ -1,6 +1,6 @@
 <script>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 
 export default {
     props: {
@@ -10,6 +10,7 @@ export default {
         },
     },
     setup(props) {
+        // useFormを使って編集用のフォームデータを定義
         const form = useForm({
             name: props.user.name,
             tel: props.user.tel,
@@ -26,6 +27,15 @@ export default {
             return page.props.flash && page.props.flash.success
                 ? page.props.flash.success
                 : null;
+        });
+
+        // フラッシュメッセージを自動的に非表示にする処理
+        watch(successMessage, (newValue) => {
+            if (newValue) {
+                setTimeout(() => {
+                    page.props.flash.success = null;
+                }, 3000);
+            }
         });
 
         // フォーム送信処理
@@ -62,9 +72,7 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="tel"
-                        >電話番号</label
-                    >
+                    <label class="block font-bold mb-2" for="tel">電話番号</label>
                     <input
                         v-model="form.tel"
                         id="tel"
@@ -73,9 +81,7 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="email"
-                        >メールアドレス</label
-                    >
+                    <label class="block font-bold mb-2" for="email">メールアドレス</label>
                     <input
                         v-model="form.email"
                         id="email"
@@ -84,9 +90,7 @@ export default {
                     />
                 </div>
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="unit_name"
-                        >担当入居者</label
-                    >
+                    <label class="block font-bold mb-2" for="unit_name">担当入居者</label>
                     <input
                         v-model="form.unit_name"
                         id="unit_name"
