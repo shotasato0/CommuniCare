@@ -76,9 +76,12 @@ class UserController extends Controller
             ->with('success', 'ユーザー情報が更新されました。');
     }
 
-
-
-
+    public function editIcon(User $user)
+{
+    return Inertia::render('Users/IconEdit', [
+        'user' => $user,
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.
