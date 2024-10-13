@@ -61,6 +61,45 @@ export default {
 
             <h1 class="text-2xl font-bold mb-6 text-center">ユーザー編集</h1>
             <form @submit.prevent="submit">
+                <div class="mb-4 relative">
+                    <div class="flex justify-center mb-4 group">
+                        <div class="relative">
+                            <img
+                                :src="
+                                    user.icon ||
+                                    'https://via.placeholder.com/100'
+                                "
+                                alt="ユーザーのプロフィール写真"
+                                class="w-24 h-24 rounded-full object-cover group-hover:opacity-70 transition-opacity duration-300"
+                            />
+                            <button
+                                type="button"
+                                @click="
+                                    $inertia.visit(
+                                        `/users/${user.id}/edit-icon`
+                                    )
+                                "
+                                class="absolute inset-0 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                title="プロフィール画像を編集"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    class="w-5 h-5"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M16.862 4.487a2.25 2.25 0 113.182 3.182L7.529 20.183a4.5 4.5 0 01-1.691 1.09l-4.013 1.337 1.337-4.013a4.5 4.5 0 011.09-1.691L16.862 4.487z"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-4">
                     <label class="block font-bold mb-2" for="name">名前</label>
                     <input
