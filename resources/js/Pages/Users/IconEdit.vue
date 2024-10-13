@@ -1,6 +1,6 @@
 <script>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
 
 export default {
     props: {
@@ -14,6 +14,20 @@ export default {
         const form = useForm({
             icon: null, // アイコンを追加
         });
+
+        // 選択された画像のプレビューURLを保存するref
+        const previewUrl = ref(
+            props.user.icon || "https://via.placeholder.com/100"
+        );
+
+        // 画像が選択された際にプレビューURLを更新する関数
+        const handleImageChange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                form.icon = file;
+                previewUrl.value = URL.createObjectURL(file);
+            }
+        };
 
         // usePageからページのプロパティを取得
         const page = usePage();
@@ -36,7 +50,7 @@ export default {
 
         // フォーム送信処理
         const submit = () => {
-            form.post(`/users/${props.user.id}/update-icon`, {
+            form.put(`/users/${props.user.id}/update-icon`, {
                 forceFormData: true, // ファイルアップロードを有効にするために必要
                 onSuccess: () => {
                     console.log("アイコン更新成功");
@@ -48,7 +62,14 @@ export default {
         };
 
         // setup関数から必要なデータを返す
-        return { form, submit, successMessage, page };
+        return {
+            form,
+            submit,
+            successMessage,
+            page,
+            previewUrl,
+            handleImageChange,
+        };
     },
 };
 </script>
@@ -69,7 +90,7 @@ export default {
             </h1>
             <div class="flex justify-center mb-4">
                 <img
-                    :src="user.icon || 'https://via.placeholder.com/100'"
+                    :src="previewUrl"
                     alt="ユーザーのプロフィール写真"
                     class="w-24 h-24 rounded-full object-cover"
                 />
@@ -82,7 +103,7 @@ export default {
                     <input
                         type="file"
                         id="icon"
-                        @change="(e) => (form.icon = e.target.files[0])"
+                        @change="handleImageChange"
                         class="w-full border border-gray-300 p-2 rounded"
                     />
                 </div>
