@@ -17,7 +17,9 @@ export default {
 
         // 選択された画像のプレビューURLを保存するref
         const previewUrl = ref(
-            props.user.icon || "https://via.placeholder.com/100"
+            props.user.icon
+                ? `/storage/${props.user.icon}`
+                : "https://via.placeholder.com/100"
         );
 
         // 画像が選択された際にプレビューURLを更新する関数
@@ -50,10 +52,13 @@ export default {
 
         // フォーム送信処理
         const submit = () => {
-            form.put(`/users/${props.user.id}/update-icon`, {
+            form.post(`/users/${props.user.id}/update-icon`, {
                 forceFormData: true, // ファイルアップロードを有効にするために必要
                 onSuccess: () => {
                     console.log("アイコン更新成功");
+                    if (form.icon) {
+                        previewUrl.value = URL.createObjectURL(form.icon);
+                    }
                 },
                 onError: (errors) => {
                     console.error("アイコン更新エラー", errors);
