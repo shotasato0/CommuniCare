@@ -25,7 +25,11 @@ export default {
     <div class="flex justify-center items-center min-h-screen bg-gray-100">
         <div class="w-80 bg-white p-6 rounded-lg shadow-lg text-center">
             <img
-                :src="user.icon || 'https://via.placeholder.com/100'"
+                :src="
+                    user.icon
+                        ? `/storage/${user.icon}`
+                        : 'https://via.placeholder.com/100'
+                "
                 alt="ユーザーのプロフィール写真"
                 class="w-24 h-24 rounded-full object-cover mx-auto mb-4"
             />
