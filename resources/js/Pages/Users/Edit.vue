@@ -66,8 +66,9 @@ export default {
                         <div class="relative">
                             <img
                                 :src="
-                                    user.icon ||
-                                    'https://via.placeholder.com/100'
+                                    user.icon
+                                        ? `/storage/${user.icon}`
+                                        : 'https://via.placeholder.com/100'
                                 "
                                 alt="ユーザーのプロフィール写真"
                                 class="w-24 h-24 rounded-full object-cover group-hover:opacity-70 transition-opacity duration-300"
