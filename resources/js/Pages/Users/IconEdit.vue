@@ -41,11 +41,29 @@ export default {
                 : null;
         });
 
+        // エラーメッセージをcomputedで取得
+        const errorMessage = computed(() => {
+            return page.props.errors && page.props.errors.icon
+                ? page.props.errors.icon
+                : null;
+        });
+
+        console.log(errorMessage.value);
+
         // フラッシュメッセージを自動的に非表示にする処理
         watch(successMessage, (newValue) => {
             if (newValue) {
                 setTimeout(() => {
                     page.props.flash.success = null;
+                }, 3000);
+            }
+        });
+
+        // フラッシュメッセージを自動的に非表示にする処理
+        watch(errorMessage, (newValue) => {
+            if (newValue) {
+                setTimeout(() => {
+                    page.props.flash.error = null;
                 }, 3000);
             }
         });
@@ -61,7 +79,10 @@ export default {
                     }
                 },
                 onError: (errors) => {
-                    console.error("アイコン更新エラー", errors);
+                    console.log("アイコン更新エラー", errors);
+                    if (errors.icon) {
+                        page.props.flash.error = errors.icon[0];
+                    }
                 },
             });
         };
@@ -71,6 +92,7 @@ export default {
             form,
             submit,
             successMessage,
+            errorMessage,
             page,
             previewUrl,
             handleImageChange,
@@ -88,6 +110,13 @@ export default {
                 class="bg-green-100 text-green-700 p-3 mb-6 rounded"
             >
                 {{ successMessage }}
+            </div>
+            <!-- エラーメッセージ -->
+            <div
+                v-if="errorMessage"
+                class="bg-red-100 text-red-700 p-3 mb-6 rounded"
+            >
+                {{ errorMessage }}
             </div>
 
             <h1 class="text-2xl font-bold mb-6 text-center">

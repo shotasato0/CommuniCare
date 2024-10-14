@@ -91,9 +91,12 @@ public function updateIcon(Request $request)
     // バリデーション
     $request->validate([
         'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+    ], [
+        'icon.max' => '画像のサイズが大きすぎます。4MB以下にしてください。',
     ]);
 
-    // ファイルを取得
+    try {
+        // ファイルを取得
     $file = $request->file('icon');
 
     // 一意のファイル名を生成
@@ -107,14 +110,18 @@ public function updateIcon(Request $request)
         Storage::disk('public')->delete($request->user()->icon);
     }
 
-    // データベースに新しいパスを保存
-    $user = $request->user();
-    $user->icon = 'icons/' . $fileName;
-    $user->save();
-
-    // アイコン編集が完了したらユーザープロフィールページにリダイレクト
-    return redirect()->route('users.editIcon', $user->id)
-        ->with('success', 'プロフィール画像が更新されました。');
+        // データベースに新しいパスを保存
+        $user = $request->user();
+        $user->icon = 'icons/' . $fileName;
+        $user->save();
+        // アイコン編集が完了したらユーザープロフィールページにリダイレクト
+        return redirect()->route('users.editIcon', $user->id)
+            ->with('success', 'プロフィール画像が更新されました。');
+    } catch (\Exception $e) {
+        // エラーが発生した場合はエラーメッセージを表示
+        return redirect()->route('users.editIcon', $user->id)
+            ->with('error', 'プロフィール画像の更新に失敗しました。');
+    }
 }
 
     /**
