@@ -48,7 +48,8 @@ export default {
                 : null;
         });
 
-        console.log(errorMessage.value);
+        // ローカルのエラーメッセージをrefで定義
+        const localErrorMessage = ref(errorMessage.value);
 
         // フラッシュメッセージを自動的に非表示にする処理
         watch(successMessage, (newValue) => {
@@ -62,8 +63,9 @@ export default {
         // フラッシュメッセージを自動的に非表示にする処理
         watch(errorMessage, (newValue) => {
             if (newValue) {
+                localErrorMessage.value = newValue;
                 setTimeout(() => {
-                    page.props.flash.error = null;
+                    localErrorMessage.value = null;
                 }, 3000);
             }
         });
@@ -92,7 +94,7 @@ export default {
             form,
             submit,
             successMessage,
-            errorMessage,
+            localErrorMessage,
             page,
             previewUrl,
             handleImageChange,
@@ -113,10 +115,10 @@ export default {
             </div>
             <!-- エラーメッセージ -->
             <div
-                v-if="errorMessage"
+                v-if="localErrorMessage"
                 class="bg-red-100 text-red-700 p-3 mb-6 rounded"
             >
-                {{ errorMessage }}
+                {{ localErrorMessage }}
             </div>
 
             <h1 class="text-2xl font-bold mb-6 text-center">
