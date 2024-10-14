@@ -104,18 +104,19 @@ public function updateIcon(Request $request)
     $path = $file->storeAs('public/' . $tenantDbName . '/icons', $fileName);
 
     // 既存のアイコンを削除（必要に応じて）
-    if ($request->user()->icon_path) {
-        Storage::delete('public/' . $request->user()->icon_path);
+    if ($request->user()->icon) {
+        Storage::delete('public/' . $request->user()->icon);
     }
 
     // データベースに新しいパスを保存
     $user = $request->user();
-    $user->icon_path = $tenantDbName . '/icons/' . $fileName;
+    $user->icon = $tenantDbName . '/icons/' . $fileName;
     $user->save();
 
-        // 成功したらレスポンスを返す
-        return redirect()->back()->with('success', 'プロフィール画像が更新されました');
-    }
+    // 成功したらレスポンスを返す
+    return redirect()->back()->with('success', 'プロフィール画像が更新されました。');
+}
+
 
     /**
      * Remove the specified resource from storage.
