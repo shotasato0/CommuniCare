@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -82,6 +83,39 @@ class UserController extends Controller
         'user' => $user,
     ]);
 }
+
+public function updateIcon(Request $request)
+{
+    // バリデーション
+    $request->validate([
+        'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    // ファイルを取得
+    $file = $request->file('icon');
+    
+    // テナントDB名を取得
+    $tenantDbName = $request->user()->tenant->tenancy_db_name;
+
+    // 一意のファイル名を生成
+    $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+    
+    // ファイルを保存
+    $path = $file->storeAs('public/' . $tenantDbName . '/icons', $fileName);
+
+    // 既存のアイコンを削除（必要に応じて）
+    if ($request->user()->icon_path) {
+        Storage::delete('public/' . $request->user()->icon_path);
+    }
+
+    // データベースに新しいパスを保存
+    $user = $request->user();
+    $user->icon_path = $tenantDbName . '/icons/' . $fileName;
+    $user->save();
+
+        // 成功したらレスポンスを返す
+        return redirect()->back()->with('success', 'プロフィール画像が更新されました');
+    }
 
     /**
      * Remove the specified resource from storage.
