@@ -48,19 +48,23 @@ export default {
                 : null;
         });
 
-        // ローカルのエラーメッセージをrefで定義
-        const localErrorMessage = ref(errorMessage.value);
+        // ローカルの成功メッセージをrefで定義
+        const localSuccessMessage = ref(successMessage.value);
 
-        // フラッシュメッセージを自動的に非表示にする処理
+        // ローカルの成功メッセージをrefで定義
         watch(successMessage, (newValue) => {
             if (newValue) {
+                localSuccessMessage.value = newValue;
                 setTimeout(() => {
-                    page.props.flash.success = null;
+                    localSuccessMessage.value = null;
                 }, 3000);
             }
         });
 
-        // フラッシュメッセージを自動的に非表示にする処理
+        // ローカルのエラーメッセージをrefで定義
+        const localErrorMessage = ref(errorMessage.value);
+
+        // ローカルのエラーメッセージをrefで定義
         watch(errorMessage, (newValue) => {
             if (newValue) {
                 localErrorMessage.value = newValue;
@@ -93,7 +97,7 @@ export default {
         return {
             form,
             submit,
-            successMessage,
+            localSuccessMessage,
             localErrorMessage,
             page,
             previewUrl,
@@ -108,10 +112,10 @@ export default {
         <div class="w-80 bg-white p-6 rounded-lg shadow-lg">
             <!-- 成功メッセージ -->
             <div
-                v-if="successMessage"
+                v-if="localSuccessMessage"
                 class="bg-green-100 text-green-700 p-3 mb-6 rounded"
             >
-                {{ successMessage }}
+                {{ localSuccessMessage }}
             </div>
             <!-- エラーメッセージ -->
             <div
