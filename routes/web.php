@@ -48,6 +48,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
 
         Route::resource('users', UserController::class);
         Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
+        Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
