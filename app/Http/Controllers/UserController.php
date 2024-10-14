@@ -90,7 +90,7 @@ public function updateIcon(Request $request)
 {
     // バリデーション
     $request->validate([
-        'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
     ]);
 
     // ファイルを取得
