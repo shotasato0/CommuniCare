@@ -79,8 +79,10 @@ class UserController extends Controller
 
     public function editIcon(User $user)
 {
+    $user->load('unit'); // ユニット情報をロードする
     return Inertia::render('Users/IconEdit', [
         'user' => $user,
+        'icon' => $user->icon ? '/storage/' . $user->icon : null,
     ]);
 }
 
