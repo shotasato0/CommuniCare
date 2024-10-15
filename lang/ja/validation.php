@@ -264,5 +264,6 @@ return [
         'year' => '年',
         'business_name' => '事業所名',
         'tenant_domain_id' => 'テナントID',
+        'icon' => 'プロフィール画像',
     ],
 ];
