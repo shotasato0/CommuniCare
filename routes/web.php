@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -44,6 +45,10 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
 
         Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
         Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+
+        Route::resource('users', UserController::class);
+        Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
+        Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
