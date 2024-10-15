@@ -138,7 +138,7 @@ export default {
             <form @submit.prevent="submit" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label class="block font-bold mb-2" for="icon"
-                        >プロフィール画像</label
+                        >画像を選択</label
                     >
                     <input
                         type="file"
@@ -156,7 +156,7 @@ export default {
                     </button>
                     <button
                         type="button"
-                        @click="$inertia.visit(`/users/${user.id}`)"
+                        @click="$inertia.visit(`/users/${user.id}/edit`)"
                         class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
                     >
                         キャンセル
