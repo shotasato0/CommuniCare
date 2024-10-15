@@ -59,7 +59,7 @@ export default {
                 {{ successMessage }}
             </div>
 
-            <h1 class="text-2xl font-bold mb-6 text-center">ユーザー編集</h1>
+            <h1 class="text-2xl font-bold mb-6 text-center">プロフィール編集</h1>
             <form @submit.prevent="submit">
                 <div class="mb-4 relative">
                     <div class="flex justify-center mb-4 group">
