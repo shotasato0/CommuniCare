@@ -22,10 +22,30 @@ export default {
                 : "https://via.placeholder.com/100"
         );
 
-        // 画像が選択された際にプレビューURLを更新する関数
+        // 画像ファイルのチェック
         const handleImageChange = (e) => {
             const file = e.target.files[0];
             if (file) {
+                // 画像形式のチェック（jpeg, png, gif などのみ許可）
+                const validImageTypes = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/gif",
+                    "image/svg+xml",
+                    "image/webp",
+                ];
+                if (!validImageTypes.includes(file.type)) {
+                    localErrorMessage.value =
+                        "対応していないファイル形式です。png, jpg, gif, svg, webpのいずれかを選択してください。";
+
+                    // 3秒後にエラーメッセージを自動的に消す処理
+                    setTimeout(() => {
+                        localErrorMessage.value = null;
+                    }, 3000);
+
+                    return;
+                }
+
                 form.icon = file;
                 previewUrl.value = URL.createObjectURL(file);
             }
