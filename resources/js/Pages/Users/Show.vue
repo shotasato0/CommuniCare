@@ -33,12 +33,6 @@ export default {
                 alt="ユーザーのプロフィール写真"
                 class="w-24 h-24 rounded-full object-cover mx-auto mb-4"
             />
-            <button
-                @click="editUser"
-                class="bg-blue-400 text-white px-4 py-2 rounded mb-6 hover:bg-blue-500"
-            >
-                編集
-            </button>
 
             <div class="info mb-4 text-left">
                 <label class="font-bold">名前</label>
@@ -64,6 +58,13 @@ export default {
                     {{ user.unit ? user.unit.name : "未所属" }}
                 </div>
             </div>
+
+            <button
+                @click="editUser"
+                class="bg-blue-400 text-white px-4 py-2 rounded mb-6 hover:bg-blue-500"
+            >
+                プロフィールを編集
+            </button>
         </div>
     </div>
 </template>
