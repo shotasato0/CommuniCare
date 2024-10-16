@@ -47,8 +47,13 @@ class UserController extends Controller
      }
 
 
-
-
+    public function editProfile(User $user)
+    {
+        $user->load('unit'); // ユニット情報をロードする
+        return Inertia::render('Users/EditProfilePage', [
+            'user' => $user,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
