@@ -15,7 +15,7 @@ export default {
     methods: {
         editUser() {
             // 編集ボタンを押したときの処理をここに書く
-            router.visit(`/users/${this.user.id}/edit`);
+            router.visit(`/users/${this.user.id}/edit-profile`);
         },
     },
 };
