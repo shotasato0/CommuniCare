@@ -1,6 +1,7 @@
 <script>
 import Edit from "./Edit.vue";
 import IconEdit from "./IconEdit.vue";
+import { usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 export default {
@@ -15,6 +16,7 @@ export default {
         },
     },
     setup() {
+        const page = usePage();
         const isIconEditVisible = ref(false);
 
         const openIconEdit = () => {
@@ -25,10 +27,13 @@ export default {
             isIconEditVisible.value = false;
         };
 
+        const units = page.props.units;
+
         return {
             isIconEditVisible,
             openIconEdit,
             closeIconEdit,
+            units,
         };
     },
 };
@@ -37,7 +42,7 @@ export default {
 <template>
     <div class="relative">
         <!-- Edit.vue を表示 -->
-        <Edit :user="user" :openIconEdit="openIconEdit" />
+        <Edit :user="user" :openIconEdit="openIconEdit" :units="units" />
 
         <!-- アイコン編集オーバーレイ -->
         <div
