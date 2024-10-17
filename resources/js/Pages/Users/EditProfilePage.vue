@@ -1,18 +1,3 @@
-<template>
-    <div class="relative">
-        <!-- Edit.vue を表示 -->
-        <Edit :user="user" />
-
-        <!-- アイコン編集オーバーレイ -->
-        <div
-            v-if="isIconEditVisible"
-            class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-        >
-            <IconEdit :user="user" @close="closeIconEdit" />
-        </div>
-    </div>
-</template>
-
 <script>
 import Edit from "./Edit.vue";
 import IconEdit from "./IconEdit.vue";
@@ -49,8 +34,17 @@ export default {
 };
 </script>
 
-<style scoped>
-.bg-opacity-50 {
-    backdrop-filter: blur(5px);
-}
-</style>
+<template>
+    <div class="relative">
+        <!-- Edit.vue を表示 -->
+        <Edit :user="user" :openIconEdit="openIconEdit" />
+
+        <!-- アイコン編集オーバーレイ -->
+        <div
+            v-if="isIconEditVisible"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+        >
+            <IconEdit :user="user" @close="closeIconEdit" />
+        </div>
+    </div>
+</template>

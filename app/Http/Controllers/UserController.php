@@ -78,7 +78,7 @@ class UserController extends Controller
 
     $user->update($validatedData);
 
-    return redirect()->route('users.edit', $user->id)
+    return redirect()->route('users.editProfile', $user->id)
             ->with('success', 'ユーザー情報が更新されました。');
     }
 
@@ -120,11 +120,11 @@ public function updateIcon(Request $request)
         $user->icon = 'icons/' . $fileName;
         $user->save();
         // アイコン編集が完了したらユーザープロフィールページにリダイレクト
-        return redirect()->route('users.editIcon', $user->id)
+        return redirect()->route('users.editProfile', $user->id)
             ->with('success', 'プロフィール画像が更新されました。');
     } catch (\Exception $e) {
         // エラーが発生した場合はエラーメッセージを表示
-        return redirect()->route('users.editIcon', $user->id)
+        return redirect()->route('users.editProfile', $user->id)
             ->with('error', 'プロフィール画像の更新に失敗しました。');
     }
 }

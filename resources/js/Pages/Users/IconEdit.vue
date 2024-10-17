@@ -9,7 +9,8 @@ export default {
             required: true,
         },
     },
-    setup(props) {
+    emits: ["updateIcon", "close"], // updateIconイベントを追加
+    setup(props, { emit }) {
         // アイコン編集用のフォームデータを定義
         const form = useForm({
             icon: null, // アイコンを追加
@@ -103,11 +104,15 @@ export default {
                     if (form.icon) {
                         previewUrl.value = URL.createObjectURL(form.icon);
                     }
+                    // 親コンポーネントにアイコンが更新されたことを通知
+                    emit("updateIcon", previewUrl.value);
+                    // オーバーレイを閉じる
+                    emit("close");
                 },
                 onError: (errors) => {
                     console.log("アイコン更新エラー", errors);
                     if (errors.icon) {
-                        page.props.flash.error = errors.icon[0];
+                        localErrorMessage.value = errors.icon[0];
                     }
                 },
             });
@@ -128,8 +133,10 @@ export default {
 </script>
 
 <template>
-    <div class="flex justify-center items-center min-h-screen bg-gray-100">
-        <div class="w-80 bg-white p-6 rounded-lg shadow-lg">
+    <div
+        class="fixed inset-0 flex justify-center items-center z-50 bg-black/50"
+    >
+        <div class="w-80 bg-white p-6 rounded-lg shadow-lg relative">
             <!-- 成功メッセージ -->
             <div
                 v-if="localSuccessMessage"
@@ -176,7 +183,7 @@ export default {
                     </button>
                     <button
                         type="button"
-                        @click="$inertia.visit(`/users/${user.id}/edit`)"
+                        @click="$emit('close')"
                         class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
                     >
                         キャンセル
