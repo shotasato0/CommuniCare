@@ -52,6 +52,7 @@ class UserController extends Controller
         $user->load('unit'); // ユニット情報をロードする
         return Inertia::render('Users/EditProfilePage', [
             'user' => $user,
+            'units' => Unit::all(),
         ]);
     }
 
@@ -60,8 +61,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $units = Unit::all();
-        return Inertia::render('Users/Edit', compact('user', 'units'));
+        return Inertia::render('Users/Edit', [
+            'user' => $user,
+            // 'units' => Unit::all(),
+        ]);
     }
 
     /**
