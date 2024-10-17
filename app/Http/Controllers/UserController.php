@@ -79,7 +79,7 @@ class UserController extends Controller
     $user->update($validatedData);
 
     return redirect()->route('users.editProfile', $user->id)
-            ->with('success', 'ユーザー情報が更新されました。');
+            ->with('success', 'プロフィールが更新されました。');
     }
 
     public function editIcon(User $user)
