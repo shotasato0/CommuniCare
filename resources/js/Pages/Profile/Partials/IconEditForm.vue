@@ -1,12 +1,12 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed, watch, ref, defineEmits } from "vue";
+import { computed, watch, ref, defineEmits, defineProps } from "vue";
+
+const props = defineProps({
+    user: Object,
+});
 
 const emit = defineEmits(["close", "updateIcon"]);
-
-// usePage からユーザー情報を取得
-const page = usePage();
-const user = page.props.auth.user;
 
 // アイコン編集用のフォームデータを定義
 const form = useForm({
@@ -15,8 +15,13 @@ const form = useForm({
 
 // 選択された画像のプレビューURLを保存するref
 const previewUrl = ref(
-    user.icon ? `/storage/${user.icon}` : "https://via.placeholder.com/100"
+    props.user.icon
+        ? `/storage/${props.user.icon}` // サーバー上の既存のアイコンURL
+        : "https://via.placeholder.com/100"
 );
+
+// ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
+const isLocalPreview = ref(false);
 
 // 画像ファイルのチェック
 const handleImageChange = (e) => {
@@ -43,28 +48,28 @@ const handleImageChange = (e) => {
         }
 
         form.icon = file;
-        previewUrl.value = URL.createObjectURL(file);
+        previewUrl.value = URL.createObjectURL(file); // ローカルプレビュー用にBlob URLをセット
+        isLocalPreview.value = true; // ローカルプレビュー用のフラグを立てる
     }
 };
 
 // 成功メッセージをcomputedで取得
 const successMessage = computed(() => {
-    return page.props.flash && page.props.flash.success
-        ? page.props.flash.success
+    return usePage().props.flash && usePage().props.flash.success
+        ? usePage().props.flash.success
         : null;
 });
 
 // エラーメッセージをcomputedで取得
 const errorMessage = computed(() => {
-    return page.props.errors && page.props.errors.icon
-        ? page.props.errors.icon
+    return usePage().props.errors && usePage().props.errors.icon
+        ? usePage().props.errors.icon
         : null;
 });
 
 // ローカルの成功メッセージをrefで定義
 const localSuccessMessage = ref(successMessage.value);
 
-// ローカルの成功メッセージをrefで定義
 watch(successMessage, (newValue) => {
     if (newValue) {
         localSuccessMessage.value = newValue;
@@ -74,10 +79,8 @@ watch(successMessage, (newValue) => {
     }
 });
 
-// ローカルのエラーメッセージをrefで定義
 const localErrorMessage = ref(errorMessage.value);
 
-// ローカルのエラーメッセージをrefで定義
 watch(errorMessage, (newValue) => {
     if (newValue) {
         localErrorMessage.value = newValue;
@@ -89,26 +92,32 @@ watch(errorMessage, (newValue) => {
 
 // フォーム送信処理
 const submit = () => {
-    form.post(`/profile/update-icon`, {
-        forceFormData: true, // ファイルアップロードを有効にするために必要
-        onSuccess: () => {
-            console.log("アイコン更新成功");
-            if (form.icon) {
-                previewUrl.value = URL.createObjectURL(form.icon);
-            }
-            // 親コンポーネントにアイコンが更新されたことを通知
-            emit("updateIcon", previewUrl.value);
-            // オーバーレイを閉じる
-            emit("close");
-        },
-        onError: (errors) => {
-            console.log("アイコン更新エラー", errors);
-            if (errors.icon) {
-                localErrorMessage.value = errors.icon[0];
-            }
-        },
-    });
+  form.post(route("profile.updateIcon"), {
+    forceFormData: true,
+    onSuccess: () => {
+      console.log("アイコン更新成功");
+      
+      // サーバーから新しいアイコンパスが返される場合は、その値を使う
+      const updatedIcon = usePage().props.auth.user.icon;
+      
+      if (updatedIcon) {
+        // 正しいパスを構築する
+        previewUrl.value = `/storage/${updatedIcon}`;
+        emit("updateIcon", previewUrl.value);
+      } else {
+        // パスがない場合はプレースホルダーに戻す
+        previewUrl.value = "https://via.placeholder.com/100";
+      }
+
+      // オーバーレイを閉じる
+      emit("close");
+    },
+    onError: (errors) => {
+      console.log("アイコン更新エラー", errors);
+    },
+  });
 };
+
 </script>
 
 <template>

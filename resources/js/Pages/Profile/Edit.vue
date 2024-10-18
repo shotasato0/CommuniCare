@@ -4,11 +4,12 @@ import DeleteUserForm from "./Partials/DeleteUserForm.vue";
 import UpdatePasswordForm from "./Partials/UpdatePasswordForm.vue";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm.vue";
 import IconEditForm from "./Partials/IconEditForm.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 // アイコン編集オーバーレイの表示制御
 const isIconEditVisible = ref(false);
+const user = usePage().props.auth.user;
 
 const openIconEdit = () => {
     isIconEditVisible.value = true;
@@ -16,6 +17,11 @@ const openIconEdit = () => {
 
 const closeIconEdit = () => {
     isIconEditVisible.value = false;
+};
+
+// アイコン更新の反映
+const handleUpdateIcon = (newIconUrl) => {
+    user.icon = newIconUrl; // 新しいアイコンURLを更新
 };
 </script>
 
@@ -35,6 +41,7 @@ const closeIconEdit = () => {
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <UpdateProfileInformationForm
                         class="max-w-xl"
+                        :user="user"
                         @openIconEdit="openIconEdit"
                     />
                 </div>
@@ -56,7 +63,11 @@ const closeIconEdit = () => {
             v-if="isIconEditVisible"
             class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
         >
-            <IconEditForm @close="closeIconEdit" />
+            <IconEditForm
+                :user="user"
+                @close="closeIconEdit"
+                @updateIcon="handleUpdateIcon"
+            />
         </div>
     </AuthenticatedLayout>
 </template>
