@@ -42,7 +42,7 @@ export default {
                     // 3秒後にエラーメッセージを自動的に消す処理
                     setTimeout(() => {
                         localErrorMessage.value = null;
-                    }, 3000);
+                    }, 5000);
 
                     return;
                 }
@@ -78,7 +78,7 @@ export default {
                 localSuccessMessage.value = newValue;
                 setTimeout(() => {
                     localSuccessMessage.value = null;
-                }, 3000);
+                }, 5000);
             }
         });
 
@@ -91,7 +91,7 @@ export default {
                 localErrorMessage.value = newValue;
                 setTimeout(() => {
                     localErrorMessage.value = null;
-                }, 3000);
+                }, 5000);
             }
         });
 
