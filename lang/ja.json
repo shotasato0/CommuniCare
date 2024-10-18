@@ -144,5 +144,8 @@
     "Tenant Domain ID": "テナントID",
     "Business Name": "事業所名",
     "Tenant Login": "テナントログイン",
-    "Forum": "掲示板"
+    "Forum": "掲示板",
+    "Tel": "電話番号",
+    "Unit": "所属部署",
+    "Profile Image": "プロフィール画像"
 }
