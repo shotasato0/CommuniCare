@@ -17,12 +17,17 @@ const props = defineProps({
     status: {
         type: String,
     },
+    units: {
+        type: Array,
+        required: true,
+    },
 });
 
 const emit = defineEmits(["openIconEdit"]);
 
 // ユーザー情報を取得
 const user = props.user;
+const units = props.units;
 
 // フォームデータの設定
 const form = useForm({
@@ -149,13 +154,19 @@ const handleOpenIconEdit = () => {
 
             <div>
                 <InputLabel for="unit_id" :value="$t('Unit')" />
-                <TextInput
-                    id="unit_id"
-                    type="text"
-                    class="mt-1 block w-full"
+                <select
                     v-model="form.unit_id"
-                    required
-                />
+                    id="unit_id"
+                    class="w-full border border-gray-300 p-2 rounded"
+                >
+                    <option
+                        v-for="unit in units"
+                        :key="unit.id"
+                        :value="unit.id"
+                    >
+                        {{ unit.name }}
+                    </option>
+                </select>
             </div>
 
             <div class="flex items-center gap-4">
