@@ -47,16 +47,24 @@ class UserController extends Controller
      }
 
 
-
-
+    public function editProfile(User $user)
+    {
+        $user->load('unit'); // ユニット情報をロードする
+        return Inertia::render('Users/EditProfilePage', [
+            'user' => $user,
+            'units' => Unit::all(),
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(User $user)
     {
-        $units = Unit::all();
-        return Inertia::render('Users/Edit', compact('user', 'units'));
+        return Inertia::render('Users/Edit', [
+            'user' => $user,
+            // 'units' => Unit::all(),
+        ]);
     }
 
     /**
@@ -73,8 +81,8 @@ class UserController extends Controller
 
     $user->update($validatedData);
 
-    return redirect()->route('users.edit', $user->id)
-            ->with('success', 'ユーザー情報が更新されました。');
+    return redirect()->route('users.editProfile', $user->id)
+            ->with('success', 'プロフィールが更新されました。');
     }
 
     public function editIcon(User $user)
@@ -115,11 +123,11 @@ public function updateIcon(Request $request)
         $user->icon = 'icons/' . $fileName;
         $user->save();
         // アイコン編集が完了したらユーザープロフィールページにリダイレクト
-        return redirect()->route('users.editIcon', $user->id)
+        return redirect()->route('users.editProfile', $user->id)
             ->with('success', 'プロフィール画像が更新されました。');
     } catch (\Exception $e) {
         // エラーが発生した場合はエラーメッセージを表示
-        return redirect()->route('users.editIcon', $user->id)
+        return redirect()->route('users.editProfile', $user->id)
             ->with('error', 'プロフィール画像の更新に失敗しました。');
     }
 }

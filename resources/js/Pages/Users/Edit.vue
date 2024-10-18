@@ -8,6 +8,10 @@ export default {
             type: Object,
             required: true,
         },
+        openIconEdit: {
+            type: Function,
+            required: true,
+        },
     },
     setup(props) {
         // useFormを使って編集用のフォームデータを定義
@@ -33,7 +37,7 @@ export default {
             if (newValue) {
                 setTimeout(() => {
                     page.props.flash.success = null;
-                }, 3000);
+                }, 5000);
             }
         });
 
@@ -43,7 +47,13 @@ export default {
         };
 
         // setup関数から必要なデータを返す
-        return { form, submit, successMessage, page };
+        return {
+            form,
+            submit,
+            successMessage,
+            page,
+            openIconEdit: props.openIconEdit,
+        };
     },
 };
 </script>
@@ -59,7 +69,9 @@ export default {
                 {{ successMessage }}
             </div>
 
-            <h1 class="text-2xl font-bold mb-6 text-center">プロフィール編集</h1>
+            <h1 class="text-2xl font-bold mb-6 text-center">
+                プロフィール編集
+            </h1>
             <form @submit.prevent="submit">
                 <div class="mb-4 relative">
                     <div class="flex justify-center mb-4 group">
@@ -75,11 +87,7 @@ export default {
                             />
                             <button
                                 type="button"
-                                @click="
-                                    $inertia.visit(
-                                        `/users/${user.id}/edit-icon`
-                                    )
-                                "
+                                @click="openIconEdit"
                                 class="absolute inset-0 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                                 title="プロフィール画像を編集"
                             >
@@ -100,6 +108,15 @@ export default {
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="flex justify-center mb-4">
+                    <button
+                        type="button"
+                        @click="openIconEdit"
+                        class="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
+                    >
+                        プロフィール画像を編集
+                    </button>
                 </div>
                 <div class="mb-4">
                     <label class="block font-bold mb-2" for="name">名前</label>
