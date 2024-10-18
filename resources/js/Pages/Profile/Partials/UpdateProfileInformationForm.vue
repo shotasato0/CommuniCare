@@ -55,11 +55,7 @@ const handleOpenIconEdit = () => {
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{
-                    $t(
-                        "Update your account's profile information."
-                    )
-                }}
+                {{ $t("Update your account's profile information.") }}
             </p>
         </header>
 
@@ -137,7 +133,6 @@ const handleOpenIconEdit = () => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.tel"
-                    required
                 />
             </div>
 
@@ -148,7 +143,6 @@ const handleOpenIconEdit = () => {
                     type="email"
                     class="mt-1 block w-full"
                     v-model="form.email"
-                    required
                 />
             </div>
 
