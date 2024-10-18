@@ -64,37 +64,43 @@ const handleOpenIconEdit = () => {
             class="mt-6 space-y-6"
         >
             <!-- プロフィール画像表示と編集ボタン -->
-            <div class="relative">
-                <img
-                    :src="
-                        user.icon.startsWith('/storage/')
-                            ? user.icon
-                            : `/storage/${user.icon}`
-                    "
-                    alt="ユーザーのプロフィール写真"
-                    class="w-24 h-24 rounded-full object-cover group-hover:opacity-70 transition-opacity duration-300"
-                />
-
+            <div class="relative w-24 h-24 group">
                 <button
                     type="button"
                     @click="handleOpenIconEdit"
-                    class="absolute inset-0 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    class="absolute inset-0 w-24 h-24 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 transition-opacity duration-300"
                     title="プロフィール画像を編集"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5"
+                    <!-- プロフィール画像 -->
+                    <img
+                        :src="
+                            user.icon.startsWith('/storage/')
+                                ? user.icon
+                                : `/storage/${user.icon}`
+                        "
+                        alt="ユーザーのプロフィール写真"
+                        class="w-24 h-24 rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
+                    />
+                    <!-- ペンのマーク -->
+                    <div
+                        class="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded-full"
+                        title="プロフィール画像を編集"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.862 4.487a2.25 2.25 0 113.182 3.182L7.529 20.183a4.5 4.5 0 01-1.691 1.09l-4.013 1.337 1.337-4.013a4.5 4.5 0 011.09-1.691L16.862 4.487z"
-                        />
-                    </svg>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="w-5 h-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M16.862 4.487a2.25 2.25 0 113.182 3.182L7.529 20.183a4.5 4.5 0 01-1.691 1.09l-4.013 1.337 1.337-4.013a4.5 4.5 0 011.09-1.691L16.862 4.487z"
+                            />
+                        </svg>
+                    </div>
                 </button>
             </div>
 
@@ -185,3 +191,10 @@ const handleOpenIconEdit = () => {
         </form>
     </section>
 </template>
+
+<style scoped>
+/* ホバー時に画像が薄暗くなる */
+.group:hover img {
+    opacity: 0.7;
+}
+</style>
