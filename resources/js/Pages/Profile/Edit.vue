@@ -11,6 +11,7 @@ import { ref } from "vue";
 const isIconEditVisible = ref(false);
 const user = usePage().props.auth.user;
 const units = usePage().props.units;
+const successMessage = ref(usePage().props.flash.success || null); // refに変更
 
 const openIconEdit = () => {
     isIconEditVisible.value = true;
@@ -44,6 +45,7 @@ const handleUpdateIcon = (newIconUrl) => {
                         class="max-w-xl"
                         :user="user"
                         :units="units"
+                        :successMessage="successMessage"
                         @openIconEdit="openIconEdit"
                     />
                 </div>
@@ -68,6 +70,7 @@ const handleUpdateIcon = (newIconUrl) => {
             <IconEditForm
                 :user="user"
                 @close="closeIconEdit"
+                @successMessage="successMessage = $event"
                 @updateIcon="handleUpdateIcon"
             />
         </div>
