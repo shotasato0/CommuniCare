@@ -37,7 +37,7 @@ export default {
             if (newValue) {
                 setTimeout(() => {
                     page.props.flash.success = null;
-                }, 3000);
+                }, 5000);
             }
         });
 
