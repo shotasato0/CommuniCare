@@ -11,6 +11,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Unit;
 
 class ProfileController extends Controller
 {
@@ -21,6 +22,7 @@ class ProfileController extends Controller
     {
         return Inertia::render('Profile/Edit', [
             'status' => session('status'),
+            'units' => Unit::all(),
         ]);
     }
 
@@ -67,8 +69,15 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username_id' => 'required|string|max:255',
+            'tel' => 'nullable|string|max:255',
+            'email' => 'nullable|string|email|max:255',
+            'unit_id' => 'nullable|exists:units,id',
+        ]);
         // リクエストから 'name' と 'username_id' のデータを抽出。only メソッドは、指定されたキーに対応するデータを配列で返す。
-        $request->user()->fill($request->only('name', 'username_id'));
+        $request->user()->fill($request->only('name', 'username_id', 'tel', 'email', 'unit_id'));
 
         // モデルの変更をデータベースに保存
         $request->user()->save();

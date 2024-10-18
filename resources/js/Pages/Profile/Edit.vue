@@ -10,6 +10,7 @@ import { ref } from "vue";
 // アイコン編集オーバーレイの表示制御
 const isIconEditVisible = ref(false);
 const user = usePage().props.auth.user;
+const units = usePage().props.units;
 
 const openIconEdit = () => {
     isIconEditVisible.value = true;
@@ -42,6 +43,7 @@ const handleUpdateIcon = (newIconUrl) => {
                     <UpdateProfileInformationForm
                         class="max-w-xl"
                         :user="user"
+                        :units="units"
                         @openIconEdit="openIconEdit"
                     />
                 </div>
