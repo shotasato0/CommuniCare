@@ -5,6 +5,18 @@ import UpdatePasswordForm from "./Partials/UpdatePasswordForm.vue";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm.vue";
 import IconEditForm from "./Partials/IconEditForm.vue";
 import { Head } from "@inertiajs/vue3";
+import { ref } from "vue";
+
+// アイコン編集オーバーレイの表示制御
+const isIconEditVisible = ref(false);
+
+const openIconEdit = () => {
+    isIconEditVisible.value = true;
+};
+
+const closeIconEdit = () => {
+    isIconEditVisible.value = false;
+};
 </script>
 
 <template>
@@ -19,21 +31,32 @@ import { Head } from "@inertiajs/vue3";
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                <div>
-                    <IconEditForm class="max-w-xl" />
-                </div>
+                <!-- プロフィール情報 -->
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                    <UpdateProfileInformationForm class="max-w-xl" />
+                    <UpdateProfileInformationForm
+                        class="max-w-xl"
+                        @openIconEdit="openIconEdit"
+                    />
                 </div>
 
+                <!-- パスワード変更 -->
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
 
+                <!-- ユーザー削除フォーム -->
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <DeleteUserForm class="max-w-xl" />
                 </div>
             </div>
+        </div>
+
+        <!-- アイコン編集オーバーレイ -->
+        <div
+            v-if="isIconEditVisible"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+        >
+            <IconEditForm @close="closeIconEdit" />
         </div>
     </AuthenticatedLayout>
 </template>

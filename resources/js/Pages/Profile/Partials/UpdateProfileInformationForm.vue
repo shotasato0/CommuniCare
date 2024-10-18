@@ -3,7 +3,8 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { useForm, usePage, router } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
+import { defineEmits } from "vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -14,14 +15,12 @@ defineProps({
     },
 });
 
+const emit = defineEmits(["openIconEdit"]);
+
 // ユーザー情報を取得
 const user = usePage().props.auth.user;
 
-// プロフィール画像編集ページに遷移する関数
-const openIconEdit = () => {
-    router.get(route("users.editIcon", user.id));
-};
-
+// フォームデータの設定
 const form = useForm({
     name: user.name,
     username_id: user.username_id,
@@ -32,6 +31,11 @@ const form = useForm({
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content"),
 });
+
+// アイコン編集を開く関数
+const handleOpenIconEdit = () => {
+    emit("openIconEdit");
+};
 </script>
 
 <template>
@@ -67,7 +71,7 @@ const form = useForm({
                 />
                 <button
                     type="button"
-                    @click="openIconEdit"
+                    @click="handleOpenIconEdit"
                     class="absolute inset-0 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     title="プロフィール画像を編集"
                 >
@@ -93,7 +97,6 @@ const form = useForm({
 
             <div>
                 <InputLabel for="name" :value="$t('Name')" />
-
                 <TextInput
                     id="name"
                     type="text"
@@ -102,13 +105,11 @@ const form = useForm({
                     required
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div>
                 <InputLabel for="username_id" :value="$t('Username_ID')" />
-
                 <TextInput
                     id="username_id"
                     type="text"
@@ -116,13 +117,11 @@ const form = useForm({
                     v-model="form.username_id"
                     required
                 />
-
                 <InputError class="mt-2" :message="form.errors.username_id" />
             </div>
 
             <div>
                 <InputLabel for="tel" :value="$t('Tel')" />
-
                 <TextInput
                     id="tel"
                     type="text"
@@ -134,7 +133,6 @@ const form = useForm({
 
             <div>
                 <InputLabel for="email" :value="$t('Email')" />
-
                 <TextInput
                     id="email"
                     type="email"
@@ -146,7 +144,6 @@ const form = useForm({
 
             <div>
                 <InputLabel for="unit_id" :value="$t('Unit')" />
-
                 <TextInput
                     id="unit_id"
                     type="text"
