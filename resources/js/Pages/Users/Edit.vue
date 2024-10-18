@@ -109,6 +109,15 @@ export default {
                         </div>
                     </div>
                 </div>
+                <div class="flex justify-center mb-4">
+                    <button
+                        type="button"
+                        @click="openIconEdit"
+                        class="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
+                    >
+                        プロフィール画像を編集
+                    </button>
+                </div>
                 <div class="mb-4">
                     <label class="block font-bold mb-2" for="name">名前</label>
                     <input
