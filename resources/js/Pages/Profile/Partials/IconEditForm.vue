@@ -6,7 +6,7 @@ const props = defineProps({
     user: Object,
 });
 
-const emit = defineEmits(["close", "updateIcon"]);
+const emit = defineEmits(["close", "updateIcon", "successMessage"]);
 
 // アイコン編集用のフォームデータを定義
 const form = useForm({
@@ -23,6 +23,10 @@ const previewUrl = ref(
 // ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
 const isLocalPreview = ref(false);
 
+// 成功メッセージとエラーメッセージのrefを定義
+const localSuccessMessage = ref(null); // 初期値をnullに設定
+const localErrorMessage = ref(null); // 初期値をnullに設定
+
 // 画像ファイルのチェック
 const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -32,14 +36,13 @@ const handleImageChange = (e) => {
             "image/jpeg",
             "image/png",
             "image/gif",
-            "image/svg+xml",
             "image/webp",
         ];
         if (!validImageTypes.includes(file.type)) {
             localErrorMessage.value =
-                "対応していないファイル形式です。png, jpg, gif, svg, webpのいずれかを選択してください。";
+                "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
 
-            // 3秒後にエラーメッセージを自動的に消す処理
+            // 5秒後にエラーメッセージを自動的に消す処理
             setTimeout(() => {
                 localErrorMessage.value = null;
             }, 5000);
@@ -53,71 +56,46 @@ const handleImageChange = (e) => {
     }
 };
 
-// 成功メッセージをcomputedで取得
-const successMessage = computed(() => {
-    return usePage().props.flash && usePage().props.flash.success
-        ? usePage().props.flash.success
-        : null;
-});
-
-// エラーメッセージをcomputedで取得
-const errorMessage = computed(() => {
-    return usePage().props.errors && usePage().props.errors.icon
-        ? usePage().props.errors.icon
-        : null;
-});
-
-// ローカルの成功メッセージをrefで定義
-const localSuccessMessage = ref(successMessage.value);
-
-watch(successMessage, (newValue) => {
-    if (newValue) {
-        localSuccessMessage.value = newValue;
-        setTimeout(() => {
-            localSuccessMessage.value = null;
-        }, 5000);
-    }
-});
-
-const localErrorMessage = ref(errorMessage.value);
-
-watch(errorMessage, (newValue) => {
-    if (newValue) {
-        localErrorMessage.value = newValue;
-        setTimeout(() => {
-            localErrorMessage.value = null;
-        }, 5000);
-    }
-});
-
 // フォーム送信処理
 const submit = () => {
-  form.post(route("profile.updateIcon"), {
-    forceFormData: true,
-    onSuccess: () => {
-      console.log("アイコン更新成功");
-      
-      // サーバーから新しいアイコンパスが返される場合は、その値を使う
-      const updatedIcon = usePage().props.auth.user.icon;
-      
-      if (updatedIcon) {
-        // 正しいパスを構築する
-        previewUrl.value = `/storage/${updatedIcon}`;
-        emit("updateIcon", previewUrl.value);
-      } else {
-        // パスがない場合はプレースホルダーに戻す
-        previewUrl.value = "https://via.placeholder.com/100";
-      }
+    form.post(route("profile.updateIcon"), {
+        forceFormData: true,
+        onSuccess: () => {
+            console.log("アイコン更新成功");
 
-      // オーバーレイを閉じる
-      emit("close");
-    },
-    onError: (errors) => {
-      console.log("アイコン更新エラー", errors);
-    },
-  });
+            // サーバーから新しいアイコンパスが返される場合は、その値を使う
+            const updatedIcon = usePage().props.auth.user.icon;
+
+            if (updatedIcon) {
+                // 正しいパスを構築する
+                previewUrl.value = `/storage/${updatedIcon}`;
+                emit("updateIcon", previewUrl.value);
+                emit("successMessage", "プロフィール画像が更新されました");
+            } else {
+                // パスがない場合はプレースホルダーに戻す
+                previewUrl.value = "https://via.placeholder.com/100";
+            }
+
+            // サクセスメッセージをemitして親コンポーネントで表示させる
+            emit("successMessage", "プロフィール画像が更新されました");
+
+            // 成功メッセージを設定
+            localSuccessMessage.value = "プロフィール画像が更新されました";
+
+            // 5秒後にサクセスメッセージを自動的に消す
+            setTimeout(() => {
+                localSuccessMessage.value = null;
+            }, 5000);
+
+            // オーバーレイを閉じる
+            emit("close");
+        },
+        onError: (errors) => {
+            console.log("アイコン更新エラー", errors);
+            localErrorMessage.value = "アイコン更新に失敗しました";
+        },
+    });
 };
-
 </script>
 
 <template>

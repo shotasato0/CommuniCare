@@ -3,8 +3,8 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { useForm, usePage } from "@inertiajs/vue3";
-import { defineEmits } from "vue";
+import { useForm } from "@inertiajs/vue3";
+import { defineProps, defineEmits, computed } from "vue";
 
 const props = defineProps({
     user: {
@@ -21,9 +21,16 @@ const props = defineProps({
         type: Array,
         required: true,
     },
+    successMessage: {
+        type: String,
+        default: null,
+    },
 });
 
 const emit = defineEmits(["openIconEdit"]);
+
+// successMessage を computed に変更し、props から受け取る
+const successMessage = computed(() => props.successMessage);
 
 // ユーザー情報を取得
 const user = props.user;
@@ -102,6 +109,14 @@ const handleOpenIconEdit = () => {
                         </svg>
                     </div>
                 </button>
+            </div>
+
+            <!-- 成功メッセージ表示 -->
+            <div
+                v-if="successMessage"
+                class="bg-green-100 text-green-700 p-3 mb-6 rounded"
+            >
+                {{ successMessage }}
             </div>
 
             <!-- フォーム項目 -->
