@@ -6,7 +6,11 @@ import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { defineEmits } from "vue";
 
-defineProps({
+const props = defineProps({
+    user: {
+        type: Object,
+        required: true,
+    },
     mustVerifyEmail: {
         type: Boolean,
     },
@@ -18,7 +22,7 @@ defineProps({
 const emit = defineEmits(["openIconEdit"]);
 
 // ユーザー情報を取得
-const user = usePage().props.auth.user;
+const user = props.user;
 
 // フォームデータの設定
 const form = useForm({
@@ -62,13 +66,14 @@ const handleOpenIconEdit = () => {
             <div class="relative">
                 <img
                     :src="
-                        user.icon
-                            ? `/storage/${user.icon}`
-                            : 'https://via.placeholder.com/100'
+                        user.icon.startsWith('/storage/')
+                            ? user.icon
+                            : `/storage/${user.icon}`
                     "
                     alt="ユーザーのプロフィール写真"
                     class="w-24 h-24 rounded-full object-cover group-hover:opacity-70 transition-opacity duration-300"
                 />
+
                 <button
                     type="button"
                     @click="handleOpenIconEdit"
