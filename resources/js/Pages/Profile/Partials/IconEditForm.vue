@@ -1,6 +1,8 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed, watch, ref } from "vue";
+import { computed, watch, ref, defineEmits } from "vue";
+
+const emit = defineEmits(["close", "updateIcon"]);
 
 // usePage からユーザー情報を取得
 const page = usePage();
