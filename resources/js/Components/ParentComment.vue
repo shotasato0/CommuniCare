@@ -40,9 +40,13 @@ const getCommentCountRecursive = (comments) => {
         <div v-for="comment in comments" :key="comment.id" class="mb-4">
             <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
                 <p class="text-xs">
-                    {{ formatDate(comment.created_at) }} ＠{{
-                        comment.user?.name || "Unknown"
-                    }}
+                    {{ formatDate(comment.created_at) }}
+                    <a
+                        :href="route('users.show', comment.user.id)"
+                        class="hover:bg-blue-300 p-1 rounded"
+                    >
+                        @{{ comment.user?.name || "Unknown" }}
+                    </a>
                 </p>
                 <p>{{ comment.message }}</p>
 
