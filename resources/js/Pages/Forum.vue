@@ -180,8 +180,10 @@ const isCommentAuthor = (comment) => {
                 <div>
                     <p class="mb-2 text-xs">
                         {{ formatDate(post.created_at) }}
-                        <span v-if="post.user">＠{{ post.user.name }}</span>
-                        <span v-else>＠Unknown</span>
+                        <a :href="route('users.show', post.user.id)">
+                            <span v-if="post.user">＠{{ post.user.name }}</span>
+                            <span v-else>＠Unknown</span>
+                        </a>
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
