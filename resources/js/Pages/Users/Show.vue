@@ -14,7 +14,7 @@ export default {
     },
     methods: {
         profileEdit() {
-            // 編集ボタンを押したときの処理をここに書く
+            // 編集ボタンを押したときの処理
             router.visit(route("profile.edit"));
         },
     },
@@ -22,8 +22,12 @@ export default {
 </script>
 
 <template>
-    <div class="flex justify-center items-center min-h-screen bg-gray-100">
-        <div class="w-80 bg-white p-6 rounded-lg shadow-lg text-center">
+    <div
+        class="flex items-center justify-center inset-0 bg-black bg-opacity-50 z-50"
+    >
+        <div
+            class="bg-white p-6 rounded-lg shadow-lg max-h-screen overflow-auto w-80"
+        >
             <img
                 :src="
                     user.icon
@@ -61,7 +65,7 @@ export default {
 
             <button
                 @click="profileEdit"
-                class="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
                 プロフィールを編集
             </button>
