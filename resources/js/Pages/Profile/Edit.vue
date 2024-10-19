@@ -5,7 +5,7 @@ import UpdatePasswordForm from "./Partials/UpdatePasswordForm.vue";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm.vue";
 import IconEditForm from "./Partials/IconEditForm.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // アイコン編集オーバーレイの表示制御
 const isIconEditVisible = ref(false);
@@ -25,6 +25,14 @@ const closeIconEdit = () => {
 const handleUpdateIcon = (newIconUrl) => {
     user.icon = newIconUrl; // 新しいアイコンURLを更新
 };
+
+watch(successMessage, (newVal) => {
+    if (newVal) {
+        setTimeout(() => {
+            successMessage.value = null;
+        }, 3000);
+    }
+});
 </script>
 
 <template>
