@@ -65,7 +65,7 @@ export default {
 
             <button
                 @click="profileEdit"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block"
             >
                 プロフィールを編集
             </button>
