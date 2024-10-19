@@ -204,7 +204,8 @@ const isCommentAuthor = (comment) => {
                             class="hover:bg-blue-300 p-1 rounded cursor-pointer"
                         >
                             <span v-if="post.user">
-                                ＠{{ post.user.name }}</span>
+                                ＠{{ post.user.name }}</span
+                            >
                             <span v-else>＠Unknown</span>
                         </span>
                     </p>
@@ -274,7 +275,10 @@ const isCommentAuthor = (comment) => {
             class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
             @click="closeUserProfile"
         >
-            <Show v-if="selectedPost" :user="selectedPost.user" />
+            <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->
+            <div @click.stop>
+                <Show v-if="selectedPost" :user="selectedPost.user" />
+            </div>
         </div>
 
         <!-- 下部ページネーション -->
