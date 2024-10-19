@@ -35,6 +35,8 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
             return Inertia::render('Dashboard');
         })->name('dashboard');
 
+        
+        Route::post('/profile/update-icon', [ProfileController::class, 'updateIcon'])->name('profile.updateIcon');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

@@ -13,9 +13,9 @@ export default {
         return { page };
     },
     methods: {
-        editUser() {
+        profileEdit() {
             // 編集ボタンを押したときの処理をここに書く
-            router.visit(`/users/${this.user.id}/edit-profile`);
+            router.visit(route("profile.edit"));
         },
     },
 };
@@ -60,7 +60,7 @@ export default {
             </div>
 
             <button
-                @click="editUser"
+                @click="profileEdit"
                 class="bg-blue-500 text-white px-4 py-2 rounded mb-6 hover:bg-blue-600"
             >
                 プロフィールを編集
