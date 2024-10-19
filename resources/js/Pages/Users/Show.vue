@@ -23,7 +23,7 @@ export default {
 
 <template>
     <div
-        class="flex items-center justify-center inset-0 bg-black bg-opacity-50 z-50"
+        class="flex items-center justify-center inset-0 bg-black rounded-lg bg-opacity-50 z-50"
     >
         <div
             class="bg-white p-6 rounded-lg shadow-lg max-h-screen overflow-auto w-80"
