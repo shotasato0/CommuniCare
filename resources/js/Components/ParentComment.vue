@@ -11,6 +11,7 @@ const props = defineProps({
     deleteItem: Function, // コメント削除用関数
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
+    openUserProfile: Function, // ユーザープロフィールを開く関数
 });
 
 // 子コメントの折りたたみ状態を管理
@@ -41,12 +42,16 @@ const getCommentCountRecursive = (comments) => {
             <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
                 <p class="text-xs">
                     {{ formatDate(comment.created_at) }}
-                    <a
-                        :href="route('users.show', comment.user.id)"
-                        class="hover:bg-blue-300 p-1 rounded"
+                    <span
+                        v-if="comment.user"
+                        @click="openUserProfile(comment)"
+                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
                     >
-                        @{{ comment.user?.name || "Unknown" }}
-                    </a>
+                        <span v-if="comment.user">
+                            ＠{{ comment.user.name }}
+                        </span>
+                        <span v-else>＠Unknown</span>
+                    </span>
                 </p>
                 <p>{{ comment.message }}</p>
 
@@ -129,6 +134,7 @@ const getCommentCountRecursive = (comments) => {
                         :deleteItem="deleteItem"
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
+                        :openUserProfile="openUserProfile"
                     />
                 </div>
             </div>

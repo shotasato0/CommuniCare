@@ -265,6 +265,7 @@ const isCommentAuthor = (comment) => {
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
                     :commentFormVisibility="commentFormVisibility"
+                    :openUserProfile="openUserProfile"
                 />
             </div>
         </div>

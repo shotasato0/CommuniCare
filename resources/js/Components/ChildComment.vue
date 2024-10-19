@@ -9,6 +9,7 @@ const props = defineProps({
     deleteItem: Function, // コメント削除用関数
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
+    openUserProfile: Function, // ユーザープロフィールを開く関数
 });
 </script>
 
@@ -18,12 +19,14 @@ const props = defineProps({
             <div class="ml-4 mb-2 pl-2">
                 <p class="text-xs">
                     {{ formatDate(comment.created_at) }}
-                    <a
-                        :href="route('users.show', comment.user.id)"
-                        class="hover:bg-blue-300 p-1 rounded"
+                    <span
+                        v-if="comment.user"
+                        @click="openUserProfile(comment)"
+                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
                     >
-                        @{{ comment.user?.name || "Unknown" }}
-                    </a>
+                        @{{ comment.user.name }}
+                    </span>
+                    <span v-else>＠Unknown</span>
                 </p>
                 <p>{{ comment.message }}</p>
 
@@ -74,6 +77,7 @@ const props = defineProps({
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
                     :commentFormVisibility="commentFormVisibility"
+                    :openUserProfile="openUserProfile"
                 />
             </div>
         </div>
