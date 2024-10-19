@@ -15,9 +15,9 @@ const form = useForm({
 
 // 選択された画像のプレビューURLを保存するref
 const previewUrl = ref(
-    props.user.icon
-        ? `/storage/${props.user.icon}` // サーバー上の既存のアイコンURL
-        : "https://via.placeholder.com/100"
+    props.user.icon.startsWith("/storage/")
+        ? `${props.user.icon}` // すでに/storageがついている場合はそのまま
+        : `/storage/${props.user.icon}` // ついていない場合は/storageをつける
 );
 
 // ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
