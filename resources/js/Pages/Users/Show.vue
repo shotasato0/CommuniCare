@@ -10,7 +10,8 @@ export default {
     },
     setup() {
         const page = usePage();
-        return { page };
+        const authUser = page.props.auth.user; // ログインユーザー情報を取得
+        return { page, authUser };
     },
     methods: {
         profileEdit() {
@@ -63,7 +64,9 @@ export default {
                 </div>
             </div>
 
+            <!-- ログインユーザーと一致する場合にのみ表示 -->
             <button
+                v-if="authUser && authUser.id === user.id"
                 @click="profileEdit"
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block"
             >
