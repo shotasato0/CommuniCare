@@ -180,7 +180,10 @@ const isCommentAuthor = (comment) => {
                 <div>
                     <p class="mb-2 text-xs">
                         {{ formatDate(post.created_at) }}
-                        <a :href="route('users.show', post.user.id)">
+                        <a
+                            :href="route('users.show', post.user.id)"
+                            class="hover:bg-blue-300 p-1 rounded"
+                        >
                             <span v-if="post.user">＠{{ post.user.name }}</span>
                             <span v-else>＠Unknown</span>
                         </a>
