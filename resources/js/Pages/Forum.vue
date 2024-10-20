@@ -8,11 +8,29 @@ import CommentForm from "@/Components/CommentForm.vue";
 import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
 import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
+import Show from "./Users/Show.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
+
+const selectedPost = ref(null); // 選択された投稿
+const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
+
+const openUserProfile = (post) => {
+    selectedPost.value = post;
+    isUserProfileVisible.value = true; // ユーザーの詳細ページを表示
+};
+
+const closeUserProfile = () => {
+    isUserProfileVisible.value = false;
+};
+
+// 投稿を選択する関数
+const selectPost = (post) => {
+    selectedPost.value = post;
+};
 
 // コメントフォーム表示状態を管理するためのオブジェクト
 const commentFormVisibility = ref({});
@@ -180,7 +198,38 @@ const isCommentAuthor = (comment) => {
                 <div>
                     <p class="mb-2 text-xs">
                         {{ formatDate(post.created_at) }}
-                        <span v-if="post.user">＠{{ post.user.name }}</span>
+                        <span
+                            v-if="post.user"
+                            class="flex items-center space-x-2"
+                        >
+                            <!-- ユーザーアイコンの表示 -->
+                            <img
+                                v-if="post.user.icon"
+                                :src="
+                                    post.user.icon.startsWith('/storage/')
+                                        ? post.user.icon
+                                        : `/storage/${post.user.icon}`
+                                "
+                                alt="User Icon"
+                                class="w-6 h-6 rounded-full cursor-pointer"
+                                @click="openUserProfile(post)"
+                            />
+                            <img
+                                v-else
+                                src="https://via.placeholder.com/40"
+                                alt="Default Icon"
+                                class="w-6 h-6 rounded-full cursor-pointer"
+                                @click="openUserProfile(post)"
+                            />
+
+                            <!-- 投稿者名の表示 -->
+                            <span
+                                @click="openUserProfile(post)"
+                                class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                            >
+                                ＠{{ post.user.name }}
+                            </span>
+                        </span>
                         <span v-else>＠Unknown</span>
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
@@ -239,7 +288,20 @@ const isCommentAuthor = (comment) => {
                     :deleteItem="deleteItem"
                     :toggleCommentForm="toggleCommentForm"
                     :commentFormVisibility="commentFormVisibility"
+                    :openUserProfile="openUserProfile"
                 />
+            </div>
+        </div>
+
+        <!-- 選択された投稿のユーザーの詳細ページを表示 -->
+        <div
+            v-if="isUserProfileVisible"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            @click="closeUserProfile"
+        >
+            <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->
+            <div @click.stop>
+                <Show v-if="selectedPost" :user="selectedPost.user" />
             </div>
         </div>
 
