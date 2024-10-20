@@ -211,13 +211,15 @@ const isCommentAuthor = (comment) => {
                                         : `/storage/${post.user.icon}`
                                 "
                                 alt="User Icon"
-                                class="w-6 h-6 rounded-full"
+                                class="w-6 h-6 rounded-full cursor-pointer"
+                                @click="openUserProfile(post)"
                             />
                             <img
                                 v-else
                                 src="https://via.placeholder.com/40"
                                 alt="Default Icon"
-                                class="w-6 h-6 rounded-full"
+                                class="w-6 h-6 rounded-full cursor-pointer"
+                                @click="openUserProfile(post)"
                             />
 
                             <!-- 投稿者名の表示 -->
