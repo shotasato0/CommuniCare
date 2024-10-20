@@ -40,18 +40,37 @@ const getCommentCountRecursive = (comments) => {
     <div v-if="comments.length">
         <div v-for="comment in comments" :key="comment.id" class="mb-4">
             <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
-                <p class="text-xs">
+                <p class="text-xs flex items-center space-x-2">
                     {{ formatDate(comment.created_at) }}
+                    <!-- ユーザーアイコンを追加 -->
+                    <img
+                        v-if="comment.user && comment.user.icon"
+                        :src="
+                            comment.user.icon.startsWith('/storage/')
+                                ? comment.user.icon
+                                : `/storage/${comment.user.icon}`
+                        "
+                        alt="User Icon"
+                        class="w-6 h-6 rounded-full cursor-pointer"
+                        @click="openUserProfile(comment)"
+                    />
+                    <img
+                        v-else
+                        src="https://via.placeholder.com/40"
+                        alt="Default Icon"
+                        class="w-6 h-6 rounded-full cursor-pointer"
+                        @click="openUserProfile(comment)"
+                    />
+
+                    <!-- 投稿者名の表示 -->
                     <span
                         v-if="comment.user"
                         @click="openUserProfile(comment)"
                         class="hover:bg-blue-300 p-1 rounded cursor-pointer"
                     >
-                        <span v-if="comment.user">
-                            ＠{{ comment.user.name }}
-                        </span>
-                        <span v-else>＠Unknown</span>
+                        ＠{{ comment.user.name }}
                     </span>
+                    <span v-else>＠Unknown</span>
                 </p>
                 <p>{{ comment.message }}</p>
 
