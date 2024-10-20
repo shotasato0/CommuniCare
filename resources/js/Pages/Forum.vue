@@ -200,14 +200,35 @@ const isCommentAuthor = (comment) => {
                         {{ formatDate(post.created_at) }}
                         <span
                             v-if="post.user"
-                            @click="openUserProfile(post)"
-                            class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                            class="flex items-center space-x-2"
                         >
-                            <span v-if="post.user">
-                                ＠{{ post.user.name }}</span
+                            <!-- ユーザーアイコンの表示 -->
+                            <img
+                                v-if="post.user.icon"
+                                :src="
+                                    post.user.icon.startsWith('/storage/')
+                                        ? post.user.icon
+                                        : `/storage/${post.user.icon}`
+                                "
+                                alt="User Icon"
+                                class="w-6 h-6 rounded-full"
+                            />
+                            <img
+                                v-else
+                                src="https://via.placeholder.com/40"
+                                alt="Default Icon"
+                                class="w-6 h-6 rounded-full"
+                            />
+
+                            <!-- 投稿者名の表示 -->
+                            <span
+                                @click="openUserProfile(post)"
+                                class="hover:bg-blue-300 p-1 rounded cursor-pointer"
                             >
-                            <span v-else>＠Unknown</span>
+                                ＠{{ post.user.name }}
+                            </span>
                         </span>
+                        <span v-else>＠Unknown</span>
                     </p>
                     <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                     <p class="mb-2">{{ post.message }}</p>
