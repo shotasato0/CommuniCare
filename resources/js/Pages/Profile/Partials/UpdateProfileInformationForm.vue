@@ -81,13 +81,18 @@ const handleOpenIconEdit = () => {
                     <!-- プロフィール画像 -->
                     <img
                         :src="
+                            user.icon &&
+                            typeof user.icon === 'string' &&
                             user.icon.startsWith('/storage/')
                                 ? user.icon
-                                : `/storage/${user.icon}`
+                                : user.icon
+                                ? `/storage/${user.icon}`
+                                : 'https://via.placeholder.com/100'
                         "
                         alt="ユーザーのプロフィール写真"
                         class="w-24 h-24 rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
                     />
+
                     <!-- ペンのマーク -->
                     <div
                         class="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded-full"

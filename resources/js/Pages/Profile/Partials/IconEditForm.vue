@@ -13,12 +13,15 @@ const form = useForm({
     icon: null, // アイコンを追加
 });
 
-// 選択された画像のプレビューURLを保存するref
+// アイコンのプレビューURLを定義
 const previewUrl = ref(
-    props.user.icon.startsWith("/storage/")
-        ? `${props.user.icon}` // すでに/storageがついている場合はそのまま
-        : `/storage/${props.user.icon}` // ついていない場合は/storageをつける
+    props.user.icon && typeof props.user.icon === 'string' && props.user.icon.startsWith("/storage/")
+        ? props.user.icon
+        : props.user.icon
+        ? `/storage/${props.user.icon}`
+        : "https://via.placeholder.com/100"
 );
+
 
 // ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
 const isLocalPreview = ref(false);
