@@ -11,6 +11,7 @@ const props = defineProps({
     deleteItem: Function, // コメント削除用関数
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
+    openUserProfile: Function, // ユーザープロフィールを開く関数
 });
 
 // 子コメントの折りたたみ状態を管理
@@ -39,10 +40,37 @@ const getCommentCountRecursive = (comments) => {
     <div v-if="comments.length">
         <div v-for="comment in comments" :key="comment.id" class="mb-4">
             <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
-                <p class="text-xs">
-                    {{ formatDate(comment.created_at) }} ＠{{
-                        comment.user?.name || "Unknown"
-                    }}
+                <p class="text-xs flex items-center space-x-2">
+                    {{ formatDate(comment.created_at) }}
+                    <!-- ユーザーアイコンを追加 -->
+                    <img
+                        v-if="comment.user && comment.user.icon"
+                        :src="
+                            comment.user.icon.startsWith('/storage/')
+                                ? comment.user.icon
+                                : `/storage/${comment.user.icon}`
+                        "
+                        alt="User Icon"
+                        class="w-6 h-6 rounded-full cursor-pointer"
+                        @click="openUserProfile(comment)"
+                    />
+                    <img
+                        v-else
+                        src="https://via.placeholder.com/40"
+                        alt="Default Icon"
+                        class="w-6 h-6 rounded-full cursor-pointer"
+                        @click="openUserProfile(comment)"
+                    />
+
+                    <!-- 投稿者名の表示 -->
+                    <span
+                        v-if="comment.user"
+                        @click="openUserProfile(comment)"
+                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                    >
+                        ＠{{ comment.user.name }}
+                    </span>
+                    <span v-else>＠Unknown</span>
                 </p>
                 <p>{{ comment.message }}</p>
 
@@ -125,6 +153,7 @@ const getCommentCountRecursive = (comments) => {
                         :deleteItem="deleteItem"
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
+                        :openUserProfile="openUserProfile"
                     />
                 </div>
             </div>
