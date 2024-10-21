@@ -6,6 +6,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link, usePage } from "@inertiajs/vue3";
+import SearchForm from "@/Components/SearchForm.vue";
 
 // CSRFトークンを取得
 const csrfToken = ref(
@@ -47,6 +48,9 @@ const auth = usePage().props.auth || {};
                                 </NavLink>
                             </div>
                         </div>
+
+                        <!-- 検索フォーム -->
+                        <SearchForm />
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
                             <!-- Settings Dropdown -->
