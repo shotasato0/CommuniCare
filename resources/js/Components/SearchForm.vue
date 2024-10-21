@@ -20,7 +20,7 @@ const searchPosts = () => {
         <input
             v-model="search"
             type="text"
-            placeholder="タイトルやメッセージを検索"
+            placeholder="キーワード検索"
             class="border p-2 w-full pr-12 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500"
         />
         <!-- 検索アイコン -->
