@@ -10,7 +10,10 @@ const searchPosts = () => {
     router.get(
         route("forum.index"),
         { search: search.value },
-        { preserveState: true }
+        {
+            preserveScroll: true, //ページのスクロール位置を保持
+            replace: true, //ページの履歴を置き換え
+        }
     );
 };
 </script>
