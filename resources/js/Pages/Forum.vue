@@ -9,7 +9,7 @@ import ParentComment from "@/Components/ParentComment.vue"; // 新しいコン�
 import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
-
+import SearchForm from "@/Components/SearchForm.vue";
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
@@ -181,7 +181,14 @@ const isCommentAuthor = (comment) => {
 
     <AuthenticatedLayout>
         <div class="w-11/12 max-w-screen-md m-auto">
-            <h1 class="text-xl font-bold mt-5">{{ appName }}</h1>
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold">{{ appName }}</h1>
+
+                <!-- 検索フォーム -->
+                <div class="flex justify-end">
+                    <SearchForm />
+                </div>
+            </div>
 
             <!-- 上部ページネーション -->
             <Pagination :links="posts.links" />
