@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
-    $search = request()->input('search');
+    $search = $request->input('search');
 
     // 投稿を取得
     $posts = Post::with([
