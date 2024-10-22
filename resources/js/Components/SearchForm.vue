@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 
+const pageProps = usePage().props;
 // 検索クエリの状態を保持
-const search = ref("");
+const search = ref(pageProps.search || "");
 const isComposing = ref(false); // 変換中かどうかを管理するフラグ
 
 // 検索実行
@@ -19,6 +20,12 @@ const searchPosts = () => {
             }
         );
     }
+};
+
+// 検索リセット
+const resetSearch = () => {
+    search.value = "";
+    router.get(route("forum.index"), {}, { replace: true });
 };
 
 // 変換開始
@@ -49,6 +56,12 @@ const compositionEnd = () => {
         <i
             class="bi bi-search absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
             @click="searchPosts"
+        ></i>
+        <!-- リセットアイコン（×ボタン） -->
+        <i
+            v-if="search"
+            class="bi bi-x absolute top-1/2 right-12 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+            @click="resetSearch"
         ></i>
     </div>
 </template>

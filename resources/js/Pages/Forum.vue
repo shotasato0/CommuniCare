@@ -174,6 +174,9 @@ const getCurrentCommentCount = (post) => {
 const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
+
+// 検索結果の表示状態
+const search = ref(pageProps.search || "");
 </script>
 
 <template>
@@ -183,6 +186,11 @@ const isCommentAuthor = (comment) => {
         <div class="w-11/12 max-w-screen-md m-auto">
             <div class="flex justify-between items-center">
                 <h1 class="text-xl font-bold">{{ appName }}</h1>
+
+                <!-- 検索結果があるかどうかを判断して表示を切り替える -->
+                <div v-if="search" class="text-xl font-bold">
+                    <p>検索結果: {{ posts.total }}件</p>
+                </div>
 
                 <!-- 検索フォーム -->
                 <div class="flex justify-end">
