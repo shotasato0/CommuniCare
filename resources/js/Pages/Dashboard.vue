@@ -37,22 +37,6 @@ console.log("User data:", props.auth.user);
             </h2>
         </template>
 
-        <!-- フラッシュメッセージの表示 -->
-        <div
-            v-if="flashMessage"
-            :class="{
-                'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
-                    flashType === 'success',
-                'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
-                    flashType === 'error',
-                'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
-                    flashType === 'info',
-            }"
-            class="mt-4 mb-6"
-        >
-            <p class="font-bold">{{ flashMessage }}</p>
-        </div>
-
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -62,6 +46,24 @@ console.log("User data:", props.auth.user);
                 </div>
             </div>
         </div>
+
+        <!-- フラッシュメッセージの表示 -->
+        <div
+            v-if="flashMessage"
+            :class="{
+                'bg-green-100 border-l-4 border-green-500 text-green-700 p-6':
+                    flashType === 'success',
+                'bg-red-100 border-l-4 border-red-500 text-red-700 p-6':
+                    flashType === 'error',
+                'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-6':
+                    flashType === 'info',
+            }"
+            class="mt-4 mb-6 max-w-7xl mx-auto sm:px-6 lg:px-8 sm:rounded-lg"
+        >
+            <p class="font-bold">{{ flashMessage }}</p>
+        </div>
+
+        <!-- 管理者ページ -->
         <div v-if="isAdmin">
             <AdminDashboard />
         </div>
