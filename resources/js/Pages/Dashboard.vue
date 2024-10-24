@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 
 const { props } = usePage();
@@ -15,17 +15,8 @@ const flashType = ref(
     flash.success ? "success" : flash.error ? "error" : "info"
 );
 
-onMounted(() => {
-    // Flashメッセージからリロードフラグを確認
-    if (props.flash && props.flash.reload_page) {
-        console.log("リロードフラグがtrueです。ページをリロードします。");
-        window.location.reload(); // リロードをトリガー
-    }
-});
-
 // コンソールにユーザー情報を出力
 console.log("User data:", props.auth.user);
-console.log("Flash message:", props.flash);
 </script>
 
 <template>
