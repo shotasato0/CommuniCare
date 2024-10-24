@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 
 const { props } = usePage();
@@ -14,6 +14,14 @@ const flashMessage = ref(flash.success || flash.error || flash.info || null);
 const flashType = ref(
     flash.success ? "success" : flash.error ? "error" : "info"
 );
+
+onMounted(() => {
+    if (flashMessage.value) {
+        setTimeout(() => {
+            flashMessage.value = null;
+        }, 3000); // 3秒後にメッセージを消す
+    }
+});
 
 // コンソールにユーザー情報を出力
 console.log("User data:", props.auth.user);
