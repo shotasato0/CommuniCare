@@ -13,6 +13,9 @@ use App\Http\Controllers\Auth\TenantRegisterController;
 use App\Http\Controllers\Auth\TenantLoginController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');
+
 Route::middleware('guest')->group(function () {
     // テナント登録ルート
     Route::get('/tenant/register', [TenantRegisterController::class, 'showRegistrationForm'])->name('tenant.register');
@@ -21,9 +24,6 @@ Route::middleware('guest')->group(function () {
     // テナントログインルート
     Route::get('/tenant/login', [TenantLoginController::class, 'showLoginForm'])->name('tenant.login');
     Route::post('/tenant/login', [TenantLoginController::class, 'store'])->name('tenant.login.post');
-
-    Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
