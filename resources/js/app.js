@@ -43,8 +43,7 @@ createInertiaApp({
 
             // ログイン後またはダッシュボードでのリダイレクトを処理
             if (
-                currentUrl.includes("localhost/home") ||
-                currentUrl.includes("localhost/dashboard")
+                currentUrl.includes("localhost/home")
             ) {
                 console.log(
                     "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
