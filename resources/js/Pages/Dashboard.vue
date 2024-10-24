@@ -2,9 +2,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
+import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 
 const { props } = usePage();
 const pageProps = usePage().props;
+const isAdmin = props.isAdmin;
 
 onMounted(() => {
     // Flashメッセージからリロードフラグを確認
@@ -36,6 +38,9 @@ console.log("User data:", props.auth.user);
                     </div>
                 </div>
             </div>
+        </div>
+        <div v-if="isAdmin">
+            <AdminDashboard />
         </div>
     </AuthenticatedLayout>
 </template>
