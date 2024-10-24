@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -52,6 +53,10 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/users/{user}/edit-profile', [UserController::class, 'editProfile'])->name('users.editProfile');
         Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
         Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
+
+        Route::middleware(['role:admin'])->group(function () {
+            Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+        });
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
