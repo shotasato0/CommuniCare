@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UnitController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -55,6 +56,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::middleware(['role:admin'])->group(function () {
             Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
         });
+        Route::resource('units', UnitController::class);
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
