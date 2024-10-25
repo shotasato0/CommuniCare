@@ -1,8 +1,22 @@
 <script setup>
-import { Head, usePage, Link } from "@inertiajs/vue3";
+import { Head, usePage} from "@inertiajs/vue3";
+import { ref } from "vue";
+import Show from "@/Pages/Users/Show.vue";
 
 const { props } = usePage();
 const users = props.users;
+
+const isUserProfileVisible = ref(false);
+const selectedUser = ref(null);
+
+const openUserProfile = (user) => {
+    selectedUser.value = user;
+    isUserProfileVisible.value = true; // ユーザーの詳細ページを表示
+};
+
+const closeUserProfile = () => {
+    isUserProfileVisible.value = false;
+};
 </script>
 
 <template>
@@ -24,15 +38,30 @@ const users = props.users;
                             : 'https://via.placeholder.com/150'
                     "
                     alt="Profile Icon"
-                    class="w-16 h-16 rounded-full"
+                    class="w-16 h-16 rounded-full cursor-pointer hover:opacity-70"
+                    @click="openUserProfile(user)"
                 />
 
-                <Link :href="route('users.show', user.id)" class="flex-grow">
-                    <p class="text-lg font-bold text-gray-900">
+                <p class="text-lg font-bold text-gray-900">
+                    <span
+                        @click="openUserProfile(user)"
+                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                    >
                         {{ user.name }}
-                    </p>
-                </Link>
+                    </span>
+                </p>
             </div>
+        </div>
+    </div>
+
+    <!-- 選択された投稿のユーザーの詳細ページを表示 -->
+    <div
+        v-if="isUserProfileVisible"
+        class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+        @click="closeUserProfile"
+    >
+        <div @click.stop>
+            <Show v-if="selectedUser" :user="selectedUser" />
         </div>
     </div>
 </template>
