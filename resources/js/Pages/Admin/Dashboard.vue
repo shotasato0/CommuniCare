@@ -40,7 +40,7 @@ import { Link, Head } from "@inertiajs/vue3";
                     </p>
                     <div class="mt-4">
                         <Link
-                            href="/admin/employees/list"
+                            :href="route('users.index')"
                             class="text-indigo-600 hover:text-indigo-900"
                             >{{ $t("List page") }}</Link
                         >
