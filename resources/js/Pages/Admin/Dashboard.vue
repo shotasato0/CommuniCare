@@ -59,7 +59,7 @@ import { Link, Head } from "@inertiajs/vue3";
                     </p>
                     <div class="mt-4">
                         <Link
-                            href="/admin/units/register"
+                            :href="route('units.create')"
                             class="text-indigo-600 hover:text-indigo-900"
                             >{{ $t("Registration page") }}</Link
                         >
