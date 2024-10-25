@@ -29,7 +29,8 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Unit::create($request->all());
+        return redirect()->route("dashboard")->with(["success" => "ユニット登録が完了しました。"]);
     }
 
     /**
