@@ -29,6 +29,15 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            "name" => "required|string|max:255|unique:units,name",
+        ], [
+            "name.required" => "部署名は必須です。",
+            "name.string" => "部署名は文字列で入力してください。",
+            "name.max" => "部署名は255文字以内で入力してください。",
+            "name.unique" => "この部署名は既に登録されています。",
+        ]);
+
         Unit::create($request->all());
         return redirect()->route("dashboard")->with(["success" => "ユニット登録が完了しました。"]);
     }
