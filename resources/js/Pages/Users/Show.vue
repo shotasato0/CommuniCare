@@ -7,11 +7,26 @@ export default {
             type: Object,
             required: true,
         },
+        units: {
+            type: Array,
+            required: true,
+        },
     },
-    setup() {
+    setup(props) {
         const page = usePage();
         const authUser = page.props.auth.user; // ログインユーザー情報を取得
-        return { page, authUser };
+
+        // デバッグ用のログを追加
+        console.log("User data:", props.user);
+        console.log("Auth user data:", authUser);
+        console.log("Units data:", props.units);
+
+        // 部署名を取得
+        const unitName =
+            props.units.find((unit) => unit.id === props.user.unit_id)?.name ||
+            "未所属";
+
+        return { page, authUser, unitName };
     },
     methods: {
         profileEdit() {
@@ -60,7 +75,7 @@ export default {
             <div class="info mb-4 text-left">
                 <label class="font-bold">所属部署</label>
                 <div class="border border-gray-300 p-2 rounded bg-gray-100">
-                    {{ user.unit ? user.unit.name : "未所属" }}
+                    {{ unitName }}
                 </div>
             </div>
 

@@ -6,6 +6,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const { props } = usePage();
 const users = props.users;
+const units = props.units;
 
 const isUserProfileVisible = ref(false);
 const selectedUser = ref(null);
@@ -63,7 +64,7 @@ const closeUserProfile = () => {
             @click="closeUserProfile"
         >
             <div @click.stop>
-                <Show v-if="selectedUser" :user="selectedUser" />
+                <Show v-if="selectedUser" :user="selectedUser" :units="units"/>
             </div>
         </div>
     </AuthenticatedLayout>

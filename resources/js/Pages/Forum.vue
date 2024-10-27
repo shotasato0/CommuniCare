@@ -10,11 +10,12 @@ import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
+
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
-
+const units = pageProps.units; // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 
@@ -316,7 +317,11 @@ const search = ref(pageProps.search || "");
         >
             <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->
             <div @click.stop>
-                <Show v-if="selectedPost" :user="selectedPost.user" />
+                <Show
+                    v-if="selectedPost"
+                    :user="selectedPost.user"
+                    :units="units"
+                />
             </div>
         </div>
 
