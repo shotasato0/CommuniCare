@@ -10,7 +10,7 @@ import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
-
+import List from "./Unit/List.vue";
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
@@ -184,149 +184,156 @@ const search = ref(pageProps.search || "");
     <Head :title="$t('Forum')" />
 
     <AuthenticatedLayout>
-        <div class="w-11/12 max-w-screen-md m-auto">
-            <div class="flex justify-between items-center">
-                <h1 class="text-xl font-bold">{{ appName }}</h1>
+        <div class="flex">
+            <!-- サイドバー -->
+            <List :units="units" class="w-1/4 p-4 mt-16" />
 
-                <!-- 検索結果があるかどうかを判断して表示を切り替える -->
-                <div v-if="search" class="text-xl font-bold">
+            <!-- メインコンテンツエリア -->
+            <div class="flex-1 max-w-4xl mx-auto p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-xl font-bold">{{ appName }}</h1>
+
+                    <!-- 検索フォーム -->
+                    <SearchForm class="ml-auto" />
+                </div>
+
+                <!-- 検索結果 -->
+                <div v-if="search" class="text-lg font-bold mb-4">
                     <p>検索結果: {{ posts.total }}件</p>
                 </div>
 
-                <!-- 検索フォーム -->
-                <div class="flex justify-end">
-                    <SearchForm />
-                </div>
-            </div>
+                <!-- 上部ページネーション -->
+                <Pagination :links="posts.links" class="mb-4" />
 
-            <!-- 上部ページネーション -->
-            <Pagination :links="posts.links" />
+                <!-- 投稿フォーム -->
+                <PostForm class="mb-6" />
 
-            <PostForm />
-
-            <!-- 投稿一覧 -->
-            <div
-                v-for="post in posts.data"
-                :key="post.id"
-                class="bg-white rounded-md mt-1 mb-5 p-3"
-            >
-                <!-- スレッド -->
-                <div>
-                    <p class="mb-2 text-xs">
-                        {{ formatDate(post.created_at) }}
-                        <span
-                            v-if="post.user"
-                            class="flex items-center space-x-2"
-                        >
-                            <!-- ユーザーアイコンの表示 -->
-                            <img
-                                v-if="post.user.icon"
-                                :src="
-                                    post.user.icon.startsWith('/storage/')
-                                        ? post.user.icon
-                                        : `/storage/${post.user.icon}`
-                                "
-                                alt="User Icon"
-                                class="w-6 h-6 rounded-full cursor-pointer"
-                                @click="openUserProfile(post)"
-                            />
-                            <img
-                                v-else
-                                src="https://via.placeholder.com/40"
-                                alt="Default Icon"
-                                class="w-6 h-6 rounded-full cursor-pointer"
-                                @click="openUserProfile(post)"
-                            />
-
-                            <!-- 投稿者名の表示 -->
+                <!-- 投稿一覧 -->
+                <div
+                    v-for="post in posts.data"
+                    :key="post.id"
+                    class="bg-white rounded-md shadow-md mb-6 p-4"
+                >
+                    <div>
+                        <p class="mb-2 text-xs text-gray-500">
+                            {{ formatDate(post.created_at) }}
                             <span
-                                @click="openUserProfile(post)"
-                                class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                v-if="post.user"
+                                class="flex items-center space-x-2"
                             >
-                                ＠{{ post.user.name }}
-                            </span>
-                        </span>
-                        <span v-else>＠Unknown</span>
-                    </p>
-                    <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
-                    <p class="mb-2">{{ post.message }}</p>
+                                <!-- ユーザーアイコンの表示 -->
+                                <img
+                                    v-if="post.user.icon"
+                                    :src="
+                                        post.user.icon.startsWith('/storage/')
+                                            ? post.user.icon
+                                            : `/storage/${post.user.icon}`
+                                    "
+                                    alt="User Icon"
+                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    @click="openUserProfile(post)"
+                                />
+                                <img
+                                    v-else
+                                    src="https://via.placeholder.com/40"
+                                    alt="Default Icon"
+                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    @click="openUserProfile(post)"
+                                />
 
-                    <!-- ボタンを投稿の下、右端に配置 -->
-                    <div class="flex justify-end space-x-2 mt-2">
-                        <!-- 投稿に対する返信ボタン -->
-                        <button
-                            @click="
-                                toggleCommentForm(
-                                    post.id,
-                                    'post',
-                                    post.user ? post.user.name : 'Unknown'
-                                )
+                                <!-- 投稿者名の表示 -->
+                                <span
+                                    @click="openUserProfile(post)"
+                                    class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                >
+                                    ＠{{ post.user.name }}
+                                </span>
+                            </span>
+                            <span v-else>＠Unknown</span>
+                        </p>
+                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
+                        <p class="mb-2">{{ post.message }}</p>
+
+                        <!-- ボタンを投稿の下、右端に配置 -->
+                        <div class="flex justify-end space-x-2 mt-2">
+                            <!-- 投稿に対する返信ボタン -->
+                            <button
+                                @click="
+                                    toggleCommentForm(
+                                        post.id,
+                                        'post',
+                                        post.user ? post.user.name : 'Unknown'
+                                    )
+                                "
+                                class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                            >
+                                <i class="bi bi-reply"></i>
+                            </button>
+                            <!-- 投稿の削除ボタン -->
+                            <button
+                                v-if="
+                                    post.user && post.user.id === auth.user.id
+                                "
+                                @click.prevent="deleteItem('post', post.id)"
+                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                            >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+
+                        <!-- 投稿へのコメントフォーム -->
+                        <CommentForm
+                            v-if="
+                                commentFormVisibility[post.id]?.['post']
+                                    ?.isVisible
                             "
-                            class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
-                        >
-                            <i class="bi bi-reply"></i>
-                        </button>
-                        <!-- 投稿の削除ボタン -->
-                        <button
-                            v-if="post.user && post.user.id === auth.user.id"
-                            @click.prevent="deleteItem('post', post.id)"
-                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        >
-                            <i class="bi bi-trash"></i>
-                        </button>
+                            :postId="post.id"
+                            :parentId="null"
+                            :replyToName="
+                                commentFormVisibility[post.id]?.['post']
+                                    ?.replyToName
+                            "
+                            class="mt-4"
+                        />
                     </div>
 
-                    <!-- 投稿へのコメントフォーム -->
-                    <CommentForm
-                        v-if="
-                            commentFormVisibility[post.id]?.['post']?.isVisible
-                        "
+                    <h3 class="font-bold mt-8 mb-2">
+                        {{ getCurrentCommentCount(post) }}件のコメント
+                    </h3>
+
+                    <!-- 親コメントビュー -->
+                    <ParentComment
+                        :comments="post.comments"
                         :postId="post.id"
-                        :parentId="null"
-                        :replyToName="
-                            commentFormVisibility[post.id]?.['post']
-                                ?.replyToName
-                        "
-                        class="mt-4"
+                        :formatDate="formatDate"
+                        :isCommentAuthor="isCommentAuthor"
+                        :deleteItem="deleteItem"
+                        :toggleCommentForm="toggleCommentForm"
+                        :commentFormVisibility="commentFormVisibility"
+                        :openUserProfile="openUserProfile"
                     />
                 </div>
 
-                <h3 class="font-bold mt-8 mb-2">
-                    {{ getCurrentCommentCount(post) }}件のコメント
-                </h3>
+                <!-- 下部ページネーション -->
+                <Pagination :links="posts.links" class="mt-4" />
+            </div>
 
-                <!-- 親コメントビュー -->
-                <ParentComment
-                    :comments="post.comments"
-                    :postId="post.id"
-                    :formatDate="formatDate"
-                    :isCommentAuthor="isCommentAuthor"
-                    :deleteItem="deleteItem"
-                    :toggleCommentForm="toggleCommentForm"
-                    :commentFormVisibility="commentFormVisibility"
-                    :openUserProfile="openUserProfile"
-                />
+            <!-- 選択された投稿のユーザーの詳細ページを表示 -->
+            <div
+                v-if="isUserProfileVisible"
+                class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+                @click="closeUserProfile"
+            >
+                <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->
+                <div @click.stop>
+                    <Show
+                        v-if="selectedPost"
+                        :user="selectedPost.user"
+                        :units="units"
+                    />
+                </div>
             </div>
         </div>
-
-        <!-- 選択された投稿のユーザーの詳細ページを表示 -->
-        <div
-            v-if="isUserProfileVisible"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
-            @click="closeUserProfile"
-        >
-            <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->
-            <div @click.stop>
-                <Show
-                    v-if="selectedPost"
-                    :user="selectedPost.user"
-                    :units="units"
-                />
-            </div>
-        </div>
-
-        <!-- 下部ページネーション -->
-        <Pagination :links="posts.links" />
     </AuthenticatedLayout>
 </template>
 
