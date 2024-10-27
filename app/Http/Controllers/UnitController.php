@@ -13,7 +13,10 @@ class UnitController extends Controller
      */
     public function index()
     {
-        //
+        $units = Unit::all();
+        return Inertia::render('Unit/List', [
+            'units' => $units,
+        ]);
     }
 
     /**
