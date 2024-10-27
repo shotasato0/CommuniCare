@@ -11,6 +11,7 @@ import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import List from "./Unit/List.vue";
+
 // propsからページのデータを取得
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
@@ -18,6 +19,7 @@ const auth = pageProps.auth; // ログインユーザー情報
 const units = pageProps.units; // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
+const sidebarVisible = ref(false); // サイドバーの表示状態
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -31,6 +33,11 @@ const closeUserProfile = () => {
 // 投稿を選択する関数
 const selectPost = (post) => {
     selectedPost.value = post;
+};
+
+const toggleSidebar = () => {
+    sidebarVisible.value = !sidebarVisible.value;
+    console.log("sidebarVisible.value:", sidebarVisible.value);
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
@@ -186,12 +193,22 @@ const search = ref(pageProps.search || "");
     <AuthenticatedLayout>
         <div class="flex">
             <!-- サイドバー -->
-            <List :units="units" class="w-1/4 p-4 mt-16" />
+            <List
+                :units="units"
+                class="sidebar-mobile  p-4 mt-16 lg:block"
+                :class="{ visible: sidebarVisible }"
+                ref="sidebar"
+            />
 
             <!-- メインコンテンツエリア -->
             <div class="flex-1 max-w-4xl mx-auto p-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-xl font-bold">{{ appName }}</h1>
+                    <h1
+                        class="text-xl font-bold cursor-pointer"
+                        @click="toggleSidebar"
+                    >
+                        {{ appName }}
+                    </h1>
 
                     <!-- 検索フォーム -->
                     <SearchForm class="ml-auto" />
@@ -340,5 +357,17 @@ const search = ref(pageProps.search || "");
 <style>
 .link-hover:hover {
     opacity: 70%;
+}
+
+/* モバイルサイズ用のスタイル（切り替え可能） */
+@media (max-width: 1024px) {
+    .sidebar-mobile {
+        width: 70%; /* モバイル時のサイドバー幅 */
+        transform: translateX(-100%); /* デフォルトで非表示 */
+        transition: transform 0.3s ease-in-out;
+    }
+    .sidebar-mobile.visible {
+        transform: translateX(0); /* 表示 */
+    }
 }
 </style>
