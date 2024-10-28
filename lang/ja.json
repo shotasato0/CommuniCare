@@ -160,5 +160,9 @@
     "Registration page": "登録ページへ",
     "Unit Registration": "部署登録",
     "Unit Name": "部署名",
-    "Register Unit": "部署登録"
+    "Register Unit": "部署登録",
+    "Unit List": "部署一覧",
+    "Delete Unit": "部署削除",
+    "No units available.": "部署がありません",
+    "Delete": "削除"
 }
