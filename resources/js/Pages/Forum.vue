@@ -202,7 +202,7 @@ const search = ref(pageProps.search || "");
             <!-- サイドバー -->
             <List
                 :units="units"
-                class="sidebar-mobile p-4 mt-16 lg:block"
+                class="sidebar-mobile p-4 lg:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
             />
