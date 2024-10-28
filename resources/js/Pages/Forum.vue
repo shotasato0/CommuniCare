@@ -192,10 +192,17 @@ const search = ref(pageProps.search || "");
 
     <AuthenticatedLayout>
         <div class="flex">
+            <!-- オーバーレイ (サイドバー表示時のみ) -->
+            <div
+                v-if="sidebarVisible"
+                class="overlay"
+                @click="toggleSidebar"
+            ></div>
+
             <!-- サイドバー -->
             <List
                 :units="units"
-                class="sidebar-mobile  p-4 mt-16 lg:block"
+                class="sidebar-mobile p-4 mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
             />
@@ -366,9 +373,22 @@ const search = ref(pageProps.search || "");
         transform: translateX(-100%); /* デフォルトで非表示 */
         transition: transform 0.3s ease-in-out;
         z-index: 50;
+        background-color: #ffffff; /* サイドバーの背景色 */
     }
     .sidebar-mobile.visible {
         transform: translateX(0); /* 表示 */
+    }
+
+    /* オーバーレイスタイル */
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 背景を半透明に */
+        z-index: 40;
+        transition: opacity 0.3s ease-in-out;
     }
 }
 </style>
