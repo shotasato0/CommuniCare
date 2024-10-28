@@ -24,7 +24,10 @@ class UnitController extends Controller
      */
     public function create()
     {
-        return inertia("Unit/Register");
+        $units = Unit::select('id', 'name')->get();
+        return inertia("Unit/Register", [
+            'units' => $units,
+        ]);
     }
 
     /**
