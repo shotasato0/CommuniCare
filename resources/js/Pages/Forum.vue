@@ -365,6 +365,7 @@ const search = ref(pageProps.search || "");
         width: 70%; /* モバイル時のサイドバー幅 */
         transform: translateX(-100%); /* デフォルトで非表示 */
         transition: transform 0.3s ease-in-out;
+        z-index: 50;
     }
     .sidebar-mobile.visible {
         transform: translateX(0); /* 表示 */
