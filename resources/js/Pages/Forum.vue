@@ -191,7 +191,7 @@ const search = ref(pageProps.search || "");
     <Head :title="$t('Forum')" />
 
     <AuthenticatedLayout>
-        <div class="flex">
+        <div class="flex mt-16">
             <!-- オーバーレイ (サイドバー表示時のみ) -->
             <div
                 v-if="sidebarVisible"
