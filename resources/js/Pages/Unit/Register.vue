@@ -61,7 +61,7 @@ const deleteUnit = (id) => {
 
                 <button
                     type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    class="bg-blue-500 link-hover text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 >
                     {{ $t("Register Unit") }}
                 </button>
@@ -80,9 +80,9 @@ const deleteUnit = (id) => {
                         <span class="text-gray-800">{{ unit.name }}</span>
                         <button
                             @click="deleteUnit(unit.id)"
-                            class="text-red-600 hover:text-red-800 font-bold"
+                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                         >
-                            {{ $t("Delete") }}
+                            <i class="bi bi-trash"></i>
                         </button>
                     </li>
                 </ul>
