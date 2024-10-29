@@ -26,7 +26,9 @@ const closeUserProfile = () => {
 
     <AuthenticatedLayout>
         <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6 mt-16">{{ $t("Employee List") }}</h1>
+            <h1 class="text-2xl font-bold mb-6 mt-16">
+                {{ $t("Employee List") }}
+            </h1>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div
@@ -57,6 +59,10 @@ const closeUserProfile = () => {
             </div>
         </div>
 
+        <p v-if="users.length === 0" class="text-gray-500 mt-4">
+            {{ $t("No user available") }}
+        </p>
+
         <!-- 選択された投稿のユーザーの詳細ページを表示 -->
         <div
             v-if="isUserProfileVisible"
@@ -64,7 +70,7 @@ const closeUserProfile = () => {
             @click="closeUserProfile"
         >
             <div @click.stop>
-                <Show v-if="selectedUser" :user="selectedUser" :units="units"/>
+                <Show v-if="selectedUser" :user="selectedUser" :units="units" />
             </div>
         </div>
     </AuthenticatedLayout>
