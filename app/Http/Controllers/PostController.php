@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Models\Unit;
 
 class PostController extends Controller
 {
@@ -28,9 +29,12 @@ class PostController extends Controller
     ->latest()
     ->paginate(5);
 
+    $units = Unit::all();
+
     return Inertia::render('Forum', [
         'posts' => $posts,
         'search' => $search, // 検索ワードを渡す
+        'units' => $units,
     ]);
 }
 
@@ -52,10 +56,13 @@ class PostController extends Controller
     // 新しい投稿にユーザー情報をロードして返す
     $post->load('user'); // リレーションをロードする
 
+    $units = Unit::all();
+
        // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
        return Inertia::render('Forum', [
         'newPost' => $post,
         'auth' => auth()->user(), // ログインユーザー情報も渡す
+        'units' => $units,
     ]);
 }
 

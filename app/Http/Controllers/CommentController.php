@@ -7,6 +7,7 @@ use App\Models\Comment;  // Commentモデル
 use App\Models\Post;     // Postモデル
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Unit;
 
 class CommentController extends Controller
 {
@@ -30,8 +31,12 @@ class CommentController extends Controller
           // コメントに関連するユーザー情報をロードする
         $comment->load('user');
 
+        $units = Unit::all();
+
          // Inertiaレスポンスを返す
-        return Inertia::render('Forum');
+        return Inertia::render('Forum', [
+            'units' => $units,
+        ]);
     }
 
     public function destroy($id)
