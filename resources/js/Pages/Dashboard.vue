@@ -9,21 +9,21 @@ const pageProps = usePage().props;
 const isAdmin = props.isAdmin;
 const flash = props.flash;
 
-// フラッシュメッセージ用の変数を定義
 const flashMessage = ref(flash.success || flash.error || flash.info || null);
 const flashType = ref(
     flash.success ? "success" : flash.error ? "error" : "info"
 );
 
+// 3秒後にフラッシュメッセージをフェードアウトさせる
+const showFlashMessage = ref(true);
 onMounted(() => {
     if (flashMessage.value) {
         setTimeout(() => {
-            flashMessage.value = null;
-        }, 3000); // 3秒後にメッセージを消す
+            showFlashMessage.value = false;
+        }, 3000);
     }
 });
 
-// コンソールにユーザー情報を出力
 console.log("User data:", props.auth.user);
 </script>
 
@@ -48,20 +48,22 @@ console.log("User data:", props.auth.user);
         </div>
 
         <!-- フラッシュメッセージの表示 -->
-        <div
-            v-if="flashMessage"
-            :class="{
-                'bg-green-100 border-l-4 border-green-500 text-green-700 p-6':
-                    flashType === 'success',
-                'bg-red-100 border-l-4 border-red-500 text-red-700 p-6':
-                    flashType === 'error',
-                'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-6':
-                    flashType === 'info',
-            }"
-            class="mt-4 mb-6 max-w-7xl mx-auto sm:px-6 lg:px-8 sm:rounded-lg"
-        >
-            <p class="font-bold">{{ flashMessage }}</p>
-        </div>
+        <transition name="fade">
+            <div
+                v-if="flashMessage && showFlashMessage"
+                :class="{
+                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-6':
+                        flashType === 'success',
+                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-6':
+                        flashType === 'error',
+                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-6':
+                        flashType === 'info',
+                }"
+                class="mt-4 mb-6 max-w-7xl mx-auto sm:px-6 lg:px-8 sm:rounded-lg"
+            >
+                <p class="font-bold">{{ flashMessage }}</p>
+            </div>
+        </transition>
 
         <!-- 管理者ページ -->
         <div v-if="isAdmin">
@@ -69,3 +71,14 @@ console.log("User data:", props.auth.user);
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
