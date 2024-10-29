@@ -31,16 +31,15 @@ const deleteUnit = (id) => {
     <AuthenticatedLayout>
         <Head :title="$t('Unit Registration')" />
         <div class="max-w-2xl mx-auto py-10 space-y-8 mt-16">
-            <h1 class="text-2xl font-bold mb-6">
-                {{ $t("Unit Registration") }}
-            </h1>
-
             <!-- 部署登録フォーム -->
             <form
                 @submit.prevent="submit"
                 class="bg-white p-6 rounded-lg shadow"
             >
                 <div class="mb-4">
+                    <h2 class="text-xl font-bold mb-6">
+                        {{ $t("Unit Registration") }}
+                    </h2>
                     <label
                         for="name"
                         class="block text-sm font-medium text-gray-700"
