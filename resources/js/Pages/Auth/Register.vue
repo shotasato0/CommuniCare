@@ -2,7 +2,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
@@ -11,7 +10,6 @@ import { ref } from "vue";
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
-console.log("CSRF Token:", csrfToken.value);
 
 // フォームの初期データを定義
 const form = useForm({
@@ -19,21 +17,19 @@ const form = useForm({
     username_id: "",
     password: "",
     password_confirmation: "",
-    _token: csrfToken.value, // フォームデータにCSRFトークンを含める
+    _token: csrfToken.value,
 });
 
 const submit = () => {
-    console.log("Submitting form with data:", form);
     form.post(route("register.post"), {
         onFinish: () => {
-            console.log("Form submission finished");
             form.reset("password", "password_confirmation");
         },
         onError: (errors) => {
             console.error("Form submission errors:", errors);
         },
         headers: {
-            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにCSRFトークンを含める
+            "X-CSRF-TOKEN": csrfToken.value,
         },
     });
 };
@@ -116,13 +112,14 @@ const submit = () => {
                 </div>
 
                 <div class="flex items-center justify-end">
-                    <Button
+                    <button
+                        type="submit"
                         class="ms-4 bg-blue-500 link-hover text-white font-bold py-2 px-4 rounded"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
                         {{ $t("Register") }}
-                    </Button>
+                    </button>
                 </div>
             </form>
         </div>
