@@ -3,7 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 // CSRFトークンを取得
@@ -37,7 +37,7 @@ const submit = () => {
 
 <template>
     <AuthenticatedLayout>
-        <Head title="Register" />
+        <Head :title="$t('User registration')" />
 
         <div class="max-w-lg mx-auto py-10 mt-16">
             <h1 class="text-2xl font-bold mb-6">
