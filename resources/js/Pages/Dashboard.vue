@@ -5,7 +5,6 @@ import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 
 const { props } = usePage();
-const pageProps = usePage().props;
 const isAdmin = props.isAdmin;
 const flash = props.flash;
 
@@ -37,8 +36,9 @@ console.log("User data:", props.auth.user);
             </h2>
         </template>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- ダッシュボードのコンテンツ全体に左右余白を追加 -->
+        <div class="py-12 px-4 sm:px-8 lg:px-16">
+            <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         {{ $t("You're logged in") }}
@@ -52,11 +52,11 @@ console.log("User data:", props.auth.user);
             <div
                 v-if="flashMessage && showFlashMessage"
                 :class="{
-                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-6':
+                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
                         flashType === 'success',
-                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-6':
+                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
                         flashType === 'error',
-                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-6':
+                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
                         flashType === 'info',
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
