@@ -16,8 +16,10 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
+        $units = Unit::all();
         return Inertia::render('Admin/EmployeeList', [
             'users' => $users,
+            'units' => $units,
         ]);
     }
 
