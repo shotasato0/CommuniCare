@@ -77,6 +77,7 @@ class UnitController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Unit::find($id)->delete();
+        return redirect()->route("dashboard")->with(["success" => "ユニット削除が完了しました。"]);
     }
 }
