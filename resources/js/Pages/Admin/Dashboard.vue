@@ -48,20 +48,20 @@ import { Link, Head } from "@inertiajs/vue3";
                 </div>
             </div>
 
-            <!-- ユニット名登録 -->
+            <!-- 部署管理 -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
                     <h3 class="text-lg font-medium leading-6 text-gray-900">
-                        {{ $t("Unit Name Registration") }}
+                        {{ $t("Unit Management") }}
                     </h3>
                     <p class="mt-2 max-w-4xl text-sm text-gray-500">
-                        {{ $t("Register a new unit name.") }}
+                        {{ $t("Manage unit names.") }}
                     </p>
                     <div class="mt-4">
                         <Link
-                            href="/admin/units/register"
+                            :href="route('units.create')"
                             class="text-indigo-600 hover:text-indigo-900"
-                            >{{ $t("Registration page") }}</Link
+                            >{{ $t("Management page") }}</Link
                         >
                     </div>
                 </div>

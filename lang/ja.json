@@ -157,5 +157,15 @@
     "List page": "一覧ページへ",
     "Unit Name Registration": "ユニット名登録",
     "Register a new unit name.": "新しいユニット名を登録します",
-    "Registration page": "登録ページへ"
+    "Registration page": "登録ページへ",
+    "Unit Registration": "部署登録",
+    "Unit Name": "部署名",
+    "Register Unit": "部署登録",
+    "Unit List": "部署一覧",
+    "Delete Unit": "部署削除",
+    "No units available.": "部署がありません",
+    "Delete": "削除",
+    "Unit Management": "部署管理",
+    "Manage unit names.": "部署名を管理します",
+    "Management page": "管理ページへ"
 }
