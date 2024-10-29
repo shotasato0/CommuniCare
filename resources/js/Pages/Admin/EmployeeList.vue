@@ -41,14 +41,14 @@ const closeUserProfile = () => {
                                 : 'https://via.placeholder.com/150'
                         "
                         alt="Profile Icon"
-                        class="w-16 h-16 rounded-full cursor-pointer hover:opacity-70"
+                        class="w-16 h-16 rounded-full cursor-pointer link-hover"
                         @click="openUserProfile(user)"
                     />
 
                     <p class="text-lg font-bold text-gray-900">
                         <span
                             @click="openUserProfile(user)"
-                            class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                            class="hover:underline p-1 rounded cursor-pointer"
                         >
                             {{ user.name }}
                         </span>
