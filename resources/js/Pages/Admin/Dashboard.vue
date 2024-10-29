@@ -22,7 +22,7 @@ import { Link, Head } from "@inertiajs/vue3";
                     <div class="mt-4">
                         <Link
                             :href="route('register')"
-                            class="text-indigo-600 hover:text-indigo-900"
+                            class="text-blue-500 link-hover"
                             >{{ $t("Registration page") }}</Link
                         >
                     </div>
@@ -41,7 +41,7 @@ import { Link, Head } from "@inertiajs/vue3";
                     <div class="mt-4">
                         <Link
                             :href="route('users.index')"
-                            class="text-indigo-600 hover:text-indigo-900"
+                            class="text-blue-500 link-hover"
                             >{{ $t("List page") }}</Link
                         >
                     </div>
@@ -60,7 +60,7 @@ import { Link, Head } from "@inertiajs/vue3";
                     <div class="mt-4">
                         <Link
                             :href="route('units.create')"
-                            class="text-indigo-600 hover:text-indigo-900"
+                            class="text-blue-500 link-hover"
                             >{{ $t("Management page") }}</Link
                         >
                     </div>
@@ -69,3 +69,9 @@ import { Link, Head } from "@inertiajs/vue3";
         </div>
     </div>
 </template>
+
+<style>
+.link-hover:hover {
+    opacity: 0.7;
+}
+</style>
