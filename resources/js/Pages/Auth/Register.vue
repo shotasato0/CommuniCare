@@ -39,9 +39,10 @@ const submit = () => {
     <AuthenticatedLayout>
         <Head :title="$t('User registration')" />
 
-        <div class="max-w-lg mx-auto py-10 mt-16">
+        <!-- コンテンツを中央に寄せ、画面幅に応じて余白を調整 -->
+        <div class="max-w-md mx-auto py-10 mt-16 px-4 sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold mb-6">
-                {{ $t("New user registration") }}
+                {{ $t("User registration") }}
             </h1>
 
             <form
@@ -114,7 +115,7 @@ const submit = () => {
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="ms-4 bg-blue-500 link-hover text-white font-bold py-2 px-4 rounded"
+                        class="ms-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
