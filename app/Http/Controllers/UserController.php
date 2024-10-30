@@ -142,6 +142,8 @@ public function updateIcon(Request $request)
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('users.index')->with('success', '社員が削除されました。');
     }
 }
