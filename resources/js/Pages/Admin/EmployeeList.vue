@@ -3,6 +3,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
 import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { deleteItem } from "@/Utils/deleteItem";
 
 const { props } = usePage();
 const users = props.users;
@@ -19,6 +20,10 @@ const openUserProfile = (user) => {
 const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
+
+const deleteUser = (user) => {
+    deleteItem("user", user.id);
+};
 </script>
 
 <template>
@@ -34,27 +39,39 @@ const closeUserProfile = () => {
                 <div
                     v-for="user in users"
                     :key="user.id"
-                    class="bg-white overflow-hidden shadow rounded-lg p-4 flex items-center space-x-4"
+                    class="bg-white overflow-hidden shadow rounded-lg p-4 flex items-center justify-between"
                 >
-                    <img
-                        :src="
-                            user.icon
-                                ? `/storage/${user.icon}`
-                                : 'https://via.placeholder.com/150'
-                        "
-                        alt="Profile Icon"
-                        class="w-16 h-16 rounded-full cursor-pointer link-hover"
-                        @click="openUserProfile(user)"
-                    />
-
-                    <p class="text-lg font-bold text-gray-900">
-                        <span
+                    <div class="flex items-center space-x-4">
+                        <!-- プロフィール画像 -->
+                        <img
+                            :src="
+                                user.icon
+                                    ? `/storage/${user.icon}`
+                                    : 'https://via.placeholder.com/150'
+                            "
+                            alt="Profile Icon"
+                            class="w-16 h-16 rounded-full cursor-pointer link-hover"
                             @click="openUserProfile(user)"
-                            class="hover:underline p-1 rounded cursor-pointer"
-                        >
-                            {{ user.name }}
-                        </span>
-                    </p>
+                        />
+
+                        <!-- ユーザー名 -->
+                        <p class="text-lg font-bold text-gray-900">
+                            <span
+                                @click="openUserProfile(user)"
+                                class="hover:underline p-1 rounded cursor-pointer"
+                            >
+                                {{ user.name }}
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- 削除ボタン -->
+                    <button
+                        @click="deleteUser(user)"
+                        class="text-red-500 hover:text-red-700"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             </div>
         </div>
