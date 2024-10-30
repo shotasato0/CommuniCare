@@ -33,15 +33,15 @@ const deleteUnit = (id) => {
         <div
             class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
         >
+            <h1 class="text-2xl font-bold mb-6">
+                {{ $t("Unit Registration") }}
+            </h1>
             <!-- 部署登録フォーム -->
             <form
                 @submit.prevent="submit"
                 class="bg-white p-6 rounded-lg shadow"
             >
                 <div class="mb-4">
-                    <h2 class="text-xl font-bold mb-6">
-                        {{ $t("Unit Registration") }}
-                    </h2>
                     <label
                         for="name"
                         class="block text-sm font-medium text-gray-700"
@@ -69,10 +69,9 @@ const deleteUnit = (id) => {
                 </button>
             </form>
 
+            <h1 class="text-2xl font-bold mb-4">{{ $t("Unit List") }}</h1>
             <!-- 部署一覧 -->
             <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-bold mb-4">{{ $t("Unit List") }}</h2>
-
                 <ul class="divide-y divide-gray-200">
                     <li
                         v-for="unit in units"
