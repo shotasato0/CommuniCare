@@ -10,7 +10,7 @@ import Pagination from "@/Components/Pagination.vue";
 import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
-import List from "./Unit/List.vue";
+import ListForSidebar from "./Unit/ListForSidebar.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props;
@@ -200,7 +200,7 @@ const search = ref(pageProps.search || "");
             ></div>
 
             <!-- サイドバー -->
-            <List
+            <ListForSidebar
                 :units="units"
                 class="sidebar-mobile p-4 lg:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
