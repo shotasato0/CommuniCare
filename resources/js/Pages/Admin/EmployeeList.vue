@@ -21,8 +21,15 @@ const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
 
+// deleteUser関数を定義
 const deleteUser = (user) => {
-    deleteItem("user", user.id);
+    deleteItem("user", user.id, (deletedUserId) => {
+        // 削除したユーザーをローカルの `users` 配列から除去
+        const index = users.findIndex((u) => u.id === deletedUserId);
+        if (index !== -1) {
+            users.splice(index, 1);
+        }
+    });
 };
 </script>
 

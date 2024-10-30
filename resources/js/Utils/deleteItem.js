@@ -16,7 +16,7 @@ export const deleteItem = (type, id, onSuccessCallback) => {
                 ? "forum.destroy"
                 : type === "comment"
                 ? "comment.destroy"
-                : "user.destroy";
+                : "users.destroy";
 
         router.delete(route(routeName, id), {
             headers: {
