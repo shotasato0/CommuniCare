@@ -57,6 +57,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
             Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
         });
         Route::resource('units', UnitController::class);
+        Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

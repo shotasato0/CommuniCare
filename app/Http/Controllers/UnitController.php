@@ -11,10 +11,10 @@ class UnitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function listForSidebar()
     {
         $units = Unit::all();
-        return Inertia::render('Unit/List', [
+        return Inertia::render('Unit/ListForSidebar', [
             'units' => $units,
         ]);
     }
