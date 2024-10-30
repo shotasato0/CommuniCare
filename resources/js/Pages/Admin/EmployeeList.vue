@@ -65,11 +65,11 @@ watchEffect(() => {
                 {{ $t("Employee List") }}
             </h1>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
                     v-for="user in users"
                     :key="user.id"
-                    class="bg-white overflow-hidden shadow rounded-lg p-4 flex items-center justify-between"
+                    class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between"
                 >
                     <div class="flex items-center space-x-4">
                         <img
@@ -79,10 +79,10 @@ watchEffect(() => {
                                     : 'https://via.placeholder.com/150'
                             "
                             alt="Profile Icon"
-                            class="w-16 h-16 rounded-full cursor-pointer link-hover"
+                            class="w-12 h-12 sm:w-16 sm:h-16 rounded-full cursor-pointer link-hover"
                             @click="openUserProfile(user)"
                         />
-                        <p class="text-lg font-bold text-gray-900">
+                        <p class="text-sm sm:text-lg font-bold text-gray-900">
                             <span
                                 @click="openUserProfile(user)"
                                 class="hover:underline p-1 rounded cursor-pointer"
