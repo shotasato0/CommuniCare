@@ -30,7 +30,9 @@ const deleteUnit = (id) => {
 <template>
     <AuthenticatedLayout>
         <Head :title="$t('Unit Registration')" />
-        <div class="max-w-2xl mx-auto py-10 space-y-8 mt-16">
+        <div
+            class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
+        >
             <!-- 部署登録フォーム -->
             <form
                 @submit.prevent="submit"
