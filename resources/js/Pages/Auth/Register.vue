@@ -1,17 +1,15 @@
 <script setup>
-import GuestLayout from "@/Layouts/GuestLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 // CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
-console.log("CSRF Token:", csrfToken.value);
 
 // フォームの初期データを定義
 const form = useForm({
@@ -19,105 +17,112 @@ const form = useForm({
     username_id: "",
     password: "",
     password_confirmation: "",
-    _token: csrfToken.value, // フォームデータにCSRFトークンを含める
+    _token: csrfToken.value,
 });
 
 const submit = () => {
-    console.log("Submitting form with data:", form);
     form.post(route("register.post"), {
         onFinish: () => {
-            console.log("Form submission finished");
             form.reset("password", "password_confirmation");
         },
         onError: (errors) => {
             console.error("Form submission errors:", errors);
         },
         headers: {
-            "X-CSRF-TOKEN": csrfToken.value, // リクエストヘッダーにCSRFトークンを含める
+            "X-CSRF-TOKEN": csrfToken.value,
         },
     });
 };
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Register" />
+    <AuthenticatedLayout>
+        <Head :title="$t('User registration')" />
 
-        <form @submit.prevent="submit">
-            <input type="hidden" name="_token" :value="csrfToken" />
-            <div>
-                <InputLabel for="name" :value="$t('Name')" />
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+        <!-- コンテンツを中央に寄せ、画面幅に応じて余白を調整 -->
+        <div class="max-w-md mx-auto py-10 mt-16 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-2xl font-bold mb-6">
+                {{ $t("User registration") }}
+            </h1>
 
-            <div class="mt-4">
-                <InputLabel for="username_id" :value="$t('Username_ID')" />
-                <TextInput
-                    id="username_id"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.username_id"
-                    required
-                />
-                <InputError class="mt-2" :message="form.errors.username_id" />
-            </div>
+            <form
+                @submit.prevent="submit"
+                class="bg-white p-6 rounded-lg shadow space-y-6"
+            >
+                <input type="hidden" name="_token" :value="csrfToken" />
 
-            <div class="mt-4">
-                <InputLabel for="password" :value="$t('Password')" />
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+                <div>
+                    <InputLabel for="name" :value="$t('Name')" />
+                    <TextInput
+                        id="name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.name"
+                        required
+                        autofocus
+                        autocomplete="name"
+                    />
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
 
-            <div class="mt-4">
-                <InputLabel
-                    for="password_confirmation"
-                    :value="$t('Confirm Password')"
-                />
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.password_confirmation"
-                />
-            </div>
+                <div>
+                    <InputLabel for="username_id" :value="$t('Username_ID')" />
+                    <TextInput
+                        id="username_id"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.username_id"
+                        required
+                    />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.username_id"
+                    />
+                </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    {{ $t('Already registered?') }}
-                </Link>
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    {{ $t('Register') }}
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+                <div>
+                    <InputLabel for="password" :value="$t('Password')" />
+                    <TextInput
+                        id="password"
+                        type="password"
+                        class="mt-1 block w-full"
+                        v-model="form.password"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+
+                <div>
+                    <InputLabel
+                        for="password_confirmation"
+                        :value="$t('Confirm Password')"
+                    />
+                    <TextInput
+                        id="password_confirmation"
+                        type="password"
+                        class="mt-1 block w-full"
+                        v-model="form.password_confirmation"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.password_confirmation"
+                    />
+                </div>
+
+                <div class="flex items-center justify-end">
+                    <button
+                        type="submit"
+                        class="ms-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        {{ $t("Register") }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </AuthenticatedLayout>
 </template>
