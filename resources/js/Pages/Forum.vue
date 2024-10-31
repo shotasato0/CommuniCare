@@ -20,6 +20,7 @@ const units = pageProps.units; // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
+const users = pageProps.users || []; // ユーザーのデータ
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -202,6 +203,7 @@ const search = ref(pageProps.search || "");
             <!-- サイドバー -->
             <ListForSidebar
                 :units="units"
+                :users="users"
                 class="sidebar-mobile p-4 lg:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
