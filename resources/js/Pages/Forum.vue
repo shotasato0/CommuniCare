@@ -65,8 +65,6 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
-const appName = "CommuniCare"; // アプリ名
-
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
 // 再帰的にコメントを検索する関数
@@ -213,10 +211,10 @@ const search = ref(pageProps.search || "");
             <div class="flex-1 max-w-4xl mx-auto p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h1
-                        class="text-xl font-bold cursor-pointer"
+                        class="text-xl font-bold cursor-pointer sm:hidden"
                         @click="toggleSidebar"
                     >
-                        {{ appName }}
+                        {{ $t("Unit List") }}
                     </h1>
 
                     <!-- 検索フォーム -->
