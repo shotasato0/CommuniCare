@@ -58,7 +58,7 @@ export default {
                 <slide-up-down
                     :active="selectedUnitId === unit.id"
                     :duration="300"
-                    class="mt-2 ml-4"
+                    class="ml-4"
                 >
                     <ul v-if="filteredUsers.length > 0">
                         <li
