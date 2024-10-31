@@ -11,10 +11,10 @@ class UnitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function listForSidebar()
     {
         $units = Unit::all();
-        return Inertia::render('Unit/List', [
+        return Inertia::render('Unit/ListForSidebar', [
             'units' => $units,
         ]);
     }
@@ -78,6 +78,6 @@ class UnitController extends Controller
     public function destroy(string $id)
     {
         Unit::find($id)->delete();
-        return redirect()->route("dashboard")->with(["success" => "ユニット削除が完了しました。"]);
+        return redirect()->route("units.create")->with(["success" => "部署の削除が完了しました"]);
     }
 }
