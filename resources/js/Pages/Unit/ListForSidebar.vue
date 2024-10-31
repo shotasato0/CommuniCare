@@ -1,5 +1,10 @@
 <script>
+import SlideUpDown from "vue-slide-up-down";
+
 export default {
+    components: {
+        SlideUpDown,
+    },
     props: {
         units: {
             type: Array,
@@ -50,13 +55,12 @@ export default {
                     <span v-if="selectedUnitId === unit.id">&#9660;</span>
                     <span v-else>&#9654;</span>
                 </div>
-                <div
-                    v-if="
-                        selectedUnitId === unit.id && filteredUsers.length > 0
-                    "
+                <slide-up-down
+                    :active="selectedUnitId === unit.id"
+                    :duration="300"
                     class="mt-2 ml-4"
                 >
-                    <ul>
+                    <ul v-if="filteredUsers.length > 0">
                         <li
                             v-for="user in filteredUsers"
                             :key="user.id"
@@ -65,7 +69,7 @@ export default {
                             {{ user.name }}
                         </li>
                     </ul>
-                </div>
+                </slide-up-down>
             </li>
         </ul>
     </div>
