@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\Unit;
+use App\Models\User;
 
 class PostController extends Controller
 {
@@ -30,11 +31,13 @@ class PostController extends Controller
     ->paginate(5);
 
     $units = Unit::all();
+    $users = User::all();
 
     return Inertia::render('Forum', [
         'posts' => $posts,
         'search' => $search, // 検索ワードを渡す
         'units' => $units,
+        'users' => $users,
     ]);
 }
 
