@@ -6,40 +6,9 @@ use Inertia\Inertia;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\Unit;
-use App\Models\User;
 
 class PostController extends Controller
 {
-    public function index(Request $request)
-{
-    $search = $request->input('search');
-
-    // 投稿を取得
-    $posts = Post::with([
-        'user', // 投稿者のユーザー情報を取得
-        'comments' => function ($query) {
-            $query->whereNull('parent_id') // 親コメントのみ取得
-                  ->with(['children.user', 'user']); // 子コメントと再帰的に子コメントを取得
-        }
-    ])
-    // 検索ワードがあれば、タイトルまたはメッセージに含まれる投稿を取得
-    ->when($search, function ($query, $search) {
-        return $query->where('title', 'like', '%' . $search . '%')
-    ->orWhere('message', 'like', '%' . $search . '%');
-    })
-    ->latest()
-    ->paginate(5);
-
-    $units = Unit::all();
-    $users = User::all();
-
-    return Inertia::render('Forum', [
-        'posts' => $posts,
-        'search' => $search, // 検索ワードを渡す
-        'units' => $units,
-        'users' => $users,
-    ]);
-}
 
     public function store(Request $request)
 {
