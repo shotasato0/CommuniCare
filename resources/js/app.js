@@ -9,6 +9,8 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { createI18n } from "vue-i18n"; // vue-i18nをインポート
 import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja.jsonを読み込み
 
+import SlideUpDown from "vue-slide-up-down"; // vue-slide-up-downをインポート
+
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 // vue-i18nの設定
@@ -32,6 +34,9 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(i18n); // vue-i18nを使用するように設定
 
+        // グローバルにSlideUpDownコンポーネントを登録
+        app.component("slide-up-down", SlideUpDown);
+
         app.mount(el);
 
         // Inertia.jsのカスタムイベントでリロードをトリガーする
@@ -42,9 +47,7 @@ createInertiaApp({
             const currentUrl = window.location.href;
 
             // ログイン後またはダッシュボードでのリダイレクトを処理
-            if (
-                currentUrl.includes("localhost/home")
-            ) {
+            if (currentUrl.includes("localhost/home")) {
                 console.log(
                     "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
                 );

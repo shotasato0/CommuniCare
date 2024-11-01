@@ -20,6 +20,8 @@ const units = pageProps.units; // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
+const users = pageProps.users || []; // ユーザーのデータ
+const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -38,6 +40,17 @@ const selectPost = (post) => {
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
     console.log("sidebarVisible.value:", sidebarVisible.value);
+
+    // サイドバーを非表示にする際にドロップダウンを閉じる
+    if (!sidebarVisible.value) {
+        if (sidebar.value && sidebar.value.resetDropdown) {
+            sidebar.value.resetDropdown();
+        } else {
+            console.error(
+                "Sidebar component reference not found or resetDropdown method is undefined."
+            );
+        }
+    }
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
@@ -63,8 +76,6 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
         !commentFormVisibility.value[postId][parentId].isVisible;
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
-
-const appName = "CommuniCare"; // アプリ名
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
@@ -185,6 +196,13 @@ const isCommentAuthor = (comment) => {
 
 // 検索結果の表示状態
 const search = ref(pageProps.search || "");
+
+// サイドバーのユーザー選択イベントを受け取る関数
+const onUserSelected = (user) => {
+    console.log("User selected:", user);
+    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
+    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
+};
 </script>
 
 <template>
@@ -202,19 +220,22 @@ const search = ref(pageProps.search || "");
             <!-- サイドバー -->
             <ListForSidebar
                 :units="units"
+                :users="users"
                 class="sidebar-mobile p-4 lg:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
+                @user-profile-clicked="onUserSelected"
+                v-model:sidebarVisible="sidebarVisible"
             />
 
             <!-- メインコンテンツエリア -->
             <div class="flex-1 max-w-4xl mx-auto p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h1
-                        class="text-xl font-bold cursor-pointer"
+                        class="text-xl font-bold cursor-pointer sm:hidden"
                         @click="toggleSidebar"
                     >
-                        {{ appName }}
+                        {{ $t("Unit List") }}
                     </h1>
 
                     <!-- 検索フォーム -->

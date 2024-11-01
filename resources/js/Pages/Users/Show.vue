@@ -23,8 +23,9 @@ export default {
 
         // 部署名を取得
         const unitName =
-            props.units.find((unit) => unit.id === props.user.unit_id)?.name ||
-            "未所属";
+            Array.isArray(props.units) && props.units.length > 0
+                ? props.units.find((unit) => unit.id === props.user.unit_id)?.name || "未所属"
+                : "未所属";
 
         return { page, authUser, unitName };
     },
