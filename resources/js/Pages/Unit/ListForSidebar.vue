@@ -56,7 +56,7 @@ export default {
                 @click="toggleUnit(unit.id)"
             >
                 <div class="flex items-center justify-between">
-                    <span>{{ unit.name }}</span>
+                    <span class="font-bold">{{ unit.name }}</span>
                     <span v-if="selectedUnitId === unit.id">&#9660;</span>
                     <span v-else>&#9654;</span>
                 </div>
@@ -69,7 +69,7 @@ export default {
                         <li
                             v-for="user in filteredUsers"
                             :key="user.id"
-                            class="p-1 cursor-pointer hover:bg-gray-200 flex items-center space-x-2"
+                            class="p-1 cursor-pointer hover:bg-blue-300 flex items-center space-x-2"
                             @click.stop="openUserProfile(user)"
                         >
                             <!-- プロフィール画像を表示 -->
