@@ -26,5 +26,10 @@ class Post extends Model
     {
         return $this->morphMany(Like::class, 'likeable'); // ポリモーフィックリレーション
     }
+
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class);
+    }
 }
 
