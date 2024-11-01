@@ -21,7 +21,6 @@ export default {
     data() {
         return {
             selectedUnitId: null,
-            selectedUser: null,
         };
     },
     computed: {
@@ -40,10 +39,7 @@ export default {
                 this.selectedUnitId === unitId ? null : unitId;
         },
         openUserProfile(user) {
-            this.selectedUser = user;
-        },
-        closeUserProfile() {
-            this.selectedUser = null;
+            this.$emit("user-profile-clicked", user); // 親にイベントを伝播
         },
     },
 };
@@ -82,17 +78,6 @@ export default {
                 </slide-up-down>
             </li>
         </ul>
-
-        <!-- ユーザープロファイルポップアップ -->
-        <div
-            v-if="selectedUser"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
-            @click="closeUserProfile"
-        >
-            <div @click.stop>
-                <Show :user="selectedUser" :units="units" />
-            </div>
-        </div>
     </div>
 </template>
 

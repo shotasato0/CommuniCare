@@ -184,6 +184,13 @@ const isCommentAuthor = (comment) => {
 
 // 検索結果の表示状態
 const search = ref(pageProps.search || "");
+
+// サイドバーのユーザー選択イベントを受け取る関数
+const onUserSelected = (user) => {
+    console.log("User selected:", user);
+    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
+    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
+};
 </script>
 
 <template>
@@ -205,6 +212,7 @@ const search = ref(pageProps.search || "");
                 class="sidebar-mobile p-4 lg:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
+                @user-profile-clicked="onUserSelected"
             />
 
             <!-- メインコンテンツエリア -->
