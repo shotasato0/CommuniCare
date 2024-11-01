@@ -41,6 +41,9 @@ export default {
         openUserProfile(user) {
             this.$emit("user-profile-clicked", user); // 親にイベントを伝播
         },
+        resetDropdown() {
+            this.selectedUnitId = null; // ドロップダウンをリセット
+        },
     },
 };
 </script>

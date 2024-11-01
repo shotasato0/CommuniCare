@@ -21,6 +21,7 @@ const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
+const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -39,6 +40,17 @@ const selectPost = (post) => {
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
     console.log("sidebarVisible.value:", sidebarVisible.value);
+
+    // サイドバーを非表示にする際にドロップダウンを閉じる
+    if (!sidebarVisible.value) {
+        if (sidebar.value && sidebar.value.resetDropdown) {
+            sidebar.value.resetDropdown();
+        } else {
+            console.error(
+                "Sidebar component reference not found or resetDropdown method is undefined."
+            );
+        }
+    }
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
@@ -213,6 +225,7 @@ const onUserSelected = (user) => {
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
+                v-model:sidebarVisible="sidebarVisible"
             />
 
             <!-- メインコンテンツエリア -->
