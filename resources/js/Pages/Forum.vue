@@ -22,6 +22,7 @@ const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表
 const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
+const selectedForumId = ref(null); // 選択されたフォーラムのID。フォーラムが選択されていない場合はnull
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -203,6 +204,11 @@ const onUserSelected = (user) => {
     selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
+
+// 掲示板が選択されたときにforum_idを設定
+const onForumSelected = (forumId) => {
+    selectedForumId.value = Number(forumId); // 選択した掲示板IDを更新
+};
 </script>
 
 <template>
@@ -226,6 +232,7 @@ const onUserSelected = (user) => {
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
                 v-model:sidebarVisible="sidebarVisible"
+                @forum-selected="onForumSelected"
             />
 
             <!-- メインコンテンツエリア -->
@@ -251,7 +258,11 @@ const onUserSelected = (user) => {
                 <Pagination :links="posts.links" class="mb-4" />
 
                 <!-- 投稿フォーム -->
-                <PostForm class="mb-6" />
+                <PostForm
+                    v-if="selectedForumId"
+                    :forum-id="Number(selectedForumId)"
+                    class="mb-6"
+                />
 
                 <!-- 投稿一覧 -->
                 <div
