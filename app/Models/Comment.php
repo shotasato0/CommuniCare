@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Comment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = ['user_id', 'post_id', 'parent_id', 'message'];
 
@@ -36,6 +36,11 @@ class Comment extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable'); // ポリモーフィックリレーション
+    }
+
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class);
     }
 }
 
