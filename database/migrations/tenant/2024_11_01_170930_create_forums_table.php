@@ -6,20 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('forums', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
+            $table->foreignId('unit_id')->nullable()->constrained()->onDelete('cascade');
+            $table->text('description')->nullable();
+            $table->enum('visibility', ['public', 'private', 'unit_only'])->default('unit_only');
+            $table->enum('status', ['active', 'archived'])->default('active');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('forums');
