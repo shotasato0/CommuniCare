@@ -16,6 +16,7 @@ class PostController extends Controller
     $validated = $request->validate([
         'title' => 'required|string|max:255',
         'message' => 'required|string',
+        'forum_id' => 'required|exists:forums,id',
     ]);
 
     // 投稿者のuser_idと投稿内容を保存
@@ -23,6 +24,7 @@ class PostController extends Controller
         'user_id' => auth()->id(),  // ログイン中のユーザーのIDを保存
         'title' => $validated['title'],
         'message' => $validated['message'],
+        'forum_id' => $validated['forum_id'],
     ]);
 
     // 新しい投稿にユーザー情報をロードして返す
@@ -31,7 +33,7 @@ class PostController extends Controller
     $units = Unit::all();
 
        // 正しいInertiaレスポンスで新しい投稿とauth情報を返す
-       return Inertia::render('Forum', [
+    return Inertia::render('Forum', [
         'newPost' => $post,
         'auth' => auth()->user(), // ログインユーザー情報も渡す
         'units' => $units,
