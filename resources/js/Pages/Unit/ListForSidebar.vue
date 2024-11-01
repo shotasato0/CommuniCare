@@ -69,10 +69,28 @@ export default {
                         <li
                             v-for="user in filteredUsers"
                             :key="user.id"
-                            class="p-1 cursor-pointer hover:bg-gray-200"
+                            class="p-1 cursor-pointer hover:bg-gray-200 flex items-center space-x-2"
                             @click.stop="openUserProfile(user)"
                         >
-                            {{ user.name }}
+                            <!-- プロフィール画像を表示 -->
+                            <img
+                                v-if="user.icon"
+                                :src="
+                                    user.icon.startsWith('/storage/')
+                                        ? user.icon
+                                        : `/storage/${user.icon}`
+                                "
+                                alt="User Icon"
+                                class="w-6 h-6 rounded-full"
+                            />
+                            <img
+                                v-else
+                                src="https://via.placeholder.com/40"
+                                alt="Default Icon"
+                                class="w-6 h-6 rounded-full"
+                            />
+                            <!-- ユーザー名 -->
+                            <span>{{ user.name }}</span>
                         </li>
                     </ul>
                 </slide-up-down>
