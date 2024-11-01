@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ForumController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -41,7 +42,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
+        Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
 
