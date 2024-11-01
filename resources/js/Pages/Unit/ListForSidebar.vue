@@ -1,9 +1,11 @@
 <script>
 import SlideUpDown from "vue-slide-up-down";
+import Show from "../Users/Show.vue";
 
 export default {
     components: {
         SlideUpDown,
+        Show,
     },
     props: {
         units: {
@@ -19,6 +21,7 @@ export default {
     data() {
         return {
             selectedUnitId: null,
+            selectedUser: null,
         };
     },
     computed: {
@@ -35,6 +38,12 @@ export default {
         toggleUnit(unitId) {
             this.selectedUnitId =
                 this.selectedUnitId === unitId ? null : unitId;
+        },
+        openUserProfile(user) {
+            this.selectedUser = user;
+        },
+        closeUserProfile() {
+            this.selectedUser = null;
         },
     },
 };
@@ -64,7 +73,8 @@ export default {
                         <li
                             v-for="user in filteredUsers"
                             :key="user.id"
-                            class="p-1"
+                            class="p-1 cursor-pointer hover:bg-gray-200"
+                            @click.stop="openUserProfile(user)"
                         >
                             {{ user.name }}
                         </li>
@@ -72,6 +82,17 @@ export default {
                 </slide-up-down>
             </li>
         </ul>
+
+        <!-- ユーザープロファイルポップアップ -->
+        <div
+            v-if="selectedUser"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            @click="closeUserProfile"
+        >
+            <div @click.stop>
+                <Show :user="selectedUser" :units="units" />
+            </div>
+        </div>
     </div>
 </template>
 
