@@ -63,40 +63,6 @@ export default {
                     <span v-if="selectedUnitId === unit.id">&#9660;</span>
                     <span v-else>&#9654;</span>
                 </div>
-                <slide-up-down
-                    :active="selectedUnitId === unit.id"
-                    :duration="300"
-                    class="ml-4"
-                >
-                    <ul v-if="filteredUsers.length > 0">
-                        <li
-                            v-for="user in filteredUsers"
-                            :key="user.id"
-                            class="p-1 cursor-pointer hover:bg-blue-300 flex items-center space-x-2"
-                            @click.stop="openUserProfile(user)"
-                        >
-                            <!-- プロフィール画像を表示 -->
-                            <img
-                                v-if="user.icon"
-                                :src="
-                                    user.icon.startsWith('/storage/')
-                                        ? user.icon
-                                        : `/storage/${user.icon}`
-                                "
-                                alt="User Icon"
-                                class="w-6 h-6 rounded-full"
-                            />
-                            <img
-                                v-else
-                                src="https://via.placeholder.com/40"
-                                alt="Default Icon"
-                                class="w-6 h-6 rounded-full"
-                            />
-                            <!-- ユーザー名 -->
-                            <span>{{ user.name }}</span>
-                        </li>
-                    </ul>
-                </slide-up-down>
             </li>
         </ul>
     </div>
