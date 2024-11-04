@@ -1,4 +1,5 @@
 <script>
+import { router } from "@inertiajs/vue3";
 import SlideUpDown from "vue-slide-up-down";
 import Show from "../Users/Show.vue";
 
@@ -21,6 +22,7 @@ export default {
     data() {
         return {
             selectedUnitId: null,
+            isFetchingData: false, // データ取得中かどうかを判定するフラグ
         };
     },
     computed: {
@@ -34,7 +36,37 @@ export default {
         },
     },
     methods: {
+        async handleUnitClick(unit) {
+            if (this.isFetchingData) {
+                console.log("Already fetching data, skipping...");
+                return;
+            }
+
+            console.log("Unit clicked:", unit); // デバッグ用
+            this.isFetchingData = true; // フラグをセット
+            this.toggleUnit(unit.id);
+            console.log("call fetchUnitData");
+            await this.fetchUnitData(unit.id);
+            this.isFetchingData = false; // フラグをリセット
+        },
+        fetchUnitData(unitId) {
+            console.log("Fetching data for unit ID:", unitId); // デバッグ用
+
+            router.visit(route("units.listForSidebar"), {
+                method: "get",
+                only: ["units"], // 必要なプロパティを指定
+                preserveState: true, // ページ遷移なし
+                onSuccess: (page) => {
+                    console.log("Received data:", page.props.units);
+                    this.$emit("forum-selected", unitId);
+                },
+                onError: (errors) => {
+                    console.error("Error fetching unit data:", errors);
+                },
+            });
+        },
         toggleUnit(unitId) {
+            console.log("Toggling unit:", unitId); // デバッグ用
             this.selectedUnitId =
                 this.selectedUnitId === unitId ? null : unitId;
         },
@@ -56,7 +88,7 @@ export default {
                 v-for="unit in units"
                 :key="unit.id"
                 class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer"
-                @click="toggleUnit(unit.id)"
+                @click="handleUnitClick(unit)"
             >
                 <div class="flex items-center justify-between">
                     <span class="font-bold">{{ unit.name }}</span>
