@@ -9,20 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            //
+            $table->unsignedBigInteger('forum_id')->nullable(false)->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('posts', function (Blueprint $table) {
-            //
+            $table->unsignedBigInteger('forum_id')->nullable()->change();
         });
     }
 };
