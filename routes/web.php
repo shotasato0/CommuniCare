@@ -57,7 +57,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         // Route::middleware(['role:admin'])->group(function () {
         //     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
         // });
-        Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
+        // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
         Route::resource('units', UnitController::class);
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');

@@ -52,7 +52,7 @@ export default {
         fetchUnitData(unitId) {
             console.log("Fetching data for unit ID:", unitId); // デバッグ用
 
-            router.visit(route("units.listForSidebar"), {
+            router.visit(route("forum.index"), {
                 method: "get",
                 only: ["units"], // 必要なプロパティを指定
                 preserveState: true, // ページ遷移なし
