@@ -14,12 +14,9 @@ class UnitController extends Controller
      */
     public function listForSidebar()
     {
-        $units = Unit::all();
-        $forums = Forum::all();
-        
-        return Inertia::render('Unit/ListForSidebar', [
+        $units = Unit::with('forum')->get();
+        return Inertia::render('Forum', [
             'units' => $units,
-            'forums' => $forums,
         ]);
     }
 
