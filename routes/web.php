@@ -54,11 +54,11 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
         Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
 
-        Route::middleware(['role:admin'])->group(function () {
-            Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-        });
-        Route::resource('units', UnitController::class);
+        // Route::middleware(['role:admin'])->group(function () {
+        //     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+        // });
         Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
+        Route::resource('units', UnitController::class);
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
