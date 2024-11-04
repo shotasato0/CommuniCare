@@ -16,7 +16,7 @@ import ListForSidebar from "./Unit/ListForSidebar.vue";
 const pageProps = usePage().props;
 const posts = ref(pageProps.posts || []); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
-const units = pageProps.units; // 部署のデータ
+const units = ref(pageProps.units || []); // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
@@ -205,9 +205,15 @@ const onUserSelected = (user) => {
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
 
-// 掲示板が選択されたときにforum_idを設定
-const onForumSelected = (forumId) => {
-    selectedForumId.value = Number(forumId); // 選択した掲示板IDを更新
+// 掲示板が選択されたときにフォーラムIDを設定する関数
+const onForumSelected = (unitId) => {
+    const unit = units.value.find((u) => u.id === unitId);
+    if (unit && unit.forum) {
+        selectedForumId.value = unit.forum.id;
+        console.log("Selected forum ID:", selectedForumId.value); // フォーラムIDの表示
+    } else {
+        console.error("対応する掲示板が見つかりませんでした");
+    }
 };
 </script>
 
@@ -255,7 +261,7 @@ const onForumSelected = (forumId) => {
                 </div>
 
                 <!-- 上部ページネーション -->
-                <Pagination :links="posts.links" class="mb-4" />
+                <Pagination :links="posts?.links || []" class="mb-4" />
 
                 <!-- 投稿フォーム -->
                 <PostForm
@@ -371,7 +377,7 @@ const onForumSelected = (forumId) => {
                 </div>
 
                 <!-- 下部ページネーション -->
-                <Pagination :links="posts.links" class="mt-4" />
+                <Pagination :links="posts?.links || []" class="mt-4" />
             </div>
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
