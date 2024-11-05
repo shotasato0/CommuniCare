@@ -42,6 +42,8 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+        Route::get('/forum/main', [ForumController::class, 'getMainForumPosts'])->name('forum.main');
+        Route::get('/forum/{forum_id}/posts', [ForumController::class, 'getForumPosts'])->name('forum.posts');
         Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
