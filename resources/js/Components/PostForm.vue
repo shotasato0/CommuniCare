@@ -30,13 +30,18 @@ const submitPost = () => {
 
     postData.value._token = getCsrfToken(); // CSRFトークンを設定
     router.post(route("forum.store"), postData.value, {
-        onSuccess: (response) => {
+        onSuccess: () => {
             postData.value = {
                 title: "",
                 message: "",
                 forum_id: props.forumId ? Number(props.forumId) : null,
             }; // フォームをリセット
-            router.get(route("forum.index")); // getで履歴を置き換え
+            router.get(
+                route("forum.index", { forum_id: postData.value.forum_id }),
+                {
+                    preserveState: true,
+                }
+            ); // 選択されたフォーラムにリダイレクト
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
