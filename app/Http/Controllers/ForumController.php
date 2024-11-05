@@ -10,6 +10,16 @@ use App\Models\User;
 
 class ForumController extends Controller
 {
+    public function showWelcome()
+    {
+        // 「Welcome」フォーラムを取得
+        $welcomeForum = Forum::where('name', 'Welcome')->firstOrFail();
+
+        // ビューにフォーラムデータを渡す
+        return view('forums.welcome', ['forum' => $welcomeForum]);
+    }
+
+
     public function index(Request $request)
 {
     $forumId = $request->input('forum_id'); // URLから選択されたユニットIDを取得
