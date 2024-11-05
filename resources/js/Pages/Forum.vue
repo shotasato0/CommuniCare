@@ -22,7 +22,7 @@ const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表
 const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
-const selectedForumId = ref(null); // 選択されたフォーラムのID。フォーラムが選択されていない場合はnull
+const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
 
 // サイドバーのユーザー選択イベントを受け取る関数
 const onUserSelected = (user) => {
@@ -31,62 +31,28 @@ const onUserSelected = (user) => {
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
 
-// 最後に選択されたユニットIDを取得する関数
-const getlastSelectedUnitId = () => {
-    const lastUnitId = localStorage.getItem("lastSelectedUnitId");
-    return lastUnitId ? Number(lastUnitId) : null;
-};
-
-// 初期掲示板データを取得する関数
-const loadInitialForumData = async () => {
-    const lastUnitId = getlastSelectedUnitId();
-    const unitId =
-        lastUnitId ||
-        units.value.find((unit) => unit.name === "メイン")?.id ||
-        null;
-
-    const unit = units.value.find((u) => u.id === unitId);
-
-    if (unit && unit.forum) {
-        selectedForumId.value = unit.forum.id;
-
-        // 初期掲示板データを取得
-        try {
-            const response = await axios.get(
-                route("forum.posts", { forum_id: selectedForumId.value })
-            );
-            posts.value = response.data.posts;
-        } catch (error) {
-            console.error("Error fetching forum posts:", error);
-        }
-    }
-};
-
 // サイドバーからのユニット選択イベント
-const onForumSelected = async (unitId) => {
+const onForumSelected = (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
     if (unit && unit.forum) {
         selectedForumId.value = unit.forum.id;
-        localStorage.setItem("lastSelectedUnitId", unitId); // 最後に選択されたユニットIDを保存
+        localStorage.setItem("lastSelectedUnitId", unitId);
 
-        // 選択されたユニットの掲示板データを取得
-        try {
-            const response = await axios.get(
-                route("forum.posts", { forum_id: selectedForumId.value })
-            );
-            posts.value = response.data.posts;
-        } catch (error) {
-            console.error("Error fetching forum posts:", error);
-        }
+        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+            preserveState: true,
+        });
     } else {
         console.error("対応する掲示板が見つかりませんでした");
     }
 };
 
-// ページの初期表示でメイン掲示板データをロード
-onMounted(() => {
-    loadInitialForumData();
-});
+const onPageChange = (url) => {
+    router.get(url, {
+        preserveScroll: true,
+        preserveState: true,
+        only: ["posts"],
+    });
+};
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -307,7 +273,11 @@ const search = ref(pageProps.search || "");
                 </div>
 
                 <!-- 上部ページネーション -->
-                <Pagination :links="posts?.links || []" class="mb-4" />
+                <Pagination
+                    :links="posts?.links || []"
+                    @change="onPageChange"
+                    class="mb-4"
+                />
 
                 <!-- 投稿フォーム -->
                 <PostForm
@@ -423,7 +393,11 @@ const search = ref(pageProps.search || "");
                 </div>
 
                 <!-- 下部ページネーション -->
-                <Pagination :links="posts?.links || []" class="mt-4" />
+                <Pagination
+                    :links="posts?.links || []"
+                    @change="onPageChange"
+                    class="mt-4"
+                />
             </div>
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
