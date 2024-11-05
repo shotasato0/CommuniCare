@@ -34,4 +34,26 @@ class ForumController extends Controller
     ]);
 }
 
+public function getMainForumPosts()
+{
+    $posts = Post::with(['user', 'comments' => function ($query) {
+        $query->whereNull('parent_id')->with(['children.user', 'user']);
+    }])
+    ->latest()
+    ->paginate(5);
+
+    return response()->json(['posts' => $posts]);
+}
+
+public function getForumPosts($forum_id)
+{
+    $posts = Post::where('forum_id', $forum_id)
+        ->with(['user', 'comments' => function ($query) {
+            $query->whereNull('parent_id')->with(['children.user', 'user']);
+        }])
+        ->latest()
+        ->paginate(5);
+
+    return response()->json(['posts' => $posts]);
+    }
 }

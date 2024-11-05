@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
@@ -13,8 +13,8 @@ import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 
 // propsからページのデータを取得
-const pageProps = usePage().props;
-const posts = ref(pageProps.posts || []); // 投稿のデータ
+const pageProps = usePage().props; // ページのデータ
+const posts = ref(pageProps.posts || { data: [], links: [] }); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
 const units = ref(pageProps.units || []); // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
@@ -23,6 +23,70 @@ const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 const selectedForumId = ref(null); // 選択されたフォーラムのID。フォーラムが選択されていない場合はnull
+
+// サイドバーのユーザー選択イベントを受け取る関数
+const onUserSelected = (user) => {
+    console.log("User selected:", user);
+    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
+    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
+};
+
+// 最後に選択されたユニットIDを取得する関数
+const getlastSelectedUnitId = () => {
+    const lastUnitId = localStorage.getItem("lastSelectedUnitId");
+    return lastUnitId ? Number(lastUnitId) : null;
+};
+
+// 初期掲示板データを取得する関数
+const loadInitialForumData = async () => {
+    const lastUnitId = getlastSelectedUnitId();
+    const unitId =
+        lastUnitId ||
+        units.value.find((unit) => unit.name === "メイン")?.id ||
+        null;
+
+    const unit = units.value.find((u) => u.id === unitId);
+
+    if (unit && unit.forum) {
+        selectedForumId.value = unit.forum.id;
+
+        // 初期掲示板データを取得
+        try {
+            const response = await axios.get(
+                route("forum.posts", { forum_id: selectedForumId.value })
+            );
+            posts.value = response.data.posts;
+        } catch (error) {
+            console.error("Error fetching forum posts:", error);
+        }
+    }
+};
+
+// サイドバーからのユニット選択イベント
+const onForumSelected = async (unitId) => {
+    const unit = units.value.find((u) => u.id === unitId);
+    if (unit && unit.forum) {
+        selectedForumId.value = unit.forum.id;
+        localStorage.setItem("lastSelectedUnitId", unitId); // 最後に選択されたユニットIDを保存
+
+        // 選択されたユニットの掲示板データを取得
+        try {
+            const response = await axios.get(
+                route("forum.posts", { forum_id: selectedForumId.value })
+            );
+            posts.value = response.data.posts;
+        } catch (error) {
+            console.error("Error fetching forum posts:", error);
+        }
+    } else {
+        console.error("対応する掲示板が見つかりませんでした");
+    }
+};
+
+// ページの初期表示でメイン掲示板データをロード
+onMounted(() => {
+    loadInitialForumData();
+});
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -195,26 +259,8 @@ const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
 
-// 検索結果の表示状態
+// 検索結果の表示状態だよ
 const search = ref(pageProps.search || "");
-
-// サイドバーのユーザー選択イベントを受け取る関数
-const onUserSelected = (user) => {
-    console.log("User selected:", user);
-    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
-    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
-};
-
-// 掲示板が選択されたときにフォーラムIDを設定する関数
-const onForumSelected = (unitId) => {
-    const unit = units.value.find((u) => u.id === unitId);
-    if (unit && unit.forum) {
-        selectedForumId.value = unit.forum.id;
-        console.log("Selected forum ID:", selectedForumId.value); // フォーラムIDの表示
-    } else {
-        console.error("対応する掲示板が見つかりませんでした");
-    }
-};
 </script>
 
 <template>
