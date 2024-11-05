@@ -42,10 +42,15 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+        // フォーラム
+        Route::get('/forum/welcome', [ForumController::class, 'showWelcome'])->name('forum.welcome');
         Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+
+        // 投稿
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
 
+        // コメント
         Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
         Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 
