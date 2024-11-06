@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
@@ -23,6 +23,21 @@ const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+
+// マウント時にselectedForumIdを設定
+onMounted(() => {
+    selectedForumId.value = pageProps.selectedForumId;
+});
+
+// selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
+watch(selectedForumId, (newForumId) => {
+    if (newForumId) {
+        router.get(route("forum.index", { forum_id: newForumId }), {
+            preserveState: true,
+            only: ["posts"],
+        });
+    }
+});
 
 // サイドバーのユーザー選択イベントを受け取る関数
 const onUserSelected = (user) => {
