@@ -148,30 +148,26 @@ public function updateIcon(Request $request)
     }
 
     // ユーザーの所属ユニットのforum_idを取得
-    public function getUserForumId(Request $request)
+    // app/Http/Controllers/UserController.php
+
+public function getUserForumId(Request $request)
 {
     $user = $request->user();
 
-    // デバッグログ: ユーザーとユニット情報
-    \Log::info('User ID: ' . $user->id);
-    \Log::info('User Unit: ', $user->unit ? $user->unit->toArray() : ['No Unit']);
-
-    // ユーザーがユニットに所属しているか確認
+    // ユーザーがユニットに所属していない場合
     if (!$user->unit) {
-        return response()->json(['error' => 'User does not belong to any unit.'], 404);
+        return response()->json(['error' => __('messages.user_not_in_unit')], 404);
     }
 
     // ユーザーが所属するユニットの forum_id を取得
     $forumId = optional($user->unit->forum)->id;
 
-    // デバッグログ: フォーラムID
-    \Log::info('Forum ID: ' . $forumId);
-
     if (!$forumId) {
-        return response()->json(['error' => 'Forum not found for the user\'s unit.'], 404);
+        return response()->json(['error' => __('messages.forum_not_found')], 404);
     }
 
     return response()->json(['forum_id' => $forumId]);
 }
+
 
 }
