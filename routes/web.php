@@ -47,7 +47,6 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/user-forum-id', [UserController::class, 'getUserForumId']);
 
         // フォーラム
-        Route::get('/forum/welcome', [ForumController::class, 'showWelcome'])->name('forum.welcome');
         Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
 
         // 投稿
