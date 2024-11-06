@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
 
+
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
     Route::get('/', function () {
@@ -41,6 +42,9 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        // ユーザーの所属ユニットのforum_idを取得（エンドポイント）
+        Route::get('/user-forum-id', [UserController::class, 'getUserForumId']);
 
         // フォーラム
         Route::get('/forum/welcome', [ForumController::class, 'showWelcome'])->name('forum.welcome');

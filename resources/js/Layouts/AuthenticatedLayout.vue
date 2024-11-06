@@ -1,11 +1,11 @@
 <script setup>
 import { ref } from "vue";
+import { router, usePage } from "@inertiajs/vue3";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link, usePage } from "@inertiajs/vue3";
 
 // CSRFトークンを取得
 const csrfToken = ref(
@@ -16,6 +16,34 @@ const showingNavigationDropdown = ref(false);
 
 // Inertiaからpropsを取得
 const auth = usePage().props.auth || {};
+// ユーザーの情報を確認
+console.log("Logged in user data:", auth.user);
+console.log("auth.user.unit_id", auth.user.unit_id);
+
+const handleLogoClick = async () => {
+    try {
+        const response = await fetch(`/user-forum-id`, {
+            headers: {
+                Accept: "application/json",
+            },
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Failed to fetch forum ID");
+        }
+
+        const forumId = data.forum_id;
+
+        // 所属ユニットの掲示板に遷移して状態をリセット
+        router.get(route("forum.index", { forum_id: forumId }), {
+            preserveState: false, // 既存の状態をリセットしてビューを更新
+        });
+    } catch (error) {
+        console.error("Error fetching user forum ID:", error);
+        alert(error.message); // エラーメッセージをアラートで表示
+    }
+};
 </script>
 
 <template>
@@ -30,11 +58,14 @@ const auth = usePage().props.auth || {};
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('forum.index')">
+                                <div
+                                    @click="handleLogoClick"
+                                    class="cursor-pointer"
+                                >
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
-                                </Link>
+                                </div>
                             </div>
 
                             <!-- Navigation Links -->
