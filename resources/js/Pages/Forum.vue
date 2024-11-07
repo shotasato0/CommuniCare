@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import dayjs from "dayjs";
@@ -13,15 +13,61 @@ import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 
 // propsからページのデータを取得
-const pageProps = usePage().props;
-const posts = ref(pageProps.posts || []); // 投稿のデータ
+const pageProps = usePage().props; // ページのデータ
+const posts = ref(pageProps.posts || { data: [], links: [] }); // 投稿のデータ
 const auth = pageProps.auth; // ログインユーザー情報
-const units = pageProps.units; // 部署のデータ
+const units = ref(pageProps.units || []); // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
+const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+
+// マウント時にselectedForumIdを設定
+onMounted(() => {
+    selectedForumId.value = pageProps.selectedForumId;
+});
+
+// selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
+watch(selectedForumId, (newForumId) => {
+    if (newForumId) {
+        router.get(route("forum.index", { forum_id: newForumId }), {
+            preserveState: true,
+            only: ["posts"],
+        });
+    }
+});
+
+// サイドバーのユーザー選択イベントを受け取る関数
+const onUserSelected = (user) => {
+    console.log("User selected:", user);
+    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
+    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
+};
+
+// サイドバーからのユニット選択イベント
+const onForumSelected = (unitId) => {
+    const unit = units.value.find((u) => u.id === unitId);
+    if (unit && unit.forum) {
+        selectedForumId.value = unit.forum.id;
+        localStorage.setItem("lastSelectedUnitId", unitId);
+
+        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+            preserveState: true,
+        });
+    } else {
+        console.error("対応する掲示板が見つかりませんでした");
+    }
+};
+
+const onPageChange = (url) => {
+    router.get(url, {
+        preserveScroll: true,
+        preserveState: true,
+        only: ["posts"],
+    });
+};
 
 const openUserProfile = (post) => {
     selectedPost.value = post;
@@ -194,15 +240,8 @@ const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
 
-// 検索結果の表示状態
+// 検索結果の表示状態だよ
 const search = ref(pageProps.search || "");
-
-// サイドバーのユーザー選択イベントを受け取る関数
-const onUserSelected = (user) => {
-    console.log("User selected:", user);
-    selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
-    isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
-};
 </script>
 
 <template>
@@ -226,6 +265,7 @@ const onUserSelected = (user) => {
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
                 v-model:sidebarVisible="sidebarVisible"
+                @forum-selected="onForumSelected"
             />
 
             <!-- メインコンテンツエリア -->
@@ -248,10 +288,18 @@ const onUserSelected = (user) => {
                 </div>
 
                 <!-- 上部ページネーション -->
-                <Pagination :links="posts.links" class="mb-4" />
+                <Pagination
+                    :links="posts?.links || []"
+                    @change="onPageChange"
+                    class="mb-4"
+                />
 
                 <!-- 投稿フォーム -->
-                <PostForm class="mb-6" />
+                <PostForm
+                    v-if="selectedForumId"
+                    :forum-id="Number(selectedForumId)"
+                    class="mb-6"
+                />
 
                 <!-- 投稿一覧 -->
                 <div
@@ -360,7 +408,11 @@ const onUserSelected = (user) => {
                 </div>
 
                 <!-- 下部ページネーション -->
-                <Pagination :links="posts.links" class="mt-4" />
+                <Pagination
+                    :links="posts?.links || []"
+                    @change="onPageChange"
+                    class="mt-4"
+                />
             </div>
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->

@@ -60,4 +60,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function forum()
+    {
+        return $this->unit->forum(); //単一のフォーラムを返す
+    }
 }

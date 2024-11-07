@@ -10,6 +10,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ForumController;
+
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -41,10 +43,17 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        Route::get('/forum', [PostController::class, 'index'])->name('forum.index');
+        // ユーザーの所属ユニットのforum_idを取得（エンドポイント）
+        Route::get('/user-forum-id', [UserController::class, 'getUserForumId']);
+
+        // フォーラム
+        Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+
+        // 投稿
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
 
+        // コメント
         Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
         Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
 
@@ -53,11 +62,11 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
         Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
 
-        Route::middleware(['role:admin'])->group(function () {
-            Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
-        });
+        // Route::middleware(['role:admin'])->group(function () {
+        //     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+        // });
+        // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
         Route::resource('units', UnitController::class);
-        Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });

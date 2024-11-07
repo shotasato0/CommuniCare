@@ -1,20 +1,47 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
+
+const props = defineProps({
+    forumId: [String, Number], // String または Number 型を許容
+});
 
 const postData = ref({
     title: "",
     message: "",
+    forum_id: props.forumId ? Number(props.forumId) : null, // forum_id を追加し、初期値を適切に設定
 });
+
+// forumIdの変更を監視し、postDataに反映
+watch(
+    () => props.forumId,
+    (newForumId) => {
+        postData.value.forum_id = newForumId ? Number(newForumId) : null;
+    }
+);
 
 // 投稿の送信処理
 const submitPost = () => {
+    if (!postData.value.forum_id || postData.value.forum_id === 0) {
+        console.error("有効な掲示板IDが選択されていません。");
+        return;
+    }
+
     postData.value._token = getCsrfToken(); // CSRFトークンを設定
     router.post(route("forum.store"), postData.value, {
-        onSuccess: (response) => {
-            postData.value = { title: "", message: "" }; // フォームをリセット
-            router.get(route("forum.index")); // getで履歴を置き換え
+        onSuccess: () => {
+            postData.value = {
+                title: "",
+                message: "",
+                forum_id: props.forumId ? Number(props.forumId) : null,
+            }; // フォームをリセット
+            router.get(
+                route("forum.index", { forum_id: postData.value.forum_id }),
+                {
+                    preserveState: true,
+                }
+            ); // 選択されたフォーラムにリダイレクト
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
