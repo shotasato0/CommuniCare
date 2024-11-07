@@ -15,5 +15,10 @@ class Unit extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function forum()
+    {
+        return $this->hasOne(Forum::class);
+    }
 }
 

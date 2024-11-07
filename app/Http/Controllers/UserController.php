@@ -146,4 +146,28 @@ public function updateIcon(Request $request)
         $user->delete();
         return redirect()->route('users.index')->with('success', '社員が削除されました。');
     }
+
+    // ユーザーの所属ユニットのforum_idを取得
+    // app/Http/Controllers/UserController.php
+
+public function getUserForumId(Request $request)
+{
+    $user = $request->user();
+
+    // ユーザーがユニットに所属していない場合
+    if (!$user->unit) {
+        return response()->json(['error' => __('messages.user_not_in_unit')], 404);
+    }
+
+    // ユーザーが所属するユニットの forum_id を取得
+    $forumId = optional($user->unit->forum)->id;
+
+    if (!$forumId) {
+        return response()->json(['error' => __('messages.forum_not_found')], 404);
+    }
+
+    return response()->json(['forum_id' => $forumId]);
+}
+
+
 }

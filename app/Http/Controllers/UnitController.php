@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Unit;
+use App\Models\Forum;
 use Inertia\Inertia;
 
 class UnitController extends Controller
@@ -13,8 +14,8 @@ class UnitController extends Controller
      */
     public function listForSidebar()
     {
-        $units = Unit::all();
-        return Inertia::render('Unit/ListForSidebar', [
+        $units = Unit::with('forum')->get();
+        return Inertia::render('Forum', [
             'units' => $units,
         ]);
     }
@@ -25,8 +26,10 @@ class UnitController extends Controller
     public function create()
     {
         $units = Unit::select('id', 'name')->get();
+        $forums = Forum::all();
         return inertia("Unit/Register", [
             'units' => $units,
+            'forums' => $forums,
         ]);
     }
 
@@ -44,7 +47,15 @@ class UnitController extends Controller
             "name.unique" => "この部署名は既に登録されています。",
         ]);
 
-        Unit::create($request->all());
+        $unit = Unit::create($request->all());
+
+        $forum = Forum::create([
+            'name' => $request->name,
+            'unit_id' => $unit->id,
+            'description' => 'この掲示板は' . $request->name . 'の掲示板です。',
+            'visibility' => 'public',
+            'status' => 'active',
+        ]);
         return redirect()->route("dashboard")->with(["success" => "ユニット登録が完了しました。"]);
     }
 

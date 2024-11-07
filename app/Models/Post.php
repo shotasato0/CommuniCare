@@ -10,7 +10,7 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'title', 'message'];
+    protected $fillable = ['user_id', 'title', 'message', 'forum_id'];
 
     public function user()
     {
@@ -25,6 +25,11 @@ class Post extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable'); // ポリモーフィックリレーション
+    }
+
+    public function forum()
+    {
+        return $this->belongsTo(Forum::class);
     }
 }
 
