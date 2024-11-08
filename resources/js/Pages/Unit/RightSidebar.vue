@@ -12,13 +12,15 @@ console.log("props.unitUsers", props.unitUsers);
 </script>
 
 <template>
-    <div class="right-sidebar desktop-only">
-        <h2>ユニットメンバー</h2>
+    <div
+        class="right-sidebar desktop-only bg-gray-100 w-56 h-screen p-4 shadow-lg"
+    >
+        <h2 class="text-lg font-bold mb-4">部署メンバー</h2>
         <ul v-if="unitUsers && unitUsers.length > 0">
             <li
                 v-for="user in unitUsers"
                 :key="user.id"
-                class="p-1 cursor-pointer hover:bg-blue-300 flex items-center space-x-2"
+                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointe flex items-center space-x-2"
             >
                 <img
                     v-if="user.icon"
@@ -47,6 +49,10 @@ console.log("props.unitUsers", props.unitUsers);
 .right-sidebar {
     padding: 16px;
     background-color: #f8f9fa;
+    position: fixed;
+    right: 0;
+    top: 0;
+    background-color: #f7fafc;
 }
 
 /* デスクトップ画面にのみ表示 */

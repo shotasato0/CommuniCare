@@ -436,7 +436,10 @@ const search = ref(pageProps.search || "");
             </div>
 
             <!-- 右サイドバー -->
-            <RightSidebar :unit-users="selectedUnitUsers" />
+            <RightSidebar
+                :unit-users="selectedUnitUsers"
+                class="p-4 lg:mt-16 lg:block"
+            />
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
             <div
