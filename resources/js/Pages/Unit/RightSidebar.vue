@@ -20,7 +20,8 @@ console.log("props.unitUsers", props.unitUsers);
             <li
                 v-for="user in unitUsers"
                 :key="user.id"
-                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointe flex items-center space-x-2"
+                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer flex items-center space-x-2"
+                @click="$emit('user-selected', user)"
             >
                 <img
                     v-if="user.icon"

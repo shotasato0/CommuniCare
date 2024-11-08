@@ -439,6 +439,7 @@ const search = ref(pageProps.search || "");
             <RightSidebar
                 :unit-users="selectedUnitUsers"
                 class="p-4 lg:mt-16 lg:block"
+                @user-selected="onUserSelected"
             />
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
