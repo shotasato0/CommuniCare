@@ -25,6 +25,7 @@ const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
+const selectedUnitName = ref(""); // 選択されたユニットの名前
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
@@ -53,7 +54,11 @@ const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
     if (unit && unit.forum) {
         selectedForumId.value = unit.forum.id;
+        selectedUnitName.value = unit.name; // 選択されたユニットの名前を設定
         localStorage.setItem("lastSelectedUnitId", unitId);
+
+        // ユニット名を保存
+        sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
 
         // ユーザーリストを取得して一時保存
         selectedUnitUsers.value = users.filter(
@@ -78,6 +83,11 @@ onMounted(() => {
     const storedUsers = sessionStorage.getItem("selectedUnitUsers");
     if (storedUsers) {
         selectedUnitUsers.value = JSON.parse(storedUsers);
+    }
+    // 保存されたユニット名を復元
+    const storedUnitName = sessionStorage.getItem("selectedUnitName");
+    if (storedUnitName) {
+        selectedUnitName.value = storedUnitName;
     }
 });
 
@@ -438,6 +448,7 @@ const search = ref(pageProps.search || "");
             <!-- 右サイドバー -->
             <RightSidebar
                 :unit-users="selectedUnitUsers"
+                :unit-name="selectedUnitName"
                 class="p-4 lg:mt-16 lg:block"
                 @user-selected="onUserSelected"
             />

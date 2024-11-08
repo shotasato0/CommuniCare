@@ -7,15 +7,22 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    unitName: {
+        type: String,
+        default: "",
+    },
 });
 console.log("props.unitUsers", props.unitUsers);
+console.log("props.unitName", props.unitName);
 </script>
 
 <template>
     <div
         class="right-sidebar desktop-only bg-gray-100 w-56 h-screen p-4 shadow-lg"
     >
-        <h2 class="text-lg font-bold mb-4">部署メンバー</h2>
+        <h2 class="text-lg font-bold mb-4">
+            {{ unitName + "職員" || "部署メンバー" }}
+        </h2>
         <ul v-if="unitUsers && unitUsers.length > 0">
             <li
                 v-for="user in unitUsers"
