@@ -46,6 +46,10 @@ export default {
             this.isFetchingData = true; // フラグをセット
             this.toggleUnit(unit.id);
             console.log("call fetchUnitData");
+
+            // 選択されたユニットIDを親コンポーネントに伝えるイベントを発火
+            this.$emit("forum-selected", unit.id);
+
             await this.fetchUnitData(unit.id);
             this.isFetchingData = false; // フラグをリセット
         },
