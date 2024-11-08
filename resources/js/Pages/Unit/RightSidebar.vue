@@ -20,7 +20,7 @@ console.log("props.unitUsers", props.unitUsers);
             <li
                 v-for="user in unitUsers"
                 :key="user.id"
-                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer flex items-center space-x-2"
+                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer flex items-center space-x-4 font-bold"
                 @click="$emit('user-selected', user)"
             >
                 <img
@@ -31,13 +31,13 @@ console.log("props.unitUsers", props.unitUsers);
                             : `/storage/${user.icon}`
                     "
                     alt="User Icon"
-                    class="w-6 h-6 rounded-full"
+                    class="w-12 h-12 rounded-full"
                 />
                 <img
                     v-else
                     src="https://via.placeholder.com/40"
                     alt="Default Icon"
-                    class="w-6 h-6 rounded-full"
+                    class="w-12 h-12 rounded-full"
                 />
                 <span>{{ user.name }}</span>
             </li>
