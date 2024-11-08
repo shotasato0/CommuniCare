@@ -48,27 +48,38 @@ const onUserSelected = (user) => {
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
 
-// サイドバーからのユニット選択イベント
-const onForumSelected = (unitId) => {
+// ユニット選択イベント
+const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
-
     if (unit && unit.forum) {
-        // 1. フォーラムを切り替える
         selectedForumId.value = unit.forum.id;
         localStorage.setItem("lastSelectedUnitId", unitId);
 
-        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: true,
-        });
-
-        // 2. 右サイドバー用のユーザーリストを更新
+        // ユーザーリストを取得して一時保存
         selectedUnitUsers.value = users.filter(
             (user) => user.unit_id === unitId
         );
+        sessionStorage.setItem(
+            "selectedUnitUsers",
+            JSON.stringify(selectedUnitUsers.value)
+        );
+
+        // 掲示板を更新
+        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+            preserveState: false, // 状態を再レンダリング
+        });
     } else {
         console.error("対応する掲示板が見つかりませんでした");
     }
 };
+
+// ページが読み込まれたときに保存されたユーザーリストを復元
+onMounted(() => {
+    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
+    if (storedUsers) {
+        selectedUnitUsers.value = JSON.parse(storedUsers);
+    }
+});
 
 const onPageChange = (url) => {
     router.get(url, {
