@@ -11,6 +11,7 @@ import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
+import RightSidebar from "./Unit/RightSidebar.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -23,6 +24,7 @@ const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
@@ -49,13 +51,20 @@ const onUserSelected = (user) => {
 // サイドバーからのユニット選択イベント
 const onForumSelected = (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
+
     if (unit && unit.forum) {
+        // 1. フォーラムを切り替える
         selectedForumId.value = unit.forum.id;
         localStorage.setItem("lastSelectedUnitId", unitId);
 
         router.get(route("forum.index", { forum_id: selectedForumId.value }), {
             preserveState: true,
         });
+
+        // 2. 右サイドバー用のユーザーリストを更新
+        selectedUnitUsers.value = users.filter(
+            (user) => user.unit_id === unitId
+        );
     } else {
         console.error("対応する掲示板が見つかりませんでした");
     }
@@ -414,6 +423,9 @@ const search = ref(pageProps.search || "");
                     class="mt-4"
                 />
             </div>
+
+            <!-- 右サイドバー -->
+            <RightSidebar :unit-users="selectedUnitUsers" />
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
             <div
