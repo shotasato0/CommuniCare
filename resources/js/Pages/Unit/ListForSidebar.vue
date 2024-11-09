@@ -21,20 +21,10 @@ export default {
     },
     data() {
         return {
-            selectedUnitId: null,
             isFetchingData: false, // データ取得中かどうかを判定するフラグ
         };
     },
-    computed: {
-        filteredUsers() {
-            if (this.selectedUnitId) {
-                return this.users.filter(
-                    (user) => user.unit_id === this.selectedUnitId
-                );
-            }
-            return [];
-        },
-    },
+
     methods: {
         async handleUnitClick(unit) {
             if (this.isFetchingData) {
@@ -46,6 +36,10 @@ export default {
             this.isFetchingData = true; // フラグをセット
             this.toggleUnit(unit.id);
             console.log("call fetchUnitData");
+
+            // 選択されたユニットIDを親コンポーネントに伝えるイベントを発火
+            this.$emit("forum-selected", unit.id);
+
             await this.fetchUnitData(unit.id);
             this.isFetchingData = false; // フラグをリセット
         },
@@ -73,15 +67,12 @@ export default {
         openUserProfile(user) {
             this.$emit("user-profile-clicked", user); // 親にイベントを伝播
         },
-        resetDropdown() {
-            this.selectedUnitId = null; // ドロップダウンをリセット
-        },
     },
 };
 </script>
 
 <template>
-    <div class="sidebar bg-gray-100 w-60 h-screen p-4 shadow-lg">
+    <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
         <h2 class="text-xl font-bold mb-4">部署一覧</h2>
         <ul>
             <li
@@ -90,11 +81,7 @@ export default {
                 class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer"
                 @click="handleUnitClick(unit)"
             >
-                <div class="flex items-center justify-between">
-                    <span class="font-bold">{{ unit.name }}</span>
-                    <span v-if="selectedUnitId === unit.id">&#9660;</span>
-                    <span v-else>&#9654;</span>
-                </div>
+                <span class="font-bold">{{ unit.name }}</span>
             </li>
         </ul>
     </div>
