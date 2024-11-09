@@ -1,22 +1,15 @@
 <script setup>
 import { ref } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { usePage, router } from "@inertiajs/vue3";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
-const props = defineProps({
-    units: {
-        type: Array,
-        required: true,
-    },
-    users: {
-        type: Array,
-        required: true,
-    },
-});
+const page = usePage();
+const units = page.props.units; // Inertiaから`units`を取得
+const users = page.props.users; // Inertiaから`users`を取得
 
 // CSRFトークンを取得
 const csrfToken = ref(
@@ -25,8 +18,8 @@ const csrfToken = ref(
 
 const showingNavigationDropdown = ref(false);
 
-// Inertiaからpropsを取得
-const auth = usePage().props.auth || {};
+// Inertiaからユーザー情報を取得
+const auth = page.props.auth || {};
 // ユーザーの情報を確認
 console.log("Logged in user data:", auth.user);
 console.log("auth.user.unit_id", auth.user.unit_id);
@@ -46,11 +39,9 @@ const handleLogoClick = async () => {
 
         const forumId = data.forum_id;
         const userUnitId = auth.user.unit_id;
-        const unit = props.units.find((u) => u.id === userUnitId);
-        // usersを`unit_id`でフィルタリングしてユニットの職員リストを取得
-        const unitUsers = props.users.filter(
-            (user) => user.unit_id === userUnitId
-        );
+        const unit = units.find((u) => u.id === userUnitId);
+        // `unit_id`で`users`をフィルタリングしてユニットの職員リストを取得
+        const unitUsers = users.filter((user) => user.unit_id === userUnitId);
 
         if (unit) {
             sessionStorage.setItem(

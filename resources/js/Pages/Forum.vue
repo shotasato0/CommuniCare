@@ -284,7 +284,7 @@ const search = ref(pageProps.search || "");
 <template>
     <Head :title="$t('Forum')" />
 
-    <AuthenticatedLayout :units="units" :users="users">
+    <AuthenticatedLayout>
         <div class="flex mt-16">
             <!-- オーバーレイ (サイドバー表示時のみ) -->
             <div
