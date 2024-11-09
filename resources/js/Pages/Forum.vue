@@ -26,6 +26,7 @@ const sidebar = ref(null); // サイドバーのコンポーネントインス�
 const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
+const search = ref(pageProps.search || ""); // 検索結果の表示状態
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
@@ -276,9 +277,6 @@ const getCurrentCommentCount = (post) => {
 const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
-
-// 検索結果の表示状態だよ
-const search = ref(pageProps.search || "");
 </script>
 
 <template>
