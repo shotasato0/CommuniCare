@@ -72,7 +72,7 @@ export default {
 </script>
 
 <template>
-    <div class="sidebar bg-gray-100 w-60 h-screen p-4 shadow-lg">
+    <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
         <h2 class="text-xl font-bold mb-4">部署一覧</h2>
         <ul>
             <li
