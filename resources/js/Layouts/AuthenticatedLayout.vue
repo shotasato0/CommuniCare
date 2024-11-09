@@ -7,6 +7,17 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
+const props = defineProps({
+    units: {
+        type: Array,
+        required: true,
+    },
+    users: {
+        type: Array,
+        required: true,
+    },
+});
+
 // CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
@@ -34,10 +45,24 @@ const handleLogoClick = async () => {
         }
 
         const forumId = data.forum_id;
+        const userUnitId = auth.user.unit_id;
+        const unit = props.units.find((u) => u.id === userUnitId);
+        // usersを`unit_id`でフィルタリングしてユニットの職員リストを取得
+        const unitUsers = props.users.filter(
+            (user) => user.unit_id === userUnitId
+        );
+
+        if (unit) {
+            sessionStorage.setItem(
+                "selectedUnitUsers",
+                JSON.stringify(unitUsers)
+            );
+            sessionStorage.setItem("selectedUnitName", unit.name);
+        }
 
         // 所属ユニットの掲示板に遷移して状態をリセット
         router.get(route("forum.index", { forum_id: forumId }), {
-            preserveState: false, // 既存の状態をリセットしてビューを更新
+            preserveState: false,
         });
     } catch (error) {
         console.error("Error fetching user forum ID:", error);

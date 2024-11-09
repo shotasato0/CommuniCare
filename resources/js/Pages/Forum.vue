@@ -32,6 +32,26 @@ onMounted(() => {
     selectedForumId.value = pageProps.selectedForumId;
 });
 
+onMounted(() => {
+    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
+
+    // `storedUsers`がnullや"undefined"ではなく、有効なJSONかをチェック
+    if (storedUsers && storedUsers !== "undefined") {
+        try {
+            selectedUnitUsers.value = JSON.parse(storedUsers);
+        } catch (error) {
+            console.error("Error parsing selectedUnitUsers:", error);
+            selectedUnitUsers.value = []; // パースエラー時には空配列を代入
+        }
+    } else {
+        selectedUnitUsers.value = []; // nullまたは"undefined"の場合は空配列を代入
+    }
+
+    // 保存されたユニット名を復元
+    const storedUnitName = sessionStorage.getItem("selectedUnitName");
+    selectedUnitName.value = storedUnitName || ""; // nullの場合は空文字列を代入
+});
+
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
 watch(selectedForumId, (newForumId) => {
     if (newForumId) {
@@ -77,19 +97,6 @@ const onForumSelected = async (unitId) => {
         console.error("対応する掲示板が見つかりませんでした");
     }
 };
-
-// ページが読み込まれたときに保存されたユーザーリストを復元
-onMounted(() => {
-    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
-    if (storedUsers) {
-        selectedUnitUsers.value = JSON.parse(storedUsers);
-    }
-    // 保存されたユニット名を復元
-    const storedUnitName = sessionStorage.getItem("selectedUnitName");
-    if (storedUnitName) {
-        selectedUnitName.value = storedUnitName;
-    }
-});
 
 const onPageChange = (url) => {
     router.get(url, {
@@ -277,7 +284,7 @@ const search = ref(pageProps.search || "");
 <template>
     <Head :title="$t('Forum')" />
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :units="units" :users="users">
         <div class="flex mt-16">
             <!-- オーバーレイ (サイドバー表示時のみ) -->
             <div
