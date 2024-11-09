@@ -11,6 +11,7 @@ import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
+import RightSidebar from "./Unit/RightSidebar.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -23,10 +24,32 @@ const sidebarVisible = ref(false); // サイドバーの表示状態
 const users = pageProps.users || []; // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
 const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
+const selectedUnitName = ref(""); // 選択されたユニットの名前
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
     selectedForumId.value = pageProps.selectedForumId;
+});
+
+onMounted(() => {
+    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
+
+    // `storedUsers`がnullや"undefined"ではなく、有効なJSONかをチェック
+    if (storedUsers && storedUsers !== "undefined") {
+        try {
+            selectedUnitUsers.value = JSON.parse(storedUsers);
+        } catch (error) {
+            console.error("Error parsing selectedUnitUsers:", error);
+            selectedUnitUsers.value = []; // パースエラー時には空配列を代入
+        }
+    } else {
+        selectedUnitUsers.value = []; // nullまたは"undefined"の場合は空配列を代入
+    }
+
+    // 保存されたユニット名を復元
+    const storedUnitName = sessionStorage.getItem("selectedUnitName");
+    selectedUnitName.value = storedUnitName || ""; // nullの場合は空文字列を代入
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
@@ -46,15 +69,29 @@ const onUserSelected = (user) => {
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
 
-// サイドバーからのユニット選択イベント
-const onForumSelected = (unitId) => {
+// ユニット選択イベント
+const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
     if (unit && unit.forum) {
         selectedForumId.value = unit.forum.id;
+        selectedUnitName.value = unit.name; // 選択されたユニットの名前を設定
         localStorage.setItem("lastSelectedUnitId", unitId);
 
+        // ユニット名を保存
+        sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
+
+        // ユーザーリストを取得して一時保存
+        selectedUnitUsers.value = users.filter(
+            (user) => user.unit_id === unitId
+        );
+        sessionStorage.setItem(
+            "selectedUnitUsers",
+            JSON.stringify(selectedUnitUsers.value)
+        );
+
+        // 掲示板を更新
         router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: true,
+            preserveState: false, // 状態を再レンダリング
         });
     } else {
         console.error("対応する掲示板が見つかりませんでした");
@@ -414,6 +451,14 @@ const search = ref(pageProps.search || "");
                     class="mt-4"
                 />
             </div>
+
+            <!-- 右サイドバー -->
+            <RightSidebar
+                :unit-users="selectedUnitUsers"
+                :unit-name="selectedUnitName"
+                class="p-4 lg:mt-16 lg:block"
+                @user-selected="onUserSelected"
+            />
 
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
             <div
