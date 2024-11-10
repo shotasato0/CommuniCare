@@ -37,7 +37,12 @@ class ForumController extends Controller
         $search = $request->input('search');
         $query = Post::with(['user', 'comments' => function ($query) {
             $query->whereNull('parent_id')->with(['children.user', 'user']);
-        }])->where('forum_id', $forumId); // 指定された掲示板内のみを対象
+        }])
+        ->withCount('likes') // いいねの数を取得
+        ->with(['likes' => function ($query) use ($user) {
+            $query->where('user_id', $user->id); // ユーザーのいいねを取得
+        }])
+        ->where('forum_id', $forumId); // 指定された掲示板内のみを対象
 
         // 検索クエリがある場合、タイトルとメッセージで検索
         if ($search) {
@@ -47,8 +52,19 @@ class ForumController extends Controller
             });
     }
 
-        // 検索結果の投稿をページネーションで取得
-        $posts = $query->latest()->paginate(5);
+       // 検索結果の投稿をページネーションで取得し、必要なデータを整形
+       $posts = $query->latest()->paginate(5)->through(function ($post) use ($user) {
+        return [
+            'id' => $post->id,
+            'title' => $post->title,
+            'message' => $post->message,
+            'created_at' => $post->created_at,
+            'user' => $post->user,
+            'comments' => $post->comments,
+            'like_count' => $post->likes_count, // いいね数
+            'is_liked_by_user' => $post->likes->isNotEmpty(), // ユーザーがいいねしているか
+        ];
+    });
 
         return Inertia::render('Forum', [
             'posts' => $posts,
