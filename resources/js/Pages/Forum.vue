@@ -314,7 +314,10 @@ const isCommentAuthor = (comment) => {
                     </h1>
 
                     <!-- 検索フォーム -->
-                    <SearchForm class="ml-auto" />
+                    <SearchForm
+                        :selected-forum-id="selectedForumId"
+                        class="ml-auto"
+                    />
                 </div>
 
                 <!-- 検索結果 -->

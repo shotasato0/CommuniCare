@@ -5,15 +5,17 @@ import { router, usePage } from "@inertiajs/vue3";
 const pageProps = usePage().props;
 // 検索クエリの状態を保持
 const search = ref(pageProps.search || "");
+const selectedUnitId = ref(pageProps.selectedunit_id || null); // ユニットIDを保持
+const selectedForumId = ref(pageProps.selectedForumId || null); // 掲示板IDを保持
 const isComposing = ref(false); // 変換中かどうかを管理するフラグ
 
 // 検索実行
 const searchPosts = () => {
     if (!isComposing.value) {
-        // 変換中でない場合のみ検索実行
+        // 変換中でない場合のみ検索を実行
         router.get(
             route("forum.index"),
-            { search: search.value },
+            { search: search.value, forum_id: selectedForumId.value }, // forum_idをリクエストに含める
             {
                 preserveScroll: true, // ページのスクロール位置を保持
                 replace: true, // ページの履歴を置き換え
@@ -25,7 +27,11 @@ const searchPosts = () => {
 // 検索リセット
 const resetSearch = () => {
     search.value = "";
-    router.get(route("forum.index"), {}, { replace: true });
+    router.get(
+        route("forum.index"),
+        { selectedunit_id: selectedUnitId.value, forum_id: selectedForumId.value },
+        { replace: true }
+    ); // ユニットIDと掲示板IDを保持したまま検索リセット
 };
 
 // 変換開始
