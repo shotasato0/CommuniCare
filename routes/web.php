@@ -11,7 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
-
+use App\Http\Controllers\LikeController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -52,6 +52,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         // 投稿
         Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
         Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
+        Route::post('/like/toggle', [LikeController::class, 'toggleLike'])->name('like.toggle');
 
         // コメント
         Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
