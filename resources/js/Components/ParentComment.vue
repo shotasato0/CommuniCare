@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import ChildComment from "./ChildComment.vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
+import LikeButton from "./LikeButton.vue";
 
 const props = defineProps({
     comments: Array, // 親コメントからのコメントデータ
@@ -101,6 +102,12 @@ const getCommentCountRecursive = (comments) => {
                 </div>
 
                 <div class="flex justify-end space-x-2 mt-2">
+                    <LikeButton
+                        :likeable-id="comment.id"
+                        :likeable-type="'Comment'"
+                        :initial-like-count="comment.like_count"
+                        :initial-is-liked="comment.is_liked_by_user"
+                    />
                     <!-- 返信ボタン -->
                     <button
                         @click="

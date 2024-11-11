@@ -12,6 +12,7 @@ import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 import RightSidebar from "./Unit/RightSidebar.vue";
+import LikeButton from "@/Components/LikeButton.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -387,6 +388,12 @@ const isCommentAuthor = (comment) => {
 
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
+                            <LikeButton
+                                :likeable-id="post.id"
+                                :likeable-type="'Post'"
+                                :initial-like-count="post.like_count"
+                                :initial-is-liked="post.is_liked_by_user"
+                            />
                             <!-- 投稿に対する返信ボタン -->
                             <button
                                 @click="
