@@ -90,17 +90,4 @@ class ForumController extends Controller
             'search' => $search,
         ]);
     }
-
-
-    public function getLatestComments()
-{
-    $latestComments = Comment::with(['post:id,title', 'user:id,name'])
-        ->orderBy('created_at', 'desc')
-        ->take(10)
-        ->get(['id', 'content', 'created_at', 'post_id', 'user_id']);
-
-    return response()->json($latestComments);
-}
-
-
 }
