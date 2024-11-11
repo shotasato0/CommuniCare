@@ -28,6 +28,14 @@ const selectedForumId = ref(pageProps.selectedForumId || null); // 選択され�
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(pageProps.search || ""); // 検索結果の表示状態
+const quotedPost = ref(null); // 引用元の投稿データを保持するための変数
+const showPostForm = ref(false); // 引用投稿フォームの表示制御
+
+const quotePost = (postId) => {
+    console.log("引用投稿:", postId); // 動作確認のためのコンソールログ
+    quotedPost.value = postId; // 引用する投稿のIDをセット
+    showPostForm.value = true; // 引用投稿フォームを表示
+};
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
@@ -407,6 +415,16 @@ const isCommentAuthor = (comment) => {
                             >
                                 <i class="bi bi-reply"></i>
                             </button>
+                            <!-- 引用投稿ボタン -->
+                            <button
+                                type="button"
+                                @click="quotePost(post.id)"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 cursor-pointer flex items-center"
+                                title="引用投稿"
+                            >
+                                <i class="bi bi-chat-quote"></i>
+                            </button>
+
                             <!-- 投稿の削除ボタン -->
                             <button
                                 v-if="
