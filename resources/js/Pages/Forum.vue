@@ -389,7 +389,8 @@ const isCommentAuthor = (comment) => {
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
                             <LikeButton
-                                :post-id="post.id"
+                                :likeable-id="post.id"
+                                :likeable-type="'Post'"
                                 :initial-like-count="post.like_count"
                                 :initial-is-liked="post.is_liked_by_user"
                             />

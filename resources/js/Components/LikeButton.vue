@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from "vue";
 import axios from "axios";
+import { ref } from "vue";
 
 const props = defineProps({
-    postId: {
+    likeableId: {
         type: Number,
         required: true,
+    },
+    likeableType: {
+        type: String,
+        required: true, // 'Post'または'Comment'を指定
     },
     initialLikeCount: {
         type: Number,
@@ -17,22 +21,19 @@ const props = defineProps({
     },
 });
 
-const isLiked = ref(props.initialIsLiked); // 初期のいいね状態
-const likeCount = ref(props.initialLikeCount); // 初期のいいね数
+const isLiked = ref(props.initialIsLiked);
+const likeCount = ref(props.initialLikeCount);
 
 const toggleLike = async () => {
-    // 状態を即時に切り替え
     isLiked.value = !isLiked.value;
     likeCount.value += isLiked.value ? 1 : -1;
 
     try {
-        // リクエストを送信
         await axios.post("/like/toggle", {
-            likeable_id: props.postId,
-            likeable_type: "Post", // 他のモデルなら 'Comment' など
+            likeable_id: props.likeableId,
+            likeable_type: props.likeableType, // 'Post' または 'Comment'を送信
         });
     } catch (error) {
-        // エラー時に状態を元に戻す
         isLiked.value = !isLiked.value;
         likeCount.value += isLiked.value ? 1 : -1;
         console.error("いいねのトグルに失敗しました:", error);
