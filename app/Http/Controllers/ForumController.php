@@ -35,12 +35,17 @@ class ForumController extends Controller
 
         // 検索結果の表示状態
         $search = $request->input('search');
-        $query = Post::with(['user', 'comments' => function ($query) {
-            $query->whereNull('parent_id')->with(['children.user', 'user']);
+        $query = Post::with(['user', 'comments' => function ($query) use ($user) {
+            $query->whereNull('parent_id')
+                ->with(['children.user', 'user'])
+                ->withCount('likes') // コメントのいいね数を取得
+                ->with(['likes' => function ($query) use ($user) {
+                    $query->where('user_id', $user->id); // ユーザーのコメントに対するいいねを取得
+                }]);
         }])
-        ->withCount('likes') // いいねの数を取得
+        ->withCount('likes') // 投稿のいいね数を取得
         ->with(['likes' => function ($query) use ($user) {
-            $query->where('user_id', $user->id); // ユーザーのいいねを取得
+            $query->where('user_id', $user->id); // ユーザーの投稿に対するいいねを取得
         }])
         ->where('forum_id', $forumId); // 指定された掲示板内のみを対象
 
@@ -50,21 +55,31 @@ class ForumController extends Controller
                 $q->where('title', 'like', '%' . $search . '%')
                     ->orWhere('message', 'like', '%' . $search . '%');
             });
-    }
+        }
 
-       // 検索結果の投稿をページネーションで取得し、必要なデータを整形
-       $posts = $query->latest()->paginate(5)->through(function ($post) use ($user) {
-        return [
-            'id' => $post->id,
-            'title' => $post->title,
-            'message' => $post->message,
-            'created_at' => $post->created_at,
-            'user' => $post->user,
-            'comments' => $post->comments,
-            'like_count' => $post->likes_count, // いいね数
-            'is_liked_by_user' => $post->likes->isNotEmpty(), // ユーザーがいいねしているか
-        ];
-    });
+        // 検索結果の投稿をページネーションで取得し、必要なデータを整形
+        $posts = $query->latest()->paginate(5)->through(function ($post) use ($user) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'message' => $post->message,
+                'created_at' => $post->created_at,
+                'user' => $post->user,
+                'like_count' => $post->likes_count, // 投稿のいいね数
+                'is_liked_by_user' => $post->likes->isNotEmpty(), // ユーザーが投稿にいいねしているか
+                'comments' => $post->comments->map(function ($comment) use ($user) {
+                    return [
+                        'id' => $comment->id,
+                        'message' => $comment->message,
+                        'created_at' => $comment->created_at,
+                        'user' => $comment->user,
+                        'like_count' => $comment->likes_count, // コメントのいいね数
+                        'is_liked_by_user' => $comment->likes->isNotEmpty(), // ユーザーがコメントにいいねしているか
+                        'children' => $comment->children,
+                    ];
+                }),
+            ];
+        });
 
         return Inertia::render('Forum', [
             'posts' => $posts,
