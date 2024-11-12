@@ -29,7 +29,7 @@ const selectedForumId = ref(pageProps.selectedForumId || null); // 選択され�
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(pageProps.search || ""); // 検索結果の表示状態
-const quotedPost = ref({}); // 引用元の投稿データを保持するための変数
+const quotedPost = ref(null);
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
 const quotePost = (post) => {
