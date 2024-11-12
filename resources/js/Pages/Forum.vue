@@ -13,6 +13,7 @@ import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 import RightSidebar from "./Unit/RightSidebar.vue";
 import LikeButton from "@/Components/LikeButton.vue";
+import QuotePostForm from "@/Components/QuotePostForm.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -28,13 +29,15 @@ const selectedForumId = ref(pageProps.selectedForumId || null); // 選択され�
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(pageProps.search || ""); // 検索結果の表示状態
-const quotedPost = ref(null); // 引用元の投稿データを保持するための変数
+const quotedPost = ref({}); // 引用元の投稿データを保持するための変数
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
-const quotePost = (postId) => {
-    console.log("引用投稿:", postId); // 動作確認のためのコンソールログ
-    quotedPost.value = postId; // 引用する投稿のIDをセット
-    showPostForm.value = true; // 引用投稿フォームを表示
+const quotePost = (post) => {
+    console.log("quotePost called with:", post); // 確認用ログ
+    quotedPost.value = post; // post全体をセットする
+    showPostForm.value = true;
+    console.log("quotedPost.value:", quotedPost.value);
+    console.log("showPostForm.value:", showPostForm.value);
 };
 
 // マウント時にselectedForumIdを設定
@@ -418,7 +421,7 @@ const isCommentAuthor = (comment) => {
                             <!-- 引用投稿ボタン -->
                             <button
                                 type="button"
-                                @click="quotePost(post.id)"
+                                @click="quotePost(post)"
                                 class="px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
@@ -501,6 +504,14 @@ const isCommentAuthor = (comment) => {
                     />
                 </div>
             </div>
+
+            <!-- 引用投稿フォームをモーダルで表示 -->
+            <QuotePostForm
+                v-if="showPostForm && quotedPost"
+                :show="showPostForm"
+                :quoted-post="quotedPost"
+                @close="showPostForm = false"
+            />
         </div>
     </AuthenticatedLayout>
 </template>
