@@ -395,6 +395,22 @@ const isCommentAuthor = (comment) => {
                             <span v-else>＠Unknown</span>
                         </p>
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
+
+                        <!-- 引用投稿がある場合の表示 -->
+                        <div
+                            v-if="post.quoted_post"
+                            class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                        >
+                            <div class="original-post">
+                                <h3 class="text-sm font-semibold">
+                                    {{ post.quoted_post.user.name }}
+                                </h3>
+                                <p class="text-sm">
+                                    {{ post.quoted_post.message }}
+                                </p>
+                            </div>
+                        </div>
+
                         <p class="mb-2">{{ post.message }}</p>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
@@ -510,6 +526,7 @@ const isCommentAuthor = (comment) => {
                 v-if="showPostForm && quotedPost"
                 :show="showPostForm"
                 :quoted-post="quotedPost"
+                :forum-id="Number(selectedForumId)"
                 @close="showPostForm = false"
             />
         </div>
