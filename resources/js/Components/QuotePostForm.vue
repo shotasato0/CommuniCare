@@ -1,15 +1,17 @@
 <script setup>
 import { ref } from "vue";
-import { usePage, router } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     show: Boolean,
     quotedPost: Object,
+    forumId: Number,
 });
 
 const emit = defineEmits(["close"]);
 
 const newPostContent = ref("");
+const newPostTitle = ref("");
 
 // キャンセルボタン
 const cancel = () => {
@@ -18,10 +20,17 @@ const cancel = () => {
 
 // 引用付き投稿を送信
 const submitQuotePost = () => {
-    router.post(route("post.store"), {
+    router.post(route("forum.store"), {
+        title: newPostTitle.value || null, // 投稿のタイトルを追加
         message: newPostContent.value,
-        quoted_post_id: props.quotedPostId,
+        forum_id: props.forumId, // Forum IDを追加
+        quoted_post_id: props.quotedPost.id,
     });
+
+    console.log("props.quotedPost.id:", props.quotedPost.id);
+    console.log("props.forumId:", props.forumId);
+    console.log("newPostTitle.value:", newPostTitle.value);
+    console.log("newPostContent.value:", newPostContent.value);
 
     emit("close"); // フォームを閉じる
 };
