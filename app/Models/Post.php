@@ -31,5 +31,11 @@ class Post extends Model
     {
         return $this->belongsTo(Forum::class);
     }
+
+    // 引用元の投稿へのリレーション
+    public function quotedPost()
+    {
+        return $this->belongsTo(Post::class, 'quoted_post_id');
+    }
 }
 
