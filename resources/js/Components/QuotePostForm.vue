@@ -63,17 +63,23 @@ const submitQuotePost = () => {
             <div class="flex justify-end space-x-2">
                 <button
                     @click="cancel"
-                    class="px-3 py-1 rounded bg-gray-300 text-gray-800 hover:bg-gray-400"
+                    class="px-3 py-1 rounded bg-gray-300 text-gray-800 link-hover"
                 >
-                    キャンセル
+                    <i class="bi bi-x-lg"></i>
                 </button>
                 <button
                     @click="submitQuotePost"
-                    class="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+                    class="px-3 py-1 rounded bg-blue-500 text-white link-hover"
                 >
-                    投稿する
+                    <i class="bi bi-send"></i>
                 </button>
             </div>
         </div>
     </div>
 </template>
+
+<style>
+.link-hover:hover {
+    opacity: 70%;
+}
+</style>
