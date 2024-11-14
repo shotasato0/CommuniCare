@@ -402,10 +402,44 @@ const isCommentAuthor = (comment) => {
                             class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
                         >
                             <div class="original-post">
-                                <h3 class="text-sm font-semibold">
-                                    {{ post.quoted_post.user.name }}
-                                </h3>
-                                <p class="text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <img
+                                        v-if="post.quoted_post.user.icon"
+                                        :src="
+                                            post.quoted_post.user.icon.startsWith(
+                                                '/storage/'
+                                            )
+                                                ? post.quoted_post.user.icon
+                                                : `/storage/${post.quoted_post.user.icon}`
+                                        "
+                                        alt="User Icon"
+                                        class="w-6 h-6 rounded-full cursor-pointer mb-1"
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                    />
+                                    <img
+                                        v-else
+                                        src="https://via.placeholder.com/40"
+                                        alt="Default Icon"
+                                        class="w-6 h-6 rounded-full cursor-pointer"
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                    />
+                                    <span
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                    >
+                                        ＠{{ post.quoted_post.user.name }}
+                                    </span>
+                                </div>
+                                <p class="text-sm mb-2 font-bold">
+                                    {{ post.quoted_post.title }}
+                                </p>
+                                <p class="text-sm mb-2">
                                     {{ post.quoted_post.message }}
                                 </p>
                             </div>
