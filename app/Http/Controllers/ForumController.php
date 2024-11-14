@@ -37,6 +37,9 @@ class ForumController extends Controller
         $search = $request->input('search');
         $query = Post::with([
             'user',
+            'quotedPost' => function($query) {
+                $query->select('id', 'user_id', 'message', 'title');
+            },
             'quotedPost.user', // 引用元の投稿とそのユーザーを取得
             'comments' => function ($query) use ($user) {
                 $query->whereNull('parent_id')
