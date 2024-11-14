@@ -35,9 +35,15 @@ class ForumController extends Controller
 
         // 検索結果の表示状態
         $search = $request->input('search');
-        $query = Post::with(['user', 'comments' => function ($query) use ($user) {
-            $query->whereNull('parent_id')
-                ->with(['children.user', 'user'])
+        $query = Post::with([
+            'user',
+            'quotedPost' => function($query) {
+                $query->select('id', 'user_id', 'message', 'title');
+            },
+            'quotedPost.user', // 引用元の投稿とそのユーザーを取得
+            'comments' => function ($query) use ($user) {
+                $query->whereNull('parent_id')
+                    ->with(['children.user', 'user'])
                 ->withCount('likes') // コメントのいいね数を取得
                 ->with(['likes' => function ($query) use ($user) {
                     $query->where('user_id', $user->id); // ユーザーのコメントに対するいいねを取得
@@ -67,6 +73,7 @@ class ForumController extends Controller
                 'user' => $post->user,
                 'like_count' => $post->likes_count, // 投稿のいいね数
                 'is_liked_by_user' => $post->likes->isNotEmpty(), // ユーザーが投稿にいいねしているか
+                'quoted_post' => $post->quotedPost, // 引用元の投稿データ
                 'comments' => $post->comments->map(function ($comment) use ($user) {
                     return [
                         'id' => $comment->id,

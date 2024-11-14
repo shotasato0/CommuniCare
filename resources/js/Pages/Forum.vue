@@ -13,6 +13,7 @@ import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 import RightSidebar from "./Unit/RightSidebar.vue";
 import LikeButton from "@/Components/LikeButton.vue";
+import QuotePostForm from "@/Components/QuotePostForm.vue";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -28,6 +29,16 @@ const selectedForumId = ref(pageProps.selectedForumId || null); // 選択され�
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(pageProps.search || ""); // 検索結果の表示状態
+const quotedPost = ref(null);
+const showPostForm = ref(false); // 引用投稿フォームの表示制御
+
+const quotePost = (post) => {
+    console.log("quotePost called with:", post); // 確認用ログ
+    quotedPost.value = post; // post全体をセットする
+    showPostForm.value = true;
+    console.log("quotedPost.value:", quotedPost.value);
+    console.log("showPostForm.value:", showPostForm.value);
+};
 
 // マウント時にselectedForumIdを設定
 onMounted(() => {
@@ -384,6 +395,56 @@ const isCommentAuthor = (comment) => {
                             <span v-else>＠Unknown</span>
                         </p>
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
+
+                        <!-- 引用投稿がある場合の表示 -->
+                        <div
+                            v-if="post.quoted_post"
+                            class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                        >
+                            <div class="original-post">
+                                <div class="flex items-center space-x-2">
+                                    <img
+                                        v-if="post.quoted_post.user.icon"
+                                        :src="
+                                            post.quoted_post.user.icon.startsWith(
+                                                '/storage/'
+                                            )
+                                                ? post.quoted_post.user.icon
+                                                : `/storage/${post.quoted_post.user.icon}`
+                                        "
+                                        alt="User Icon"
+                                        class="w-6 h-6 rounded-full cursor-pointer mb-1"
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                    />
+                                    <img
+                                        v-else
+                                        src="https://via.placeholder.com/40"
+                                        alt="Default Icon"
+                                        class="w-6 h-6 rounded-full cursor-pointer"
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                    />
+                                    <span
+                                        @click="
+                                            openUserProfile(post.quoted_post)
+                                        "
+                                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                    >
+                                        ＠{{ post.quoted_post.user.name }}
+                                    </span>
+                                </div>
+                                <p class="text-sm mb-2 font-bold">
+                                    {{ post.quoted_post.title }}
+                                </p>
+                                <p class="text-sm mb-2">
+                                    {{ post.quoted_post.message }}
+                                </p>
+                            </div>
+                        </div>
+
                         <p class="mb-2">{{ post.message }}</p>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
@@ -407,6 +468,16 @@ const isCommentAuthor = (comment) => {
                             >
                                 <i class="bi bi-reply"></i>
                             </button>
+                            <!-- 引用投稿ボタン -->
+                            <button
+                                type="button"
+                                @click="quotePost(post)"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                                title="引用投稿"
+                            >
+                                <i class="bi bi-chat-quote"></i>
+                            </button>
+
                             <!-- 投稿の削除ボタン -->
                             <button
                                 v-if="
@@ -483,6 +554,15 @@ const isCommentAuthor = (comment) => {
                     />
                 </div>
             </div>
+
+            <!-- 引用投稿フォームをモーダルで表示 -->
+            <QuotePostForm
+                v-if="showPostForm && quotedPost"
+                :show="showPostForm"
+                :quoted-post="quotedPost"
+                :forum-id="Number(selectedForumId)"
+                @close="showPostForm = false"
+            />
         </div>
     </AuthenticatedLayout>
 </template>
