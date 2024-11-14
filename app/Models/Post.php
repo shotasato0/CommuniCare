@@ -10,7 +10,7 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['user_id', 'title', 'message', 'forum_id'];
+    protected $fillable = ['user_id', 'title', 'message', 'forum_id', 'quoted_post_id'];
 
     public function user()
     {
@@ -30,6 +30,12 @@ class Post extends Model
     public function forum()
     {
         return $this->belongsTo(Forum::class);
+    }
+
+    // 引用元の投稿へのリレーション
+    public function quotedPost()
+    {
+        return $this->belongsTo(Post::class, 'quoted_post_id');
     }
 }
 
