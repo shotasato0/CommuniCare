@@ -472,7 +472,7 @@ const isCommentAuthor = (comment) => {
                             <button
                                 type="button"
                                 @click="quotePost(post)"
-                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 cursor-pointer flex items-center"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
                                 <i class="bi bi-chat-quote"></i>
