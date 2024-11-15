@@ -64,7 +64,9 @@ class ForumController extends Controller
         }
 
         // 検索結果の投稿をページネーションで取得し、必要なデータを整形
-        $posts = $query->latest()->paginate(5)->through(function ($post) use ($user) {
+        $posts = $query->latest()->paginate(5)
+            ->appends(['forum_id' => $forumId, 'search' => $search])  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
+            ->through(function ($post) use ($user) {
             return [
                 'id' => $post->id,
                 'title' => $post->title,
