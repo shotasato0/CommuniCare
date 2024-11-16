@@ -1,6 +1,9 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
+
+const currentPage = usePage().component;
 </script>
 
 <template>
@@ -9,7 +12,10 @@ import { Link } from "@inertiajs/vue3";
     >
         <!-- ロゴ部分 -->
         <div class="w-full flex justify-center">
-            <Link href="/home">
+            <Link
+                href="/home"
+                :class="{ 'pointer-events-none': currentPage === 'Welcome' }"
+            >
                 <ApplicationLogo class="w-full text-gray-500 text-center" />
             </Link>
         </div>
