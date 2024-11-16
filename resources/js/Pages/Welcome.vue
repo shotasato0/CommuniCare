@@ -1,10 +1,9 @@
 <script setup>
-import GuestLayout from "@/Layouts/TenantGuestLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
 import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Checkbox from "@/Components/Checkbox.vue";
+import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
@@ -14,44 +13,45 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route("tenant.login"), {
-        onFinish: () => form.reset("password"),
+    form.post(route("tenant.register"), {
+        onFinish: () => form.reset("business_name", "tenant_domain_id"),
     });
 };
 </script>
 
 <template>
     <GuestLayout>
-        <Head :title="$t('Tenant Login')" />
+        <Head :title="$t('Tenant Register')" />
 
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="business_name" :value="$t('Business Name')" />
+
                 <TextInput
                     id="business_name"
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.business_name"
-                    title="事業所の名前を入力してください。"
                     required
                     autofocus
                 />
+
                 <InputError class="mt-2" :message="form.errors.business_name" />
             </div>
-
             <div class="mt-4">
                 <InputLabel
                     for="tenant_domain_id"
                     :value="$t('Tenant Domain ID')"
                 />
+
                 <TextInput
                     id="tenant_domain_id"
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.tenant_domain_id"
-                    title="事業所のIDを英数字で入力してください。URLに使用されます。"
                     required
                 />
+
                 <InputError
                     class="mt-2"
                     :message="form.errors.tenant_domain_id"
@@ -64,7 +64,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $t("Login") }}
+                    {{ $t("Tenant Register") }}
                 </PrimaryButton>
             </div>
         </form>
