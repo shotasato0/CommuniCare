@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\TenantHomeController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -26,14 +27,8 @@ Route::middleware([])->group(function () {
 
 // テナント識別を行うルート
 Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
-    Route::get('/home', function () {
-        return Inertia::render('TenantHome', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
-    })->name('tenant-home');
+    Route::get('/home', [TenantHomeController::class, 'index'])
+    ->name('tenant-home');
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
