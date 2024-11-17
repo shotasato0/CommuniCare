@@ -16,7 +16,7 @@ const currentPage = usePage().component;
                 href="/home"
                 :class="{ 'pointer-events-none': currentPage === 'Welcome' }"
             >
-                <ApplicationLogo class="w-full text-gray-500 text-center" />
+                <ApplicationLogo class="w-full text-blue-900 text-center" />
             </Link>
         </div>
 
