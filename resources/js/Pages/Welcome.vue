@@ -80,8 +80,8 @@ const submit = () => {
                     は、施設を一意に識別するために使用されます。英字のみで入力してください。
                 </p>
                 <p class="mt-3">
-                    例：「warmheart」と入力すると、次のようなURLでアクセスできます：
-                    <strong>https://warmheart.communicare.com</strong>
+                    例：「example」と入力すると、次のようなURLでアクセスできます：
+                    <strong>https://example.communicare.com</strong>
                 </p>
             </div>
 
