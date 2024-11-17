@@ -24,13 +24,14 @@ const submit = () => {
         <Head :title="'施設登録'" />
 
         <!-- 説明文 -->
-        <div class="max-w-md mx-auto text-center mb-6">
-            <h1 class="text-2xl font-bold mb-2">介護施設の登録</h1>
-            <p class="text-gray-600">
-                このページでは、あなたの施設専用の管理スペースを作成できます。<br />
-                登録が完了すると、施設内のスタッフや利用者データを専用の環境で管理できるようになります。
+        <div class="max-w-md mx-auto text-center ">
+            <h1 class="text-2xl font-bold mb-4">介護施設の登録</h1>
+
+            <p class="text-gray-600 leading-relaxed">
+                あなたの施設専用の管理スペースを作成できます。登録が完了すると、スタッフや利用者データを安全に管理できる専用の環境をご利用いただけます。
             </p>
-            <p class="text-sm text-gray-500 mt-2">
+
+            <p class="text-sm text-gray-500 mt-6 leading-relaxed">
                 以下の情報を入力し、「登録する」ボタンをクリックしてください。
             </p>
         </div>
@@ -38,15 +39,15 @@ const submit = () => {
         <!-- フォーム部分 -->
         <form
             @submit.prevent="submit"
-            class="max-w-md mx-auto bg-white p-6"
+            class="max-w-md mx-auto bg-white p-8"
         >
-            <div>
+            <div class="mb-6">
                 <InputLabel for="facility_name" value="施設名" />
 
                 <TextInput
                     id="facility_name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-2 block w-full"
                     v-model="form.facility_name"
                     required
                     autofocus
@@ -54,13 +55,14 @@ const submit = () => {
 
                 <InputError class="mt-2" :message="form.errors.facility_name" />
             </div>
-            <div class="mt-4">
+
+            <div class="mb-6">
                 <InputLabel for="facility_domain_id" value="施設ドメインID" />
 
                 <TextInput
                     id="facility_domain_id"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-2 block w-full"
                     v-model="form.facility_domain_id"
                     required
                 />
@@ -72,18 +74,20 @@ const submit = () => {
             </div>
 
             <!-- ヒントや補足 -->
-            <div class="text-sm text-gray-500 mt-4">
+            <div class="text-sm text-gray-500 mb-6 leading-relaxed">
                 <p>
-                    施設ドメインIDは、あなたの施設を一意に識別するために使用されます。アルファベットのみで入力してください。
+                    <strong>施設ドメインID</strong>
+                    は、施設を一意に識別するために使用されます。英字のみで入力してください。
                 </p>
-                <p class="mt-1">
-                    例：「myfacility」と入力すると、「myfacility.com」のように使用されます。
+                <p class="mt-3">
+                    例：「warmheart」と入力すると、次のようなURLでアクセスできます：
+                    <strong>https://warmheart.communicare.com</strong>
                 </p>
             </div>
 
-            <div class="flex items-center justify-end mt-6">
+            <div class="flex items-center justify-end">
                 <PrimaryButton
-                    class="ms-4"
+                    class="ms-4 px-6 py-2"
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
