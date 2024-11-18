@@ -6,21 +6,29 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
+// フォーム定義
 const form = useForm({
     business_name: "",
     tenant_domain_id: "",
     remember: false,
 });
 
+// フォーム送信処理
 const submit = () => {
     form.post(route("tenant.register"), {
         onFinish: () => {
-            // エラーがない場合のみフィールドをリセット
             if (Object.keys(form.errors).length === 0) {
                 form.reset("business_name", "tenant_domain_id");
             }
         },
     });
+};
+
+// ゲストログイン処理
+const guestLogin = () => {
+    console.log("guestLogin");
+    form.get(route("guest.login"));
+    console.log("guestLogin completed");
 };
 </script>
 
@@ -28,8 +36,21 @@ const submit = () => {
     <GuestLayout>
         <Head :title="'施設登録'" />
 
+        <!-- ゲストログインボタン -->
+        <div class="text-center mb-8">
+            <p class="text-gray-600 mb-4">
+                施設の登録が面倒な場合は、以下のボタンでゲストログインをお試しください。
+            </p>
+            <button
+                @click="guestLogin"
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+            >
+                ゲストログイン
+            </button>
+        </div>
+
         <!-- 説明文 -->
-        <div class="max-w-md mx-auto text-center ">
+        <div class="max-w-md mx-auto text-center">
             <h1 class="text-2xl font-bold mb-4">介護施設の登録</h1>
 
             <p class="text-gray-600 leading-relaxed">
@@ -42,10 +63,7 @@ const submit = () => {
         </div>
 
         <!-- フォーム部分 -->
-        <form
-            @submit.prevent="submit"
-            class="max-w-md mx-auto bg-white p-8"
-        >
+        <form @submit.prevent="submit" class="max-w-md mx-auto bg-white p-8">
             <div class="mb-6">
                 <InputLabel for="business_name" value="施設名" />
 
@@ -58,10 +76,7 @@ const submit = () => {
                     autofocus
                 />
 
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.business_name"
-                />
+                <InputError class="mt-2" :message="form.errors.business_name" />
             </div>
 
             <div class="mb-6">
