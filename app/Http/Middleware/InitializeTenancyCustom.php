@@ -15,6 +15,7 @@ class InitializeTenancyCustom extends InitializeTenancyByDomain
             '/',
             'tenant/login',
             'tenant/register',
+            'guest/login',
             // 他にもスキップしたいパスを追加
         ];
 
