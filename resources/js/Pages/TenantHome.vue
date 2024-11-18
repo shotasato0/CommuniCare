@@ -1,6 +1,13 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
+
+defineProps({
+    domainName: {
+        type: String,
+        required: true,
+    },
+});
 </script>
 
 <template>
@@ -45,6 +52,13 @@ import { Link } from "@inertiajs/vue3";
                     職員間のスムーズなコミュニケーションと利用者様の情報を一元管理する
                     プラットフォームです。
                 </p>
+
+                <!-- ドメイン名 -->
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-blue-900">
+                        {{ domainName }}様の管理サイト
+                    </h1>
+                </div>
 
                 <!-- ボタンセクション -->
                 <div
