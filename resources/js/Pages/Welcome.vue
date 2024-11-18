@@ -7,14 +7,19 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-    facility_name: "",
-    facility_domain_id: "",
+    business_name: "",
+    tenant_domain_id: "",
     remember: false,
 });
 
 const submit = () => {
-    form.post(route("facility.register"), {
-        onFinish: () => form.reset("facility_name", "facility_domain_id"),
+    form.post(route("tenant.register"), {
+        onFinish: () => {
+            // エラーがない場合のみフィールドをリセット
+            if (Object.keys(form.errors).length === 0) {
+                form.reset("business_name", "tenant_domain_id");
+            }
+        },
     });
 };
 </script>
@@ -42,34 +47,37 @@ const submit = () => {
             class="max-w-md mx-auto bg-white p-8"
         >
             <div class="mb-6">
-                <InputLabel for="facility_name" value="施設名" />
+                <InputLabel for="business_name" value="施設名" />
 
                 <TextInput
-                    id="facility_name"
+                    id="business_name"
                     type="text"
                     class="mt-2 block w-full"
-                    v-model="form.facility_name"
+                    v-model="form.business_name"
                     required
                     autofocus
                 />
 
-                <InputError class="mt-2" :message="form.errors.facility_name" />
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.business_name"
+                />
             </div>
 
             <div class="mb-6">
-                <InputLabel for="facility_domain_id" value="施設ドメインID" />
+                <InputLabel for="tenant_domain_id" value="施設ドメインID" />
 
                 <TextInput
-                    id="facility_domain_id"
+                    id="tenant_domain_id"
                     type="text"
                     class="mt-2 block w-full"
-                    v-model="form.facility_domain_id"
+                    v-model="form.tenant_domain_id"
                     required
                 />
 
                 <InputError
                     class="mt-2"
-                    :message="form.errors.facility_domain_id"
+                    :message="form.errors.tenant_domain_id"
                 />
             </div>
 
