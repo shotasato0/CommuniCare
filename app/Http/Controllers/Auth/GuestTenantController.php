@@ -7,6 +7,6 @@ class GuestTenantController extends Controller
     public function redirectToGuestTenant()
     {
         // ゲスト用テナントのサブドメインにリダイレクト
-        return redirect('http://guest-demo.localhost/home');
+        return redirect('http://guestdemo.localhost/home');
     }
 }
