@@ -39,19 +39,28 @@ createInertiaApp({
 
         app.mount(el);
 
-        // Inertia.jsのカスタムイベントでリロードをトリガーする
         document.addEventListener("inertia:finish", (event) => {
             console.log("Inertia:finish イベントが発火しました");
 
-            // 現在のURLを取得
-            const currentUrl = window.location.href;
+            // HTTPレスポンスのステータスコードを確認
+            const statusCode = event.detail?.response?.status;
 
-            // ログイン後またはダッシュボードでのリダイレクトを処理
-            if (currentUrl.includes("localhost/home")) {
+            if (statusCode === 419) {
+                // セッション切れの場合の処理
                 console.log(
-                    "URLが 'localhost/home'または'localhost/dashboard'を含んでいます。ページをリロードします。"
+                    "セッション切れが検出されました。リロードを実行します。"
                 );
+                alert("セッションが切れています。リロードします。");
                 window.location.reload();
+            } else {
+                // 特定のページでリロードする場合（例: ダッシュボード）
+                const currentPath = window.location.pathname;
+                if (currentPath === "/home" || currentPath === "/dashboard") {
+                    console.log(
+                        "ホームまたはダッシュボードにリダイレクトされました。リロードします。"
+                    );
+                    window.location.reload();
+                }
             }
         });
     },
