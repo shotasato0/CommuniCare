@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\TenantRegisterController;
 use App\Http\Controllers\Auth\TenantLoginController;
 use App\Http\Controllers\Auth\GuestTenantController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');
