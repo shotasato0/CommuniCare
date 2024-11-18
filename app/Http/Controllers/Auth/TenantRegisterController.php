@@ -66,9 +66,6 @@ class TenantRegisterController extends Controller
         // テナントIDをセッションに保存
         session(['tenant_id' => $tenant->id]);
 
-        // ドメイン名をセッションに保存
-        session(['tenant_domain' => $domain]);
-
         // テナント初期化後にリダイレクト
         return Inertia::location('http://' . $domain . '/home');
     }
