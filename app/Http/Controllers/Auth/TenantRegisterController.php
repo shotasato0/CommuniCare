@@ -9,6 +9,7 @@ use Stancl\Tenancy\Database\Models\Domain;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Validation\ValidationException;
 
 class TenantRegisterController extends Controller
 {
@@ -30,14 +31,23 @@ class TenantRegisterController extends Controller
             ],
         ]);
 
+        // ドメイン名を生成
+        $domain = strtolower(preg_replace('/[^\x20-\x7E]/', '', str_replace(' ', '-', $validatedData['tenant_domain_id']))) . '.localhost';
+
+        // ドメインの重複チェック
+        if (Domain::where('domain', $domain)->exists()) {
+            throw ValidationException::withMessages([
+                'tenant_domain_id' => 'このドメインは既に使用されています。',
+            ]);
+        }
+
         // テナントの作成
         $tenant = Tenant::create([
             'business_name' => $validatedData['business_name'],
             'tenant_domain_id' => $validatedData['tenant_domain_id'],
         ]);
 
-        // ドメインの自動生成
-        $domain = strtolower(preg_replace('/[^\x20-\x7E]/', '', str_replace(' ', '-', $validatedData['tenant_domain_id']))) . '.localhost';
+        // ドメインの登録
         Domain::create([
             'tenant_id' => $tenant->id,
             'domain' => $domain,
