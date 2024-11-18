@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\TenantRegisterController;
 use App\Http\Controllers\Auth\TenantLoginController;
-use App\Http\Controllers\Auth\GuestLoginController;
+use App\Http\Controllers\Auth\GuestTenantController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
