@@ -32,6 +32,10 @@ Route::middleware('guest')->group(function () {
     // ゲストログイン
     Route::get('/guest/login', [GuestTenantController::class, 'redirectToGuestTenant'])->name('guest.login');
 
+    // 管理者登録ルート
+    Route::get('/auth/register-admin', [UserController::class, 'showRegisterAdminForm'])->name('register-admin.form');
+    Route::post('/auth/register-admin', [UserController::class, 'registerAdmin'])->name('register-admin');
+
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
 
