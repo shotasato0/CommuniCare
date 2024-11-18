@@ -24,10 +24,13 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    /**
-     * Handle an incoming authentication request.
+   /**
+ * Handle an incoming authentication request.
+     *
+     * @param  \App\Http\Requests\Auth\LoginRequest  $request
+     * @return \Inertia\Response|\Illuminate\Http\RedirectResponse
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         $credentials = $request->only('username_id', 'password');
 
@@ -41,7 +44,7 @@ class AuthenticatedSessionController extends Controller
             // セッションにリロードフラグを設定
             session()->flash('reload_page', true);
 
-            return redirect()->route('dashboard');
+            return inertia::location('dashboard');
         }
 
         return back()->withErrors([
