@@ -32,7 +32,7 @@ class SeedTenantRolesAndPermissions
             '--class' => 'RolePermissionSeeder',
         ]);
 
-        // ログに記録（任意）
+        // ログに記録
         logger()->info("Roles and permissions seeded for tenant: {$event->tenant->id}");
     }
 }
