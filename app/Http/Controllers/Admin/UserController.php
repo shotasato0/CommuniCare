@@ -30,6 +30,7 @@ public function registerAdmin(Request $request)
     // バリデーション
     $validated = $request->validate([
         'name' => 'required|string|max:255',
+        'username_id' => 'required|string|max:255|unique:users',
         'password' => 'required|string|min:8|confirmed',
     ]);
 
@@ -39,6 +40,7 @@ public function registerAdmin(Request $request)
     // 新しいユーザーを作成
     $user = User::create([
         'name' => $validated['name'],
+        'username_id' => $validated['username_id'],
         'password' => bcrypt($validated['password']), // bcrypt を明示的に適用
         'tenant_id' => $tenantId, // テナント ID を設定
     ]);
@@ -53,7 +55,6 @@ public function registerAdmin(Request $request)
     // 登録後にログインセッションを開始
     Auth::login($user);
 
-    return redirect()->route('dashboard')->with('success', 'ユーザー登録が完了しました。');
-}
-
+        return redirect()->route('dashboard')->with('success', 'ユーザー登録が完了しました。');
+    }
 }
