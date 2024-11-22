@@ -64,23 +64,20 @@ const transferAdmin = (user) => {
                             alt="Profile Icon"
                             class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
                         />
-                        <div>
+                        <div class="flex items-center">
                             <p
                                 class="text-sm sm:text-lg font-bold text-gray-900"
                             >
                                 {{ sortedUsers.currentAdmin.name }}
                             </p>
-                            <p class="text-xs sm:text-sm text-blue-500">
-                                {{ $t("Current Admin") }}
-                            </p>
+                            <i
+                                class="bi bi-award-fill text-yellow-500 text-xl ml-2"
+                            ></i>
                         </div>
+                        <p class="text-xs sm:text-sm text-blue-500">
+                            {{ $t("Current Admin") }}
+                        </p>
                     </div>
-                    <button
-                        disabled
-                        class="bg-gray-300 text-white py-2 px-4 rounded-lg cursor-not-allowed"
-                    >
-                        {{ $t("Transfer") }}
-                    </button>
                 </div>
             </div>
 
@@ -105,7 +102,9 @@ const transferAdmin = (user) => {
                             {{ user.name }}
                         </p>
                     </div>
+                    <!-- 管理者以外にのみ移動ボタンを表示 -->
                     <button
+                        v-if="user.id !== currentAdminId"
                         @click="transferAdmin(user)"
                         class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
                     >
