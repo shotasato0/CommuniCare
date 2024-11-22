@@ -21,8 +21,6 @@ class UserController extends Controller
         ]);
     }
 
-
-
 public function registerAdmin(Request $request)
 {
     Tenancy::initialize(tenant());
@@ -56,5 +54,14 @@ public function registerAdmin(Request $request)
     Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', 'ユーザー登録が完了しました。');
+    }
+
+    // テナントの管理者を移動するためのフォームを表示
+    public function showTransferAdminForm()
+    {
+        $users = User::all(); // 全ユーザーを取得
+        return inertia('Admin/TransferAdmin', [
+        'users' => $users,
+        ]);
     }
 }
