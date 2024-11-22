@@ -174,5 +174,7 @@
     "Admin Registration": "管理者登録",
     "Transfer Admin Role": "管理者権限の移動",
     "Transfer admin privileges to another user.": "管理者権限を他のユーザーに移動します",
-    "Transfer page": "管理者権限移動ページへ"
+    "Transfer page": "管理者権限移動ページへ",
+    "Select a user to transfer admin privileges.": "管理者権限を移動するユーザーを選択してください。",
+    "Transfer": "移動"
 }

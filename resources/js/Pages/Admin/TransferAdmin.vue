@@ -1,19 +1,35 @@
+<script setup>
+import { ref } from "vue";
+import { router } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+
+const { props } = usePage();
+const users = props.users; // 必要に応じて ref(props.users) に変更可能
+
+const flashMessage = ref(null);
+
+const transferAdmin = (user) => {
+    if (confirm(`${user.name} に管理者権限を移動しますか？`)) {
+        router
+            .post(route("admin.transferAdmin"), { new_admin_id: user.id })
+            .then(() => {
+                flashMessage.value = `${user.name} に管理者権限を移動しました。`;
+                setTimeout(() => (flashMessage.value = null), 3000); // 必要なら維持
+            })
+            .catch((error) => {
+                console.error("エラー:", error);
+                flashMessage.value = "管理者権限の移動に失敗しました。";
+                setTimeout(() => (flashMessage.value = null), 3000); // 必要なら維持
+            });
+    }
+};
+</script>
+
 <template>
-    <Head :title="$t('Transfer Admin Role')" />
-
     <AuthenticatedLayout>
-        <!-- フラッシュメッセージ -->
-        <transition name="fade">
-            <div
-                v-if="flashMessage"
-                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 text-green-700 p-4 rounded shadow-lg text-center"
-            >
-                {{ flashMessage }}
-            </div>
-        </transition>
-
         <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6">
+            <h1 class="text-2xl font-bold mb-6 mt-16">
                 {{ $t("Transfer Admin Role") }}
             </h1>
             <p class="text-gray-700 mb-6">
@@ -54,48 +70,5 @@
             </p>
         </div>
     </AuthenticatedLayout>
+    
 </template>
-
-<script setup>
-import { Head } from "@inertiajs/vue3";
-import { ref } from "vue";
-
-// フラッシュメッセージ
-const flashMessage = ref(null);
-
-// ダミーデータとしてのユーザーリスト
-const users = [
-    // ここにAPIレスポンスなどで取得したユーザーリストを格納
-    { id: 1, name: "山田 太郎", icon: null },
-    { id: 2, name: "佐藤 花子", icon: null },
-];
-
-// 管理者権限の譲渡処理
-const transferAdmin = (user) => {
-    if (confirm(`${user.name} に管理者権限を移動しますか？`)) {
-        // APIリクエストを送信
-        $inertia
-            .post(route("admin.transferAdmin"), { user_id: user.id })
-            .then(() => {
-                flashMessage.value = `${user.name} に管理者権限を移動しました。`;
-                setTimeout(() => (flashMessage.value = null), 3000);
-            })
-            .catch((error) => {
-                console.error("エラー:", error);
-                flashMessage.value = "管理者権限の移動に失敗しました。";
-                setTimeout(() => (flashMessage.value = null), 3000);
-            });
-    }
-};
-</script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
