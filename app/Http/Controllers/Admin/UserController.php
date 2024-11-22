@@ -67,4 +67,25 @@ public function registerAdmin(Request $request)
         'users' => $users,
     ]);
     }
+
+    // 管理者権限を移動
+    public function transferAdmin(Request $request)
+    {
+        $validated = $request->validate([
+            'new_admin_id' => 'required|exists:users,id',
+        ]);
+
+        $newAdmin = User::find($validated['new_admin_id']);
+        $currentAdmin = auth()->user();
+
+        // 現在の管理者の権限を削除
+        $currentAdmin->removeRole('admin');
+        // 新しい管理者の権限を割り当て
+        $currentAdmin->assignRole('user');
+
+        // 新しい管理者の権限を割り当て
+        $newAdmin->assignRole('admin');
+
+        return redirect()->route('dashboard')->with('success', '管理者権限を移動しました。');
+    }
 }
