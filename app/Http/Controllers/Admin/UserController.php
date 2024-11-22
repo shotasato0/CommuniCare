@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Stancl\Tenancy\Facades\Tenancy;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -59,9 +60,11 @@ public function registerAdmin(Request $request)
     // テナントの管理者を移動するためのフォームを表示
     public function showTransferAdminForm()
     {
-        $users = User::all(); // 全ユーザーを取得
-        return inertia('Admin/TransferAdmin', [
+        // 現在のテナントに所属するユーザーを取得
+    $users = User::where('tenant_id', tenant('id'))->get();
+
+    return inertia('Admin/TransferAdmin', [
         'users' => $users,
-        ]);
+    ]);
     }
 }
