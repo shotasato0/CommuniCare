@@ -61,11 +61,17 @@ public function registerAdmin(Request $request)
     public function showTransferAdminForm()
     {
         // 現在のテナントに所属するユーザーを取得
-    $users = User::where('tenant_id', tenant('id'))->get();
+        $users = User::where('tenant_id', tenant('id'))->get();
 
-    return inertia('Admin/TransferAdmin', [
-        'users' => $users,
-    ]);
+        // 現在の管理者を取得
+        $currentAdmin = User::role('admin')
+            ->where('tenant_id', tenant('id'))
+            ->first();
+
+        return inertia('Admin/TransferAdmin', [
+            'users' => $users,
+            'currentAdminId' => $currentAdmin?->id, // 現在の管理者のIDを渡す
+        ]);
     }
 
     // 管理者権限を移動

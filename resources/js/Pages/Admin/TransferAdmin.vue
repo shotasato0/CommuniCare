@@ -1,26 +1,39 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const { props } = usePage();
-const users = props.users; // 必要に応じて ref(props.users) に変更可能
+const users = props.users;
+const currentAdminId = props.currentAdminId; // 現在の管理者のIDを取得
 
 const flashMessage = ref(null);
 
+// 現在の管理者とそれ以外のユーザーを分ける
+const sortedUsers = computed(() => {
+    const currentAdmin = users.find((user) => user.id === currentAdminId);
+    const otherUsers = users.filter((user) => user.id !== currentAdminId);
+
+    return {
+        currentAdmin,
+        otherUsers,
+    };
+});
+
+// 管理者権限の譲渡処理
 const transferAdmin = (user) => {
     if (confirm(`${user.name} に管理者権限を移動しますか？`)) {
         router
             .post(route("admin.transferAdmin"), { new_admin_id: user.id })
             .then(() => {
                 flashMessage.value = `${user.name} に管理者権限を移動しました。`;
-                setTimeout(() => (flashMessage.value = null), 3000); // 必要なら維持
+                setTimeout(() => (flashMessage.value = null), 3000);
             })
             .catch((error) => {
                 console.error("エラー:", error);
                 flashMessage.value = "管理者権限の移動に失敗しました。";
-                setTimeout(() => (flashMessage.value = null), 3000); // 必要なら維持
+                setTimeout(() => (flashMessage.value = null), 3000);
             });
     }
 };
@@ -36,9 +49,45 @@ const transferAdmin = (user) => {
                 {{ $t("Select a user to transfer admin privileges.") }}
             </p>
 
+            <!-- 現在の管理者 -->
+            <div v-if="sortedUsers.currentAdmin" class="mb-8">
+                <div
+                    class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between border-l-4 border-blue-500"
+                >
+                    <div class="flex items-center space-x-4">
+                        <img
+                            :src="
+                                sortedUsers.currentAdmin.icon
+                                    ? `/storage/${sortedUsers.currentAdmin.icon}`
+                                    : 'https://via.placeholder.com/150'
+                            "
+                            alt="Profile Icon"
+                            class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
+                        />
+                        <div>
+                            <p
+                                class="text-sm sm:text-lg font-bold text-gray-900"
+                            >
+                                {{ sortedUsers.currentAdmin.name }}
+                            </p>
+                            <p class="text-xs sm:text-sm text-blue-500">
+                                {{ $t("Current Admin") }}
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        disabled
+                        class="bg-gray-300 text-white py-2 px-4 rounded-lg cursor-not-allowed"
+                    >
+                        {{ $t("Transfer") }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- 他のユーザー -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
-                    v-for="user in users"
+                    v-for="user in sortedUsers.otherUsers"
                     :key="user.id"
                     class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between"
                 >
@@ -70,5 +119,4 @@ const transferAdmin = (user) => {
             </p>
         </div>
     </AuthenticatedLayout>
-    
 </template>
