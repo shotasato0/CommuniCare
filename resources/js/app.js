@@ -52,15 +52,15 @@ createInertiaApp({
                 );
                 alert("セッションが切れています。リロードします。");
                 window.location.reload();
-            } else {
-                // 特定のページでリロードする場合（例: ダッシュボード）
-                const currentPath = window.location.pathname;
-                if (currentPath === "/home" || currentPath === "/dashboard") {
-                    console.log(
-                        "ホームまたはダッシュボードにリダイレクトされました。リロードします。"
-                    );
-                    window.location.reload();
-                }
+            // } else {
+            //     // 特定のページでリロードする場合（例: ダッシュボード）
+            //     const currentPath = window.location.pathname;
+            //     if (currentPath === "/home" || currentPath === "/dashboard") {
+            //         console.log(
+            //             "ホームまたはダッシュボードにリダイレクトされました。リロードします。"
+            //         );
+            //         window.location.reload();
+            //     }
             }
         });
     },
