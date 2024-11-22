@@ -63,6 +63,9 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         // });
         // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
         Route::resource('units', UnitController::class);
+
+        // テナントの管理者を移動
+        Route::post('/admin/transfer-admin', [UserController::class, 'transferAdmin'])->name('admin.transferAdmin');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
