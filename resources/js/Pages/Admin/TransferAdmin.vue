@@ -22,19 +22,29 @@ const sortedUsers = computed(() => {
 });
 
 // 管理者権限の譲渡処理
-const transferAdmin = (user) => {
+const transferAdmin = async (user) => {
     if (confirm(`${user.name} に管理者権限を移動しますか？`)) {
-        router
-            .post(route("admin.transferAdmin"), { new_admin_id: user.id })
-            .then(() => {
-                flashMessage.value = `${user.name} に管理者権限を移動しました。`;
-                setTimeout(() => (flashMessage.value = null), 3000);
-            })
-            .catch((error) => {
-                console.error("エラー:", error);
-                flashMessage.value = "管理者権限の移動に失敗しました。";
-                setTimeout(() => (flashMessage.value = null), 3000);
-            });
+        try {
+            await router.post(
+                route("admin.transferAdmin"),
+                { new_admin_id: user.id },
+                {
+                    onSuccess: () => {
+                        flashMessage.value = `${user.name} に管理者権限を移動しました。`;
+                        setTimeout(() => (flashMessage.value = null), 3000);
+                    },
+                    onError: (errors) => {
+                        console.error("エラー:", errors);
+                        flashMessage.value = "管理者権限の移動に失敗しました。";
+                        setTimeout(() => (flashMessage.value = null), 3000);
+                    },
+                }
+            );
+        } catch (error) {
+            console.error("予期しないエラー:", error);
+            flashMessage.value = "管理者権限の移動中に問題が発生しました。";
+            setTimeout(() => (flashMessage.value = null), 3000);
+        }
     }
 };
 </script>
