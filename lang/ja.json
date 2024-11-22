@@ -171,5 +171,8 @@
     "New user registration": "社員新規登録",
     "No user available": "社員が登録されていません",
     "User registration": "社員登録",
-    "Admin Registration": "管理者登録"
+    "Admin Registration": "管理者登録",
+    "Transfer Admin Role": "管理者権限の移動",
+    "Transfer admin privileges to another user.": "管理者権限を他のユーザーに移動します",
+    "Transfer page": "管理者権限移動ページへ"
 }
