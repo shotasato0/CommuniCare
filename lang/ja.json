@@ -176,5 +176,6 @@
     "Transfer admin privileges to another user.": "管理者権限を他のユーザーに移動します",
     "Transfer page": "管理者権限移動ページへ",
     "Select a user to transfer admin privileges.": "管理者権限を移動するユーザーを選択してください。",
-    "Transfer": "移動"
+    "Transfer": "移動",
+    "Current Admin": "現在の管理者"
 }
