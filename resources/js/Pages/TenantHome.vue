@@ -62,7 +62,7 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
                     <!-- ボタンの切り替え -->
                     <Link
                         v-if="isGuestHome"
-                        :href="'/guest-login'"
+                        :href="route('guest.user.login')"
                         class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
                     >
                         ゲストユーザーとしてログイン
