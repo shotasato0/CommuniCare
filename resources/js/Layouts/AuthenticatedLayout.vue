@@ -8,8 +8,10 @@ import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 const page = usePage();
-const units = page.props.units; // Inertiaから`units`を取得
-const users = page.props.users; // Inertiaから`users`を取得
+const units = page.props.units || []; // Inertiaから`units`を取得
+const users = page.props.users || []; // Inertiaから`users`を取得
+const isGuest = page.props.isGuest || false; // Inertiaから`isGuest`を取得
+console.log("isGuest", isGuest);
 
 // CSRFトークンを取得
 const csrfToken = ref(
@@ -60,8 +62,6 @@ const handleLogoClick = async () => {
         alert(error.message); // エラーメッセージをアラートで表示
     }
 };
-
-const isGuest = auth.user?.guest ?? false; // auth.user.guestでゲスト判定（ゲストフラグを仮定）
 </script>
 
 <template>
