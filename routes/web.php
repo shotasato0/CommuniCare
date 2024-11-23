@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
@@ -63,6 +64,10 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         // });
         // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
         Route::resource('units', UnitController::class);
+
+        // テナントの管理者を移動
+        Route::get('/admin/transfer-admin', [AdminUserController::class, 'showTransferAdminForm'])->name('admin.transfer.view');
+        Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 });
