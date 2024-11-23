@@ -54,7 +54,7 @@ const guestLogin = () => {
             <h1 class="text-2xl font-bold mb-4">介護施設の登録</h1>
 
             <p class="text-gray-600 leading-relaxed">
-                あなたの施設専用の管理スペースを作成できます。登録が完了すると、スタッフや利用者データを安全に管理できる専用の環境をご利用いただけます。
+                あなたの施設専用の管理サイトを作成できます。登録が完了すると、職員や利用者データを安全に管理できる専用の環境をご利用いただけます。
             </p>
 
             <p class="text-sm text-gray-500 mt-6 leading-relaxed">
