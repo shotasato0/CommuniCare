@@ -1,6 +1,10 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
+
+defineProps({
+    adminExists: Boolean,
+});
 </script>
 
 <template>
@@ -57,16 +61,17 @@ import { Link } from "@inertiajs/vue3";
                     >
                         ログイン
                     </Link>
+
+                    <!-- 管理者登録ボタン -->
+                    <Link
+                        v-if="!adminExists"
+                        :href="route('register-admin.form')"
+                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg hover:bg-blue-600 transition transform hover:scale-105"
+                    >
+                        管理者登録
+                    </Link>
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style>
-/* 必要に応じてカスタムスタイルを追加可能 */
-</style>
-
-<style>
-/* 必要に応じてカスタムスタイルを追加可能 */
-</style>
