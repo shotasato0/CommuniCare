@@ -33,14 +33,8 @@ class GuestLoginController extends Controller
 
     Auth::login($guestUser);
 
-    return Inertia::render('Dashboard', [
-        'auth' => [
-            'user' => Auth::user(),
-        ],
-        'isGuest' => true,
-        'guestSessionId' => $guestUser->guest_session_id,
-    ])->with('message', 'ゲストとしてログインしました！');
-}
+    return Inertia::render('Dashboard')->with('message', 'ゲストとしてログインしました！');
+    }
 
 
 
