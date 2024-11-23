@@ -54,7 +54,7 @@ public function registerAdmin(Request $request)
     // 登録後にログインセッションを開始
     Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'ユーザー登録が完了しました。');
+        return redirect()->route('dashboard')->with('success', '管理者の登録が完了しました。');
     }
 
     // テナントの管理者を移動するためのフォームを表示
