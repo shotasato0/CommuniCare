@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',        // メールアドレスフィールドの追加
         'icon',         // プロフィール写真用のURLフィールド
         'unit_id',      // 担当入居者の関連ID
+        'guest_session_id', // ゲストユーザーのセッションID
     ];
     
 
