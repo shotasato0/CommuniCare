@@ -60,6 +60,8 @@ const handleLogoClick = async () => {
         alert(error.message); // エラーメッセージをアラートで表示
     }
 };
+
+const isGuest = auth.user?.guest ?? false; // auth.user.guestでゲスト判定（ゲストフラグを仮定）
 </script>
 
 <template>
@@ -137,7 +139,11 @@ const handleLogoClick = async () => {
                                             {{ $t("Profile") }}
                                         </DropdownLink>
                                         <form
-                                            :action="route('logout')"
+                                            :action="
+                                                isGuest
+                                                    ? route('logout-guest')
+                                                    : route('logout')
+                                            "
                                             method="post"
                                             class="inline"
                                         >
