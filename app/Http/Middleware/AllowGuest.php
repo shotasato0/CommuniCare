@@ -4,17 +4,25 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AllowGuest
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        return $next($request);
+        // 認証されていない場合でも、ゲストセッションを許可
+        if (session('guest', false)) {
+            return $next($request);
+        }
+
+        // 通常の認証状態も許可
+        if (auth()->check()) {
+            return $next($request);
+        }
+
+        // 上記以外の場合はログインページへリダイレクト
+        return redirect()->route('login');
     }
 }
