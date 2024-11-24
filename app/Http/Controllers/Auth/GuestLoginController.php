@@ -49,6 +49,6 @@ class GuestLoginController extends Controller
         Auth::logout();
         session()->invalidate();
 
-        return redirect('/')->with('message', '操作内容がリセットされました。');
+        return redirect('/home')->with('message', '操作内容がリセットされました。');
     }
 }
