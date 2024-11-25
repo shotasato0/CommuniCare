@@ -38,19 +38,15 @@ class GuestLoginController extends Controller
         ]
     );
 
-    \Log::info('作成されたゲストユーザー:', $guestUser->toArray());
-    \Log::info('ログイン前のセッションID: ' . $initialSessionId);
 
     // ゲストユーザーとしてログイン
     Auth::login($guestUser);
 
     // ログイン後の新しいセッションIDを取得
     $newSessionId = session()->getId();
-    \Log::info('ログイン後のセッションID: ' . $newSessionId);
 
     // ゲストユーザーのセッションIDを更新
     $guestUser->update(['guest_session_id' => $newSessionId]);
-    \Log::info('更新されたゲストユーザー:', $guestUser->toArray());
 
     // ダッシュボードページにリダイレクト
     return Inertia::render('Dashboard', [
@@ -71,14 +67,12 @@ class GuestLoginController extends Controller
 {
     // 現在のセッションIDを取得
     $sessionId = session()->getId();
-    \Log::info('ログアウト時のセッションID: ' . $sessionId);
 
     // セッションIDでゲストユーザーを検索・削除
     $guestUser = User::where('guest_session_id', $sessionId)->first();
 
     if ($guestUser) {
         $guestUser->delete();
-        \Log::info("ゲストユーザーが削除されました: {$guestUser->id}");
     } else {
         \Log::warning("該当するゲストユーザーが見つかりません: セッションID: {$sessionId}");
     }
