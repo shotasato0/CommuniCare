@@ -253,6 +253,7 @@ const handleLogoClick = async () => {
                                 </div>
                             </div>
                             <div v-else>
+                                <!-- ゲストセッションの切断など、予期せぬauth.userのnull状態に対応するため保持 -->
                                 <div
                                     class="font-medium text-base text-gray-800"
                                 >
