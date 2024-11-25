@@ -76,6 +76,18 @@ const handleLogoClick = async () => {
         alert(error.message); // エラーメッセージをアラートで表示
     }
 };
+
+// ゲストログアウト時の確認アラート
+const confirmGuestLogout = (event) => {
+    if (auth.user.guest_session_id) {
+        const confirmed = window.confirm(
+            "ログアウトするとゲストユーザーが削除されます。本当にログアウトしてよろしいですか？"
+        );
+        if (!confirmed) {
+            event.preventDefault(); // ログアウト処理をキャンセル
+        }
+    }
+};
 </script>
 
 <template>
@@ -169,6 +181,7 @@ const handleLogoClick = async () => {
                                             <button
                                                 type="submit"
                                                 class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                                @click="confirmGuestLogout"
                                             >
                                                 {{ $t("Log Out") }}
                                             </button>
@@ -281,7 +294,8 @@ const handleLogoClick = async () => {
                                 />
                                 <button
                                     type="submit"
-                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="confirmGuestLogout"
                                 >
                                     {{ $t("Log Out") }}
                                 </button>
