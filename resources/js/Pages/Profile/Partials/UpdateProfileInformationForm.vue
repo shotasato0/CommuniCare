@@ -150,6 +150,13 @@ const handleOpenIconEdit = () => {
                     required
                 />
                 <InputError class="mt-2" :message="form.errors.username_id" />
+                <!-- ゲストユーザー向けの説明文 -->
+                <p
+                    v-if="user.guest_session_id"
+                    class="mt-2 text-sm text-red-600"
+                >
+                    ゲストユーザーではこのIDは使用されません。通常ログインで使用されるIDです。
+                </p>
             </div>
 
             <div>
