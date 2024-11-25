@@ -48,6 +48,15 @@ watch(successMessage, (newVal) => {
             </h2>
         </template>
 
+        <!-- ゲスト向け説明文 -->
+        <div
+            v-if="isGuest"
+            class="p-4 mb-6 bg-yellow-100 text-yellow-800 rounded"
+        >
+            現在、ゲストユーザーとしてログインしています。一部の機能（パスワード変更、アカウント削除など）は利用できません。
+            通常のアカウントでログインすることで、これらの機能をご利用いただけます。
+        </div>
+
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <!-- プロフィール情報 -->
