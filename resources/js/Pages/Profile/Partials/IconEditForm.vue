@@ -1,6 +1,6 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed, watch, ref, defineEmits, defineProps } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
     user: Object,
