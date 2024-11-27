@@ -79,15 +79,11 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    {{ $t("Forgot your password?") }}
-                </Link>
+            <div class="mt-6 text-sm text-gray-600">
+                ユーザーID、並びにパスワードを忘れた場合は、管理者にお問い合わせください。
+            </div>
 
+            <div class="flex items-center justify-end mt-4">
                 <PrimaryButton
                     class="ms-4"
                     :class="{ 'opacity-25': form.processing }"
