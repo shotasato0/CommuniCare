@@ -33,7 +33,7 @@ watch(successMessage, (newVal) => {
     if (newVal) {
         setTimeout(() => {
             successMessage.value = null;
-        }, 3000);
+        }, 8000);
     }
 });
 </script>

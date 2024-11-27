@@ -56,7 +56,7 @@ class UnitController extends Controller
             'visibility' => 'public',
             'status' => 'active',
         ]);
-        return redirect()->route("dashboard")->with(["success" => "ユニット登録が完了しました。"]);
+        return redirect()->route("dashboard")->with(["success" => "部署登録が完了しました。"]);
     }
 
     /**
