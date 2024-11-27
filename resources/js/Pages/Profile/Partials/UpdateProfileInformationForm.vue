@@ -196,23 +196,29 @@ const handleOpenIconEdit = () => {
                 </select>
             </div>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">
-                    {{ $t("Save") }}
-                </PrimaryButton>
+            <div>
+                <!-- 保存ボタン -->
+                <div>
+                    <PrimaryButton :disabled="form.processing">
+                        {{ $t("Save") }}
+                    </PrimaryButton>
+                </div>
 
+                <!-- フラッシュメッセージ -->
                 <Transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p
+                    <div
                         v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
+                        class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
                     >
-                        {{ $t("Saved.") }}
-                    </p>
+                        <p class="font-bold text-center">
+                            {{ $t("Saved.") }}
+                        </p>
+                    </div>
                 </Transition>
             </div>
         </form>
