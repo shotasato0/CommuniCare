@@ -7,6 +7,7 @@ import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 const { props } = usePage();
 const isAdmin = props.isAdmin;
 const flash = props.flash;
+const isGuest = props.isGuest;
 
 const flashMessage = ref(flash.success || flash.error || flash.info || null);
 const flashType = ref(
@@ -40,8 +41,11 @@ console.log("User data:", props.auth.user);
         <div class="py-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                    <div v-if="!isGuest" class="p-6 text-gray-900">
                         {{ $t("You're logged in") }}
+                    </div>
+                    <div v-else class="p-6 text-gray-900">
+                        {{ $t("Logged in as guest user") }}
                     </div>
                 </div>
             </div>

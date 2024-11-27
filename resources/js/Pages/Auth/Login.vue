@@ -6,24 +6,20 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
+import { ref } from "vue";
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
+// URLの判定
+const currentUrl = window.location.href;
+const isGuestUrl = ref(currentUrl.includes("guestdemo.localhost/login")); // ゲスト用URLの判定
 
 // フォームデータにusername_idを使用
 const form = useForm({
-    username_id: "", // emailをusername_idに変更
+    username_id: "",
     password: "",
     remember: false,
     _token: document
         .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content"), // 初期表示時にCSRFトークンを設定
+        .getAttribute("content"),
 });
 
 const submit = () => {
@@ -37,11 +33,16 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
+        <!-- 説明テキスト -->
+        <div
+            v-if="isGuestUrl"
+            class="p-6 bg-yellow-100 text-yellow-800 rounded"
+        >
+            セッションが切れました。アプリケーションロゴをクリックして、新たなゲストユーザーとしてログインし直してください。
         </div>
 
-        <form @submit.prevent="submit">
+        <!-- 通常ログインフォーム -->
+        <form v-else @submit.prevent="submit">
             <div>
                 <InputLabel for="username_id" :value="$t('Username_ID')" />
                 <TextInput
