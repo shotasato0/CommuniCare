@@ -66,6 +66,31 @@ const handleOpenIconEdit = () => {
             </p>
         </header>
 
+        <!-- プロフィール画像更新成功メッセージ表示 -->
+        <div
+            v-if="successMessage"
+            class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
+        >
+            {{ successMessage }}
+        </div>
+
+        <!-- プロフィール情報更新成功メッセージ表示 -->
+        <Transition
+            enter-active-class="transition ease-in-out"
+            enter-from-class="opacity-0"
+            leave-active-class="transition ease-in-out"
+            leave-to-class="opacity-0"
+        >
+            <div
+                v-if="form.recentlySuccessful"
+                class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
+            >
+                <p class="font-medium text-center">
+                    {{ $t("Saved.") }}
+                </p>
+            </div>
+        </Transition>
+
         <form
             @submit.prevent="form.patch(route('profile.update'))"
             class="mt-6 space-y-6"
@@ -114,14 +139,6 @@ const handleOpenIconEdit = () => {
                         </svg>
                     </div>
                 </button>
-            </div>
-
-            <!-- 成功メッセージ表示 -->
-            <div
-                v-if="successMessage"
-                class="bg-green-100 text-green-700 p-3 mb-6 rounded"
-            >
-                {{ successMessage }}
             </div>
 
             <!-- フォーム項目 -->
@@ -203,23 +220,6 @@ const handleOpenIconEdit = () => {
                         {{ $t("Save") }}
                     </PrimaryButton>
                 </div>
-
-                <!-- フラッシュメッセージ -->
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <div
-                        v-if="form.recentlySuccessful"
-                        class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
-                    >
-                        <p class="font-bold text-center">
-                            {{ $t("Saved.") }}
-                        </p>
-                    </div>
-                </Transition>
             </div>
         </form>
     </section>
