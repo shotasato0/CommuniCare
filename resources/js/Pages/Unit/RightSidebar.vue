@@ -67,7 +67,7 @@ console.log("props.unitName", props.unitName);
     display: block;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1366px) {
     /* モバイル画面では非表示 */
     .desktop-only {
         display: none;
