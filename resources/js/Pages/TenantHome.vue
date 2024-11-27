@@ -5,6 +5,11 @@ import { Link } from "@inertiajs/vue3";
 defineProps({
     adminExists: Boolean,
 });
+
+// 現在のURLが特定のパスかをチェック
+const guestTenantUrl =
+    import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost";
+const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
 </script>
 
 <template>
@@ -54,10 +59,18 @@ defineProps({
                 <div
                     class="flex flex-wrap justify-center sm:justify-start gap-4"
                 >
-                    <!-- ログインボタン -->
+                    <!-- ボタンの切り替え -->
                     <Link
+                        v-if="isGuestHome"
+                        :href="route('guest.user.login')"
+                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
+                    >
+                        ゲストユーザーとしてログイン
+                    </Link>
+                    <Link
+                        v-else
                         :href="route('login')"
-                        class="bg-gray-300 text-gray-700 text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg hover:bg-gray-400 transition transform hover:scale-105"
+                        class="bg-gray-300 text-gray-700 text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
                     >
                         ログイン
                     </Link>
@@ -66,7 +79,7 @@ defineProps({
                     <Link
                         v-if="!adminExists"
                         :href="route('register-admin.form')"
-                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg hover:bg-blue-600 transition transform hover:scale-105"
+                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
                     >
                         管理者登録
                     </Link>
@@ -75,3 +88,9 @@ defineProps({
         </div>
     </div>
 </template>
+
+<style scoped>
+.link-hover:hover {
+    opacity: 70%;
+}
+</style>

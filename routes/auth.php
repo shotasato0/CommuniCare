@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\TenantLoginController;
 use App\Http\Controllers\Auth\GuestTenantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\GuestLoginController;
 
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');
@@ -32,6 +33,7 @@ Route::middleware('guest')->group(function () {
 
     // ゲストログイン
     Route::get('/guest/login', [GuestTenantController::class, 'redirectToGuestTenant'])->name('guest.login');
+    Route::get('/guest/user/login', [GuestLoginController::class, 'loginAsGuest'])->name('guest.user.login');
 
     // 管理者登録ルート
     Route::get('/auth/register-admin', [UserController::class, 'showRegisterAdminForm'])->name('register-admin.form');
@@ -57,4 +59,5 @@ Route::middleware('auth')->group(function () {
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::post('logout-guest', [GuestLoginController::class, 'logoutGuest'])->name('logout-guest');
 });

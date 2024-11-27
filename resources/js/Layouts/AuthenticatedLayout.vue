@@ -8,21 +8,28 @@ import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
 const page = usePage();
-const units = page.props.units; // Inertiaから`units`を取得
-const users = page.props.users; // Inertiaから`users`を取得
+const units = page.props.units || []; // Inertiaから`units`を取得
+const users = page.props.users || []; // Inertiaから`users`を取得
+const isGuest = page.props.isGuest || false; // Inertiaから`isGuest`を取得
+
+console.log("isGuest", isGuest);
 
 // CSRFトークンを取得
 const csrfToken = ref(
-    document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+    document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content") || ""
 );
 
 const showingNavigationDropdown = ref(false);
 
 // Inertiaからユーザー情報を取得
-const auth = page.props.auth || {};
+const auth = page.props.auth || { user: {} }; // userがnullの場合、デフォルト値を設定
+const userUnitId = auth.user?.unit_id || null;
+
 // ユーザーの情報を確認
 console.log("Logged in user data:", auth.user);
-console.log("auth.user.unit_id", auth.user.unit_id);
+console.log("auth.user.unit_id:", userUnitId);
 
 const handleLogoClick = async () => {
     try {
@@ -37,27 +44,48 @@ const handleLogoClick = async () => {
             throw new Error(data.error || "Failed to fetch forum ID");
         }
 
-        const forumId = data.forum_id;
-        const userUnitId = auth.user.unit_id;
-        const unit = units.find((u) => u.id === userUnitId);
-        // `unit_id`で`users`をフィルタリングしてユニットの職員リストを取得
-        const unitUsers = users.filter((user) => user.unit_id === userUnitId);
+        const forumId = data.forum_id || null;
 
-        if (unit) {
-            sessionStorage.setItem(
-                "selectedUnitUsers",
-                JSON.stringify(unitUsers)
+        if (userUnitId) {
+            const unit = units.find((u) => u.id === userUnitId);
+            const unitUsers = users.filter(
+                (user) => user.unit_id === userUnitId
             );
-            sessionStorage.setItem("selectedUnitName", unit.name);
+
+            if (unit) {
+                sessionStorage.setItem(
+                    "selectedUnitUsers",
+                    JSON.stringify(unitUsers)
+                );
+                sessionStorage.setItem("selectedUnitName", unit.name);
+            }
+        } else {
+            console.warn("User does not belong to a unit.");
         }
 
         // 所属ユニットの掲示板に遷移して状態をリセット
-        router.get(route("forum.index", { forum_id: forumId }), {
-            preserveState: false,
-        });
+        if (forumId) {
+            router.get(route("forum.index", { forum_id: forumId }), {
+                preserveState: false,
+            });
+        } else {
+            console.warn("Forum ID not found. Navigation skipped.");
+        }
     } catch (error) {
         console.error("Error fetching user forum ID:", error);
         alert(error.message); // エラーメッセージをアラートで表示
+    }
+};
+
+// ゲストログアウト時の確認アラート
+const confirmGuestLogout = (event) => {
+    if (auth.user.guest_session_id) {
+        const confirmed = window.confirm(
+            "ログアウトするとゲストユーザーが削除されます。本当にログアウトしてよろしいですか？"
+        );
+        if (!confirmed) {
+            event.preventDefault(); // ログアウト処理をキャンセル
+        }
     }
 };
 </script>
@@ -137,7 +165,11 @@ const handleLogoClick = async () => {
                                             {{ $t("Profile") }}
                                         </DropdownLink>
                                         <form
-                                            :action="route('logout')"
+                                            :action="
+                                                isGuest
+                                                    ? route('logout-guest')
+                                                    : route('logout')
+                                            "
                                             method="post"
                                             class="inline"
                                         >
@@ -149,6 +181,7 @@ const handleLogoClick = async () => {
                                             <button
                                                 type="submit"
                                                 class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                                @click="confirmGuestLogout"
                                             >
                                                 {{ $t("Log Out") }}
                                             </button>
@@ -233,6 +266,7 @@ const handleLogoClick = async () => {
                                 </div>
                             </div>
                             <div v-else>
+                                <!-- ゲストセッションの切断など、予期せぬauth.userのnull状態に対応するため保持 -->
                                 <div
                                     class="font-medium text-base text-gray-800"
                                 >
@@ -260,7 +294,8 @@ const handleLogoClick = async () => {
                                 />
                                 <button
                                     type="submit"
-                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                    @click="confirmGuestLogout"
                                 >
                                     {{ $t("Log Out") }}
                                 </button>

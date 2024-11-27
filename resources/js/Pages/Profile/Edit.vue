@@ -5,13 +5,16 @@ import UpdatePasswordForm from "./Partials/UpdatePasswordForm.vue";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm.vue";
 import IconEditForm from "./Partials/IconEditForm.vue";
 import { Head, usePage } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 // アイコン編集オーバーレイの表示制御
 const isIconEditVisible = ref(false);
 const user = usePage().props.auth.user;
 const units = usePage().props.units;
 const successMessage = ref(usePage().props.flash.success || null); // refに変更
+
+// ユーザーがゲストかどうかを判定
+const isGuest = computed(() => user.guest_session_id !== null);
 
 const openIconEdit = () => {
     isIconEditVisible.value = true;
@@ -45,6 +48,15 @@ watch(successMessage, (newVal) => {
             </h2>
         </template>
 
+        <!-- ゲスト向け説明文 -->
+        <div
+            v-if="isGuest"
+            class="p-4 mb-6 bg-yellow-100 text-yellow-800 rounded"
+        >
+            現在、ゲストユーザーとしてログインしています。一部の機能（パスワード変更、アカウント削除など）は利用できません。
+            通常のアカウントでログインすることで、これらの機能をご利用いただけます。
+        </div>
+
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <!-- プロフィール情報 -->
@@ -59,12 +71,18 @@ watch(successMessage, (newVal) => {
                 </div>
 
                 <!-- パスワード変更 -->
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div
+                    v-if="!isGuest"
+                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg"
+                >
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
 
                 <!-- ユーザー削除フォーム -->
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div
+                    v-if="!isGuest"
+                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg"
+                >
                     <DeleteUserForm class="max-w-xl" />
                 </div>
             </div>
