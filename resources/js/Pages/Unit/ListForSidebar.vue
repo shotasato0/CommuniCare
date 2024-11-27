@@ -96,6 +96,30 @@ export default {
     position: fixed;
     left: 0;
     top: 0;
+    width: 220px; /* デフォルトの幅を少し狭める */
+    height: 100vh; /* 全画面高さ */
     background-color: #f7fafc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: width 0.3s ease-in-out; /* アニメーションを追加 */
+}
+
+/* iPadサイズ以上で余白を減らす */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .sidebar {
+        width: 200px; /* 余白を減らす */
+    }
+}
+
+/* モバイルサイズでの設定 */
+@media (max-width: 767px) {
+    .sidebar {
+        width: 70%; /* モバイルでは画面の70%を占める */
+        position: absolute; /* トグルで表示されるため絶対配置 */
+        transform: translateX(-100%); /* 初期状態で非表示 */
+        transition: transform 0.3s ease-in-out;
+    }
+    .sidebar.visible {
+        transform: translateX(0); /* 表示状態に切り替え */
+    }
 }
 </style>
