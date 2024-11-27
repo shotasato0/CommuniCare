@@ -307,7 +307,7 @@ const isCommentAuthor = (comment) => {
             <ListForSidebar
                 :units="units"
                 :users="users"
-                class="sidebar-mobile p-4 lg:mt-16 lg:block"
+                class="sidebar-mobile p-4 sm:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
@@ -535,7 +535,7 @@ const isCommentAuthor = (comment) => {
             <RightSidebar
                 :unit-users="selectedUnitUsers"
                 :unit-name="selectedUnitName"
-                class="p-4 lg:mt-16 lg:block"
+                class="p-4 lg:mt-16 sm:block"
                 @user-selected="onUserSelected"
             />
 
@@ -573,13 +573,15 @@ const isCommentAuthor = (comment) => {
 }
 
 /* モバイルサイズ用のスタイル（切り替え可能） */
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
     .sidebar-mobile {
         width: 70%; /* モバイル時のサイドバー幅 */
         transform: translateX(-100%); /* デフォルトで非表示 */
         transition: transform 0.3s ease-in-out;
         z-index: 50;
-        background-color: #ffffff; /* サイドバーの背景色 */
+        background-color: #ffffff; /* 背景色 */
+        position: absolute;
+        height: 100%;
     }
     .sidebar-mobile.visible {
         transform: translateX(0); /* 表示 */
@@ -595,6 +597,35 @@ const isCommentAuthor = (comment) => {
         background-color: rgba(0, 0, 0, 0.5); /* 背景を半透明に */
         z-index: 40;
         transition: opacity 0.3s ease-in-out;
+    }
+}
+
+/* iPadサイズ専用（768px ～ 1024px） */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .sidebar-mobile {
+        width: 220px; /* iPadサイズではサイドバーを狭くする */
+    }
+
+    .flex-1 {
+        margin-left: 220px; /* サイドバーの幅分余白を調整 */
+    }
+}
+
+/* iPad Proサイズ以上（1024px以上） */
+@media (min-width: 1025px) {
+    .sidebar-mobile {
+        width: 250px; /* 通常のサイドバー幅 */
+    }
+
+    .flex-1 {
+        margin-left: 250px; /* 通常の余白 */
+    }
+}
+
+/* 全画面表示専用（デスクトップサイズ以上） */
+@media (min-width: 1366px) {
+    .flex-1 {
+        margin-left: 280px; /* サイドバー幅より広い余白を設定 */
     }
 }
 </style>
