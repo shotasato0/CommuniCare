@@ -1,6 +1,6 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
-import { computed, watch, ref, defineEmits, defineProps } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
     user: Object,
@@ -45,10 +45,10 @@ const handleImageChange = (e) => {
             localErrorMessage.value =
                 "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
 
-            // 5秒後にエラーメッセージを自動的に消す処理
+            // 8秒後にエラーメッセージを自動的に消す処理
             setTimeout(() => {
                 localErrorMessage.value = null;
-            }, 5000);
+            }, 8000);
 
             return;
         }
@@ -85,10 +85,10 @@ const submit = () => {
             // 成功メッセージを設定
             localSuccessMessage.value = "プロフィール画像が更新されました";
 
-            // 5秒後にサクセスメッセージを自動的に消す
+            // 8秒後にサクセスメッセージを自動的に消す
             setTimeout(() => {
                 localSuccessMessage.value = null;
-            }, 5000);
+            }, 8000);
 
             // オーバーレイを閉じる
             emit("close");

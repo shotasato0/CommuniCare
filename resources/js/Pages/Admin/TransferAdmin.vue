@@ -27,7 +27,7 @@ const addFlashMessage = (message) => {
     flashMessages.value.push(message);
     setTimeout(() => {
         flashMessages.value.shift();
-    }, 3000);
+    }, 8000);
 };
 
 // 管理者権限の譲渡
