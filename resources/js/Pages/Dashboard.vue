@@ -14,13 +14,13 @@ const flashType = ref(
     flash.success ? "success" : flash.error ? "error" : "info"
 );
 
-// 3秒後にフラッシュメッセージをフェードアウトさせる
+// 8秒後にフラッシュメッセージをフェードアウトさせる
 const showFlashMessage = ref(true);
 onMounted(() => {
     if (flashMessage.value) {
         setTimeout(() => {
             showFlashMessage.value = false;
-        }, 3000);
+        }, 8000);
     }
 });
 

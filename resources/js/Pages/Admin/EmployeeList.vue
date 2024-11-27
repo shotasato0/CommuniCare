@@ -38,7 +38,7 @@ watchEffect(() => {
     if (flashMessage.value) {
         const timeout = setTimeout(() => {
             flashMessage.value = null;
-        }, 3000);
+        }, 8000);
 
         // クリーンアップでタイマーをクリア
         return () => clearTimeout(timeout);
