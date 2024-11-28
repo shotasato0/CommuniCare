@@ -103,13 +103,6 @@ export default {
     transition: width 0.3s ease-in-out; /* アニメーションを追加 */
 }
 
-/* iPadサイズ以上で余白を減らす */
-@media (min-width: 768px) and (max-width: 1024px) {
-    .sidebar {
-        width: 200px; /* 余白を減らす */
-    }
-}
-
 /* モバイルサイズでの設定 */
 @media (max-width: 767px) {
     .sidebar {
