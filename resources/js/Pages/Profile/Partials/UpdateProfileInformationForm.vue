@@ -211,6 +211,9 @@ const handleOpenIconEdit = () => {
                         {{ unit.name }}
                     </option>
                 </select>
+                <p class="text-sm text-gray-600 mt-2">
+                    {{ $t("By setting your unit, you can access the forum.") }}
+                </p>
             </div>
 
             <div>
