@@ -319,7 +319,7 @@ const isCommentAuthor = (comment) => {
             <div class="flex-1 max-w-4xl mx-auto p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h1
-                        class="text-xl font-bold cursor-pointer sm:hidden"
+                        class="text-xl font-bold cursor-pointer toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
@@ -626,6 +626,20 @@ const isCommentAuthor = (comment) => {
 @media (min-width: 1366px) {
     .flex-1 {
         margin-left: 280px; /* サイドバー幅より広い余白を設定 */
+    }
+}
+
+/* モバイルサイズのトグルボタン */
+@media (max-width: 767px) {
+    .toggle-button {
+        display: block; /* 767px以下でトグルボタンを表示 */
+    }
+}
+    
+/* デスクトップサイズのトグルボタン */
+@media (min-width: 768px) {
+    .toggle-button {
+        display: none; /* 768px以上では非表示 */
     }
 }
 </style>
