@@ -349,6 +349,7 @@ const isCommentAuthor = (comment) => {
                     v-if="selectedForumId"
                     :forum-id="Number(selectedForumId)"
                     class="mb-6"
+                    title="投稿"
                 />
 
                 <!-- 投稿一覧 -->
@@ -465,6 +466,7 @@ const isCommentAuthor = (comment) => {
                                     )
                                 "
                                 class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                                title="返信"
                             >
                                 <i class="bi bi-reply"></i>
                             </button>
@@ -485,6 +487,7 @@ const isCommentAuthor = (comment) => {
                                 "
                                 @click.prevent="deleteItem('post', post.id)"
                                 class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                                title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -503,6 +506,7 @@ const isCommentAuthor = (comment) => {
                                     ?.replyToName
                             "
                             class="mt-4"
+                            title="返信"
                         />
                     </div>
 
