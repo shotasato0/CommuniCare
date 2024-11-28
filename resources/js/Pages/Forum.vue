@@ -635,11 +635,18 @@ const isCommentAuthor = (comment) => {
         display: block; /* 767px以下でトグルボタンを表示 */
     }
 }
-    
+
 /* デスクトップサイズのトグルボタン */
 @media (min-width: 768px) {
     .toggle-button {
         display: none; /* 768px以上では非表示 */
+    }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+    .sidebar-mobile {
+        margin-top: 0 !important; /* この範囲ではmt-16を無効化 */
+        width: 50% !important;
     }
 }
 </style>
