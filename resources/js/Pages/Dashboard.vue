@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
+import { redirectToForum } from "@/Utils/redirectToForum";
 
 const { props } = usePage();
 const isAdmin = props.isAdmin;
@@ -24,6 +25,10 @@ onMounted(() => {
     }
 });
 
+const navigateToForum = () => {
+    redirectToForum(props.units, props.users, props.auth.user.unit_id);
+};
+
 console.log("User data:", props.auth.user);
 </script>
 
@@ -41,11 +46,20 @@ console.log("User data:", props.auth.user);
         <div class="py-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div v-if="!isGuest" class="p-6 text-gray-900">
-                        {{ $t("You're logged in") }}
-                    </div>
-                    <div v-else class="p-6 text-gray-900">
-                        {{ $t("Logged in as guest user") }}
+                    <div class="p-6 text-gray-900 flex items-center space-x-4">
+                        <div v-if="!isGuest">
+                            {{ $t("You're logged in") }}
+                        </div>
+                        <div v-else>
+                            {{ $t("Logged in as guest user") }}
+                        </div>
+                        <!-- 掲示板へのリンクボタン -->
+                        <button
+                            @click="navigateToForum"
+                            class="text-blue-500 link-hover"
+                        >
+                            {{ $t("Go to Forum") }}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -77,10 +91,15 @@ console.log("User data:", props.auth.user);
 </template>
 
 <style>
+.link-hover:hover {
+    color: #007bff;
+}
+
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.5s;
 }
+
 .fade-enter,
 .fade-leave-to {
     opacity: 0;
