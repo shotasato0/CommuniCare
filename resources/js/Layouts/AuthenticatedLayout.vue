@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { usePage, router } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import { redirectToForum } from "@/Utils/redirectToForum";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
@@ -31,50 +32,8 @@ const userUnitId = auth.user?.unit_id || null;
 console.log("Logged in user data:", auth.user);
 console.log("auth.user.unit_id:", userUnitId);
 
-const handleLogoClick = async () => {
-    try {
-        const response = await fetch(`/user-forum-id`, {
-            headers: {
-                Accept: "application/json",
-            },
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Failed to fetch forum ID");
-        }
-
-        const forumId = data.forum_id || null;
-
-        if (userUnitId) {
-            const unit = units.find((u) => u.id === userUnitId);
-            const unitUsers = users.filter(
-                (user) => user.unit_id === userUnitId
-            );
-
-            if (unit) {
-                sessionStorage.setItem(
-                    "selectedUnitUsers",
-                    JSON.stringify(unitUsers)
-                );
-                sessionStorage.setItem("selectedUnitName", unit.name);
-            }
-        } else {
-            console.warn("User does not belong to a unit.");
-        }
-
-        // 所属ユニットの掲示板に遷移して状態をリセット
-        if (forumId) {
-            router.get(route("forum.index", { forum_id: forumId }), {
-                preserveState: false,
-            });
-        } else {
-            console.warn("Forum ID not found. Navigation skipped.");
-        }
-    } catch (error) {
-        console.error("Error fetching user forum ID:", error);
-        alert(error.message); // エラーメッセージをアラートで表示
-    }
+const navigateToForum = () => {
+    redirectToForum(units, users, userUnitId);
 };
 
 // ゲストログアウト時の確認アラート
@@ -103,7 +62,7 @@ const confirmGuestLogout = (event) => {
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <div
-                                    @click="handleLogoClick"
+                                    @click="navigateToForum"
                                     class="cursor-pointer"
                                 >
                                     <ApplicationLogo
