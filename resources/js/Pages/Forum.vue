@@ -307,7 +307,7 @@ const isCommentAuthor = (comment) => {
             <ListForSidebar
                 :units="units"
                 :users="users"
-                class="sidebar-mobile p-4 lg:mt-16 lg:block"
+                class="sidebar-mobile p-4 sm:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
@@ -319,7 +319,7 @@ const isCommentAuthor = (comment) => {
             <div class="flex-1 max-w-4xl mx-auto p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h1
-                        class="text-xl font-bold cursor-pointer sm:hidden"
+                        class="text-xl font-bold cursor-pointer toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
@@ -349,6 +349,7 @@ const isCommentAuthor = (comment) => {
                     v-if="selectedForumId"
                     :forum-id="Number(selectedForumId)"
                     class="mb-6"
+                    title="投稿"
                 />
 
                 <!-- 投稿一覧 -->
@@ -465,6 +466,7 @@ const isCommentAuthor = (comment) => {
                                     )
                                 "
                                 class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                                title="返信"
                             >
                                 <i class="bi bi-reply"></i>
                             </button>
@@ -485,6 +487,7 @@ const isCommentAuthor = (comment) => {
                                 "
                                 @click.prevent="deleteItem('post', post.id)"
                                 class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                                title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -503,6 +506,7 @@ const isCommentAuthor = (comment) => {
                                     ?.replyToName
                             "
                             class="mt-4"
+                            title="返信"
                         />
                     </div>
 
@@ -535,7 +539,7 @@ const isCommentAuthor = (comment) => {
             <RightSidebar
                 :unit-users="selectedUnitUsers"
                 :unit-name="selectedUnitName"
-                class="p-4 lg:mt-16 lg:block"
+                class="p-4 lg:mt-16 sm:block"
                 @user-selected="onUserSelected"
             />
 
@@ -573,13 +577,15 @@ const isCommentAuthor = (comment) => {
 }
 
 /* モバイルサイズ用のスタイル（切り替え可能） */
-@media (max-width: 1024px) {
+@media (max-width: 767px) {
     .sidebar-mobile {
         width: 70%; /* モバイル時のサイドバー幅 */
         transform: translateX(-100%); /* デフォルトで非表示 */
         transition: transform 0.3s ease-in-out;
         z-index: 50;
-        background-color: #ffffff; /* サイドバーの背景色 */
+        background-color: #ffffff; /* 背景色 */
+        position: absolute;
+        height: 100%;
     }
     .sidebar-mobile.visible {
         transform: translateX(0); /* 表示 */
@@ -595,6 +601,56 @@ const isCommentAuthor = (comment) => {
         background-color: rgba(0, 0, 0, 0.5); /* 背景を半透明に */
         z-index: 40;
         transition: opacity 0.3s ease-in-out;
+    }
+}
+
+/* iPadサイズ専用（768px ～ 1024px） */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .sidebar-mobile {
+        width: 220px; /* iPadサイズではサイドバーを狭くする */
+    }
+
+    .flex-1 {
+        margin-left: 220px; /* サイドバーの幅分余白を調整 */
+    }
+}
+
+/* iPad Proサイズ以上（1024px以上） */
+@media (min-width: 1025px) {
+    .sidebar-mobile {
+        width: 250px; /* 通常のサイドバー幅 */
+    }
+
+    .flex-1 {
+        margin-left: 250px; /* 通常の余白 */
+    }
+}
+
+/* 全画面表示専用（デスクトップサイズ以上） */
+@media (min-width: 1366px) {
+    .flex-1 {
+        margin-left: 280px; /* サイドバー幅より広い余白を設定 */
+    }
+}
+
+/* モバイルサイズのトグルボタン */
+@media (max-width: 767px) {
+    .toggle-button {
+        display: block; /* 767px以下でトグルボタンを表示 */
+    }
+}
+
+/* デスクトップサイズのトグルボタン */
+@media (min-width: 768px) {
+    .toggle-button {
+        display: none; /* 768px以上では非表示 */
+    }
+}
+
+@media (min-width: 640px) and (max-width: 767px) {
+    .sidebar-mobile {
+        margin-top: 0 !important; /* この範囲ではmt-16を無効化 */
+        width: 50% !important;
     }
 }
 </style>
