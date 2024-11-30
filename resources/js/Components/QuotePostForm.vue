@@ -39,11 +39,11 @@ const submitQuotePost = () => {
 <template>
     <div
         v-if="show"
-        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
     >
-        <div class="bg-white p-4 rounded-lg shadow-md max-w-md w-full">
+        <div class="bg-white p-4 rounded shadow-md max-w-md w-full">
             <!-- 引用元の投稿表示 -->
-            <div class="border p-2 rounded-lg mb-4 bg-gray-100">
+            <div class="border p-2 rounded mb-4 bg-gray-100">
                 <h3 class="text-sm font-semibold text-gray-700">
                     引用元の投稿
                 </h3>
