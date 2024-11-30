@@ -363,7 +363,7 @@ const isCommentAuthor = (comment) => {
                             {{ formatDate(post.created_at) }}
                             <span
                                 v-if="post.user"
-                                class="flex items-center space-x-2"
+                                class="flex items-center space-x-4"
                             >
                                 <!-- ユーザーアイコンの表示 -->
                                 <img
@@ -374,21 +374,21 @@ const isCommentAuthor = (comment) => {
                                             : `/storage/${post.user.icon}`
                                     "
                                     alt="User Icon"
-                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
                                 <img
                                     v-else
                                     src="https://via.placeholder.com/40"
                                     alt="Default Icon"
-                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
 
                                 <!-- 投稿者名の表示 -->
                                 <span
                                     @click="openUserProfile(post)"
-                                    class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                    class="text-lg font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
                                 >
                                     ＠{{ post.user.name }}
                                 </span>
@@ -403,7 +403,7 @@ const isCommentAuthor = (comment) => {
                             class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
                         >
                             <div class="original-post">
-                                <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-4">
                                     <img
                                         v-if="post.quoted_post.user.icon"
                                         :src="
@@ -414,7 +414,7 @@ const isCommentAuthor = (comment) => {
                                                 : `/storage/${post.quoted_post.user.icon}`
                                         "
                                         alt="User Icon"
-                                        class="w-6 h-6 rounded-full cursor-pointer mb-1"
+                                        class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                         @click="
                                             openUserProfile(post.quoted_post)
                                         "
@@ -423,7 +423,7 @@ const isCommentAuthor = (comment) => {
                                         v-else
                                         src="https://via.placeholder.com/40"
                                         alt="Default Icon"
-                                        class="w-6 h-6 rounded-full cursor-pointer"
+                                        class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                         @click="
                                             openUserProfile(post.quoted_post)
                                         "
@@ -432,7 +432,7 @@ const isCommentAuthor = (comment) => {
                                         @click="
                                             openUserProfile(post.quoted_post)
                                         "
-                                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                        class="hover:bg-blue-100 p-1 rounded cursor-pointer"
                                     >
                                         ＠{{ post.quoted_post.user.name }}
                                     </span>
