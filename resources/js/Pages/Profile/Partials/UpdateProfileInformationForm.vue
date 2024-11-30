@@ -203,6 +203,12 @@ const handleOpenIconEdit = () => {
                     id="unit_id"
                     class="w-full border border-gray-300 p-2 rounded"
                 >
+                    <!-- プレースホルダー（選択を促す） -->
+                    <option value="" disabled hidden>
+                        {{ $t("Select your unit") }}
+                    </option>
+
+                    <!-- 部署リスト -->
                     <option
                         v-for="unit in units"
                         :key="unit.id"
