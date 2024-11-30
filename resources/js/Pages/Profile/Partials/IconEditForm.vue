@@ -94,8 +94,13 @@ const submit = () => {
             emit("close");
         },
         onError: (errors) => {
-            console.log("アイコン更新エラー", errors);
-            localErrorMessage.value = "アイコン更新に失敗しました";
+            console.log("プロフィール画像更新エラー", errors);
+
+            if (errors.icon) {
+                localErrorMessage.value = errors.icon;
+            } else {
+                localErrorMessage.value = "プロフィール画像の更新に失敗しました";
+            }
         },
     });
 };
