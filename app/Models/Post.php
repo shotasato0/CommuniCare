@@ -35,7 +35,7 @@ class Post extends Model
     // 引用元の投稿へのリレーション
     public function quotedPost()
     {
-        return $this->belongsTo(Post::class, 'quoted_post_id');
+        return $this->belongsTo(Post::class, 'quoted_post_id')->withTrashed();
     }
 }
 
