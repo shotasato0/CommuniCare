@@ -52,7 +52,18 @@ public function destroy($id)
         $post->forceDelete();
     });
 
-    return redirect()->route('forum.index')->with('message', '投稿が削除されました');
+    // 最新の投稿データを取得
+    $forumId = request('forum_id');
+    $posts = Post::where('forum_id', $forumId)
+        ->with(['user', 'quotedPost', 'comments'])
+        ->latest()
+        ->paginate(5);
+
+    return Inertia::render('Forum', [
+        'posts' => $posts,
+        'selectedForumId' => $forumId,
+    ]);
 }
+
 
 }
