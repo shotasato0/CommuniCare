@@ -32,28 +32,9 @@ const search = ref(pageProps.search || ""); // 検索結果の表示状態
 const quotedPost = ref(null);
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
-console.log(
-    "quoted_post_deleted for post 0:",
-    pageProps.posts.data[0].quoted_post_deleted
-);
-
-pageProps.posts.data.forEach((post, index) => {
-    console.log(
-        `Post ${index} - quoted_post_deleted:`,
-        post.quoted_post_deleted
-    );
-});
-
 const quotePost = (post) => {
-    console.log("quotePost called with:", post); // 確認用ログ
     quotedPost.value = post; // post全体をセットする
     showPostForm.value = true;
-    console.log("quotedPost.value:", quotedPost.value);
-    console.log(
-        "quotedPost.value.quoted_post_deleted:",
-        quotedPost.value.quoted_post_deleted
-    );
-    console.log("showPostForm.value:", showPostForm.value);
 };
 
 // マウント時にselectedForumIdを設定
@@ -276,11 +257,6 @@ const handleCommentDeletion = (commentId) => {
 
         // Vueに変更を通知
         posts.value.data[postIndex].comments = [...comments];
-
-        console.log(
-            "削除後のコメントデータ:",
-            posts.value.data[postIndex].comments
-        );
     } else {
         console.error("削除対象のコメントが見つかりませんでした。");
     }
