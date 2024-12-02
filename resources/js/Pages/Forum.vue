@@ -417,25 +417,21 @@ const isCommentAuthor = (comment) => {
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
 
                         <!-- 引用投稿がある場合の表示 -->
-                        <div
-                            v-if="post.quoted_post"
-                            class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
-                        >
-                            <div class="original-post">
-                                <!-- デバッグ用 -->
-                                <p>
-                                    quoted_post_deleted:
-                                    {{ post.quoted_post_deleted }}
+                        <div>
+                            <!-- 削除済みの場合 -->
+                            <template v-if="post.quoted_post_deleted === 1">
+                                <p
+                                    class="text-gray-500 italic mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                >
+                                    引用元の投稿は削除されました
                                 </p>
-                                <!-- 削除済みの場合 -->
-                                <template v-if="post.quoted_post_deleted">
-                                    <p class="text-gray-500 italic">
-                                        引用元の投稿は削除されました
-                                        </p>
-                                    </template>
+                            </template>
 
-                                    <!-- 削除されていない場合 -->
-                                <template v-else>
+                            <!-- 削除されていない場合 -->
+                            <template v-else-if="post.quoted_post">
+                                <div
+                                    class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                >
                                     <div class="flex items-center space-x-4">
                                         <img
                                             v-if="
@@ -488,8 +484,8 @@ const isCommentAuthor = (comment) => {
                                     <p class="text-sm mb-2">
                                         {{ post.quoted_post.message }}
                                     </p>
-                                </template>
-                            </div>
+                                </div>
+                            </template>
                         </div>
 
                         <p class="mb-2">{{ post.message }}</p>
