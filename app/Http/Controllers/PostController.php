@@ -44,25 +44,27 @@ public function destroy($id)
         // 削除対象の投稿を取得
         $post = Post::findOrFail($id);
 
-        // 削除対象の投稿を引用している投稿を更新
+        // 削除対象の投稿を引用している投稿を取得
+        $affectedPosts = Post::where('quoted_post_id', $post->id)->get();
+        
+        // デバッグ: 更新前の状態を確認
+        \Log::info('Before update:', ['affectedPosts' => $affectedPosts->toArray()]);
+
+        // 引用投稿のフラグを更新
         Post::where('quoted_post_id', $post->id)
             ->update(['quoted_post_deleted' => true]);
+
+        // 更新後の投稿を取得
+        $updatedPosts = Post::where('quoted_post_id', $post->id)->get();
+
+        // デバッグ: 更新後の状態を確認
+        \Log::info('After update:', ['updatedPosts' => $updatedPosts->toArray()]);
 
         // 削除対象の投稿を削除
         $post->forceDelete();
     });
 
-    // 最新の投稿データを取得
-    $forumId = request('forum_id');
-    $posts = Post::where('forum_id', $forumId)
-        ->with(['user', 'quotedPost', 'comments'])
-        ->latest()
-        ->paginate(5);
-
-    return Inertia::render('Forum', [
-        'posts' => $posts,
-        'selectedForumId' => $forumId,
-    ]);
+    return app(ForumController::class)->index(request());
 }
 
 
