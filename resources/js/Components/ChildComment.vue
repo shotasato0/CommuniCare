@@ -17,10 +17,13 @@ const props = defineProps({
     <div v-if="childComments.length">
         <div v-for="comment in childComments" :key="comment.id" class="mb-4">
             <div class="ml-4 mb-2 pl-2">
-                <p class="text-xs flex items-center space-x-2">
+                <!-- 日付 -->
+                <p class="text-xs text-gray-500">
                     {{ formatDate(comment.created_at) }}
+                </p>
 
-                    <!-- ユーザーアイコンの表示 -->
+                <!-- プロフィール画像とユーザー名 -->
+                <div class="flex items-center space-x-2 mt-1">
                     <img
                         v-if="comment.user && comment.user.icon"
                         :src="
@@ -29,28 +32,29 @@ const props = defineProps({
                                 : `/storage/${comment.user.icon}`
                         "
                         alt="User Icon"
-                        class="w-6 h-6 rounded-full cursor-pointer"
+                        class="w-6 h-6 rounded-full cursor-pointer border border-gray-300"
                         @click="openUserProfile(comment)"
                     />
                     <img
                         v-else
                         src="https://via.placeholder.com/40"
                         alt="Default Icon"
-                        class="w-6 h-6 rounded-full cursor-pointer"
+                        class="w-6 h-6 rounded-full cursor-pointer border border-gray-300"
                         @click="openUserProfile(comment)"
                     />
 
-                    <!-- 投稿者名の表示 -->
                     <span
                         v-if="comment.user"
                         @click="openUserProfile(comment)"
-                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                        class="hover:bg-blue-300 p-1 rounded cursor-pointer text-sm font-semibold"
                     >
-                        @{{ comment.user.name }}
+                        ＠{{ comment.user.name }}
                     </span>
-                    <span v-else>＠Unknown</span>
-                </p>
-                <p>{{ comment.message }}</p>
+                    <span v-else class="italic text-sm">＠Unknown</span>
+                </div>
+
+                <!-- コメント本文 -->
+                <p class="mt-2">{{ comment.message }}</p>
 
                 <div class="flex justify-end space-x-2 mt-2">
                     <!-- 返信ボタン -->
