@@ -82,7 +82,7 @@ const getCommentCountRecursive = (comments) => {
                 </div>
 
                 <!-- コメント本文 -->
-                <p class="text-sm mt-3">{{ comment.message }}</p>
+                <p class="mt-3">{{ comment.message }}</p>
 
                 <!-- 子コメント -->
                 <div
@@ -91,7 +91,7 @@ const getCommentCountRecursive = (comments) => {
                 >
                     <button
                         @click="toggleCollapse(comment.id)"
-                        class="text-blue-500 text-sm flex items-center"
+                        class="text-blue-500 text-lg flex items-center link-hover"
                     >
                         <i
                             :class="
@@ -121,7 +121,7 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer flex items-center text-sm"
+                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer flex items-center"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
@@ -130,7 +130,7 @@ const getCommentCountRecursive = (comments) => {
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="deleteItem('comment', comment.id)"
-                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center text-sm"
+                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center"
                         title="コメント削除"
                     >
                         <i class="bi bi-trash"></i>
