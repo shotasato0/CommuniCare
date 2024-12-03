@@ -457,14 +457,16 @@ const isCommentAuthor = (comment) => {
                                     <p class="text-sm mb-2 font-bold">
                                         {{ post.quoted_post.title }}
                                     </p>
-                                    <p class="text-sm mb-2">
+                                    <p class="text-sm mb-2 whitespace-pre-wrap">
                                         {{ post.quoted_post.message }}
                                     </p>
                                 </div>
                             </template>
                         </div>
 
-                        <p class="mb-2">{{ post.message }}</p>
+                        <p class="mb-2 whitespace-pre-wrap">
+                            {{ post.message }}
+                        </p>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
