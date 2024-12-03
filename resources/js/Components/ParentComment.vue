@@ -144,8 +144,9 @@ const getCommentCountRecursive = (comments) => {
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :replyToName="comment.parent_id ? comment.user?.name : ''"
+                    :replyToName="comment.user?.name || ''"
                     class="mt-4"
+                    title="返信"
                 />
 
                 <!-- 子コメント表示 -->
