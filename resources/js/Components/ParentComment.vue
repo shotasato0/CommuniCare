@@ -39,11 +39,19 @@ const getCommentCountRecursive = (comments) => {
 
 <template>
     <div v-if="comments.length">
-        <div v-for="comment in comments" :key="comment.id" class="mb-4">
-            <div class="ml-4 mb-2 border-l-2 border-gray-300 pl-2">
-                <p class="text-xs flex items-center space-x-2">
+        <div
+            v-for="comment in comments"
+            :key="comment.id"
+            class="mb-6 bg-white rounded-md shadow-md p-4"
+        >
+            <div>
+                <!-- 日付 -->
+                <p class="text-xs text-gray-500">
                     {{ formatDate(comment.created_at) }}
-                    <!-- ユーザーアイコンを追加 -->
+                </p>
+
+                <!-- 投稿者名 -->
+                <div class="flex items-center space-x-2 mt-1">
                     <img
                         v-if="comment.user && comment.user.icon"
                         :src="
@@ -52,55 +60,51 @@ const getCommentCountRecursive = (comments) => {
                                 : `/storage/${comment.user.icon}`
                         "
                         alt="User Icon"
-                        class="w-6 h-6 rounded-full cursor-pointer"
+                        class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
                     />
                     <img
                         v-else
                         src="https://via.placeholder.com/40"
                         alt="Default Icon"
-                        class="w-6 h-6 rounded-full cursor-pointer"
+                        class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
                     />
 
-                    <!-- 投稿者名の表示 -->
                     <span
                         v-if="comment.user"
                         @click="openUserProfile(comment)"
-                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                        class="hover:bg-blue-100 p-1 rounded cursor-pointer font-semibold text-sm"
                     >
                         ＠{{ comment.user.name }}
                     </span>
-                    <span v-else>＠Unknown</span>
-                </p>
-                <p>{{ comment.message }}</p>
+                    <span v-else class="italic text-sm">＠Unknown</span>
+                </div>
 
-                <!-- 子コメントの数を表示し、折りたたみ機能を追加 -->
+                <!-- コメント本文 -->
+                <p class="text-sm mt-3">{{ comment.message }}</p>
+
+                <!-- 子コメント -->
                 <div
                     v-if="comment.children && comment.children.length > 0"
-                    class="mt-2"
+                    class="mt-4"
                 >
-                    <!-- メッセージの件数を表示 -->
                     <button
                         @click="toggleCollapse(comment.id)"
-                        class="text-blue-500"
+                        class="text-blue-500 text-sm flex items-center"
                     >
-                        <!-- 折りたたみ状態に応じてアイコンとテキストを切り替える -->
-                        <span v-if="collapsedComments[comment.id]">
-                            <i class="bi bi-caret-up-fill"></i>
-                            {{
-                                getCommentCountRecursive(comment.children)
-                            }}件の返信
-                        </span>
-                        <span v-else>
-                            <i class="bi bi-caret-down-fill"></i>
-                            {{
-                                getCommentCountRecursive(comment.children)
-                            }}件の返信
-                        </span>
+                        <i
+                            :class="
+                                collapsedComments[comment.id]
+                                    ? 'bi bi-caret-up-fill'
+                                    : 'bi bi-caret-down-fill'
+                            "
+                        ></i>
+                        {{ getCommentCountRecursive(comment.children) }}件の返信
                     </button>
                 </div>
 
+                <!-- ボタンを投稿下部右揃えに配置 -->
                 <div class="flex justify-end space-x-2 mt-2">
                     <LikeButton
                         :likeable-id="comment.id"
@@ -117,18 +121,17 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer flex items-center text-sm"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
                     </button>
-
-                    <!-- コメント削除ボタン -->
+                    <!-- コメント削除 -->
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="deleteItem('comment', comment.id)"
-                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
-                        title="コメントの削除"
+                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center text-sm"
+                        title="コメント削除"
                     >
                         <i class="bi bi-trash"></i>
                     </button>
@@ -145,14 +148,14 @@ const getCommentCountRecursive = (comments) => {
                     class="mt-4"
                 />
 
-                <!-- 子コメントを折りたたみ・展開 -->
+                <!-- 子コメント表示 -->
                 <div
                     v-if="
                         comment.children &&
-                        comment.children.length &&
+                        comment.children.length > 0 &&
                         collapsedComments[comment.id]
                     "
-                    class="ml-4"
+                    class="mt-4 ml-4 border-l-2 border-gray-300 pl-2"
                 >
                     <ChildComment
                         :child-comments="comment.children"
