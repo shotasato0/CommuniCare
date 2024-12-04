@@ -37,9 +37,29 @@ class PostController extends Controller
     }
 }
 
-    public function destroy($id)
-    {
-        Post::findOrFail($id)->forceDelete();
-        return redirect()->route('forum.index');
-    }
+public function destroy($id)
+{
+    // トランザクションを利用して整合性を確保
+    \DB::transaction(function () use ($id) {
+        // 削除対象の投稿を取得
+        $post = Post::findOrFail($id);
+
+        // 削除対象の投稿を引用している投稿を取得
+        $affectedPosts = Post::where('quoted_post_id', $post->id)->get();
+
+        // 引用投稿のフラグを更新
+        Post::where('quoted_post_id', $post->id)
+            ->update(['quoted_post_deleted' => true]);
+
+        // 更新後の投稿を取得
+        $updatedPosts = Post::where('quoted_post_id', $post->id)->get();
+
+        // 削除対象の投稿を削除
+        $post->forceDelete();
+    });
+
+    return app(ForumController::class)->index(request());
+}
+
+
 }
