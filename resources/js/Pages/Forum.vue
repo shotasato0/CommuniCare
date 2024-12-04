@@ -33,11 +33,8 @@ const quotedPost = ref(null);
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
 const quotePost = (post) => {
-    console.log("quotePost called with:", post); // 確認用ログ
     quotedPost.value = post; // post全体をセットする
     showPostForm.value = true;
-    console.log("quotedPost.value:", quotedPost.value);
-    console.log("showPostForm.value:", showPostForm.value);
 };
 
 // マウント時にselectedForumIdを設定
@@ -208,62 +205,60 @@ const deleteItem = (type, id) => {
                 "X-CSRF-TOKEN": getCsrfToken(),
             },
             onSuccess: () => {
+                console.log("削除成功");
+
                 if (type === "post") {
-                    // 投稿を削除したら、postIdで該当の投稿をフィルタリングして削除
+                    // 投稿を削除したら、`posts`を更新
                     posts.value.data = posts.value.data.filter(
                         (post) => post.id !== id
                     );
                 } else {
-                    // コメントの削除処理
-                    const postIndex = posts.value.data.findIndex((post) =>
-                        findCommentRecursive(post.comments, id)
-                    );
-
-                    console.log("postIndex:", postIndex); // postIndexが-1かどうかを確認
-
-                    if (postIndex !== -1) {
-                        let comments = posts.value.data[postIndex].comments;
-
-                        // 再帰的にコメントを削除
-                        const deleteCommentRecursive = (comments, id) => {
-                            for (let i = 0; i < comments.length; i++) {
-                                if (comments[i].id === id) {
-                                    comments.splice(i, 1); // 削除対象のコメントを配列から削除
-                                    return;
-                                }
-                                if (
-                                    comments[i].children &&
-                                    comments[i].children.length > 0
-                                ) {
-                                    deleteCommentRecursive(
-                                        comments[i].children,
-                                        id
-                                    ); // 子コメントがあれば再帰的に削除
-                                }
-                            }
-                        };
-
-                        deleteCommentRecursive(comments, id); // 削除処理の実行
-
-                        // 手動でVueに変更を知らせる
-                        posts.value.data[postIndex].comments = [...comments];
-
-                        // 削除後のコメントデータを確認
-                        console.log(
-                            "削除後のコメントデータ:",
-                            posts.value.data[postIndex].comments
-                        );
-                    } else {
-                        console.error(
-                            "削除対象のコメントが見つかりませんでした。"
-                        );
-                    }
+                    // コメント削除
+                    handleCommentDeletion(id);
                 }
+
+                // フォーラムを再描画するためリダイレクト
+                router.get(route("forum.index"), {
+                    preserveState: false,
+                    preserveScroll: true,
+                });
             },
             onError: (errors) => {
-                console.error("削除に失敗しました:", errors);
+                console.error("削除失敗:", errors);
+                alert("削除に失敗しました。もう一度お試しください。");
             },
         });
+    }
+};
+
+// コメント削除を処理する関数
+const handleCommentDeletion = (commentId) => {
+    const postIndex = posts.value.data.findIndex((post) =>
+        findCommentRecursive(post.comments, commentId)
+    );
+
+    if (postIndex !== -1) {
+        const comments = posts.value.data[postIndex].comments;
+
+        // 再帰的にコメントを削除
+        const deleteCommentRecursive = (comments, id) => {
+            for (let i = 0; i < comments.length; i++) {
+                if (comments[i].id === id) {
+                    comments.splice(i, 1); // コメント削除
+                    return;
+                }
+                if (comments[i].children && comments[i].children.length > 0) {
+                    deleteCommentRecursive(comments[i].children, id); // 子コメント削除
+                }
+            }
+        };
+
+        deleteCommentRecursive(comments, commentId);
+
+        // Vueに変更を通知
+        posts.value.data[postIndex].comments = [...comments];
+    } else {
+        console.error("削除対象のコメントが見つかりませんでした。");
     }
 };
 
@@ -374,21 +369,21 @@ const isCommentAuthor = (comment) => {
                                             : `/storage/${post.user.icon}`
                                     "
                                     alt="User Icon"
-                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
                                 <img
                                     v-else
                                     src="https://via.placeholder.com/40"
                                     alt="Default Icon"
-                                    class="w-6 h-6 rounded-full cursor-pointer"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
 
                                 <!-- 投稿者名の表示 -->
                                 <span
                                     @click="openUserProfile(post)"
-                                    class="hover:bg-blue-300 p-1 rounded cursor-pointer"
+                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
                                 >
                                     ＠{{ post.user.name }}
                                 </span>
@@ -398,55 +393,80 @@ const isCommentAuthor = (comment) => {
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
 
                         <!-- 引用投稿がある場合の表示 -->
-                        <div
-                            v-if="post.quoted_post"
-                            class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
-                        >
-                            <div class="original-post">
-                                <div class="flex items-center space-x-2">
-                                    <img
-                                        v-if="post.quoted_post.user.icon"
-                                        :src="
-                                            post.quoted_post.user.icon.startsWith(
-                                                '/storage/'
-                                            )
-                                                ? post.quoted_post.user.icon
-                                                : `/storage/${post.quoted_post.user.icon}`
-                                        "
-                                        alt="User Icon"
-                                        class="w-6 h-6 rounded-full cursor-pointer mb-1"
-                                        @click="
-                                            openUserProfile(post.quoted_post)
-                                        "
-                                    />
-                                    <img
-                                        v-else
-                                        src="https://via.placeholder.com/40"
-                                        alt="Default Icon"
-                                        class="w-6 h-6 rounded-full cursor-pointer"
-                                        @click="
-                                            openUserProfile(post.quoted_post)
-                                        "
-                                    />
-                                    <span
-                                        @click="
-                                            openUserProfile(post.quoted_post)
-                                        "
-                                        class="hover:bg-blue-300 p-1 rounded cursor-pointer"
-                                    >
-                                        ＠{{ post.quoted_post.user.name }}
-                                    </span>
+                        <div>
+                            <!-- 削除済みの場合 -->
+                            <template v-if="post.quoted_post_deleted === 1">
+                                <p
+                                    class="text-gray-500 italic mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                >
+                                    引用元の投稿は削除されました
+                                </p>
+                            </template>
+
+                            <!-- 削除されていない場合 -->
+                            <template v-else-if="post.quoted_post">
+                                <div
+                                    class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                >
+                                    <div class="flex items-center space-x-2">
+                                        <img
+                                            v-if="
+                                                post.quoted_post.user &&
+                                                post.quoted_post.user.icon
+                                            "
+                                            :src="
+                                                post.quoted_post.user.icon.startsWith(
+                                                    '/storage/'
+                                                )
+                                                    ? post.quoted_post.user.icon
+                                                    : `/storage/${post.quoted_post.user.icon}`
+                                            "
+                                            alt="User Icon"
+                                            class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            @click="
+                                                openUserProfile(
+                                                    post.quoted_post
+                                                )
+                                            "
+                                        />
+                                        <img
+                                            v-else
+                                            src="https://via.placeholder.com/40"
+                                            alt="Default Icon"
+                                            class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            @click="
+                                                openUserProfile(
+                                                    post.quoted_post
+                                                )
+                                            "
+                                        />
+                                        <span
+                                            @click="
+                                                openUserProfile(
+                                                    post.quoted_post
+                                                )
+                                            "
+                                            class="hover:bg-blue-100 p-1 rounded cursor-pointer text-sm"
+                                        >
+                                            ＠{{
+                                                post.quoted_post.user?.name ||
+                                                "Unknown"
+                                            }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sm mb-2 font-bold">
+                                        {{ post.quoted_post.title }}
+                                    </p>
+                                    <p class="text-sm mb-2 whitespace-pre-wrap">
+                                        {{ post.quoted_post.message }}
+                                    </p>
                                 </div>
-                                <p class="text-sm mb-2 font-bold">
-                                    {{ post.quoted_post.title }}
-                                </p>
-                                <p class="text-sm mb-2">
-                                    {{ post.quoted_post.message }}
-                                </p>
-                            </div>
+                            </template>
                         </div>
 
-                        <p class="mb-2">{{ post.message }}</p>
+                        <p class="mb-2 whitespace-pre-wrap">
+                            {{ post.message }}
+                        </p>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">

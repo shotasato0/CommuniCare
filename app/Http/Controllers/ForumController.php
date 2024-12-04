@@ -75,7 +75,14 @@ class ForumController extends Controller
                 'user' => $post->user,
                 'like_count' => $post->likes_count, // 投稿のいいね数
                 'is_liked_by_user' => $post->likes->isNotEmpty(), // ユーザーが投稿にいいねしているか
-                'quoted_post' => $post->quotedPost, // 引用元の投稿データ
+                'quoted_post_deleted' => $post->quoted_post_deleted, // 投稿データのフラグをそのまま使用
+                // 引用元の投稿データを取得
+                'quoted_post' => $post->quotedPost ? [
+                    'id' => $post->quotedPost->id,
+                    'message' => $post->quotedPost->trashed() ? null : $post->quotedPost->message,
+                    'title' => $post->quotedPost->trashed() ? null : $post->quotedPost->title,
+                    'user' => $post->quotedPost->trashed() ? null : $post->quotedPost->user,
+                ] : null,
                 'comments' => $post->comments->map(function ($comment) use ($user) {
                     return [
                         'id' => $comment->id,
@@ -97,6 +104,8 @@ class ForumController extends Controller
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
+            // デバッグ用ログ
+            'debugPosts' => $posts->toArray(),
         ]);
     }
 }
