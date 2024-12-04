@@ -2,7 +2,6 @@
 import { ref, onMounted, watch } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
 import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
@@ -14,6 +13,7 @@ import ListForSidebar from "./Unit/ListForSidebar.vue";
 import RightSidebar from "./Unit/RightSidebar.vue";
 import LikeButton from "@/Components/LikeButton.vue";
 import QuotePostForm from "@/Components/QuotePostForm.vue";
+import { formatDate } from "@/Utils/dateUtils";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -164,8 +164,6 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
         !commentFormVisibility.value[postId][parentId].isVisible;
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
-
-const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
 
 // 再帰的にコメントを検索する関数
 const findCommentRecursive = (comments, commentId) => {
