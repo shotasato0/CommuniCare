@@ -14,6 +14,10 @@ import RightSidebar from "./Unit/RightSidebar.vue";
 import LikeButton from "@/Components/LikeButton.vue";
 import QuotePostForm from "@/Components/QuotePostForm.vue";
 import { formatDate } from "@/Utils/dateUtils";
+import {
+    findCommentRecursive,
+    deleteCommentRecursive,
+} from "@/Utils/commentUtils";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -165,25 +169,6 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
-// 再帰的にコメントを検索する関数
-const findCommentRecursive = (comments, commentId) => {
-    for (let i = 0; i < comments.length; i++) {
-        if (comments[i].id === commentId) {
-            return comments[i]; // 削除対象のコメントを見つけた場合に返す
-        }
-        if (comments[i].children && comments[i].children.length > 0) {
-            const foundComment = findCommentRecursive(
-                comments[i].children,
-                commentId
-            );
-            if (foundComment) {
-                return foundComment;
-            }
-        }
-    }
-    return null;
-};
-
 const deleteItem = (type, id) => {
     const confirmMessage =
         type === "post"
@@ -233,25 +218,17 @@ const handleCommentDeletion = (commentId) => {
     if (postIndex !== -1) {
         const comments = posts.value.data[postIndex].comments;
 
-        // 再帰的にコメントを削除
-        const deleteCommentRecursive = (comments, id) => {
-            for (let i = 0; i < comments.length; i++) {
-                if (comments[i].id === id) {
-                    comments.splice(i, 1); // コメント削除
-                    return;
-                }
-                if (comments[i].children && comments[i].children.length > 0) {
-                    deleteCommentRecursive(comments[i].children, id); // 子コメント削除
-                }
-            }
-        };
+        const deleted = deleteCommentRecursive(comments, commentId);
 
-        deleteCommentRecursive(comments, commentId);
-
-        // Vueに変更を通知
-        posts.value.data[postIndex].comments = [...comments];
+        if (deleted) {
+            // Vueに変更を通知
+            posts.value.data[postIndex].comments = [...comments];
+            console.log(`コメント削除成功: ${commentId}`);
+        } else {
+            console.error(`コメント削除に失敗しました: ${commentId}`);
+        }
     } else {
-        console.error("削除対象のコメントが見つかりませんでした。");
+        console.error(`削除対象のコメントが見つかりませんでした: ${commentId}`);
     }
 };
 
