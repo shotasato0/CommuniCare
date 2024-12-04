@@ -125,11 +125,6 @@ const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
 
-// 投稿を選択する関数
-const selectPost = (post) => {
-    selectedPost.value = post;
-};
-
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
     console.log("sidebarVisible.value:", sidebarVisible.value);
