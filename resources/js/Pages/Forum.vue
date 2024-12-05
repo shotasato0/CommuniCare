@@ -19,6 +19,7 @@ import {
     deleteCommentRecursive,
 } from "@/Utils/commentUtils";
 import { restoreSelectedUnit } from "@/Utils/sessionUtils";
+import { initSelectedForumId } from "@/Utils/initUtils";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -43,8 +44,8 @@ const quotePost = (post) => {
 };
 
 onMounted(() => {
-    // マウント時にselectedForumIdを設定
-    selectedForumId.value = pageProps.selectedForumId;
+    // マウント時にselectedForumIdを初期化
+    initSelectedForumId(selectedForumId, pageProps);
     // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 });
