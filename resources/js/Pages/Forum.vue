@@ -20,6 +20,7 @@ import {
 } from "@/Utils/commentUtils";
 import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
+import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -52,12 +53,7 @@ onMounted(() => {
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
 watch(selectedForumId, (newForumId) => {
-    if (newForumId) {
-        router.get(route("forum.index", { forum_id: newForumId }), {
-            preserveState: true,
-            only: ["posts"],
-        });
-    }
+    fetchPostsByForumId(router, newForumId);
 });
 
 // サイドバーのユーザー選択イベントを受け取る関数
