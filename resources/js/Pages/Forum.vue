@@ -18,6 +18,7 @@ import {
     findCommentRecursive,
     deleteCommentRecursive,
 } from "@/Utils/commentUtils";
+import { restoreSelectedUnitUsers } from "@/Utils/sessionUtils";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -46,24 +47,9 @@ onMounted(() => {
     selectedForumId.value = pageProps.selectedForumId;
 });
 
+// マウント時に選択されたユニットのユーザーと名前を復元
 onMounted(() => {
-    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
-
-    // `storedUsers`がnullや"undefined"ではなく、有効なJSONかをチェック
-    if (storedUsers && storedUsers !== "undefined") {
-        try {
-            selectedUnitUsers.value = JSON.parse(storedUsers);
-        } catch (error) {
-            console.error("Error parsing selectedUnitUsers:", error);
-            selectedUnitUsers.value = []; // パースエラー時には空配列を代入
-        }
-    } else {
-        selectedUnitUsers.value = []; // nullまたは"undefined"の場合は空配列を代入
-    }
-
-    // 保存されたユニット名を復元
-    const storedUnitName = sessionStorage.getItem("selectedUnitName");
-    selectedUnitName.value = storedUnitName || ""; // nullの場合は空文字列を代入
+    restoreSelectedUnitUsers(selectedUnitUsers, selectedUnitName);
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
