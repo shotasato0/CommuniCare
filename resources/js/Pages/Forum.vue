@@ -2,34 +2,49 @@
 import { ref, onMounted, watch } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import dayjs from "dayjs";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
-import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
+import ParentComment from "@/Components/ParentComment.vue";
 import Pagination from "@/Components/Pagination.vue";
-import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
 import RightSidebar from "./Unit/RightSidebar.vue";
 import LikeButton from "@/Components/LikeButton.vue";
 import QuotePostForm from "@/Components/QuotePostForm.vue";
+import { formatDate } from "@/Utils/dateUtils";
+import {
+    findCommentRecursive,
+    deleteCommentRecursive,
+} from "@/Utils/commentUtils";
+import { restoreSelectedUnit } from "@/Utils/sessionUtils";
+import { initSelectedForumId } from "@/Utils/initUtils";
+import { fetchPostsByForumId } from "@/Utils/fetchPosts";
+import { deleteItem } from "@/Utils/deleteItem";
+
+// props を構造分解して取得
+const {
+    posts: initialPosts = { data: [], links: [] }, // 投稿のデータ
+    auth, // ログインユーザー情報
+    units: initialUnits = [], // 部署のデータ
+    users: initialUsers = [], // ユーザーのデータ
+    selectedForumId: forumIdFromProps = null, // 選択された掲示板のID
+    search: initialSearch = "", // 検索結果の表示状態
+} = usePage().props;
 
 // propsからページのデータを取得
-const pageProps = usePage().props; // ページのデータ
-const posts = ref(pageProps.posts || { data: [], links: [] }); // 投稿のデータ
-const auth = pageProps.auth; // ログインユーザー情報
-const units = ref(pageProps.units || []); // 部署のデータ
+const posts = ref(initialPosts); // 投稿のデータ
+const units = ref(initialUnits); // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
-const users = pageProps.users || []; // ユーザーのデータ
+const users = ref(initialUsers); // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
-const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+const selectedForumId = ref(forumIdFromProps); // 選択された掲示板のID
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
-const search = ref(pageProps.search || ""); // 検索結果の表示状態
-const quotedPost = ref(null);
+const search = ref(initialSearch); // 検索結果の表示状態
+const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
 const quotePost = (post) => {
@@ -37,39 +52,16 @@ const quotePost = (post) => {
     showPostForm.value = true;
 };
 
-// マウント時にselectedForumIdを設定
 onMounted(() => {
-    selectedForumId.value = pageProps.selectedForumId;
-});
-
-onMounted(() => {
-    const storedUsers = sessionStorage.getItem("selectedUnitUsers");
-
-    // `storedUsers`がnullや"undefined"ではなく、有効なJSONかをチェック
-    if (storedUsers && storedUsers !== "undefined") {
-        try {
-            selectedUnitUsers.value = JSON.parse(storedUsers);
-        } catch (error) {
-            console.error("Error parsing selectedUnitUsers:", error);
-            selectedUnitUsers.value = []; // パースエラー時には空配列を代入
-        }
-    } else {
-        selectedUnitUsers.value = []; // nullまたは"undefined"の場合は空配列を代入
-    }
-
-    // 保存されたユニット名を復元
-    const storedUnitName = sessionStorage.getItem("selectedUnitName");
-    selectedUnitName.value = storedUnitName || ""; // nullの場合は空文字列を代入
+    // マウント時にselectedForumIdを初期化
+    initSelectedForumId(selectedForumId);
+    // マウント時に選択されたユニットのユーザーと名前を復元
+    restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
 watch(selectedForumId, (newForumId) => {
-    if (newForumId) {
-        router.get(route("forum.index", { forum_id: newForumId }), {
-            preserveState: true,
-            only: ["posts"],
-        });
-    }
+    fetchPostsByForumId(router, newForumId);
 });
 
 // サイドバーのユーザー選択イベントを受け取る関数
@@ -82,30 +74,27 @@ const onUserSelected = (user) => {
 // ユニット選択イベント
 const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
-    if (unit && unit.forum) {
-        selectedForumId.value = unit.forum.id;
-        selectedUnitName.value = unit.name; // 選択されたユニットの名前を設定
-        localStorage.setItem("lastSelectedUnitId", unitId);
-
-        // ユニット名を保存
-        sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
-
-        // ユーザーリストを取得して一時保存
-        selectedUnitUsers.value = users.filter(
-            (user) => user.unit_id === unitId
-        );
-        sessionStorage.setItem(
-            "selectedUnitUsers",
-            JSON.stringify(selectedUnitUsers.value)
-        );
-
-        // 掲示板を更新
-        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: false, // 状態を再レンダリング
-        });
-    } else {
+    if (!unit || !unit.forum) {
         console.error("対応する掲示板が見つかりませんでした");
+        return;
     }
+
+    // users が配列であることを確認しつつフィルタリング
+    const filteredUsers = Array.isArray(users.value)
+        ? users.value.filter((user) => user.unit_id === unitId)
+        : [];
+
+    selectedForumId.value = unit.forum.id;
+    selectedUnitName.value = unit.name;
+    selectedUnitUsers.value = filteredUsers;
+
+    sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
+    sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
+    localStorage.setItem("lastSelectedUnitId", unitId);
+
+    router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+        preserveState: false,
+    });
 };
 
 const onPageChange = (url) => {
@@ -123,11 +112,6 @@ const openUserProfile = (post) => {
 
 const closeUserProfile = () => {
     isUserProfileVisible.value = false;
-};
-
-// 投稿を選択する関数
-const selectPost = (post) => {
-    selectedPost.value = post;
 };
 
 const toggleSidebar = () => {
@@ -151,18 +135,12 @@ const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
-    // postIdでコメントフォームの状態が初期化されているか確認
-    if (!commentFormVisibility.value[postId]) {
-        commentFormVisibility.value[postId] = {};
-    }
-
-    // コメントフォームがparentIdで初期化されているか確認
-    if (!commentFormVisibility.value[postId][parentId]) {
-        commentFormVisibility.value[postId][parentId] = {
-            isVisible: false,
-            replyToName: "",
-        };
-    }
+    commentFormVisibility.value[postId] ??= {}; // 投稿IDが存在しない場合は空のオブジェクトを初期化
+    commentFormVisibility.value[postId][parentId] ??= {
+        // 親IDが存在しない場合は初期化
+        isVisible: false,
+        replyToName: "",
+    };
 
     // コメントフォームの表示・非表示を切り替え
     commentFormVisibility.value[postId][parentId].isVisible =
@@ -170,65 +148,21 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
-const formatDate = (date) => dayjs(date).format("YYYY-MM-DD HH:mm:ss");
-
-// 再帰的にコメントを検索する関数
-const findCommentRecursive = (comments, commentId) => {
-    for (let i = 0; i < comments.length; i++) {
-        if (comments[i].id === commentId) {
-            return comments[i]; // 削除対象のコメントを見つけた場合に返す
-        }
-        if (comments[i].children && comments[i].children.length > 0) {
-            const foundComment = findCommentRecursive(
-                comments[i].children,
-                commentId
+const onDeleteItem = (type, id) => {
+    deleteItem(type, id, (deletedId) => {
+        if (type === "post") {
+            posts.value.data = posts.value.data.filter(
+                (post) => post.id !== deletedId
             );
-            if (foundComment) {
-                return foundComment;
-            }
+        } else if (type === "comment") {
+            handleCommentDeletion(deletedId);
         }
-    }
-    return null;
-};
 
-const deleteItem = (type, id) => {
-    const confirmMessage =
-        type === "post"
-            ? "本当に投稿を削除しますか？"
-            : "本当にコメントを削除しますか？";
-
-    // ユーザーが確認した場合のみ削除
-    if (confirm(confirmMessage)) {
-        const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
-        router.delete(route(routeName, id), {
-            headers: {
-                "X-CSRF-TOKEN": getCsrfToken(),
-            },
-            onSuccess: () => {
-                console.log("削除成功");
-
-                if (type === "post") {
-                    // 投稿を削除したら、`posts`を更新
-                    posts.value.data = posts.value.data.filter(
-                        (post) => post.id !== id
-                    );
-                } else {
-                    // コメント削除
-                    handleCommentDeletion(id);
-                }
-
-                // フォーラムを再描画するためリダイレクト
-                router.get(route("forum.index"), {
-                    preserveState: false,
-                    preserveScroll: true,
-                });
-            },
-            onError: (errors) => {
-                console.error("削除失敗:", errors);
-                alert("削除に失敗しました。もう一度お試しください。");
-            },
+        router.get(route("forum.index"), {
+            preserveState: false,
+            preserveScroll: true,
         });
-    }
+    });
 };
 
 // コメント削除を処理する関数
@@ -240,25 +174,17 @@ const handleCommentDeletion = (commentId) => {
     if (postIndex !== -1) {
         const comments = posts.value.data[postIndex].comments;
 
-        // 再帰的にコメントを削除
-        const deleteCommentRecursive = (comments, id) => {
-            for (let i = 0; i < comments.length; i++) {
-                if (comments[i].id === id) {
-                    comments.splice(i, 1); // コメント削除
-                    return;
-                }
-                if (comments[i].children && comments[i].children.length > 0) {
-                    deleteCommentRecursive(comments[i].children, id); // 子コメント削除
-                }
-            }
-        };
+        const deleted = deleteCommentRecursive(comments, commentId);
 
-        deleteCommentRecursive(comments, commentId);
-
-        // Vueに変更を通知
-        posts.value.data[postIndex].comments = [...comments];
+        if (deleted) {
+            // Vueに変更を通知
+            posts.value.data[postIndex].comments = [...comments];
+            console.log(`コメント削除成功: ${commentId}`);
+        } else {
+            console.error(`コメント削除に失敗しました: ${commentId}`);
+        }
     } else {
-        console.error("削除対象のコメントが見つかりませんでした。");
+        console.error(`削除対象のコメントが見つかりませんでした: ${commentId}`);
     }
 };
 
@@ -505,7 +431,7 @@ const isCommentAuthor = (comment) => {
                                 v-if="
                                     post.user && post.user.id === auth.user.id
                                 "
-                                @click.prevent="deleteItem('post', post.id)"
+                                @click.prevent="onDeleteItem('post', post.id)"
                                 class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                                 title="投稿の削除"
                             >
@@ -540,7 +466,7 @@ const isCommentAuthor = (comment) => {
                         :postId="post.id"
                         :formatDate="formatDate"
                         :isCommentAuthor="isCommentAuthor"
-                        :deleteItem="deleteItem"
+                        :onDeleteItem="onDeleteItem"
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"
