@@ -138,18 +138,11 @@ const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
-    // postIdでコメントフォームの状態が初期化されているか確認
-    if (!commentFormVisibility.value[postId]) {
-        commentFormVisibility.value[postId] = {};
-    }
-
-    // コメントフォームがparentIdで初期化されているか確認
-    if (!commentFormVisibility.value[postId][parentId]) {
-        commentFormVisibility.value[postId][parentId] = {
-            isVisible: false,
-            replyToName: "",
-        };
-    }
+    commentFormVisibility.value[postId] ??= {}; // 投稿IDが存在しない場合は空のオブジェクトを初期化
+    commentFormVisibility.value[postId][parentId] ??= { // 親IDが存在しない場合は初期化
+        isVisible: false,
+        replyToName: "",
+    };
 
     // コメントフォームの表示・非表示を切り替え
     commentFormVisibility.value[postId][parentId].isVisible =
