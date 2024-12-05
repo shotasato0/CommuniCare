@@ -18,7 +18,7 @@ import {
     findCommentRecursive,
     deleteCommentRecursive,
 } from "@/Utils/commentUtils";
-import { restoreSelectedUnitUsers } from "@/Utils/sessionUtils";
+import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -49,7 +49,7 @@ onMounted(() => {
 
 // マウント時に選択されたユニットのユーザーと名前を復元
 onMounted(() => {
-    restoreSelectedUnitUsers(selectedUnitUsers, selectedUnitName);
+    restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
