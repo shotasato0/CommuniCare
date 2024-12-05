@@ -6,7 +6,6 @@ import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
 import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
 import Pagination from "@/Components/Pagination.vue";
-import { getCsrfToken } from "@/Utils/csrf";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
 import ListForSidebar from "./Unit/ListForSidebar.vue";
@@ -21,6 +20,7 @@ import {
 import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
+import { deleteItem } from "@/Utils/deleteItem";
 
 // propsからページのデータを取得
 const pageProps = usePage().props; // ページのデータ
@@ -149,44 +149,21 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
-const deleteItem = (type, id) => {
-    const confirmMessage =
-        type === "post"
-            ? "本当に投稿を削除しますか？"
-            : "本当にコメントを削除しますか？";
+const onDeleteItem = (type, id) => {
+    deleteItem(type, id, (deletedId) => {
+        if (type === "post") {
+            posts.value.data = posts.value.data.filter(
+                (post) => post.id !== deletedId
+            );
+        } else if (type === "comment") {
+            handleCommentDeletion(deletedId);
+        }
 
-    // ユーザーが確認した場合のみ削除
-    if (confirm(confirmMessage)) {
-        const routeName = type === "post" ? "forum.destroy" : "comment.destroy";
-        router.delete(route(routeName, id), {
-            headers: {
-                "X-CSRF-TOKEN": getCsrfToken(),
-            },
-            onSuccess: () => {
-                console.log("削除成功");
-
-                if (type === "post") {
-                    // 投稿を削除したら、`posts`を更新
-                    posts.value.data = posts.value.data.filter(
-                        (post) => post.id !== id
-                    );
-                } else {
-                    // コメント削除
-                    handleCommentDeletion(id);
-                }
-
-                // フォーラムを再描画するためリダイレクト
-                router.get(route("forum.index"), {
-                    preserveState: false,
-                    preserveScroll: true,
-                });
-            },
-            onError: (errors) => {
-                console.error("削除失敗:", errors);
-                alert("削除に失敗しました。もう一度お試しください。");
-            },
+        router.get(route("forum.index"), {
+            preserveState: false,
+            preserveScroll: true,
         });
-    }
+    });
 };
 
 // コメント削除を処理する関数
@@ -455,7 +432,7 @@ const isCommentAuthor = (comment) => {
                                 v-if="
                                     post.user && post.user.id === auth.user.id
                                 "
-                                @click.prevent="deleteItem('post', post.id)"
+                                @click.prevent="onDeleteItem('post', post.id)"
                                 class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
                                 title="投稿の削除"
                             >
@@ -490,7 +467,7 @@ const isCommentAuthor = (comment) => {
                         :postId="post.id"
                         :formatDate="formatDate"
                         :isCommentAuthor="isCommentAuthor"
-                        :deleteItem="deleteItem"
+                        :onDeleteItem="onDeleteItem"
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"

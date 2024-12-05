@@ -9,7 +9,7 @@ const props = defineProps({
     postId: Number, // 親投稿のID
     formatDate: Function, // 日付フォーマット用関数
     isCommentAuthor: Function, // コメント作成者かを確認する関数
-    deleteItem: Function, // コメント削除用関数
+    onDeleteItem: Function, // コメント削除用関数
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
     openUserProfile: Function, // ユーザープロフィールを開く関数
@@ -129,7 +129,7 @@ const getCommentCountRecursive = (comments) => {
                     <!-- コメント削除 -->
                     <button
                         v-if="isCommentAuthor(comment)"
-                        @click="deleteItem('comment', comment.id)"
+                        @click="onDeleteItem('comment', comment.id)"
                         class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center"
                         title="コメント削除"
                     >
@@ -163,7 +163,7 @@ const getCommentCountRecursive = (comments) => {
                         :postId="postId"
                         :formatDate="formatDate"
                         :isCommentAuthor="isCommentAuthor"
-                        :deleteItem="deleteItem"
+                        :onDeleteItem="onDeleteItem"
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"
