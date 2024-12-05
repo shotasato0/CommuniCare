@@ -74,30 +74,27 @@ const onUserSelected = (user) => {
 // ユニット選択イベント
 const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId);
-    if (unit && unit.forum) {
-        selectedForumId.value = unit.forum.id;
-        selectedUnitName.value = unit.name; // 選択されたユニットの名前を設定
-        localStorage.setItem("lastSelectedUnitId", unitId);
-
-        // ユニット名を保存
-        sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
-
-        // ユーザーリストを取得して一時保存
-        selectedUnitUsers.value = users.filter(
-            (user) => user.unit_id === unitId
-        );
-        sessionStorage.setItem(
-            "selectedUnitUsers",
-            JSON.stringify(selectedUnitUsers.value)
-        );
-
-        // 掲示板を更新
-        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: false, // 状態を再レンダリング
-        });
-    } else {
+    if (!unit || !unit.forum) {
         console.error("対応する掲示板が見つかりませんでした");
+        return;
     }
+
+    // users が配列であることを確認しつつフィルタリング
+    const filteredUsers = Array.isArray(users.value)
+        ? users.value.filter((user) => user.unit_id === unitId)
+        : [];
+
+    selectedForumId.value = unit.forum.id;
+    selectedUnitName.value = unit.name;
+    selectedUnitUsers.value = filteredUsers;
+
+    sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
+    sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
+    localStorage.setItem("lastSelectedUnitId", unitId);
+
+    router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+        preserveState: false,
+    });
 };
 
 const onPageChange = (url) => {
@@ -139,7 +136,8 @@ const commentFormVisibility = ref({});
 // コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value[postId] ??= {}; // 投稿IDが存在しない場合は空のオブジェクトを初期化
-    commentFormVisibility.value[postId][parentId] ??= { // 親IDが存在しない場合は初期化
+    commentFormVisibility.value[postId][parentId] ??= {
+        // 親IDが存在しない場合は初期化
         isVisible: false,
         replyToName: "",
     };
