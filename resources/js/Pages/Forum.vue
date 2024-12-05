@@ -42,13 +42,10 @@ const quotePost = (post) => {
     showPostForm.value = true;
 };
 
-// マウント時にselectedForumIdを設定
 onMounted(() => {
+    // マウント時にselectedForumIdを設定
     selectedForumId.value = pageProps.selectedForumId;
-});
-
-// マウント時に選択されたユニットのユーザーと名前を復元
-onMounted(() => {
+    // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 });
 
