@@ -4,7 +4,7 @@ import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PostForm from "@/Components/PostForm.vue";
 import CommentForm from "@/Components/CommentForm.vue";
-import ParentComment from "@/Components/ParentComment.vue"; // 新しいコンポーネント
+import ParentComment from "@/Components/ParentComment.vue";
 import Pagination from "@/Components/Pagination.vue";
 import Show from "./Users/Show.vue";
 import SearchForm from "@/Components/SearchForm.vue";
@@ -22,21 +22,29 @@ import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
 
+// props を構造分解して取得
+const {
+    posts: initialPosts = { data: [], links: [] }, // 投稿のデータ
+    auth, // ログインユーザー情報
+    units: initialUnits = [], // 部署のデータ
+    users: initialUsers = [], // ユーザーのデータ
+    selectedForumId: forumIdFromProps = null, // 選択された掲示板のID
+    search: initialSearch = "", // 検索結果の表示状態
+} = usePage().props;
+
 // propsからページのデータを取得
-const pageProps = usePage().props; // ページのデータ
-const posts = ref(pageProps.posts || { data: [], links: [] }); // 投稿のデータ
-const auth = pageProps.auth; // ログインユーザー情報
-const units = ref(pageProps.units || []); // 部署のデータ
+const posts = ref(initialPosts); // 投稿のデータ
+const units = ref(initialUnits); // 部署のデータ
 const selectedPost = ref(null); // 選択された投稿
 const isUserProfileVisible = ref(false); // ユーザーの詳細ページの表示状態
 const sidebarVisible = ref(false); // サイドバーの表示状態
-const users = pageProps.users || []; // ユーザーのデータ
+const users = ref(initialUsers); // ユーザーのデータ
 const sidebar = ref(null); // サイドバーのコンポーネントインスタンス
-const selectedForumId = ref(pageProps.selectedForumId || null); // 選択された掲示板のID
+const selectedForumId = ref(forumIdFromProps); // 選択された掲示板のID
 const selectedUnitUsers = ref([]); // 選択されたユニットのユーザーリスト
 const selectedUnitName = ref(""); // 選択されたユニットの名前
-const search = ref(pageProps.search || ""); // 検索結果の表示状態
-const quotedPost = ref(null);
+const search = ref(initialSearch); // 検索結果の表示状態
+const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 
 const quotePost = (post) => {
@@ -46,7 +54,7 @@ const quotePost = (post) => {
 
 onMounted(() => {
     // マウント時にselectedForumIdを初期化
-    initSelectedForumId(selectedForumId, pageProps);
+    initSelectedForumId(selectedForumId);
     // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 });
