@@ -275,6 +275,7 @@ const isCommentAuthor = (comment) => {
 
                 <!-- 投稿一覧 -->
                 <div
+                    v-if="posts.data && posts.data.length > 0"
                     v-for="post in posts.data"
                     :key="post.id"
                     class="bg-white rounded-md shadow-md mb-6 p-4"
@@ -471,6 +472,14 @@ const isCommentAuthor = (comment) => {
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"
                     />
+                </div>
+
+                <!-- 投稿がない場合のメッセージ -->
+                <div
+                    v-else
+                    class="text-center text-gray-500 text-lg font-semibold mt-6"
+                >
+                    投稿がありません。
                 </div>
 
                 <!-- 下部ページネーション -->
