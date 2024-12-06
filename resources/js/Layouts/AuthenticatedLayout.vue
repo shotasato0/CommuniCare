@@ -7,6 +7,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
+import Footer from "@/Layouts/Footer.vue";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
@@ -276,5 +277,7 @@ const confirmGuestLogout = (event) => {
                 <slot />
             </main>
         </div>
+
+        <Footer />
     </div>
 </template>
