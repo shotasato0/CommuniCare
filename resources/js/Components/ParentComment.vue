@@ -13,6 +13,7 @@ const props = defineProps({
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
     openUserProfile: Function, // ユーザープロフィールを開く関数
+    selectedForumId: Number, // 選択されたフォーラムのID
 });
 
 // 子コメントの折りたたみ状態を管理
@@ -144,6 +145,7 @@ const getCommentCountRecursive = (comments) => {
                     "
                     :postId="postId"
                     :parentId="comment.id"
+                    :selectedForumId="selectedForumId"
                     :replyToName="comment.user?.name || ''"
                     class="mt-4"
                     title="返信"
@@ -167,6 +169,7 @@ const getCommentCountRecursive = (comments) => {
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"
+                        :selectedForumId="selectedForumId"
                     />
                 </div>
             </div>
