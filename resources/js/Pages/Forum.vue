@@ -158,7 +158,7 @@ const onDeleteItem = (type, id) => {
             handleCommentDeletion(deletedId);
         }
 
-        router.get(route("forum.index"), {
+        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
             preserveState: false,
             preserveScroll: true,
         });
