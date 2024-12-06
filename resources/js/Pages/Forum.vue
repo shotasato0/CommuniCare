@@ -472,6 +472,7 @@ const isCommentAuthor = (comment) => {
                         :toggleCommentForm="toggleCommentForm"
                         :commentFormVisibility="commentFormVisibility"
                         :openUserProfile="openUserProfile"
+                        :selectedForumId="Number(selectedForumId)"
                     />
                 </div>
 

@@ -10,6 +10,7 @@ const props = defineProps({
     toggleCommentForm: Function, // コメントフォームの表示切替関数
     commentFormVisibility: Object, // コメントフォームの表示状態
     openUserProfile: Function, // ユーザープロフィールを開く関数
+    selectedForumId: Number, // 選択されたフォーラムのID
 });
 </script>
 
@@ -106,6 +107,7 @@ const props = defineProps({
                     :toggleCommentForm="toggleCommentForm"
                     :commentFormVisibility="commentFormVisibility"
                     :openUserProfile="openUserProfile"
+                    :selectedForumId="selectedForumId"
                 />
             </div>
         </div>
