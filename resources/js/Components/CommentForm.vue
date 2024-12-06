@@ -7,6 +7,7 @@ const props = defineProps({
     postId: Number, // 親投稿のID
     parentId: { type: Number, default: null }, // 親コメントのID
     replyToName: { type: String, default: "" }, // 返信先のユーザー名
+    selectedForumId: Number, // 選択されたフォーラムのID
 });
 
 // コメントデータを管理するref
@@ -41,7 +42,9 @@ const submitComment = () => {
                     parent_id: props.parentId,
                     message: "",
                 };
-                router.get(route("forum.index")); // getで履歴を置き換え
+                router.get(
+                    route("forum.index", { forum_id: props.selectedForumId })
+                ); // getで履歴を置き換え
             },
             onError: (errors) => {
                 console.error("コメントの投稿に失敗しました:", errors);
