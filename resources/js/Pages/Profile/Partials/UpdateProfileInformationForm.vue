@@ -100,7 +100,7 @@ const handleOpenIconEdit = () => {
                 <button
                     type="button"
                     @click="handleOpenIconEdit"
-                    class="absolute inset-0 w-24 h-24 flex items-center justify-center bg-gray-800 text-white p-1 rounded-full hover:bg-gray-600 transition-opacity duration-300"
+                    class="absolute inset-0 w-24 h-24 flex items-center justify-center bg-transparent text-white p-1 rounded-ful transition-opacity duration-300"
                     title="プロフィール画像を編集"
                 >
                     <!-- プロフィール画像 -->
@@ -115,7 +115,7 @@ const handleOpenIconEdit = () => {
                                 : 'https://via.placeholder.com/100'
                         "
                         alt="ユーザーのプロフィール写真"
-                        class="w-24 h-24 rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
+                        class="w-full h-full rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
                     />
 
                     <!-- ペンのマーク -->
