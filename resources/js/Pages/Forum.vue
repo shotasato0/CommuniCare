@@ -448,6 +448,7 @@ const isCommentAuthor = (comment) => {
                             "
                             :postId="post.id"
                             :parentId="null"
+                            :selected-forum-id="Number(selectedForumId)"
                             :replyToName="
                                 commentFormVisibility[post.id]?.['post']
                                     ?.replyToName
