@@ -7,6 +7,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
+import Footer from "@/Layouts/Footer.vue";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
@@ -51,7 +52,7 @@ const confirmGuestLogout = (event) => {
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 pb-16">
             <nav
                 class="bg-white border-b border-gray-100 fixed top-0 left-0 w-full z-10"
             >
@@ -276,5 +277,7 @@ const confirmGuestLogout = (event) => {
                 <slot />
             </main>
         </div>
+
+        <Footer />
     </div>
 </template>
