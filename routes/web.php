@@ -14,6 +14,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\TenantHomeController;
+use App\Http\Controllers\ResidentController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -63,7 +64,12 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         //     Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
         // });
         // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
+
+        // ユニット
         Route::resource('units', UnitController::class);
+
+        // 利用者
+        Route::resource('residents', ResidentController::class);
 
         // テナントの管理者を移動
         Route::get('/admin/transfer-admin', [AdminUserController::class, 'showTransferAdminForm'])->name('admin.transfer.view');
