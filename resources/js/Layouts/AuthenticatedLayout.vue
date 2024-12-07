@@ -87,7 +87,7 @@ const confirmGuestLogout = (event) => {
                                     :href="route('residents.index')"
                                     :active="route().current('residents.index')"
                                 >
-                                    利用者一覧
+                                    {{ $t("Residents") }}
                                 </NavLink>
                             </div>
                         </div>
@@ -223,7 +223,7 @@ const confirmGuestLogout = (event) => {
                             :href="route('residents.index')"
                             :active="route().current('residents.index')"
                         >
-                            利用者一覧
+                            {{ $t("Residents") }}
                         </ResponsiveNavLink>
                     </div>
 
