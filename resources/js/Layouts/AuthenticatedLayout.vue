@@ -82,6 +82,13 @@ const confirmGuestLogout = (event) => {
                                 >
                                     {{ $t("Dashboard") }}
                                 </NavLink>
+
+                                <NavLink
+                                    :href="route('residents.index')"
+                                    :active="route().current('residents.index')"
+                                >
+                                    利用者一覧
+                                </NavLink>
                             </div>
                         </div>
 
@@ -208,6 +215,15 @@ const confirmGuestLogout = (event) => {
                             :active="route().current('dashboard')"
                         >
                             {{ $t("Dashboard") }}
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <div class="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink
+                            :href="route('residents.index')"
+                            :active="route().current('residents.index')"
+                        >
+                            利用者一覧
                         </ResponsiveNavLink>
                     </div>
 
