@@ -4,15 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Resident;
 use Illuminate\Http\Request;
+use App\Models\Unit;
+use Inertia\Inertia;
 
 class ResidentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $unitId = $request->input('unit_id');
+
+        $residents = Resident::when($unitId, function ($query) use ($unitId) {
+            return $query->where('unit_id', $unitId);
+        })->with('unit')->get();
+
+    return Inertia::render('Residents/Index', [
+            'residents' => $residents,
+            'units' => Unit::all(),
+            'selectedUnitId' => $unitId
+        ]);
     }
 
     /**
