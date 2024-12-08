@@ -85,7 +85,8 @@ class ResidentController extends Controller
 
         $resident->update($validated);
 
-        return redirect()->route('residents.show', $resident->id);
+        return to_route('residents.show', $resident->id)
+            ->with('success', '利用者情報を更新しました。');
     }
 
     /**

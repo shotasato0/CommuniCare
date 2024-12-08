@@ -1,5 +1,6 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
+import { computed, ref, onMounted } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
@@ -8,12 +9,47 @@ const props = defineProps({
         required: true,
     },
 });
+
+// フラッシュメッセージの処理
+const flash = computed(() => usePage().props.flash);
+const showFlashMessage = ref(true);
+const flashMessage = computed(
+    () => flash.value.success || flash.value.error || null
+);
+
+// フラッシュメッセージの自動非表示
+onMounted(() => {
+    if (flashMessage.value) {
+        setTimeout(() => {
+            showFlashMessage.value = false;
+        }, 8000);
+    }
+});
+
+// フラッシュメッセージのタイプを判定
+const flashType = computed(() => (flash.value.success ? "success" : "error"));
 </script>
 
 <template>
     <Head :title="`${resident.name}さんの詳細情報`" />
 
     <AuthenticatedLayout>
+        <!-- フラッシュメッセージ -->
+        <transition name="fade">
+            <div
+                v-if="flashMessage && showFlashMessage"
+                :class="{
+                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
+                        flashType === 'success',
+                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
+                        flashType === 'error',
+                }"
+                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
+            >
+                <p class="font-bold">{{ flashMessage }}</p>
+            </div>
+        </transition>
+
         <div class="pt-6 pb-12 mt-16">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">
@@ -114,3 +150,15 @@ const props = defineProps({
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
