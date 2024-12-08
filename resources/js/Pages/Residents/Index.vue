@@ -77,18 +77,28 @@ const deleteResident = (residentId) => {
                                 <!-- 新規登録ボタン -->
                                 <Link
                                     :href="route('residents.create')"
-                                    class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+                                    class="px-4 py-2 bg-blue-500 text-white rounded-md transition hover:bg-opacity-80"
                                 >
                                     新規登録
                                 </Link>
 
                                 <!-- 削除モードトグルボタン -->
                                 <button
-                                    @click="showDeleteButtons = !showDeleteButtons"
-                                    class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-                                    :class="{ 'bg-gray-500': showDeleteButtons }"
+                                    @click="
+                                        showDeleteButtons = !showDeleteButtons
+                                    "
+                                    class="px-4 py-2 text-white rounded-md transition"
+                                    :class="
+                                        showDeleteButtons
+                                            ? 'bg-blue-100 text-red-700 hover:bg-opacity-80'
+                                            : 'bg-red-500 hover:bg-opacity-80'
+                                    "
                                 >
-                                    {{ showDeleteButtons ? "削除モード解除" : "削除モード" }}
+                                    {{
+                                        showDeleteButtons
+                                            ? "削除モード解除"
+                                            : "削除モード"
+                                    }}
                                 </button>
                             </div>
                         </div>
@@ -115,7 +125,9 @@ const deleteResident = (residentId) => {
                                             alt="利用者アイコン"
                                         />
                                         <div>
-                                            <p class="font-medium">{{ resident.name }}</p>
+                                            <p class="font-medium">
+                                                {{ resident.name }}
+                                            </p>
                                             <p class="text-sm text-gray-500">
                                                 {{ resident.unit?.name }}
                                             </p>
