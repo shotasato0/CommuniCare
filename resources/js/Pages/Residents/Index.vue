@@ -13,7 +13,7 @@ const props = defineProps({
         required: true,
     },
     selectedUnitId: {
-        type: Number,
+        type: [Number, String],
         default: null,
     },
 });
