@@ -32,7 +32,9 @@ class ResidentController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Residents/Register', [
+            'units' => Unit::all(),
+        ]);
     }
 
     /**
