@@ -178,27 +178,32 @@ const flashType = computed(() =>
                                 v-if="sortedResidents.length > 0"
                                 class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
                             >
-                                <div
+                                <Link
                                     v-for="resident in sortedResidents"
                                     :key="resident.id"
-                                    class="relative bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                                    :href="route('residents.show', resident.id)"
+                                    class="relative block bg-white hover:bg-gray-50 border rounded-lg p-4 shadow-sm hover:shadow-md transition-all text-gray-900 group"
                                 >
                                     <div
                                         class="flex justify-between items-start"
                                     >
-                                        <p class="font-bold text-lg">
+                                        <span
+                                            class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                        >
                                             {{ resident.name }}
-                                        </p>
+                                        </span>
                                         <button
                                             v-if="showDeleteButtons"
-                                            @click="deleteResident(resident.id)"
+                                            @click.prevent="
+                                                deleteResident(resident.id)
+                                            "
                                             class="text-red-500 hover:text-red-700 transition"
                                             title="削除"
                                         >
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
-                                </div>
+                                </Link>
                             </div>
 
                             <!-- 利用者が存在しない場合 -->
