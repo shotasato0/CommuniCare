@@ -21,7 +21,7 @@ const props = defineProps({
 const showDeleteButtons = ref(false);
 const selectedUnit = ref(props.selectedUnitId);
 
-// ユニット変更時の処理
+// 部署変更時の処理
 watch(selectedUnit, (newUnitId) => {
     router.get(route("residents.index", { unit_id: newUnitId }), {
         preserveState: true,
@@ -42,13 +42,13 @@ const deleteResident = (residentId) => {
     }
 };
 
-// 選択されたユニット名を取得する算出プロパティを追加
+// 選択された部署名を取得する算出プロパティを追加
 const selectedUnitName = computed(() => {
-    if (selectedUnit.value === "") return "全ユニット";
+    if (selectedUnit.value === "") return "全部署";
     const unit = props.units.find(
         (unit) => String(unit.id) === String(selectedUnit.value)
     );
-    return unit ? unit.name : "全ユニット";
+    return unit ? unit.name : "全部署";
 });
 
 // ソートされた利用者リストを返す算出プロパティを追加
@@ -121,7 +121,7 @@ const flashType = computed(() =>
                                     v-model="selectedUnit"
                                     class="rounded-md border-gray-300 shadow-sm"
                                 >
-                                    <option value="">全ユニット</option>
+                                    <option value="">全部署</option>
                                     <option
                                         v-for="unit in units"
                                         :key="unit.id"
@@ -162,7 +162,7 @@ const flashType = computed(() =>
                             </div>
                         </div>
 
-                        <!-- ユニット名見出しを追加 -->
+                        <!-- 部署見出しを追加 -->
                         <div class="mb-6">
                             <h3
                                 class="text-2xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2"
