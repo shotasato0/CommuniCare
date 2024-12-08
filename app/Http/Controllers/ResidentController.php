@@ -53,7 +53,7 @@ class ResidentController extends Controller
     public function show(Resident $resident)
     {
         return Inertia::render('Residents/Show', [
-            'resident' => $resident,
+            'resident' => $resident->load('unit'),
         ]);
     }
 
