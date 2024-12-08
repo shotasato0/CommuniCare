@@ -12,6 +12,11 @@ class Resident extends Model
     protected $fillable = [
         "name",
         "unit_id",
+        "meal_support",
+        "toilet_support",
+        "bathing_support",
+        "mobility_support",
+        "memo",
     ];
 
     public function unit()
