@@ -70,6 +70,16 @@ const flashMessage = computed(
     () => flash.value.success || flash.value.error || flash.value.info || null
 );
 
+// フラッシュメッセージを監視して自動的に消す
+watch(flashMessage, (newMessage) => {
+    if (newMessage) {
+        showFlashMessage.value = true;
+        setTimeout(() => {
+            showFlashMessage.value = false;
+        }, 8000);
+    }
+});
+
 // 削除モードを解除するためのクリックイベントハンドラを追加
 const handleClickOutside = (event) => {
     const deleteButtons = document.querySelectorAll(".delete-mode-button");
@@ -84,6 +94,7 @@ const handleClickOutside = (event) => {
 
 // コンポーネントがマウントされた時にイベントリスナーを追加
 onMounted(() => {
+    // 初期表示時のフラッシュメッセージ用タイマー
     if (flashMessage.value) {
         setTimeout(() => {
             showFlashMessage.value = false;
