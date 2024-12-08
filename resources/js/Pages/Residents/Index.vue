@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { router, Link, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -70,12 +70,33 @@ const flashMessage = computed(
     () => flash.value.success || flash.value.error || flash.value.info || null
 );
 
+// 削除モードを解除するためのクリックイベントハンドラを追加
+const handleClickOutside = (event) => {
+    const deleteButtons = document.querySelectorAll(".delete-mode-button");
+    const isClickInsideButton = Array.from(deleteButtons).some((button) =>
+        button.contains(event.target)
+    );
+
+    if (showDeleteButtons.value && !isClickInsideButton) {
+        showDeleteButtons.value = false;
+    }
+};
+
+// コンポーネントがマウントされた時にイベントリスナーを追加
 onMounted(() => {
     if (flashMessage.value) {
         setTimeout(() => {
             showFlashMessage.value = false;
         }, 8000);
     }
+
+    // クリックイベントリスナーを追加
+    document.addEventListener("click", handleClickOutside);
+});
+
+// コンポーネントがアンマウントされる時にイベントリスナーを削除
+onUnmounted(() => {
+    document.removeEventListener("click", handleClickOutside);
 });
 
 // フラッシュメッセージのタイプを判定
@@ -146,16 +167,16 @@ const flashType = computed(() =>
                                     @click="
                                         showDeleteButtons = !showDeleteButtons
                                     "
-                                    class="px-4 py-2 text-white rounded-md transition"
+                                    class="px-4 py-2 text-white rounded-md transition delete-mode-button"
                                     :class="
                                         showDeleteButtons
-                                            ? 'bg-blue-100 text-red-700 hover:bg-opacity-80'
+                                            ? 'bg-red-300 text-red-700 hover:bg-opacity-80'
                                             : 'bg-red-500 hover:bg-opacity-80'
                                     "
                                 >
                                     {{
                                         showDeleteButtons
-                                            ? "削除モード解除"
+                                            ? "削除モード"
                                             : "削除モード"
                                     }}
                                 </button>
