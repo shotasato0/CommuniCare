@@ -94,6 +94,8 @@ class ResidentController extends Controller
      */
     public function destroy(Resident $resident)
     {
-        //
+        $resident->delete();
+        return to_route('residents.index')
+            ->with('success', '利用者を削除しました。');
     }
 }
