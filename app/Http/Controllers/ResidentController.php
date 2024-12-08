@@ -42,7 +42,12 @@ class ResidentController extends Controller
      */
     public function store(Request $request)
     {
-        Resident::create($request->all());
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'unit_id' => 'required|exists:units,id',
+        ]);
+
+        Resident::create($validated);
         return to_route('residents.index')
             ->with('success', '利用者を登録しました。');
     }
