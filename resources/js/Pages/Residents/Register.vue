@@ -53,7 +53,7 @@ const submit = () => {
                         placeholder="所属部署を選択してください"
                     >
                         <option value="" disabled selected>
-                            {{ $t("Select Unit") }}
+                            {{ $t("Select your unit") }}
                         </option>
                         <option v-for="unit in units" :key="unit.id" :value="unit.id">
                             {{ unit.name }}
