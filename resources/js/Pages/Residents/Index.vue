@@ -199,32 +199,50 @@ const flashType = computed(() =>
                                 v-if="sortedResidents.length > 0"
                                 class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
                             >
-                                <Link
+                                <div
                                     v-for="resident in sortedResidents"
                                     :key="resident.id"
-                                    :href="route('residents.show', resident.id)"
-                                    class="relative block bg-white hover:bg-gray-50 border rounded-lg p-4 shadow-sm hover:shadow-md transition-all text-gray-900 group"
+                                    :class="[
+                                        'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                        showDeleteButtons
+                                            ? 'hover:bg-red-50 cursor-pointer'
+                                            : 'hover:bg-gray-50 hover:shadow-md',
+                                    ]"
+                                    @click="
+                                        showDeleteButtons
+                                            ? deleteResident(resident.id)
+                                            : null
+                                    "
                                 >
+                                    <Link
+                                        v-if="!showDeleteButtons"
+                                        :href="
+                                            route('residents.show', resident.id)
+                                        "
+                                        class="block"
+                                    >
+                                        <div
+                                            class="flex justify-between items-start"
+                                        >
+                                            <span
+                                                class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                            >
+                                                {{ resident.name }}
+                                            </span>
+                                        </div>
+                                    </Link>
                                     <div
+                                        v-else
                                         class="flex justify-between items-start"
                                     >
                                         <span
-                                            class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                            class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
                                         >
                                             {{ resident.name }}
                                         </span>
-                                        <button
-                                            v-if="showDeleteButtons"
-                                            @click.prevent="
-                                                deleteResident(resident.id)
-                                            "
-                                            class="text-red-500 hover:text-red-700 transition"
-                                            title="削除"
-                                        >
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                        <i class="bi bi-trash text-red-500"></i>
                                     </div>
-                                </Link>
+                                </div>
                             </div>
 
                             <!-- 利用者が存在しない場合 -->
