@@ -183,5 +183,10 @@
     "By setting your unit, you can access the forum.": "所属部署を設定すると、掲示板にアクセスできます",
     "Unassigned": "未所属",
     "Select your unit": "所属部署を選択してください",
-    "Residents": "利用者ページ"
+    "Residents": "利用者ページ",
+    "Resident Registration": "利用者登録",
+    "Register a new resident.": "新しい利用者を登録します",
+    "Resident Name": "利用者名",
+    "Select Unit": "所属部署を選択してください",
+    "Register Resident": "利用者登録"
 }
