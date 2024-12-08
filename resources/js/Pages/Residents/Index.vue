@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { router, Link } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
@@ -41,6 +41,15 @@ const deleteResident = (residentId) => {
         });
     }
 };
+
+// 選択されたユニット名を取得する算出プロパティを追加
+const selectedUnitName = computed(() => {
+    if (selectedUnit.value === "") return "全ユニット";
+    const unit = props.units.find(
+        (unit) => String(unit.id) === String(selectedUnit.value)
+    );
+    return unit ? unit.name : "全ユニット";
+});
 </script>
 
 <template>
@@ -101,6 +110,15 @@ const deleteResident = (residentId) => {
                                     }}
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- ユニット名見出しを追加 -->
+                        <div class="mb-6">
+                            <h3
+                                class="text-2xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2"
+                            >
+                                {{ selectedUnitName }}
+                            </h3>
                         </div>
 
                         <!-- 利用者一覧 -->
