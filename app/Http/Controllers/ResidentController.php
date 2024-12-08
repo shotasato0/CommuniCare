@@ -64,6 +64,7 @@ class ResidentController extends Controller
     {
         return Inertia::render('Residents/Edit', [
             'resident' => $resident,
+            'units' => Unit::all(),
         ]);
     }
 
@@ -72,9 +73,19 @@ class ResidentController extends Controller
      */
     public function update(Request $request, Resident $resident)
     {
-        $resident->update($request->all());
-        return to_route('residents.index')
-            ->with('success', '利用者情報を更新しました。');
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'unit_id' => 'required|exists:units,id',
+            'meal_support' => 'nullable|string',
+            'toilet_support' => 'nullable|string',
+            'bathing_support' => 'nullable|string',
+            'mobility_support' => 'nullable|string',
+            'memo' => 'nullable|string',
+        ]);
+
+        $resident->update($validated);
+
+        return redirect()->route('residents.show', $resident->id);
     }
 
     /**

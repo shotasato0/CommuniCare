@@ -7,9 +7,15 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    units: {
+        type: Array,
+        required: true,
+    },
 });
 
 const form = useForm({
+    name: props.resident.name,
+    unit_id: props.resident.unit_id,
     meal_support: props.resident.meal_support,
     toilet_support: props.resident.toilet_support,
     bathing_support: props.resident.bathing_support,
@@ -40,6 +46,53 @@ const submit = () => {
                     <div class="bg-gray-100 p-6 space-y-6 rounded-lg">
                         <!-- 2x2 グリッドレイアウト -->
                         <div class="grid grid-cols-2 gap-6">
+                            <!-- 利用者名 -->
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">
+                                    利用者名
+                                </h3>
+                                <div class="mt-2">
+                                    <input
+                                        type="text"
+                                        v-model="form.name"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    />
+                                    <div
+                                        v-if="form.errors.name"
+                                        class="text-red-500 text-sm mt-1"
+                                    >
+                                        {{ form.errors.name }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 所属ユニット -->
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-900">
+                                    所属ユニット
+                                </h3>
+                                <div class="mt-2">
+                                    <select
+                                        v-model="form.unit_id"
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    >
+                                        <option
+                                            v-for="unit in units"
+                                            :key="unit.id"
+                                            :value="unit.id"
+                                        >
+                                            {{ unit.name }}
+                                        </option>
+                                    </select>
+                                    <div
+                                        v-if="form.errors.unit_id"
+                                        class="text-red-500 text-sm mt-1"
+                                    >
+                                        {{ form.errors.unit_id }}
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- 食事の支援 -->
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900">
