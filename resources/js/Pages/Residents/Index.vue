@@ -205,7 +205,7 @@ const flashType = computed(() =>
                             <div v-else class="p-8 text-center text-gray-500">
                                 <i class="bi bi-people text-4xl mb-2 block"></i>
                                 <p class="text-lg font-medium">
-                                    利用者が登録されていま���ん。
+                                    利用者が登録されていません。
                                 </p>
                             </div>
                         </div>
