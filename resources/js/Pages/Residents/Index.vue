@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watch, computed } from "vue";
-import { router, Link } from "@inertiajs/vue3";
+import { ref, watch, computed, onMounted } from "vue";
+import { router, Link, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps({
@@ -53,8 +53,35 @@ const selectedUnitName = computed(() => {
 
 // ソートされた利用者リストを返す算出プロパティを追加
 const sortedResidents = computed(() => {
-    return [...props.residents].sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+    return [...props.residents].sort((a, b) =>
+        a.name.localeCompare(b.name, "ja")
+    );
 });
+
+// フラッシュメッセージを取得
+const flash = computed(() => {
+    console.log("Flash props:", usePage().props.flash);
+    return usePage().props.flash;
+});
+
+// フラッシュメッセージの表示制御
+const showFlashMessage = ref(true);
+const flashMessage = computed(
+    () => flash.value.success || flash.value.error || flash.value.info || null
+);
+
+onMounted(() => {
+    if (flashMessage.value) {
+        setTimeout(() => {
+            showFlashMessage.value = false;
+        }, 8000);
+    }
+});
+
+// フラッシュメッセージのタイプを判定
+const flashType = computed(() =>
+    flash.value.success ? "success" : flash.value.error ? "error" : "info"
+);
 </script>
 
 <template>
@@ -64,6 +91,24 @@ const sortedResidents = computed(() => {
                 利用者一覧
             </h2>
         </template>
+
+        <!-- フラッシュメッセージの条件を修正 -->
+        <transition name="fade">
+            <div
+                v-if="flashMessage && showFlashMessage"
+                :class="{
+                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
+                        flashType === 'success',
+                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
+                        flashType === 'error',
+                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
+                        flashType === 'info',
+                }"
+                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
+            >
+                <p class="font-bold">{{ flashMessage }}</p>
+            </div>
+        </transition>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -156,11 +201,11 @@ const sortedResidents = computed(() => {
                                 </div>
                             </div>
 
-                            <!-- 利用者が存���しない場合 -->
+                            <!-- 利用者が存在しない場合 -->
                             <div v-else class="p-8 text-center text-gray-500">
                                 <i class="bi bi-people text-4xl mb-2 block"></i>
                                 <p class="text-lg font-medium">
-                                    利用者が登録されていません。
+                                    利用者が登録されていま���ん。
                                 </p>
                             </div>
                         </div>
@@ -171,8 +216,14 @@ const sortedResidents = computed(() => {
     </AuthenticatedLayout>
 </template>
 
-<style scoped>
-.transition {
-    transition: all 0.3s ease;
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

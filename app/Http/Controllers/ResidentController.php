@@ -43,7 +43,8 @@ class ResidentController extends Controller
     public function store(Request $request)
     {
         Resident::create($request->all());
-        return redirect()->route('residents.index');
+        return to_route('residents.index')
+            ->with('success', '利用者を登録しました。');
     }
 
     /**
