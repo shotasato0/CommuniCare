@@ -52,9 +52,14 @@ const flashType = computed(() => (flash.value.success ? "success" : "error"));
 
         <div class="pt-6 pb-12 mt-16">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">
-                    {{ resident.name }}さんの情報
-                </h2>
+                <div class="flex items-center gap-8 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        {{ resident.unit.name }}
+                    </h2>
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        {{ resident.name }}さんの情報
+                    </h2>
+                </div>
 
                 <div class="bg-gray-100 p-6 space-y-6 rounded-lg">
                     <!-- 2x2 グリッドレイアウト -->
