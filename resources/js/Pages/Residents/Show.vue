@@ -30,7 +30,7 @@ const props = defineProps({
                             </h3>
                             <div class="mt-2">
                                 <div
-                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem] whitespace-pre-wrap"
                                 >
                                     {{ resident.meal_support }}
                                 </div>
@@ -44,7 +44,7 @@ const props = defineProps({
                             </h3>
                             <div class="mt-2">
                                 <div
-                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem] whitespace-pre-wrap"
                                 >
                                     {{ resident.toilet_support }}
                                 </div>
@@ -58,7 +58,7 @@ const props = defineProps({
                             </h3>
                             <div class="mt-2">
                                 <div
-                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem] whitespace-pre-wrap"
                                 >
                                     {{ resident.bathing_support }}
                                 </div>
@@ -72,7 +72,7 @@ const props = defineProps({
                             </h3>
                             <div class="mt-2">
                                 <div
-                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                    class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem] whitespace-pre-wrap"
                                 >
                                     {{ resident.mobility_support }}
                                 </div>
@@ -87,7 +87,7 @@ const props = defineProps({
                         </h3>
                         <div class="mt-2">
                             <div
-                                class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                class="p-3 bg-white rounded-md border border-gray-300 min-h-[12rem] whitespace-pre-wrap"
                             >
                                 {{ resident.memo }}
                             </div>
