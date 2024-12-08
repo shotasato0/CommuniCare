@@ -42,7 +42,8 @@ class ResidentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Resident::create($request->all());
+        return redirect()->route('residents.index');
     }
 
     /**
