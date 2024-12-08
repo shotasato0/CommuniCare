@@ -75,7 +75,7 @@ const submitPost = () => {
             </div>
             <div class="flex justify-end mt-2">
                 <button
-                    class="my-2 px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
+                    class="my-2 px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-opacity-80 cursor-pointer"
                 >
                     <i class="bi bi-send"></i>
                 </button>

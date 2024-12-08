@@ -412,7 +412,7 @@ const isCommentAuthor = (comment) => {
                                         post.user ? post.user.name : 'Unknown'
                                     )
                                 "
-                                class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                                class="px-2 py-1 rounded bg-green-500 text-white font-bold hover:bg-opacity-80 cursor-pointer"
                                 title="返信"
                             >
                                 <i class="bi bi-reply"></i>
@@ -421,7 +421,7 @@ const isCommentAuthor = (comment) => {
                             <button
                                 type="button"
                                 @click="quotePost(post)"
-                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-opacity-80 cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
                                 <i class="bi bi-chat-quote"></i>
@@ -433,7 +433,7 @@ const isCommentAuthor = (comment) => {
                                     post.user && post.user.id === auth.user.id
                                 "
                                 @click.prevent="onDeleteItem('post', post.id)"
-                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold hover:bg-opacity-80 cursor-pointer"
                                 title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
@@ -529,10 +529,6 @@ const isCommentAuthor = (comment) => {
 </template>
 
 <style>
-.link-hover:hover {
-    opacity: 70%;
-}
-
 /* モバイルサイズ用のスタイル（切り替え可能） */
 @media (max-width: 767px) {
     .sidebar-mobile {
