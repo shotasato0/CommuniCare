@@ -116,20 +116,9 @@ const deleteResident = (residentId) => {
                                     class="flex justify-between items-center p-4 hover:bg-gray-50"
                                 >
                                     <div class="flex items-center space-x-4">
-                                        <img
-                                            :src="
-                                                resident.avatar ||
-                                                'https://via.placeholder.com/40'
-                                            "
-                                            class="w-10 h-10 rounded-full"
-                                            alt="利用者アイコン"
-                                        />
                                         <div>
-                                            <p class="font-medium">
+                                            <p class="font-bold text-lg">
                                                 {{ resident.name }}
-                                            </p>
-                                            <p class="text-sm text-gray-500">
-                                                {{ resident.unit?.name }}
                                             </p>
                                         </div>
                                     </div>
