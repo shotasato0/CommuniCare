@@ -72,7 +72,9 @@ class ResidentController extends Controller
      */
     public function update(Request $request, Resident $resident)
     {
-        //
+        $resident->update($request->all());
+        return to_route('residents.index')
+            ->with('success', '利用者情報を更新しました。');
     }
 
     /**
