@@ -50,6 +50,11 @@ const selectedUnitName = computed(() => {
     );
     return unit ? unit.name : "全ユニット";
 });
+
+// ソートされた利用者リストを返す算出プロパティを追加
+const sortedResidents = computed(() => {
+    return [...props.residents].sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+});
 </script>
 
 <template>
@@ -125,11 +130,11 @@ const selectedUnitName = computed(() => {
                         <div class="bg-white shadow rounded-lg p-4">
                             <!-- 利用者が存在する場合 -->
                             <div
-                                v-if="residents.length > 0"
+                                v-if="sortedResidents.length > 0"
                                 class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
                             >
                                 <div
-                                    v-for="resident in residents"
+                                    v-for="resident in sortedResidents"
                                     :key="resident.id"
                                     class="relative bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
                                 >
@@ -151,7 +156,7 @@ const selectedUnitName = computed(() => {
                                 </div>
                             </div>
 
-                            <!-- 利用者が存在しない場合 -->
+                            <!-- 利用者が存���しない場合 -->
                             <div v-else class="p-8 text-center text-gray-500">
                                 <i class="bi bi-people text-4xl mb-2 block"></i>
                                 <p class="text-lg font-medium">
