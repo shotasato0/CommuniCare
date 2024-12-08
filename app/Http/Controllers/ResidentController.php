@@ -62,7 +62,9 @@ class ResidentController extends Controller
      */
     public function edit(Resident $resident)
     {
-        //
+        return Inertia::render('Residents/Edit', [
+            'resident' => $resident,
+        ]);
     }
 
     /**
