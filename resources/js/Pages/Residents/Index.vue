@@ -71,14 +71,18 @@ const flashMessage = computed(
 );
 
 // フラッシュメッセージを監視して自動的に消す
-watch(flashMessage, (newMessage) => {
-    if (newMessage) {
-        showFlashMessage.value = true;
-        setTimeout(() => {
-            showFlashMessage.value = false;
-        }, 8000);
-    }
-});
+watch(
+    flashMessage,
+    (newMessage) => {
+        if (newMessage) {
+            showFlashMessage.value = true;
+            setTimeout(() => {
+                showFlashMessage.value = false;
+            }, 8000);
+        }
+    },
+    { immediate: true }
+);
 
 // 削除モードを解除するためのクリックイベントハンドラを追加
 const handleClickOutside = (event) => {
@@ -94,13 +98,6 @@ const handleClickOutside = (event) => {
 
 // コンポーネントがマウントされた時にイベントリスナーを追加
 onMounted(() => {
-    // 初期表示時のフラッシュメッセージ用タイマー
-    if (flashMessage.value) {
-        setTimeout(() => {
-            showFlashMessage.value = false;
-        }, 8000);
-    }
-
     // クリックイベントリスナーを追加
     document.addEventListener("click", handleClickOutside);
 });
