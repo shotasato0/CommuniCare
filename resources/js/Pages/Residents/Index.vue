@@ -104,36 +104,34 @@ const deleteResident = (residentId) => {
                         </div>
 
                         <!-- 利用者一覧 -->
-                        <div class="bg-white shadow rounded-lg">
+                        <div class="bg-white shadow rounded-lg p-4">
                             <!-- 利用者が存在する場合 -->
-                            <ul
+                            <div
                                 v-if="residents.length > 0"
-                                class="divide-y divide-gray-200"
+                                class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
                             >
-                                <li
+                                <div
                                     v-for="resident in residents"
                                     :key="resident.id"
-                                    class="flex justify-between items-center p-4 hover:bg-gray-50"
+                                    class="relative bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
                                 >
-                                    <div class="flex items-center space-x-4">
-                                        <div>
-                                            <p class="font-bold text-lg">
-                                                {{ resident.name }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- 削除ボタン -->
-                                    <button
-                                        v-if="showDeleteButtons"
-                                        @click="deleteResident(resident.id)"
-                                        class="text-red-500 hover:text-red-700 transition"
-                                        title="削除"
+                                    <div
+                                        class="flex justify-between items-start"
                                     >
-                                        <i class="bi bi-trash text-xl"></i>
-                                    </button>
-                                </li>
-                            </ul>
+                                        <p class="font-bold text-lg">
+                                            {{ resident.name }}
+                                        </p>
+                                        <button
+                                            v-if="showDeleteButtons"
+                                            @click="deleteResident(resident.id)"
+                                            class="text-red-500 hover:text-red-700 transition"
+                                            title="削除"
+                                        >
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- 利用者が存在しない場合 -->
                             <div v-else class="p-8 text-center text-gray-500">
