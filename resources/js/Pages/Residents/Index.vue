@@ -124,7 +124,7 @@ const flashType = computed(() =>
     flash.value.success ? "success" : flash.value.error ? "error" : "info"
 );
 
-// 部署ごとにグループ化さ��た利用者リストを返す算出プロパティ
+// 部署ごとにグループ化された利用者リストを返す算出プロパティ
 const groupedResidents = computed(() => {
     if (selectedUnit.value) {
         // 特定の部署が選択されている場合
@@ -207,47 +207,18 @@ const filteredGroupedResidents = computed(() => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
-                        <!-- コントロール部分 -->
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center space-x-4">
-                                <!-- 部署選択 -->
-                                <select
-                                    v-model="selectedUnit"
-                                    class="rounded-md border-gray-300 shadow-sm"
-                                >
-                                    <option value="">全部署</option>
-                                    <option
-                                        v-for="unit in units"
-                                        :key="unit.id"
-                                        :value="unit.id"
-                                    >
-                                        {{ unit.name }}
-                                    </option>
-                                </select>
-
-                                <!-- 検索フィールドを追加 -->
-                                <div class="relative">
-                                    <input
-                                        type="text"
-                                        v-model="searchQuery"
-                                        placeholder="利用者名で検索..."
-                                        class="rounded-md border-gray-300 shadow-sm pl-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                    <div
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                                    >
-                                        <i
-                                            class="bi bi-search text-gray-400"
-                                        ></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center space-x-4">
+                        <!-- コントロール部分を修正 -->
+                        <div
+                            class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center mb-6"
+                        >
+                            <!-- 新規登録と削除モードボタン（モバイルでは上部に配置） -->
+                            <div
+                                class="flex items-center space-x-4 order-1 sm:order-2"
+                            >
                                 <!-- 新規登録ボタン -->
                                 <Link
                                     :href="route('residents.create')"
-                                    class="px-4 py-2 bg-blue-500 text-white rounded-md transition hover:bg-opacity-80"
+                                    class="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md transition hover:bg-opacity-80 text-center"
                                 >
                                     新規登録
                                 </Link>
@@ -257,7 +228,7 @@ const filteredGroupedResidents = computed(() => {
                                     @click="
                                         showDeleteButtons = !showDeleteButtons
                                     "
-                                    class="px-4 py-2 text-white rounded-md transition delete-mode-button"
+                                    class="w-full sm:w-auto px-4 py-2 text-white rounded-md transition delete-mode-button"
                                     :class="
                                         showDeleteButtons
                                             ? 'bg-red-300 text-red-700 hover:bg-opacity-80'
@@ -271,15 +242,43 @@ const filteredGroupedResidents = computed(() => {
                                     }}
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- 部署見出しを追加 -->
-                        <div class="mb-6">
-                            <h3
-                                class="text-2xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2"
+                            <!-- 検索コントロール（モバイルでは下部に配置） -->
+                            <div
+                                class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 order-2 sm:order-1"
                             >
-                                {{ selectedUnitName }}
-                            </h3>
+                                <!-- 部署選択 -->
+                                <select
+                                    v-model="selectedUnit"
+                                    class="w-full sm:w-auto rounded-md border-gray-300 shadow-sm"
+                                >
+                                    <option value="">全部署</option>
+                                    <option
+                                        v-for="unit in units"
+                                        :key="unit.id"
+                                        :value="unit.id"
+                                    >
+                                        {{ unit.name }}
+                                    </option>
+                                </select>
+
+                                <!-- 検索フィールド -->
+                                <div class="relative w-full sm:w-auto">
+                                    <input
+                                        type="text"
+                                        v-model="searchQuery"
+                                        placeholder="利用者名で検索..."
+                                        class="w-full rounded-md border-gray-300 shadow-sm pl-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                    >
+                                        <i
+                                            class="bi bi-search text-gray-400"
+                                        ></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 利用者一覧 -->
