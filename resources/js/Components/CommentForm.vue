@@ -59,7 +59,7 @@ const submitComment = () => {
         <!-- メッセージ入力 -->
         <textarea
             v-model="commentData.message"
-            class="border rounded mt-4 px-2 w-full"
+            class="border-gray-300 rounded-md mt-4 px-2 w-full"
             required
             :placeholder="
                 commentData.replyToName

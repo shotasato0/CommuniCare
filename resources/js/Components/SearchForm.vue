@@ -52,7 +52,7 @@ const compositionEnd = () => {
             v-model="search"
             type="text"
             placeholder="投稿を検索"
-            class="border p-2 w-full pr-12 rounded shadow-sm focus:ring-2 focus:ring-blue-500"
+            class="border-gray-300 p-2 w-full pr-12 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
             @keydown.enter="searchPosts"
             @compositionstart="compositionStart"
             @compositionend="compositionEnd"
