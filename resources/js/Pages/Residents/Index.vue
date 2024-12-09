@@ -29,14 +29,28 @@ watch(selectedUnit, (newUnitId) => {
     });
 });
 
-// 利用者削除の処理
+// フラッシュメッセージの状態管理を修正
+const localFlashMessage = ref(null);
+const showFlashMessage = ref(false);
+
+// フラッシュメッセージを表示する関数
+const displayFlashMessage = (message) => {
+    localFlashMessage.value = message;
+    showFlashMessage.value = true;
+    setTimeout(() => {
+        showFlashMessage.value = false;
+        localFlashMessage.value = null;
+    }, 8000);
+};
+
+// 削除処理を修正
 const deleteResident = (residentId) => {
     if (confirm("本当にこの利用者を削除しますか？")) {
         router.delete(route("residents.destroy", residentId), {
             preserveScroll: true,
-            onSuccess: () => {
-                // 削除成功時の処理
+            onSuccess: (page) => {
                 showDeleteButtons.value = false;
+                displayFlashMessage(page.props.flash.success);
             },
         });
     }
@@ -63,26 +77,6 @@ const flash = computed(() => {
     console.log("Flash props:", usePage().props.flash);
     return usePage().props.flash;
 });
-
-// フラッシュメッセージの表示制御
-const showFlashMessage = ref(true);
-const flashMessage = computed(
-    () => flash.value.success || flash.value.error || flash.value.info || null
-);
-
-// フラッシュメッセージを監視して自動的に消す
-watch(
-    flashMessage,
-    (newMessage) => {
-        if (newMessage) {
-            showFlashMessage.value = true;
-            setTimeout(() => {
-                showFlashMessage.value = false;
-            }, 8000);
-        }
-    },
-    { immediate: true }
-);
 
 // 削除モードを解除するためのクリックイベントハンドラを追加
 const handleClickOutside = (event) => {
@@ -124,7 +118,7 @@ const flashType = computed(() =>
         <!-- フラッシュメッセージの条件を修正 -->
         <transition name="fade">
             <div
-                v-if="flashMessage && showFlashMessage"
+                v-if="localFlashMessage && showFlashMessage"
                 :class="{
                     'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
                         flashType === 'success',
@@ -135,7 +129,7 @@ const flashType = computed(() =>
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
             >
-                <p class="font-bold">{{ flashMessage }}</p>
+                <p class="font-bold">{{ localFlashMessage }}</p>
             </div>
         </transition>
 
