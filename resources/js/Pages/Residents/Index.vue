@@ -124,30 +124,56 @@ const flashType = computed(() =>
     flash.value.success ? "success" : flash.value.error ? "error" : "info"
 );
 
-// 部署ごとにグループ化された利用者リストを返す算出プロパティ
+// 部署ごとにグループ化さ��た利用者リストを返す算出プロパティ
 const groupedResidents = computed(() => {
     if (selectedUnit.value) {
         // 特定の部署が選択されている場合
         const residentsInUnit = props.residents
-            .filter(resident => resident.unit_id === Number(selectedUnit.value))
+            .filter(
+                (resident) => resident.unit_id === Number(selectedUnit.value)
+            )
             .sort((a, b) => a.name.localeCompare(b.name, "ja"));
 
         return residentsInUnit.length > 0
             ? { [selectedUnitName.value]: residentsInUnit }
-            : {};  // 空のオブジェクトを返して「利用者が登録されていません」を表示
+            : {}; // 空のオブジェクトを返して「利用者が登録されていません」を表示
     }
 
     // 全部署表示の場合、部署ごとにグループ化
     return props.units.reduce((acc, unit) => {
         const residentsInUnit = props.residents
-            .filter(resident => resident.unit_id === unit.id)
+            .filter((resident) => resident.unit_id === unit.id)
             .sort((a, b) => a.name.localeCompare(b.name, "ja"));
-        
+
         if (residentsInUnit.length > 0) {
             acc[unit.name] = residentsInUnit;
         }
         return acc;
     }, {});
+});
+
+// 検索用の状態を追加
+const searchQuery = ref("");
+
+// グループ化された利用者リストを検索クエリでフィルタリング
+const filteredGroupedResidents = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase();
+
+    // 検索クエリが空の場合は全ての結果を返す
+    if (!query) return groupedResidents.value;
+
+    // 各部署の利用者をフィルタリング
+    const filtered = {};
+    Object.entries(groupedResidents.value).forEach(([unitName, residents]) => {
+        const filteredResidents = residents.filter((resident) =>
+            resident.name.toLowerCase().includes(query)
+        );
+        if (filteredResidents.length > 0) {
+            filtered[unitName] = filteredResidents;
+        }
+    });
+
+    return filtered;
 });
 </script>
 
@@ -184,6 +210,7 @@ const groupedResidents = computed(() => {
                         <!-- コントロール部分 -->
                         <div class="flex justify-between items-center mb-6">
                             <div class="flex items-center space-x-4">
+                                <!-- 部署選択 -->
                                 <select
                                     v-model="selectedUnit"
                                     class="rounded-md border-gray-300 shadow-sm"
@@ -197,6 +224,23 @@ const groupedResidents = computed(() => {
                                         {{ unit.name }}
                                     </option>
                                 </select>
+
+                                <!-- 検索フィールドを追加 -->
+                                <div class="relative">
+                                    <input
+                                        type="text"
+                                        v-model="searchQuery"
+                                        placeholder="利用者名で検索..."
+                                        class="rounded-md border-gray-300 shadow-sm pl-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                    >
+                                        <i
+                                            class="bi bi-search text-gray-400"
+                                        ></i>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="flex items-center space-x-4">
@@ -242,12 +286,15 @@ const groupedResidents = computed(() => {
                         <div class="bg-white shadow rounded-lg p-4">
                             <!-- 利用者が存在する場合 -->
                             <div
-                                v-if="Object.keys(groupedResidents).length > 0"
+                                v-if="
+                                    Object.keys(filteredGroupedResidents)
+                                        .length > 0
+                                "
                             >
                                 <div
                                     v-for="(
                                         residents, unitName
-                                    ) in groupedResidents"
+                                    ) in filteredGroupedResidents"
                                     :key="unitName"
                                     class="mb-8"
                                 >
@@ -317,11 +364,15 @@ const groupedResidents = computed(() => {
                                 </div>
                             </div>
 
-                            <!-- 利用者が存在しない場合 -->
+                            <!-- 検索結果が存在しない場合 -->
                             <div v-else class="p-8 text-center text-gray-500">
                                 <i class="bi bi-people text-4xl mb-2 block"></i>
                                 <p class="text-lg font-medium">
-                                    利用者が登録されていません。
+                                    {{
+                                        searchQuery
+                                            ? "検索条件に一致する利用者が見つかりません。"
+                                            : "利用者が登録されていません。"
+                                    }}
                                 </p>
                             </div>
                         </div>
