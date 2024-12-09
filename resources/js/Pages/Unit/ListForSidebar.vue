@@ -80,10 +80,6 @@ export default {
         openUserProfile(user) {
             this.$emit("user-profile-clicked", user);
         },
-        resetDropdown() {
-            this.$emit("forum-selected", null); // 親コンポーネントに通知
-            this.isFetchingData = false;
-        },
     },
 };
 </script>

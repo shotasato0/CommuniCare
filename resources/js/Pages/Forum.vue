@@ -123,17 +123,6 @@ const closeUserProfile = () => {
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
     console.log("sidebarVisible.value:", sidebarVisible.value);
-
-    // サイドバーを非表示にする際にドロップダウンを閉じる
-    if (!sidebarVisible.value) {
-        if (sidebar.value && sidebar.value.resetDropdown) {
-            sidebar.value.resetDropdown();
-        } else {
-            console.error(
-                "Sidebar component reference not found or resetDropdown method is undefined."
-            );
-        }
-    }
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
