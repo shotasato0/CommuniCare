@@ -14,12 +14,12 @@ const props = defineProps({
     },
     selectedUnitId: {
         type: [Number, String],
-        default: null,
+        default: "",
     },
 });
 
 const showDeleteButtons = ref(false);
-const selectedUnit = ref(props.selectedUnitId);
+const selectedUnit = ref(props.selectedUnitId || "");
 
 // フラッシュメッセージの状態管理
 const localFlashMessage = ref(null);
@@ -63,10 +63,15 @@ const deleteResident = (residentId) => {
 
 // 部署変更時の処理
 watch(selectedUnit, (newUnitId) => {
-    router.get(route("residents.index", { unit_id: newUnitId }), {
-        preserveState: true,
-        preserveScroll: true,
-    });
+    router.get(
+        route("residents.index", {
+            unit_id: newUnitId === "" ? null : newUnitId,
+        }),
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
 });
 
 // 選択された部署名を取得する算出プロパティを追加
