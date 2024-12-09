@@ -18,6 +18,16 @@ export default {
             required: false,
             default: () => [],
         },
+        activeUnitId: {
+            type: Number,
+            required: false,
+            default: null,
+        },
+    },
+    computed: {
+        selectedUnitId() {
+            return this.activeUnitId;
+        },
     },
     data() {
         return {
@@ -32,44 +42,47 @@ export default {
                 return;
             }
 
-            console.log("Unit clicked:", unit); // デバッグ用
-            this.isFetchingData = true; // フラグをセット
-            this.toggleUnit(unit.id);
-            console.log("call fetchUnitData");
+            this.isFetchingData = true;
 
-            // 選択されたユニットIDを親コンポーネントに伝えるイベントを発火
+            // toggleUnitを呼び出して掲示板の切り替えを行う
+            this.toggleUnit(unit.id);
+
+            // 親コンポーネントに選択された部署IDを通知
             this.$emit("forum-selected", unit.id);
 
+            console.log("call fetchUnitData");
             await this.fetchUnitData(unit.id);
-            this.isFetchingData = false; // フラグをリセット
+            this.isFetchingData = false;
         },
+
+        // toggleUnitメソッドを復活
+        toggleUnit(unitId) {
+            console.log("Toggling unit:", unitId);
+            // 親コンポーネントの状態を変更するためにイベントを発火
+            this.$emit("forum-selected", unitId);
+        },
+
         fetchUnitData(unitId) {
-            console.log("Fetching data for unit ID:", unitId); // デバッグ用
+            console.log("Fetching data for unit ID:", unitId);
 
             router.visit(route("forum.index"), {
                 method: "get",
-                only: ["units"], // 必要なプロパティを指定
-                preserveState: true, // ページ遷移なし
+                only: ["units"],
+                preserveState: true,
                 onSuccess: (page) => {
                     console.log("Received data:", page.props.units);
-                    this.$emit("forum-selected", unitId);
                 },
                 onError: (errors) => {
                     console.error("Error fetching unit data:", errors);
                 },
             });
         },
-        toggleUnit(unitId) {
-            console.log("Toggling unit:", unitId); // デバッグ用
-            this.selectedUnitId =
-                this.selectedUnitId === unitId ? null : unitId;
-        },
         openUserProfile(user) {
-            this.$emit("user-profile-clicked", user); // 親にイベントを伝播
+            this.$emit("user-profile-clicked", user);
         },
         resetDropdown() {
-            this.selectedUnitId = null; // 選択されたユニットをリセット
-            this.isFetchingData = false; // データ取得中フラグをリセット
+            this.$emit("forum-selected", null); // 親コンポーネントに通知
+            this.isFetchingData = false;
         },
     },
 };
@@ -82,7 +95,12 @@ export default {
             <li
                 v-for="unit in units"
                 :key="unit.id"
-                class="mb-2 p-2 rounded text-gray-500 hover:text-black hover:bg-gray-200 cursor-pointer"
+                class="mb-2 p-2 rounded cursor-pointer"
+                :class="{
+                    'text-gray-500 hover:text-black hover:bg-gray-200':
+                        activeUnitId !== unit.id,
+                    'bg-gray-200': activeUnitId === unit.id,
+                }"
                 @click="handleUnitClick(unit)"
             >
                 <span class="font-bold">{{ unit.name }}</span>
