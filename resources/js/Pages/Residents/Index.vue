@@ -118,6 +118,28 @@ onUnmounted(() => {
 const flashType = computed(() =>
     flash.value.success ? "success" : flash.value.error ? "error" : "info"
 );
+
+// 部署ごとにグループ化された利用者リストを返す算出プロパティ
+const groupedResidents = computed(() => {
+    if (selectedUnit.value) {
+        // 特定の部署が選択されている場合は現在の表示を維持
+        return {
+            [selectedUnitName.value]: sortedResidents.value,
+        };
+    }
+
+    // 全部署表示の場合、部署ごとにグループ化
+    return props.units.reduce((acc, unit) => {
+        const residentsInUnit = props.residents
+            .filter((resident) => resident.unit_id === unit.id)
+            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+
+        if (residentsInUnit.length > 0) {
+            acc[unit.name] = residentsInUnit;
+        }
+        return acc;
+    }, {});
+});
 </script>
 
 <template>
@@ -211,51 +233,77 @@ const flashType = computed(() =>
                         <div class="bg-white shadow rounded-lg p-4">
                             <!-- 利用者が存在する場合 -->
                             <div
-                                v-if="sortedResidents.length > 0"
-                                class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
+                                v-if="Object.keys(groupedResidents).length > 0"
                             >
                                 <div
-                                    v-for="resident in sortedResidents"
-                                    :key="resident.id"
-                                    :class="[
-                                        'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
-                                        showDeleteButtons
-                                            ? 'hover:bg-red-50 cursor-pointer'
-                                            : 'hover:bg-gray-50 hover:shadow-md',
-                                    ]"
-                                    @click="
-                                        showDeleteButtons
-                                            ? deleteResident(resident.id)
-                                            : null
-                                    "
+                                    v-for="(
+                                        residents, unitName
+                                    ) in groupedResidents"
+                                    :key="unitName"
+                                    class="mb-8"
                                 >
-                                    <Link
-                                        v-if="!showDeleteButtons"
-                                        :href="
-                                            route('residents.show', resident.id)
-                                        "
-                                        class="block"
+                                    <!-- 部署見出し -->
+                                    <h3
+                                        class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4"
+                                    >
+                                        {{ unitName }}
+                                    </h3>
+
+                                    <!-- 部署ごとの利用者一覧 -->
+                                    <div
+                                        class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4"
                                     >
                                         <div
-                                            class="flex justify-between items-start"
+                                            v-for="resident in residents"
+                                            :key="resident.id"
+                                            :class="[
+                                                'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                                showDeleteButtons
+                                                    ? 'hover:bg-red-50 cursor-pointer'
+                                                    : 'hover:bg-gray-50 hover:shadow-md',
+                                            ]"
+                                            @click="
+                                                showDeleteButtons
+                                                    ? deleteResident(
+                                                          resident.id
+                                                      )
+                                                    : null
+                                            "
                                         >
-                                            <span
-                                                class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                            <Link
+                                                v-if="!showDeleteButtons"
+                                                :href="
+                                                    route(
+                                                        'residents.show',
+                                                        resident.id
+                                                    )
+                                                "
+                                                class="block"
                                             >
-                                                {{ resident.name }}
-                                            </span>
+                                                <div
+                                                    class="flex justify-between items-start"
+                                                >
+                                                    <span
+                                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                    >
+                                                        {{ resident.name }}
+                                                    </span>
+                                                </div>
+                                            </Link>
+                                            <div
+                                                v-else
+                                                class="flex justify-between items-start"
+                                            >
+                                                <span
+                                                    class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
+                                                >
+                                                    {{ resident.name }}
+                                                </span>
+                                                <i
+                                                    class="bi bi-trash text-red-500"
+                                                ></i>
+                                            </div>
                                         </div>
-                                    </Link>
-                                    <div
-                                        v-else
-                                        class="flex justify-between items-start"
-                                    >
-                                        <span
-                                            class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
-                                        >
-                                            {{ resident.name }}
-                                        </span>
-                                        <i class="bi bi-trash text-red-500"></i>
                                     </div>
                                 </div>
                             </div>
