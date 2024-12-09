@@ -127,18 +127,22 @@ const flashType = computed(() =>
 // 部署ごとにグループ化された利用者リストを返す算出プロパティ
 const groupedResidents = computed(() => {
     if (selectedUnit.value) {
-        // 特定の部署が選択されている場合は現在の表示を維持
-        return {
-            [selectedUnitName.value]: sortedResidents.value,
-        };
+        // 特定の部署が選択されている場合
+        const residentsInUnit = props.residents
+            .filter(resident => resident.unit_id === Number(selectedUnit.value))
+            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+
+        return residentsInUnit.length > 0
+            ? { [selectedUnitName.value]: residentsInUnit }
+            : {};  // 空のオブジェクトを返して「利用者が登録されていません」を表示
     }
 
     // 全部署表示の場合、部署ごとにグループ化
     return props.units.reduce((acc, unit) => {
         const residentsInUnit = props.residents
-            .filter((resident) => resident.unit_id === unit.id)
+            .filter(resident => resident.unit_id === unit.id)
             .sort((a, b) => a.name.localeCompare(b.name, "ja"));
-
+        
         if (residentsInUnit.length > 0) {
             acc[unit.name] = residentsInUnit;
         }
