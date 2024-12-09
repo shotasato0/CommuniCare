@@ -75,10 +75,11 @@ const submitPost = () => {
             </div>
             <div class="flex justify-end mt-2">
                 <button
-                    class="my-2 px-2 py-1 rounded bg-blue-500 text-white font-bold hover:bg-opacity-80 cursor-pointer"
-                >
-                    <i class="bi bi-send"></i>
-                </button>
+    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
+>
+    <i class="bi bi-send"></i>
+</button>
+
             </div>
         </form>
     </div>
