@@ -77,12 +77,12 @@ export default {
 
 <template>
     <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
-        <h2 class="text-xl font-bold mb-4">部署一覧</h2>
+        <h2 class="text-lg font-bold mb-4">部署一覧</h2>
         <ul>
             <li
                 v-for="unit in units"
                 :key="unit.id"
-                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer"
+                class="mb-2 p-2 rounded text-gray-500 hover:text-black hover:bg-gray-200 cursor-pointer"
                 @click="handleUnitClick(unit)"
             >
                 <span class="font-bold">{{ unit.name }}</span>
