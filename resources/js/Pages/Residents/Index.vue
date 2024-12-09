@@ -2,6 +2,7 @@
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { router, Link, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import SearchForm from "./Components/SearchForm.vue";
 
 const props = defineProps({
     residents: {
@@ -197,6 +198,15 @@ const resetSearch = () => {
         }
     );
 };
+
+// v-modelバインディング用のemits
+const updateSearchQuery = (query) => {
+    searchQuery.value = query;
+};
+
+const updateSelectedUnit = (unit) => {
+    selectedUnit.value = unit;
+};
 </script>
 
 <template>
@@ -264,64 +274,15 @@ const resetSearch = () => {
                                 </button>
                             </div>
 
-                            <!-- 検索コントロール -->
-                            <div
-                                class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 order-2 sm:order-1"
-                            >
-                                <!-- 部署選択 -->
-                                <div class="w-full sm:w-auto">
-                                    <select
-                                        v-model="selectedUnit"
-                                        class="w-full rounded-md border-gray-300 shadow-sm"
-                                    >
-                                        <option value="">全部署</option>
-                                        <option
-                                            v-for="unit in units"
-                                            :key="unit.id"
-                                            :value="unit.id"
-                                        >
-                                            {{ unit.name }}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- 検索フィールドと結果表示 -->
-                                <div class="w-full sm:w-auto space-y-2">
-                                    <div class="relative">
-                                        <input
-                                            type="text"
-                                            v-model="searchQuery"
-                                            placeholder="利用者名で検索..."
-                                            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                        />
-                                        <!-- 検索アイコン -->
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                                        >
-                                            <i
-                                                class="bi bi-search text-gray-400"
-                                            ></i>
-                                        </div>
-                                        <!-- リセットアイコン -->
-                                        <div
-                                            v-if="searchQuery"
-                                            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                                            @click="resetSearch"
-                                        >
-                                            <i
-                                                class="bi bi-x text-gray-400 hover:text-gray-600"
-                                            ></i>
-                                        </div>
-                                    </div>
-                                    <!-- 検索結果件数表示 -->
-                                    <div
-                                        v-if="searchQuery"
-                                        class="text-sm text-gray-600 absolute mt-1"
-                                    >
-                                        検索結果: {{ totalResidents }}件
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- 検索フォームをコンポーネントに置き換え -->
+                            <SearchForm
+                                :units="units"
+                                :selected-unit-id="selectedUnit"
+                                :total-results="totalResidents"
+                                @update:search-query="updateSearchQuery"
+                                @update:selected-unit="updateSelectedUnit"
+                                class="order-2 sm:order-1"
+                            />
                         </div>
 
                         <!-- 利用者一覧 -->
