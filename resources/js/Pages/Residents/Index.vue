@@ -21,20 +21,14 @@ const props = defineProps({
 const showDeleteButtons = ref(false);
 const selectedUnit = ref(props.selectedUnitId);
 
-// 部署変更時の処理
-watch(selectedUnit, (newUnitId) => {
-    router.get(route("residents.index", { unit_id: newUnitId }), {
-        preserveState: true,
-        preserveScroll: true,
-    });
-});
-
-// フラッシュメッセージの状態管理を修正
+// フラッシュメッセージの状態管理
 const localFlashMessage = ref(null);
 const showFlashMessage = ref(false);
 
-// フラッシュメッセージを表示する関数
+// フラッシュメッセージを表示する関数を先に定義
 const displayFlashMessage = (message) => {
+    if (!message) return;
+
     localFlashMessage.value = message;
     showFlashMessage.value = true;
     setTimeout(() => {
@@ -43,7 +37,18 @@ const displayFlashMessage = (message) => {
     }, 8000);
 };
 
-// 削除処理を修正
+// フラッシュメッセージを監視（関数定義後に配置）
+watch(
+    () => usePage().props.flash,
+    (newFlash) => {
+        if (newFlash.success || newFlash.error) {
+            displayFlashMessage(newFlash.success || newFlash.error);
+        }
+    },
+    { immediate: true }
+);
+
+// 削除処理
 const deleteResident = (residentId) => {
     if (confirm("本当にこの利用者を削除しますか？")) {
         router.delete(route("residents.destroy", residentId), {
@@ -55,6 +60,14 @@ const deleteResident = (residentId) => {
         });
     }
 };
+
+// 部署変更時の処理
+watch(selectedUnit, (newUnitId) => {
+    router.get(route("residents.index", { unit_id: newUnitId }), {
+        preserveState: true,
+        preserveScroll: true,
+    });
+});
 
 // 選択された部署名を取得する算出プロパティを追加
 const selectedUnitName = computed(() => {
