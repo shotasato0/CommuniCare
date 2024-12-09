@@ -122,7 +122,7 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer flex items-center"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
@@ -131,7 +131,7 @@ const getCommentCountRecursive = (comments) => {
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="onDeleteItem('comment', comment.id)"
-                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer flex items-center"
                         title="コメント削除"
                     >
                         <i class="bi bi-trash"></i>

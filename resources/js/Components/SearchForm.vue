@@ -29,7 +29,10 @@ const resetSearch = () => {
     search.value = "";
     router.get(
         route("forum.index"),
-        { selectedunit_id: selectedUnitId.value, forum_id: selectedForumId.value },
+        {
+            selectedunit_id: selectedUnitId.value,
+            forum_id: selectedForumId.value,
+        },
         { replace: true }
     ); // ユニットIDと掲示板IDを保持したまま検索リセット
 };
@@ -52,7 +55,7 @@ const compositionEnd = () => {
             v-model="search"
             type="text"
             placeholder="投稿を検索"
-            class="border-gray-300 p-2 w-full pr-12 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            class="border-gray-300 p-2 w-full pr-12 rounded-md shadow-sm focus:border-blue-500"
             @keydown.enter="searchPosts"
             @compositionstart="compositionStart"
             @compositionend="compositionEnd"
