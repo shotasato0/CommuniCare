@@ -247,9 +247,10 @@ const updateSelectedUnit = (unit) => {
                             <div
                                 class="flex items-center space-x-4 order-1 sm:order-2"
                             >
+                                <!-- 新規登録ボタン -->
                                 <Link
                                     :href="route('residents.create')"
-                                    class="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md transition hover:bg-opacity-80 text-center"
+                                    class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                                 >
                                     新規登録
                                 </Link>
@@ -259,11 +260,11 @@ const updateSelectedUnit = (unit) => {
                                     @click="
                                         showDeleteButtons = !showDeleteButtons
                                     "
-                                    class="w-full sm:w-auto px-4 py-2 text-white rounded-md transition delete-mode-button"
+                                    class="w-full sm:w-auto px-4 py-2 rounded-md transition delete-mode-button"
                                     :class="
                                         showDeleteButtons
-                                            ? 'bg-red-300 text-red-700 hover:bg-opacity-80'
-                                            : 'bg-red-500 hover:bg-opacity-80'
+                                            ? 'bg-red-100 text-red-700 hover:bg-red-300 hover:text-white'
+                                            : 'bg-red-200 text-red-600 hover:bg-red-400 hover:text-white'
                                     "
                                 >
                                     {{
