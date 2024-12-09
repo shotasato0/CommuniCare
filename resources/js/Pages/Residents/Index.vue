@@ -175,6 +175,28 @@ const filteredGroupedResidents = computed(() => {
 
     return filtered;
 });
+
+// 検索関連の computed プロパティを追加
+const totalResidents = computed(() => {
+    return Object.values(filteredGroupedResidents.value).reduce(
+        (total, residents) => total + residents.length,
+        0
+    );
+});
+
+// 検索をリセットする関数
+const resetSearch = () => {
+    searchQuery.value = "";
+    router.get(
+        route("residents.index", {
+            unit_id: selectedUnit.value === "" ? null : selectedUnit.value,
+        }),
+        {
+            preserveState: true,
+            preserveScroll: true,
+        }
+    );
+};
 </script>
 
 <template>
@@ -262,20 +284,40 @@ const filteredGroupedResidents = computed(() => {
                                     </option>
                                 </select>
 
-                                <!-- 検索フィールド -->
-                                <div class="relative w-full sm:w-auto">
-                                    <input
-                                        type="text"
-                                        v-model="searchQuery"
-                                        placeholder="利用者名で検索..."
-                                        class="w-full rounded-md border-gray-300 shadow-sm pl-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
+                                <!-- 検索フィールドと結果表示 -->
+                                <div class="w-full sm:w-auto space-y-2">
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            v-model="searchQuery"
+                                            placeholder="利用者名で検索..."
+                                            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        />
+                                        <!-- 検索アイコン -->
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                        >
+                                            <i
+                                                class="bi bi-search text-gray-400"
+                                            ></i>
+                                        </div>
+                                        <!-- リセットアイコン -->
+                                        <div
+                                            v-if="searchQuery"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                            @click="resetSearch"
+                                        >
+                                            <i
+                                                class="bi bi-x text-gray-400 hover:text-gray-600"
+                                            ></i>
+                                        </div>
+                                    </div>
+                                    <!-- 検索結果件数表示 -->
                                     <div
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                        v-if="searchQuery"
+                                        class="text-sm text-gray-600"
                                     >
-                                        <i
-                                            class="bi bi-search text-gray-400"
-                                        ></i>
+                                        検索結果: {{ totalResidents }}件
                                     </div>
                                 </div>
                             </div>
@@ -297,11 +339,16 @@ const filteredGroupedResidents = computed(() => {
                                     :key="unitName"
                                     class="mb-8"
                                 >
-                                    <!-- 部署見出し -->
+                                    <!-- 部署見出し（件数も表示）-->
                                     <h3
                                         class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4"
                                     >
                                         {{ unitName }}
+                                        <span
+                                            class="text-sm font-normal text-gray-600 ml-2"
+                                        >
+                                            ({{ residents.length }}名)
+                                        </span>
                                     </h3>
 
                                     <!-- 部署ごとの利用者一覧 -->
