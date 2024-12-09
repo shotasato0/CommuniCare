@@ -46,6 +46,7 @@ const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
+const activeUnitId = ref(null); // 選択中の部署IDを管理
 
 const quotePost = (post) => {
     quotedPost.value = post; // post全体をセットする
@@ -57,6 +58,11 @@ onMounted(() => {
     initSelectedForumId(selectedForumId);
     // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
+    // 保存された部署IDを復元
+    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+    if (savedUnitId) {
+        activeUnitId.value = parseInt(savedUnitId);
+    }
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
@@ -210,6 +216,12 @@ const getCurrentCommentCount = (post) => {
 const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
+
+const handleForumSelected = (unitId) => {
+    activeUnitId.value = unitId; // 選択された部署IDを保存
+    localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
+    onForumSelected(unitId);
+};
 </script>
 
 <template>
@@ -228,12 +240,13 @@ const isCommentAuthor = (comment) => {
             <ListForSidebar
                 :units="units"
                 :users="users"
+                :active-unit-id="activeUnitId"
                 class="sidebar-mobile p-4 sm:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
                 v-model:sidebarVisible="sidebarVisible"
-                @forum-selected="onForumSelected"
+                @forum-selected="handleForumSelected"
             />
 
             <!-- メインコンテンツエリア -->
