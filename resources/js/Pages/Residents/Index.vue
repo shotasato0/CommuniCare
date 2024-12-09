@@ -231,13 +231,12 @@ const resetSearch = () => {
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分を修正 -->
                         <div
-                            class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center mb-6"
+                            class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
                         >
-                            <!-- 新規登録と削除モードボタン（モバイルでは上部に配置） -->
+                            <!-- 新規登録と削除モードボタン -->
                             <div
                                 class="flex items-center space-x-4 order-1 sm:order-2"
                             >
-                                <!-- 新規登録ボタン -->
                                 <Link
                                     :href="route('residents.create')"
                                     class="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded-md transition hover:bg-opacity-80 text-center"
@@ -265,24 +264,26 @@ const resetSearch = () => {
                                 </button>
                             </div>
 
-                            <!-- 検索コントロール（モバイルでは下部に配置） -->
+                            <!-- 検索コントロール -->
                             <div
-                                class="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 order-2 sm:order-1"
+                                class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 order-2 sm:order-1"
                             >
                                 <!-- 部署選択 -->
-                                <select
-                                    v-model="selectedUnit"
-                                    class="w-full sm:w-auto rounded-md border-gray-300 shadow-sm"
-                                >
-                                    <option value="">全部署</option>
-                                    <option
-                                        v-for="unit in units"
-                                        :key="unit.id"
-                                        :value="unit.id"
+                                <div class="w-full sm:w-auto">
+                                    <select
+                                        v-model="selectedUnit"
+                                        class="w-full rounded-md border-gray-300 shadow-sm"
                                     >
-                                        {{ unit.name }}
-                                    </option>
-                                </select>
+                                        <option value="">全部署</option>
+                                        <option
+                                            v-for="unit in units"
+                                            :key="unit.id"
+                                            :value="unit.id"
+                                        >
+                                            {{ unit.name }}
+                                        </option>
+                                    </select>
+                                </div>
 
                                 <!-- 検索フィールドと結果表示 -->
                                 <div class="w-full sm:w-auto space-y-2">
@@ -315,7 +316,7 @@ const resetSearch = () => {
                                     <!-- 検索結果件数表示 -->
                                     <div
                                         v-if="searchQuery"
-                                        class="text-sm text-gray-600"
+                                        class="text-sm text-gray-600 absolute mt-1"
                                     >
                                         検索結果: {{ totalResidents }}件
                                     </div>
@@ -324,7 +325,7 @@ const resetSearch = () => {
                         </div>
 
                         <!-- 利用者一覧 -->
-                        <div class="bg-white shadow rounded-lg p-4">
+                        <div class="bg-white shadow rounded-lg p-4 mt-12">
                             <!-- 利用者が存在する場合 -->
                             <div
                                 v-if="
