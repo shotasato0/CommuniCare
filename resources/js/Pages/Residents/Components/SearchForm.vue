@@ -58,7 +58,7 @@ const resetSearch = () => {
                     v-model="searchQuery"
                     @input="emit('update:searchQuery', searchQuery)"
                     placeholder="利用者名で検索..."
-                    class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:ring-2 focus:ring-blue-500"
                 />
                 <!-- 検索アイコン -->
                 <div
