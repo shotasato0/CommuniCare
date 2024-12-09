@@ -43,7 +43,7 @@ const submit = () => {
                         type="text"
                         id="name"
                         v-model="form.name"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
                         placeholder="利用者名を入力してください"
                     />
                     <div
@@ -64,7 +64,7 @@ const submit = () => {
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
                         placeholder="所属部署を選択してください"
                     >
                         <option value="" disabled selected>
