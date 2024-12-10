@@ -301,8 +301,8 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 検索結果 -->
-                <div v-if="search" class="text-lg font-bold mb-4">
-                    <p>検索結果: {{ posts.total }}件</p>
+                <div class="text-sm text-gray-600 mt-1 h-6 flex items-center">
+                    <p v-if="search">検索結果: {{ posts.total }}件</p>
                 </div>
 
                 <!-- 上部ページネーション -->
