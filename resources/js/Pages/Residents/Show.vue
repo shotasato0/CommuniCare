@@ -53,10 +53,10 @@ const flashType = computed(() => (flash.value.success ? "success" : "error"));
         <div class="pt-6 pb-12 mt-16">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex items-center gap-8 mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">
+                    <h2 class="text-xl font-bold text-gray-800">
                         {{ resident.unit.name }}
                     </h2>
-                    <h2 class="text-2xl font-bold text-gray-800">
+                    <h2 class="text-xl font-bold text-gray-800">
                         {{ resident.name }}さんの情報
                     </h2>
                 </div>
