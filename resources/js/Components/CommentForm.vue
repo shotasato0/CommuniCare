@@ -55,24 +55,23 @@ const submitComment = () => {
 </script>
 
 <template>
-    <form @submit.prevent="submitComment">
-        <!-- メッセージ入力 -->
-        <textarea
-            v-model="commentData.message"
-            class="border-gray-300 rounded-md mt-4 px-2 w-full"
-            required
-            :placeholder="
-                commentData.replyToName
-                    ? `@${commentData.replyToName} にメッセージを送信`
-                    : 'メッセージを入力してください'
-            "
-        ></textarea>
+    <form @submit.prevent="submitComment" class="relative">
+        <!-- メッセージ入力エリアと送信ボタンを横並びに -->
+        <div class="flex items-start gap-2">
+            <textarea
+                v-model="commentData.message"
+                class="flex-grow border-gray-300 rounded-md px-2 py-1 text-sm min-h-[2.5rem] max-h-32"
+                required
+                :placeholder="
+                    commentData.replyToName
+                        ? `@${commentData.replyToName} にメッセージを送信`
+                        : 'メッセージを入力してください'
+                "
+            ></textarea>
 
-        <!-- 送信ボタン -->
-        <div class="flex justify-end mt-2">
             <button
                 type="submit"
-                class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
+                class="px-3 py-1 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer h-[2.5rem]"
             >
                 <i class="bi bi-send"></i>
             </button>
