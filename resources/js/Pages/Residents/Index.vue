@@ -185,20 +185,6 @@ const totalResidents = computed(() => {
     );
 });
 
-// 検索をリセットする関数
-const resetSearch = () => {
-    searchQuery.value = "";
-    router.get(
-        route("residents.index", {
-            unit_id: selectedUnit.value === "" ? null : selectedUnit.value,
-        }),
-        {
-            preserveState: true,
-            preserveScroll: true,
-        }
-    );
-};
-
 // v-modelバインディング用のemits
 const updateSearchQuery = (query) => {
     searchQuery.value = query;
