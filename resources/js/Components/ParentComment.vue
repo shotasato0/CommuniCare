@@ -21,7 +21,12 @@ const collapsedComments = ref({});
 
 // 子コメントの表示・非表示を切り替える関数
 const toggleCollapse = (commentId) => {
-    collapsedComments.value[commentId] = !collapsedComments.value[commentId];
+    if (!(commentId in collapsedComments.value)) {
+        collapsedComments.value[commentId] = true;
+    } else {
+        collapsedComments.value[commentId] =
+            !collapsedComments.value[commentId];
+    }
 };
 
 // 再帰的にすべての子コメントを含めてコメント数を取得する関数
@@ -156,7 +161,8 @@ const getCommentCountRecursive = (comments) => {
                     v-if="
                         comment.children &&
                         comment.children.length > 0 &&
-                        collapsedComments[comment.id]
+                        (!(comment.id in collapsedComments) ||
+                            collapsedComments[comment.id])
                     "
                     class="mt-4 ml-4 border-l-2 border-gray-300 pl-2"
                 >
