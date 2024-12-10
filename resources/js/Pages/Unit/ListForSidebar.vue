@@ -86,7 +86,7 @@ export default {
 
 <template>
     <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
-        <h2 class="text-lg font-bold mb-4">部署一覧</h2>
+        <h2 class="text-lg font-bold mb-4">{{ $t("Unit List") }}</h2>
         <ul>
             <li
                 v-for="unit in units"
