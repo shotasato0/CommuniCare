@@ -55,22 +55,26 @@ const compositionEnd = () => {
             v-model="search"
             type="text"
             placeholder="投稿を検索"
-            class="border-gray-300 p-2 w-full pr-12 rounded-md shadow-sm focus:border-blue-500"
+            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
             @keydown.enter="searchPosts"
             @compositionstart="compositionStart"
             @compositionend="compositionEnd"
         />
 
         <!-- 検索アイコン -->
-        <i
-            class="bi bi-search absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
-            @click="searchPosts"
-        ></i>
+        <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+        >
+            <i class="bi bi-search text-gray-400"></i>
+        </div>
+
         <!-- リセットアイコン（×ボタン） -->
-        <i
+        <div
             v-if="search"
-            class="bi bi-x absolute top-1/2 right-12 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
             @click="resetSearch"
-        ></i>
+        >
+            <i class="bi bi-x text-gray-400 hover:text-gray-600"></i>
+        </div>
     </div>
 </template>
