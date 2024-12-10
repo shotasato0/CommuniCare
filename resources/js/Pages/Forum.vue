@@ -285,7 +285,8 @@ onUnmounted(() => {
 
             <!-- メインコンテンツエリア -->
             <div class="flex-1 max-w-4xl mx-auto p-4">
-                <div class="flex justify-between items-center mb-4">
+                <!-- トグルボタンと検索フォーム -->
+                <div class="flex items-center mb-4 relative">
                     <h1
                         class="text-xl font-bold cursor-pointer toggle-button"
                         @click="toggleSidebar"
@@ -298,15 +299,17 @@ onUnmounted(() => {
                         :selected-forum-id="selectedForumId"
                         class="ml-auto"
                     />
-                </div>
 
-                <!-- 検索結果 -->
-                <div class="text-sm text-gray-600 mt-1 h-6 flex items-center">
-                    <p v-if="search">検索結果: {{ posts.total }}件</p>
+                    <!-- 検索結果 -->
+                    <div
+                        class="absolute top-full right-36 text-sm text-gray-600 mt-1 mb-16"
+                    >
+                        <p v-if="search">検索結果: {{ posts.total }}件</p>
+                    </div>
                 </div>
 
                 <!-- 上部ページネーション -->
-                <div class="mb-4 h-12 flex items-center justify-center">
+                <div class="mt-12 h-12 flex items-center justify-center">
                     <Pagination
                         v-if="posts?.links?.length"
                         :links="posts.links"
