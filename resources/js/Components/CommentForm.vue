@@ -28,13 +28,13 @@ onMounted(() => {
 // コメントの送信処理
 const submitComment = () => {
     commentData.value._token = getCsrfToken();
-    commentData.value.post_id = props.postId; // 送信対象の投稿IDをセット
+    commentData.value.post_id = props.postId;
 
-    // コメントデータをサーバーに送信
     router.post(
         route("comment.store", { post: props.postId }),
         commentData.value,
         {
+            preserveScroll: true,
             onSuccess: () => {
                 // フォームのリセット
                 commentData.value = {
@@ -42,9 +42,14 @@ const submitComment = () => {
                     parent_id: props.parentId,
                     message: "",
                 };
-                router.get(
-                    route("forum.index", { forum_id: props.selectedForumId })
-                ); // getで履歴を置き換え
+
+                router.visit(
+                    route("forum.index", { forum_id: props.selectedForumId }),
+                    {
+                        preserveScroll: true,
+                        replace: true,
+                    }
+                );
             },
             onError: (errors) => {
                 console.error("コメントの投稿に失敗しました:", errors);
