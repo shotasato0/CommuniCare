@@ -266,5 +266,6 @@ return [
         'tenant_domain_id' => 'テナントID',
         'icon' => 'プロフィール画像',
         'username_id' => 'ユーザーID',
+        'unit_id' => '所属部署',
     ],
 ];
