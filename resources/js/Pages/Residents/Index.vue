@@ -84,13 +84,6 @@ const selectedUnitName = computed(() => {
     return unit ? unit.name : "全部署";
 });
 
-// ソートされた利用者リストを返す算出プロパティを追加
-const sortedResidents = computed(() => {
-    return [...props.residents].sort((a, b) =>
-        a.name.localeCompare(b.name, "ja")
-    );
-});
-
 // フラッシュメッセージを取得
 const flash = computed(() => {
     console.log("Flash props:", usePage().props.flash);
@@ -140,7 +133,7 @@ const groupedResidents = computed(() => {
             : {}; // 空のオブジェクトを返して「利用者が登録されていません」を表示
     }
 
-    // 全部署表示の場合、部署ごとにグループ化
+    // 全部署表示の場合、部署ごとにグループ化とソート
     return props.units.reduce((acc, unit) => {
         const residentsInUnit = props.residents
             .filter((resident) => resident.unit_id === unit.id)
@@ -163,12 +156,13 @@ const filteredGroupedResidents = computed(() => {
     // 検索クエリが空の場合は全ての結果を返す
     if (!query) return groupedResidents.value;
 
-    // 各部署の利用者をフィルタリング
+    // 各部署の利用者をフィルタリングとソート
     const filtered = {};
     Object.entries(groupedResidents.value).forEach(([unitName, residents]) => {
-        const filteredResidents = residents.filter((resident) =>
-            resident.name.toLowerCase().includes(query)
-        );
+        const filteredResidents = residents
+            .filter((resident) => resident.name.toLowerCase().includes(query))
+            .sort((a, b) => a.name.localeCompare(b.name, "ja")); // ソート処理を追加
+
         if (filteredResidents.length > 0) {
             filtered[unitName] = filteredResidents;
         }
