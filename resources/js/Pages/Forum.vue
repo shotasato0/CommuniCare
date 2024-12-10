@@ -306,11 +306,13 @@ onUnmounted(() => {
                 </div>
 
                 <!-- 上部ページネーション -->
-                <Pagination
-                    :links="posts?.links || []"
-                    @change="onPageChange"
-                    class="mb-4"
-                />
+                <div class="mb-4 h-12 flex items-center justify-center">
+                    <Pagination
+                        v-if="posts?.links?.length"
+                        :links="posts.links"
+                        @change="onPageChange"
+                    />
+                </div>
 
                 <!-- 投稿フォーム -->
                 <PostForm
