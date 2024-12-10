@@ -285,10 +285,10 @@ onUnmounted(() => {
 
             <!-- メインコンテンツエリア -->
             <div class="flex-1 max-w-4xl mx-auto p-4">
-                <!-- トグルボタンと検索フォーム -->
+                <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
-                        class="text-xl font-bold cursor-pointer toggle-button"
+                        class="text-lg font-bold cursor-pointer toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
