@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
-import { router, Link, usePage } from "@inertiajs/vue3";
+import { router, Link, usePage, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SearchForm from "./Components/SearchForm.vue";
 
@@ -191,6 +191,7 @@ const updateSelectedUnit = (unit) => {
 
 <template>
     <AuthenticatedLayout>
+        <Head :title="$t('Residents')" />
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 利用者一覧
