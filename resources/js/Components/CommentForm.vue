@@ -84,11 +84,11 @@ const handleCancel = () => {
     commentData.value = {
         post_id: props.postId,
         parent_id: props.parentId,
-        message: '',
+        message: "",
         replyToName: props.replyToName,
     };
     // 親コンポーネントにキャンセルイベントを発行
-    emit('cancel');
+    emit("cancel");
 };
 </script>
 
@@ -106,15 +106,15 @@ const handleCancel = () => {
                 <button
                     type="button"
                     @click="handleCancel"
-                    class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    class="my-2 py-2 px-4 rounded-md bg-gray-300 text-gray-700 font-medium transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     <i class="bi bi-x-lg"></i>
                 </button>
                 <button
                     type="submit"
-                    class="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
                 >
-                    送信
+                    <i class="bi bi-send"></i>
                 </button>
             </div>
         </form>
