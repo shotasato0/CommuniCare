@@ -91,7 +91,9 @@ const props = defineProps({
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :replyToName="comment.parent_id ? comment.user?.name : ''"
+                    :selected-forum-id="selectedForumId"
+                    :replyToName="comment.user?.name || ''"
+                    @cancel="toggleCommentForm(postId, comment.id)"
                     class="mt-4"
                 />
             </div>
