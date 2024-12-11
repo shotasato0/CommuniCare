@@ -94,7 +94,6 @@ const handleCancel = () => {
 
 <template>
     <div class="mt-4">
-        <h3 class="font-bold mb-2">{{ title }}</h3>
         <form @submit.prevent="submitComment">
             <textarea
                 v-model="commentData.message"

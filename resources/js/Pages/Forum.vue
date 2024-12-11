@@ -479,7 +479,7 @@ const handleForumSelected = (unitId) => {
                     </div>
 
                     <h3 class="font-bold mt-8 mb-2">
-                        {{ getCurrentCommentCount(post) }}件のコメント
+                        {{ getCurrentCommentCount(post) }}件の返信
                     </h3>
 
                     <!-- 親コメントビュー -->
