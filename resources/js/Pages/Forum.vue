@@ -160,25 +160,15 @@ const onDeleteItem = (type, id) => {
                 (post) => post.id !== deletedId
             );
         } else if (type === "comment") {
+            // コメントの削除を即時反映
             handleCommentDeletion(deletedId);
         }
 
-        // 削除成功後にデータを再取得
-        axios
-            .get(route("forum.index", { forum_id: selectedForumId.value }))
-            .then((response) => {
-                posts.value = response.data.posts;
-
-                setTimeout(() => {
-                    window.scrollTo({
-                        top: scrollPosition,
-                        behavior: "instant",
-                    });
-                }, 100);
-            })
-            .catch((error) => {
-                console.error("データ取得エラー:", error);
-            });
+        // スクロール位置を復元
+        window.scrollTo({
+            top: scrollPosition,
+            behavior: "instant",
+        });
     });
 };
 

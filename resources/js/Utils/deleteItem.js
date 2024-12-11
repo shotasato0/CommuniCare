@@ -1,6 +1,5 @@
-import { router } from "@inertiajs/vue3";
-import { getCsrfToken } from "@/Utils/csrf";
 import axios from "axios";
+import { router } from "@inertiajs/vue3";
 
 /**
  * 汎用的な削除ロジック
@@ -10,24 +9,28 @@ import axios from "axios";
  */
 export const deleteItem = (type, id, callback) => {
     const isConfirmed = confirm("本当に削除しますか？");
-    
+
     if (!isConfirmed) {
         return;
     }
 
+    // CSRFトークンを取得
+    const token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+
     // 削除用のルートを設定
-    const route = type === 'post' 
-        ? `/forum/post/${id}`
-        : `/forum/comment/${id}`;
+    const deleteUrl =
+        type === "post" ? route('forum.destroy', { id }) : route('comment.destroy', { id });
 
     // DELETEメソッドでリクエストを送信
-    axios.delete(route)
-        .then(response => {
-            if (response.status === 200) {
-                callback(id);
-            }
-        })
-        .catch(error => {
-            console.error('削除エラー:', error);
-        });
+    router.delete(deleteUrl, {
+        preserveScroll: true,
+        onSuccess: () => {
+            callback(id);
+        },
+        onError: (errors) => {
+            console.error("削除エラー:", errors);
+        }
+    });
 };
