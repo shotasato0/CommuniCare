@@ -21,6 +21,7 @@ import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
+import axios from "axios";
 
 // props を構造分解して取得
 const {
@@ -151,6 +152,8 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
 };
 
 const onDeleteItem = (type, id) => {
+    const scrollPosition = window.scrollY;
+
     deleteItem(type, id, (deletedId) => {
         if (type === "post") {
             posts.value.data = posts.value.data.filter(
@@ -160,10 +163,22 @@ const onDeleteItem = (type, id) => {
             handleCommentDeletion(deletedId);
         }
 
-        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: false,
-            preserveScroll: true,
-        });
+        // 削除成功後にデータを再取得
+        axios
+            .get(route("forum.index", { forum_id: selectedForumId.value }))
+            .then((response) => {
+                posts.value = response.data.posts;
+
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: "instant",
+                    });
+                }, 100);
+            })
+            .catch((error) => {
+                console.error("データ取得エラー:", error);
+            });
     });
 };
 
