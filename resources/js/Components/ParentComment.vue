@@ -150,10 +150,10 @@ const getCommentCountRecursive = (comments) => {
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :selectedForumId="selectedForumId"
+                    :selected-forum-id="selectedForumId"
                     :replyToName="comment.user?.name || ''"
+                    @cancel="toggleCommentForm(postId, comment.id)"
                     class="mt-4"
-                    title="返信"
                 />
 
                 <!-- 子コメント表示 -->
