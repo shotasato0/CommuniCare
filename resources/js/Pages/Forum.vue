@@ -131,16 +131,24 @@ const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
-    commentFormVisibility.value[postId] ??= {};
-    commentFormVisibility.value[postId][parentId] ??= {
-        isVisible: false,
-        replyToName: "",
-    };
+    if (!commentFormVisibility.value[postId]) {
+        commentFormVisibility.value[postId] = {};
+    }
 
-    // コメントフォームの表示・非表示を切り替え
+    if (!commentFormVisibility.value[postId][parentId]) {
+        commentFormVisibility.value[postId][parentId] = {
+            isVisible: false,
+            replyToName: "",
+        };
+    }
+
+    // フォームの表示を反転
     commentFormVisibility.value[postId][parentId].isVisible =
         !commentFormVisibility.value[postId][parentId].isVisible;
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
+
+    // 強制的に再描画を促すため、オブジェクトを新しく作り直す
+    commentFormVisibility.value = { ...commentFormVisibility.value };
 };
 
 const onDeleteItem = (type, id) => {
@@ -164,7 +172,7 @@ const onDeleteItem = (type, id) => {
     });
 };
 
-// コメント削除を処理する関数
+// コメントの削除を処理する関数
 const handleCommentDeletion = (commentId) => {
     const postIndex = posts.value.data.findIndex((post) =>
         findCommentRecursive(post.comments, commentId)
@@ -464,6 +472,7 @@ const handleForumSelected = (unitId) => {
                                 commentFormVisibility[post.id]?.['post']
                                     ?.replyToName
                             "
+                            @cancel="toggleCommentForm(post.id, 'post')"
                             class="mt-4 comment-form"
                             title="返信"
                         />
