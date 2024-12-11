@@ -1,14 +1,34 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, defineProps, defineEmits, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 
 const props = defineProps({
-    postId: Number, // 親投稿のID
-    parentId: { type: Number, default: null }, // 親コメントのID
-    replyToName: { type: String, default: "" }, // 返信先のユーザー名
-    selectedForumId: Number, // 選択されたフォーラムのID
+    postId: {
+        type: Number,
+        required: true,
+    },
+    parentId: {
+        type: Number,
+        default: null,
+    },
+    selectedForumId: {
+        type: Number,
+        required: true,
+    },
+    replyToName: {
+        type: String,
+        default: "",
+    },
+    title: {
+        type: String,
+        default: "返信",
+    },
 });
+
+const emit = defineEmits(["cancel"]);
+const message = ref("");
+const placeholder = ref(`@${props.replyToName} さんへの返信を入力`);
 
 // コメントデータを管理するref
 const commentData = ref({
@@ -57,29 +77,46 @@ const submitComment = () => {
         }
     );
 };
+
+// キャンセルハンドラーを追加
+const handleCancel = () => {
+    // フォームをリセット
+    commentData.value = {
+        post_id: props.postId,
+        parent_id: props.parentId,
+        message: '',
+        replyToName: props.replyToName,
+    };
+    // 親コンポーネントにキャンセルイベントを発行
+    emit('cancel');
+};
 </script>
 
 <template>
-    <form @submit.prevent="submitComment" class="relative">
-        <!-- メッセージ入力エリアと送信ボタンを横並びに -->
-        <div class="flex items-start gap-2">
+    <div class="mt-4">
+        <h3 class="font-bold mb-2">{{ title }}</h3>
+        <form @submit.prevent="submitComment">
             <textarea
                 v-model="commentData.message"
-                class="flex-grow border-gray-300 rounded-md px-2 py-1 text-sm min-h-[2.5rem] max-h-32"
-                required
-                :placeholder="
-                    commentData.replyToName
-                        ? `@${commentData.replyToName} にメッセージを送信`
-                        : 'メッセージを入力してください'
-                "
+                class="w-full p-2 border rounded-md"
+                :placeholder="placeholder"
+                rows="3"
             ></textarea>
-
-            <button
-                type="submit"
-                class="px-3 py-1 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer h-[2.5rem]"
-            >
-                <i class="bi bi-send"></i>
-            </button>
-        </div>
-    </form>
+            <div class="flex justify-end space-x-2 mt-2">
+                <button
+                    type="button"
+                    @click="handleCancel"
+                    class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <button
+                    type="submit"
+                    class="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600"
+                >
+                    送信
+                </button>
+            </div>
+        </form>
+    </div>
 </template>
