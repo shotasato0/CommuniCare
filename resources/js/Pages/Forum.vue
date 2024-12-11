@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, onUnmounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { usePage, router, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PostForm from "@/Components/PostForm.vue";
@@ -64,8 +64,6 @@ onMounted(() => {
     if (savedUnitId) {
         activeUnitId.value = parseInt(savedUnitId);
     }
-    document.addEventListener("click", handleClickOutside);
-    window.addEventListener("click", handleClickOutside, true);
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
@@ -139,15 +137,9 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
         replyToName: "",
     };
 
-    // 他のすべてのフォームを非表示にする
-    Object.keys(commentFormVisibility.value).forEach((pId) => {
-        Object.keys(commentFormVisibility.value[pId]).forEach((pParentId) => {
-            commentFormVisibility.value[pId][pParentId].isVisible = false;
-        });
-    });
-
-    // クリックされたフォームを表示
-    commentFormVisibility.value[postId][parentId].isVisible = true;
+    // コメントフォームの表示・非表示を切り替え
+    commentFormVisibility.value[postId][parentId].isVisible =
+        !commentFormVisibility.value[postId][parentId].isVisible;
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
 };
 
@@ -223,44 +215,6 @@ const handleForumSelected = (unitId) => {
     localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
     onForumSelected(unitId);
 };
-
-// クリックイベントハンドラーを修正
-const handleClickOutside = (event) => {
-    const clickedElement = event.target;
-
-    // クリックされた要素とその親要素のスタイルを取得
-    const computedStyle = window.getComputedStyle(clickedElement);
-
-    // クリックを許可する条件
-    const shouldCloseForm =
-        // カーソルがポインターでない
-        computedStyle.cursor !== "pointer" &&
-        // フォーム要素でない
-        !clickedElement.closest("form") &&
-        // 入力要素でない
-        !clickedElement.closest("input, textarea, select") &&
-        // 特定のインタラクティブ要素でない
-        !clickedElement.closest(
-            ".reply-button, .bi-reply, .delete-button, .bi-trash"
-        );
-
-    if (shouldCloseForm) {
-        Object.keys(commentFormVisibility.value).forEach((postId) => {
-            Object.keys(commentFormVisibility.value[postId]).forEach(
-                (parentId) => {
-                    commentFormVisibility.value[postId][
-                        parentId
-                    ].isVisible = false;
-                }
-            );
-        });
-    }
-};
-
-// イベントリスナーの設定（キャプチャフェーズで実行）
-onUnmounted(() => {
-    window.removeEventListener("click", handleClickOutside, true);
-});
 </script>
 
 <template>
@@ -462,14 +416,14 @@ onUnmounted(() => {
                             />
                             <!-- 投稿に対する返信ボタン -->
                             <button
-                                @click.stop="
+                                @click="
                                     toggleCommentForm(
                                         post.id,
                                         'post',
                                         post.user ? post.user.name : 'Unknown'
                                     )
                                 "
-                                class="reply-button px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer"
+                                class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer"
                                 title="返信"
                             >
                                 <i class="bi bi-reply"></i>
