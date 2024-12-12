@@ -159,8 +159,12 @@ const onDeleteItem = (type, id) => {
             posts.value.data = posts.value.data.filter(
                 (post) => post.id !== deletedId
             );
+            // 削除後に現在のフォーラムページにリダイレクト
+            router.get(
+                route("forum.index", { forum_id: selectedForumId.value }),
+                { preserveState: false }
+            );
         } else if (type === "comment") {
-            // コメントの削除を即時反映
             handleCommentDeletion(deletedId);
         }
 
