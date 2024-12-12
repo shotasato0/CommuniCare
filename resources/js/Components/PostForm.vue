@@ -55,30 +55,31 @@ const submitPost = () => {
     <div class="bg-white rounded-md mt-5 p-3">
         <form @submit.prevent="submitPost">
             <div class="flex mt-2">
-                <p class="font-bold">件名</p>
+                <p class="font-medium">件名</p>
                 <input
                     v-model="postData.title"
-                    class="border rounded px-2 ml-2 flex-auto"
+                    class="border-gray-300 rounded-md px-2 ml-2 flex-auto"
                     type="text"
                     required
                     placeholder="件名を入力してください"
                 />
             </div>
             <div class="flex flex-col mt-2">
-                <p class="font-bold">本文</p>
+                <p class="font-medium">本文</p>
                 <textarea
                     v-model="postData.message"
-                    class="border rounded px-2"
+                    class="border-gray-300 rounded-md px-2"
                     required
                     placeholder="本文を入力してください"
                 ></textarea>
             </div>
             <div class="flex justify-end mt-2">
                 <button
-                    class="my-2 px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer"
-                >
-                    <i class="bi bi-send"></i>
-                </button>
+    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
+>
+    <i class="bi bi-send"></i>
+</button>
+
             </div>
         </form>
     </div>
