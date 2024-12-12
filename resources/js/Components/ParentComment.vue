@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ChildComment from "./ChildComment.vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
 import LikeButton from "./LikeButton.vue";
@@ -19,9 +19,33 @@ const props = defineProps({
 // 子コメントの折りたたみ状態を管理
 const collapsedComments = ref({});
 
+// コンポーネントのマウント時に初期値を設定
+onMounted(() => {
+    props.comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            // 1週間（7日）をミリ秒で計算
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const commentDate = new Date(comment.created_at);
+            const now = new Date();
+
+            // コメントが1週間以上前の場合は折りたたむ
+            if (now - commentDate > oneWeek) {
+                collapsedComments.value[comment.id] = false;
+            } else {
+                collapsedComments.value[comment.id] = true;
+            }
+        }
+    });
+});
+
 // 子コメントの表示・非表示を切り替える関数
 const toggleCollapse = (commentId) => {
-    collapsedComments.value[commentId] = !collapsedComments.value[commentId];
+    if (!(commentId in collapsedComments.value)) {
+        collapsedComments.value[commentId] = true;
+    } else {
+        collapsedComments.value[commentId] =
+            !collapsedComments.value[commentId];
+    }
 };
 
 // 再帰的にすべての子コメントを含めてコメント数を取得する関数
@@ -122,7 +146,7 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer flex items-center"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
@@ -131,7 +155,7 @@ const getCommentCountRecursive = (comments) => {
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="onDeleteItem('comment', comment.id)"
-                        class="px-2 py-1 rounded bg-red-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer flex items-center"
                         title="コメント削除"
                     >
                         <i class="bi bi-trash"></i>
@@ -145,10 +169,10 @@ const getCommentCountRecursive = (comments) => {
                     "
                     :postId="postId"
                     :parentId="comment.id"
-                    :selectedForumId="selectedForumId"
+                    :selected-forum-id="selectedForumId"
                     :replyToName="comment.user?.name || ''"
+                    @cancel="toggleCommentForm(postId, comment.id)"
                     class="mt-4"
-                    title="返信"
                 />
 
                 <!-- 子コメント表示 -->
@@ -156,7 +180,8 @@ const getCommentCountRecursive = (comments) => {
                     v-if="
                         comment.children &&
                         comment.children.length > 0 &&
-                        collapsedComments[comment.id]
+                        (!(comment.id in collapsedComments) ||
+                            collapsedComments[comment.id])
                     "
                     class="mt-4 ml-4 border-l-2 border-gray-300 pl-2"
                 >

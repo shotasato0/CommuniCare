@@ -21,6 +21,7 @@ import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
+import axios from "axios";
 
 // props を構造分解して取得
 const {
@@ -46,6 +47,7 @@ const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
+const activeUnitId = ref(null); // 選択中の部署IDを管理
 
 const quotePost = (post) => {
     quotedPost.value = post; // post全体をセットする
@@ -57,6 +59,11 @@ onMounted(() => {
     initSelectedForumId(selectedForumId);
     // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
+    // 保存された部署IDを復元
+    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+    if (savedUnitId) {
+        activeUnitId.value = parseInt(savedUnitId);
+    }
 });
 
 // selectedForumIdの変更を監視し、変更があるたびに投稿を再取得
@@ -117,17 +124,6 @@ const closeUserProfile = () => {
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
     console.log("sidebarVisible.value:", sidebarVisible.value);
-
-    // サイドバーを非表示にする際にドロップダウンを閉じる
-    if (!sidebarVisible.value) {
-        if (sidebar.value && sidebar.value.resetDropdown) {
-            sidebar.value.resetDropdown();
-        } else {
-            console.error(
-                "Sidebar component reference not found or resetDropdown method is undefined."
-            );
-        }
-    }
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
@@ -135,37 +131,56 @@ const commentFormVisibility = ref({});
 
 // コメントフォームの表示・非表示を切り替える関数
 const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
-    commentFormVisibility.value[postId] ??= {}; // 投稿IDが存在しない場合は空のオブジェクトを初期化
-    commentFormVisibility.value[postId][parentId] ??= {
-        // 親IDが存在しない場合は初期化
-        isVisible: false,
-        replyToName: "",
-    };
+    if (!commentFormVisibility.value[postId]) {
+        commentFormVisibility.value[postId] = {};
+    }
 
-    // コメントフォームの表示・非表示を切り替え
+    if (!commentFormVisibility.value[postId][parentId]) {
+        commentFormVisibility.value[postId][parentId] = {
+            isVisible: false,
+            replyToName: "",
+        };
+    }
+
+    // フォームの表示を反転
     commentFormVisibility.value[postId][parentId].isVisible =
         !commentFormVisibility.value[postId][parentId].isVisible;
     commentFormVisibility.value[postId][parentId].replyToName = replyToName;
+
+    // 強制的に再描画を促すため、オブジェクトを新しく作り直す
+    commentFormVisibility.value = { ...commentFormVisibility.value };
 };
 
 const onDeleteItem = (type, id) => {
-    deleteItem(type, id, (deletedId) => {
+    deleteItem(type, id, async (deletedId) => {
         if (type === "post") {
+            // まずローカルでデータを更新
             posts.value.data = posts.value.data.filter(
                 (post) => post.id !== deletedId
             );
+
+            // 削除後に正しいURLに遷移（履歴を置き換える）
+            const currentUrl = route("forum.index", {
+                forum_id: selectedForumId.value,
+            });
+
+            // ブラウザの履歴を置き換え
+            window.history.replaceState({}, "", currentUrl);
+
+            // Inertiaを使用してデータを更新
+            router.reload({
+                only: ["posts"],
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            });
         } else if (type === "comment") {
             handleCommentDeletion(deletedId);
         }
-
-        router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-            preserveState: false,
-            preserveScroll: true,
-        });
     });
 };
 
-// コメント削除を処理する関数
+// コメントの削除を処理する関数
 const handleCommentDeletion = (commentId) => {
     const postIndex = posts.value.data.findIndex((post) =>
         findCommentRecursive(post.comments, commentId)
@@ -210,6 +225,12 @@ const getCurrentCommentCount = (post) => {
 const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
+
+const handleForumSelected = (unitId) => {
+    activeUnitId.value = unitId; // 選択された部署IDを保存
+    localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
+    onForumSelected(unitId);
+};
 </script>
 
 <template>
@@ -228,19 +249,21 @@ const isCommentAuthor = (comment) => {
             <ListForSidebar
                 :units="units"
                 :users="users"
+                :active-unit-id="activeUnitId"
                 class="sidebar-mobile p-4 sm:mt-16 lg:block"
                 :class="{ visible: sidebarVisible }"
                 ref="sidebar"
                 @user-profile-clicked="onUserSelected"
                 v-model:sidebarVisible="sidebarVisible"
-                @forum-selected="onForumSelected"
+                @forum-selected="handleForumSelected"
             />
 
             <!-- メインコンテンツエリア -->
             <div class="flex-1 max-w-4xl mx-auto p-4">
-                <div class="flex justify-between items-center mb-4">
+                <!-- サイドバーのトグルボタンと検索フォーム -->
+                <div class="flex items-center mb-4 relative">
                     <h1
-                        class="text-xl font-bold cursor-pointer toggle-button"
+                        class="text-lg font-bold cursor-pointer toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
@@ -251,19 +274,23 @@ const isCommentAuthor = (comment) => {
                         :selected-forum-id="selectedForumId"
                         class="ml-auto"
                     />
-                </div>
 
-                <!-- 検索結果 -->
-                <div v-if="search" class="text-lg font-bold mb-4">
-                    <p>検索結果: {{ posts.total }}件</p>
+                    <!-- 検索結果 -->
+                    <div
+                        class="absolute top-full right-36 text-sm text-gray-600 mt-1 mb-16"
+                    >
+                        <p v-if="search">検索結果: {{ posts.total }}件</p>
+                    </div>
                 </div>
 
                 <!-- 上部ページネーション -->
-                <Pagination
-                    :links="posts?.links || []"
-                    @change="onPageChange"
-                    class="mb-4"
-                />
+                <div class="mt-12 h-12 flex items-center justify-center">
+                    <Pagination
+                        v-if="posts?.links?.length"
+                        :links="posts.links"
+                        @change="onPageChange"
+                    />
+                </div>
 
                 <!-- 投稿フォーム -->
                 <PostForm
@@ -412,7 +439,7 @@ const isCommentAuthor = (comment) => {
                                         post.user ? post.user.name : 'Unknown'
                                     )
                                 "
-                                class="px-2 py-1 rounded bg-green-500 text-white font-bold link-hover cursor-pointer"
+                                class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer"
                                 title="返信"
                             >
                                 <i class="bi bi-reply"></i>
@@ -421,7 +448,7 @@ const isCommentAuthor = (comment) => {
                             <button
                                 type="button"
                                 @click="quotePost(post)"
-                                class="px-2 py-1 rounded bg-blue-500 text-white font-bold link-hover cursor-pointer flex items-center"
+                                class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
                                 <i class="bi bi-chat-quote"></i>
@@ -433,7 +460,7 @@ const isCommentAuthor = (comment) => {
                                     post.user && post.user.id === auth.user.id
                                 "
                                 @click.prevent="onDeleteItem('post', post.id)"
-                                class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                                class="px-4 py-2 ml-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer"
                                 title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
@@ -453,13 +480,14 @@ const isCommentAuthor = (comment) => {
                                 commentFormVisibility[post.id]?.['post']
                                     ?.replyToName
                             "
-                            class="mt-4"
+                            @cancel="toggleCommentForm(post.id, 'post')"
+                            class="mt-4 comment-form"
                             title="返信"
                         />
                     </div>
 
                     <h3 class="font-bold mt-8 mb-2">
-                        {{ getCurrentCommentCount(post) }}件のコメント
+                        {{ getCurrentCommentCount(post) }}件の返信
                     </h3>
 
                     <!-- 親コメントビュー -->
@@ -529,10 +557,6 @@ const isCommentAuthor = (comment) => {
 </template>
 
 <style>
-.link-hover:hover {
-    opacity: 70%;
-}
-
 /* モバイルサイズ用のスタイル（切り替え可能） */
 @media (max-width: 767px) {
     .sidebar-mobile {
