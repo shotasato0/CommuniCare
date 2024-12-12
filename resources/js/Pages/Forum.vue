@@ -152,27 +152,31 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
 };
 
 const onDeleteItem = (type, id) => {
-    const scrollPosition = window.scrollY;
-
-    deleteItem(type, id, (deletedId) => {
+    deleteItem(type, id, async (deletedId) => {
         if (type === "post") {
+            // まずローカルでデータを更新
             posts.value.data = posts.value.data.filter(
                 (post) => post.id !== deletedId
             );
-            // 削除後に現在のフォーラムページにリダイレクト
-            router.get(
-                route("forum.index", { forum_id: selectedForumId.value }),
-                { preserveState: false }
-            );
+
+            // 削除後に正しいURLに遷移（履歴を置き換える）
+            const currentUrl = route("forum.index", {
+                forum_id: selectedForumId.value,
+            });
+
+            // ブラウザの履歴を置き換え
+            window.history.replaceState({}, "", currentUrl);
+
+            // Inertiaを使用してデータを更新
+            router.reload({
+                only: ["posts"],
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            });
         } else if (type === "comment") {
             handleCommentDeletion(deletedId);
         }
-
-        // スクロール位置を復元
-        window.scrollTo({
-            top: scrollPosition,
-            behavior: "instant",
-        });
     });
 };
 
