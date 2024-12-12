@@ -634,11 +634,4 @@ const handleForumSelected = (unitId) => {
         width: 50% !important;
     }
 }
-
-img {
-    max-width: 100%; /* 親要素の幅に合わせる */
-    height: auto; /* アスペクト比を保ちながら高さを自動調整 */
-    object-fit: cover; /* アスペクト比を維持しながら、親要素に収める */
-    border-radius: 8px; /* デザインとして角を丸める（オプション） */
-}
 </style>
