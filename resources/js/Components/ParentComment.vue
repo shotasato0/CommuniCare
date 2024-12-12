@@ -23,7 +23,17 @@ const collapsedComments = ref({});
 onMounted(() => {
     props.comments.forEach((comment) => {
         if (comment.children && comment.children.length > 0) {
-            collapsedComments.value[comment.id] = true;
+            // 1週間（7日）をミリ秒で計算
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const commentDate = new Date(comment.created_at);
+            const now = new Date();
+
+            // コメントが1週間以上前の場合は折りたたむ
+            if (now - commentDate > oneWeek) {
+                collapsedComments.value[comment.id] = false;
+            } else {
+                collapsedComments.value[comment.id] = true;
+            }
         }
     });
 });
