@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ChildComment from "./ChildComment.vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
 import LikeButton from "./LikeButton.vue";
@@ -18,6 +18,15 @@ const props = defineProps({
 
 // 子コメントの折りたたみ状態を管理
 const collapsedComments = ref({});
+
+// コンポーネントのマウント時に初期値を設定
+onMounted(() => {
+    props.comments.forEach((comment) => {
+        if (comment.children && comment.children.length > 0) {
+            collapsedComments.value[comment.id] = true;
+        }
+    });
+});
 
 // 子コメントの表示・非表示を切り替える関数
 const toggleCollapse = (commentId) => {
