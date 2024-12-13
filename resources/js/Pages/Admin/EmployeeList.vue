@@ -6,16 +6,19 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { deleteItem } from "@/Utils/deleteItem";
 
 const { props } = usePage();
-const users = props.users;
+const users = ref(props.users);
 const units = props.units;
 const flashMessage = ref(props.flash.success || null);
+const showDeleteButtons = ref(false);
 
 const isUserProfileVisible = ref(false);
 const selectedUser = ref(null);
 
 const openUserProfile = (user) => {
-    selectedUser.value = user;
-    isUserProfileVisible.value = true;
+    if (!showDeleteButtons.value) {
+        selectedUser.value = user;
+        isUserProfileVisible.value = true;
+    }
 };
 
 const closeUserProfile = () => {
@@ -24,23 +27,23 @@ const closeUserProfile = () => {
 
 const deleteUser = (user) => {
     deleteItem("user", user.id, (deletedUserId) => {
-        const index = users.findIndex((u) => u.id === deletedUserId);
+        const index = users.value.findIndex((u) => u.id === deletedUserId);
         if (index !== -1) {
-            users.splice(index, 1);
+            users.value.splice(index, 1);
         }
         // 削除成功時にフラッシュメッセージを設定
         flashMessage.value = "社員が削除されました。";
+        showDeleteButtons.value = false;
     });
 };
 
-// flashMessageの変更を監視して非表示タイマーを設定
+// flashMessageの変更を監視して、8秒後にフラッシュメッセージをクリア
 watchEffect(() => {
     if (flashMessage.value) {
         const timeout = setTimeout(() => {
             flashMessage.value = null;
         }, 8000);
-
-        // クリーンアップでタイマーをクリア
+        // クリーンアップでタイムアウトをクリア
         return () => clearTimeout(timeout);
     }
 });
@@ -54,57 +57,98 @@ watchEffect(() => {
         <transition name="fade">
             <div
                 v-if="flashMessage"
-                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 text-green-700 p-4 rounded shadow-lg text-center"
+                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg"
             >
-                {{ flashMessage }}
+                <p class="font-bold">{{ flashMessage }}</p>
             </div>
         </transition>
 
-        <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6 mt-16">
-                {{ $t("Employee List") }}
-            </h1>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div
-                    v-for="user in users"
-                    :key="user.id"
-                    class="bg-white hover:bg-gray-200 w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between transition-colors group"
-                >
-                    <div class="flex items-center space-x-4">
-                        <img
-                            :src="
-                                user.icon
-                                    ? `/storage/${user.icon}`
-                                    : 'https://via.placeholder.com/150'
-                            "
-                            alt="Profile Icon"
-                            class="w-12 h-12 sm:w-16 sm:h-16 rounded-full cursor-pointer link-hover"
-                            @click="openUserProfile(user)"
-                        />
-                        <p class="text-sm sm:text-lg font-bold">
-                            <span
-                                @click="openUserProfile(user)"
-                                class="text-gray-500 group-hover:text-black transition-colors cursor-pointer"
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 bg-white border-b border-gray-200">
+                        <!-- コントロール部分 -->
+                        <div class="flex justify-end mb-6">
+                            <button
+                                @click="showDeleteButtons = !showDeleteButtons"
+                                class="px-4 py-2 rounded-md transition delete-mode-button"
+                                :class="
+                                    showDeleteButtons
+                                        ? 'bg-red-100 text-red-700 hover:bg-red-300 hover:text-white'
+                                        : 'bg-red-200 text-red-600 hover:bg-red-400 hover:text-white'
+                                "
                             >
-                                {{ user.name }}
-                            </span>
-                        </p>
+                                削除モード
+                            </button>
+                        </div>
+
+                        <!-- 社員一覧 -->
+                        <div
+                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                        >
+                            <div
+                                v-for="user in users"
+                                :key="user.id"
+                                :class="[
+                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                    showDeleteButtons
+                                        ? 'hover:bg-red-50 cursor-pointer'
+                                        : 'hover:bg-gray-50 hover:shadow-md',
+                                ]"
+                                @click="
+                                    showDeleteButtons
+                                        ? deleteUser(user)
+                                        : openUserProfile(user)
+                                "
+                            >
+                                <div class="flex items-center space-x-4">
+                                    <img
+                                        :src="
+                                            user.icon
+                                                ? `/storage/${user.icon}`
+                                                : 'https://via.placeholder.com/150'
+                                        "
+                                        alt="Profile Icon"
+                                        class="w-12 h-12 rounded-full"
+                                    />
+                                    <div
+                                        class="flex justify-between items-start w-full"
+                                    >
+                                        <span
+                                            :class="[
+                                                'font-bold text-lg',
+                                                showDeleteButtons
+                                                    ? 'text-gray-500 group-hover:text-red-500'
+                                                    : 'text-gray-500 group-hover:text-black',
+                                            ]"
+                                        >
+                                            {{ user.name }}
+                                        </span>
+                                        <i
+                                            v-if="showDeleteButtons"
+                                            class="bi bi-trash text-red-500"
+                                        ></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- データが存在しない場合 -->
+                        <div
+                            v-if="users.length === 0"
+                            class="p-8 text-center text-gray-500"
+                        >
+                            <i class="bi bi-people text-4xl mb-2 block"></i>
+                            <p class="text-lg font-medium">
+                                社員が登録されていません。
+                            </p>
+                        </div>
                     </div>
-                    <button
-                        @click="deleteUser(user)"
-                        class="text-red-500 hover:text-red-700"
-                    >
-                        <i class="bi bi-trash"></i>
-                    </button>
                 </div>
             </div>
         </div>
 
-        <p v-if="users.length === 0" class="text-gray-500 mt-4">
-            {{ $t("No user available") }}
-        </p>
-
+        <!-- プロフィールモーダル -->
         <div
             v-if="isUserProfileVisible"
             class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
