@@ -204,7 +204,7 @@ const handleOpenIconEdit = () => {
                     class="w-full border border-gray-300 p-2 rounded"
                 >
                     <!-- プレースホルダー（選択を促す） -->
-                    <option value="" disabled hidden>
+                    <option value="" disabled selected>
                         {{ $t("Select your unit") }}
                     </option>
 
@@ -217,6 +217,7 @@ const handleOpenIconEdit = () => {
                         {{ unit.name }}
                     </option>
                 </select>
+
                 <p class="text-sm text-gray-600 mt-2">
                     {{ $t("By setting your unit, you can access the forum.") }}
                 </p>
