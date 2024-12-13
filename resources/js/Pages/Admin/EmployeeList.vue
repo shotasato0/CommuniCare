@@ -69,7 +69,7 @@ watchEffect(() => {
                 <div
                     v-for="user in users"
                     :key="user.id"
-                    class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between"
+                    class="bg-white hover:bg-gray-200 w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between transition-colors group"
                 >
                     <div class="flex items-center space-x-4">
                         <img
@@ -82,10 +82,10 @@ watchEffect(() => {
                             class="w-12 h-12 sm:w-16 sm:h-16 rounded-full cursor-pointer link-hover"
                             @click="openUserProfile(user)"
                         />
-                        <p class="text-sm sm:text-lg font-bold text-gray-900">
+                        <p class="text-sm sm:text-lg font-bold">
                             <span
                                 @click="openUserProfile(user)"
-                                class="hover:underline p-1 rounded cursor-pointer"
+                                class="text-gray-500 group-hover:text-black transition-colors cursor-pointer"
                             >
                                 {{ user.name }}
                             </span>
