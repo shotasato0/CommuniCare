@@ -116,7 +116,7 @@ const submit = () => {
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="ms-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
