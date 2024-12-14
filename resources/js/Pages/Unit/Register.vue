@@ -58,7 +58,12 @@ watchEffect(() => {
 
 <template>
     <AuthenticatedLayout>
-        <Head :title="$t('Unit Registration')" />
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $t("Unit Management") }}
+            </h2>
+        </template>
+        <Head :title="$t('Unit Management')" />
         <div
             class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
         >
@@ -72,9 +77,9 @@ watchEffect(() => {
                 </div>
             </transition>
 
-            <h1 class="text-2xl font-bold mb-6">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ $t("Unit Registration") }}
-            </h1>
+            </h2>
             <!-- 部署登録フォーム -->
             <form
                 @submit.prevent="submit"
@@ -102,13 +107,15 @@ watchEffect(() => {
 
                 <button
                     type="submit"
-                    class="bg-blue-500 link-hover text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                 >
                     {{ $t("Register Unit") }}
                 </button>
             </form>
 
-            <h1 class="text-2xl font-bold mb-4">{{ $t("Unit List") }}</h1>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $t("Unit List") }}
+            </h2>
             <!-- 部署一覧 -->
             <div class="bg-white p-6 rounded-lg shadow">
                 <ul class="divide-y divide-gray-200">
@@ -120,7 +127,7 @@ watchEffect(() => {
                         <span class="text-gray-800">{{ unit.name }}</span>
                         <button
                             @click="deleteUnit(unit.id)"
-                            class="px-2 py-1 ml-2 rounded bg-red-500 text-white font-bold link-hover cursor-pointer"
+                            class="w-full sm:w-auto px-4 py-2 bg-red-100 text-red-700 rounded-md transition hover:bg-red-300 hover:text-white text-center"
                         >
                             <i class="bi bi-trash"></i>
                         </button>
