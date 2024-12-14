@@ -43,7 +43,7 @@ console.log("User data:", props.auth.user);
         </template>
 
         <!-- ダッシュボードのコンテンツ全体に左右余白を追加 -->
-        <div class="py-12 px-4 sm:px-8 lg:px-16">
+        <div class="pb-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 flex items-center space-x-4">
