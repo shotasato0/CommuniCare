@@ -37,14 +37,15 @@ const submit = () => {
 
 <template>
     <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $t("User registration") }}
+            </h2>
+        </template>
         <Head :title="$t('User registration')" />
 
         <!-- コンテンツを中央に寄せ、画面幅に応じて余白を調整 -->
         <div class="max-w-md mx-auto py-10 mt-16 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6">
-                {{ $t("User registration") }}
-            </h1>
-
             <form
                 @submit.prevent="submit"
                 class="bg-white p-6 rounded-lg shadow space-y-6"
