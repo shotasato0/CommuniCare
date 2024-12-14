@@ -24,7 +24,8 @@ export default {
         // 部署名を取得
         const unitName =
             Array.isArray(props.units) && props.units.length > 0
-                ? props.units.find((unit) => unit.id === props.user.unit_id)?.name || "未所属"
+                ? props.units.find((unit) => unit.id === props.user.unit_id)
+                      ?.name || "未所属"
                 : "未所属";
 
         return { page, authUser, unitName };
@@ -84,7 +85,7 @@ export default {
             <button
                 v-if="authUser && authUser.id === user.id"
                 @click="profileEdit"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mx-auto block"
+                class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center mx-auto block"
             >
                 プロフィールを編集
             </button>
