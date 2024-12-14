@@ -65,15 +65,15 @@ watchEffect(() => {
         </template>
         <Head :title="$t('Unit Management')" />
         <div
-            class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
+            class="max-w-2xl mx-auto pb-12 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
         >
             <!-- フラッシュメッセージ -->
             <transition name="fade">
                 <div
                     v-if="flashMessage"
-                    class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 text-green-700 p-4 rounded shadow text-center"
+                    class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50"
                 >
-                    {{ flashMessage }}
+                    <p class="font-bold">{{ flashMessage }}</p>
                 </div>
             </transition>
 
