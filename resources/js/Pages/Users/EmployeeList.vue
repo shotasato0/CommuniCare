@@ -98,9 +98,9 @@ watchEffect(() => {
 });
 
 // 管理者かどうかを判定する関数
-const isAdmin = (userId) => {
-    return userId === currentAdminId;
-};
+const isAdmin = computed(() => {
+    return currentAdminId === props.auth.user.id;
+});
 
 // 管理者とその他ユーザーの分類
 const sortedUsers = computed(() => {
@@ -225,8 +225,8 @@ const totalFilteredUsers = computed(() => {
                                 @update:search-query="updateSearchQuery"
                             />
 
-                            <!-- 既存のボタン群 -->
-                            <div class="flex items-center space-x-4">
+                            <!-- 管理者のみに表示するボタン群 -->
+                            <div v-if="isAdmin" class="flex items-center space-x-4">
                                 <Link
                                     :href="route('register')"
                                     class="w-32 px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-center"
