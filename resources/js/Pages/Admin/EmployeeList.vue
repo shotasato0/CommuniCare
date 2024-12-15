@@ -188,7 +188,7 @@ const sortedUsers = computed(() => {
                                     />
                                     <div class="flex items-center">
                                         <p
-                                            class="text-sm sm:text-lg font-bold text-gray-900 group-hover:text-black"
+                                            class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
                                         >
                                             {{ sortedUsers.currentAdmin.name }}
                                         </p>
@@ -237,7 +237,7 @@ const sortedUsers = computed(() => {
                                     >
                                         <div class="flex items-center">
                                             <span
-                                                class="font-bold text-lg group-hover:text-black"
+                                                class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
                                             >
                                                 {{ user.name }}
                                             </span>
@@ -295,12 +295,6 @@ const sortedUsers = computed(() => {
             <div @click.stop>
                 <Show v-if="selectedUser" :user="selectedUser" :units="units" />
             </div>
-        </div>
-
-        <!-- デバッグ表示を追加 -->
-        <div class="p-4 bg-gray-100">
-            <p>Current Admin ID: {{ currentAdminId }}</p>
-            <p>Users: {{ users }}</p>
         </div>
     </AuthenticatedLayout>
 </template>
