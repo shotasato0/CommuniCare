@@ -7,6 +7,7 @@ import { deleteItem } from "@/Utils/deleteItem";
 
 const { props } = usePage();
 const users = ref(props.users);
+const currentAdminId = props.currentAdminId;
 const units = props.units;
 const flashMessage = ref(props.flash.success || null);
 const showDeleteButtons = ref(false);
@@ -82,6 +83,11 @@ watchEffect(() => {
         return () => clearTimeout(timeout);
     }
 });
+
+// 管理者かどうかを判定する関数
+const isAdmin = (userId) => {
+    return userId === currentAdminId;
+};
 </script>
 
 <template>
@@ -162,14 +168,7 @@ watchEffect(() => {
                             <div
                                 v-for="user in users"
                                 :key="user.id"
-                                :class="[
-                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer',
-                                    isAdminMode
-                                        ? 'hover:bg-purple-50'
-                                        : showDeleteButtons
-                                        ? 'hover:bg-red-50'
-                                        : 'hover:bg-gray-50 hover:shadow-md',
-                                ]"
+                                class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer"
                                 @click="
                                     isAdminMode
                                         ? handleAdminTransfer(user)
@@ -191,16 +190,22 @@ watchEffect(() => {
                                     <div
                                         class="flex justify-between items-start w-full"
                                     >
-                                        <span
-                                            :class="[
-                                                'font-bold text-lg',
-                                                showDeleteButtons
-                                                    ? 'text-gray-500 group-hover:text-red-500'
-                                                    : 'text-gray-500 group-hover:text-black',
-                                            ]"
-                                        >
-                                            {{ user.name }}
-                                        </span>
+                                        <div class="flex items-center">
+                                            <span
+                                                :class="[
+                                                    'font-bold text-lg',
+                                                    showDeleteButtons
+                                                        ? 'text-gray-500 group-hover:text-red-500'
+                                                        : 'text-gray-500 group-hover:text-black',
+                                                ]"
+                                            >
+                                                {{ user.name }}
+                                            </span>
+                                            <i
+                                                v-if="isAdmin(user.id)"
+                                                class="bi bi-award-fill text-yellow-500 text-xl ml-2"
+                                            ></i>
+                                        </div>
                                         <i
                                             v-if="showDeleteButtons"
                                             class="bi bi-trash text-red-500"
@@ -262,6 +267,12 @@ watchEffect(() => {
             <div @click.stop>
                 <Show v-if="selectedUser" :user="selectedUser" :units="units" />
             </div>
+        </div>
+
+        <!-- デバッグ表示を追加 -->
+        <div class="p-4 bg-gray-100">
+            <p>Current Admin ID: {{ currentAdminId }}</p>
+            <p>Users: {{ users }}</p>
         </div>
     </AuthenticatedLayout>
 </template>
