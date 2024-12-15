@@ -185,7 +185,7 @@ const toggleAdminMode = () => {
                             class="mb-4 p-4 bg-purple-100 rounded-lg"
                         >
                             <p class="text-purple-700">
-                                管理者権限を他のユーザーに渡すことができます。
+                                管理者権限を他の社員に渡すことができます。
                                 この操作を行うと、現在の管理者権限が解除されます。
                             </p>
                         </div>
