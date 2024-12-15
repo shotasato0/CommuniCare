@@ -122,6 +122,23 @@ const sortedUsers = computed(() => {
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分 -->
                         <div class="flex justify-end mb-6 space-x-4">
+                            <Link
+                                :href="route('register')"
+                                class="px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white"
+                            >
+                                新規登録
+                            </Link>
+                            <button
+                                @click="showDeleteButtons = !showDeleteButtons"
+                                class="px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                :class="
+                                    showDeleteButtons
+                                        ? 'bg-red-300 !text-white'
+                                        : 'bg-red-200 text-red-600'
+                                "
+                            >
+                                削除モード
+                            </button>
                             <button
                                 @click="isAdminMode = !isAdminMode"
                                 class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
@@ -133,26 +150,20 @@ const sortedUsers = computed(() => {
                             >
                                 管理者権限を渡す
                             </button>
-                            <Link
-                                :href="route('register')"
-                                class="px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white"
-                            >
-                                新規登録
-                            </Link>
-                            <button
-                                @click="showDeleteButtons = !showDeleteButtons"
-                                class="px-4 py-2 rounded-md transition"
-                                :class="
-                                    showDeleteButtons
-                                        ? 'bg-red-100 text-red-700'
-                                        : 'bg-red-200 text-red-600'
-                                "
-                            >
-                                削除モード
-                            </button>
                         </div>
 
                         <!-- モード説明 -->
+                        <div
+                            v-if="showDeleteButtons"
+                            class="mb-4 p-4 bg-red-100 rounded-lg"
+                        >
+                            <p class="text-red-700">
+                                削除したい社員をクリックすると削除できます。
+                                この操作は取り消しできませんのでご注意ください。
+                            </p>
+                        </div>
+
+                        <!-- 既存の管理者モード説明 -->
                         <div
                             v-if="isAdminMode"
                             class="mb-4 p-4 bg-purple-100 rounded-lg"
