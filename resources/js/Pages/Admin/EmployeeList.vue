@@ -1,6 +1,6 @@
 <script setup>
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { deleteItem } from "@/Utils/deleteItem";
@@ -88,6 +88,13 @@ watchEffect(() => {
 const isAdmin = (userId) => {
     return userId === currentAdminId;
 };
+
+// 管理者とその他ユーザーの分類
+const sortedUsers = computed(() => {
+    const currentAdmin = users.value.find((user) => user.id === currentAdminId);
+    const otherUsers = users.value.filter((user) => user.id !== currentAdminId);
+    return { currentAdmin, otherUsers };
+});
 </script>
 
 <template>
@@ -138,11 +145,11 @@ const isAdmin = (userId) => {
                             </Link>
                             <button
                                 @click="showDeleteButtons = !showDeleteButtons"
-                                class="px-4 py-2 rounded-md transition delete-mode-button"
+                                class="px-4 py-2 rounded-md transition"
                                 :class="
                                     showDeleteButtons
-                                        ? 'bg-red-100 text-red-700 hover:bg-red-300 hover:text-white'
-                                        : 'bg-red-200 text-red-600 hover:bg-red-400 hover:text-white'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-red-200 text-red-600'
                                 "
                             >
                                 削除モード
@@ -161,14 +168,52 @@ const isAdmin = (userId) => {
                             </p>
                         </div>
 
-                        <!-- 社員一覧 -->
+                        <!-- 現在の管理者 -->
+                        <div v-if="sortedUsers.currentAdmin" class="mb-8">
+                            <div
+                                class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between border-l-4 border-blue-500 group cursor-pointer hover:bg-gray-50 transition-all"
+                                @click="
+                                    openUserProfile(sortedUsers.currentAdmin)
+                                "
+                            >
+                                <div class="flex items-center space-x-4">
+                                    <img
+                                        :src="
+                                            sortedUsers.currentAdmin.icon
+                                                ? `/storage/${sortedUsers.currentAdmin.icon}`
+                                                : 'https://via.placeholder.com/150'
+                                        "
+                                        alt="Profile Icon"
+                                        class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
+                                    />
+                                    <div class="flex items-center">
+                                        <p
+                                            class="text-sm sm:text-lg font-bold text-gray-900 group-hover:text-black"
+                                        >
+                                            {{ sortedUsers.currentAdmin.name }}
+                                        </p>
+                                        <i
+                                            class="bi bi-award-fill text-yellow-500 text-xl ml-2"
+                                        ></i>
+                                    </div>
+                                </div>
+                                <p
+                                    class="text-xs sm:text-sm text-blue-500 mr-4"
+                                >
+                                    現在の管理者
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- ユーザー一覧 -->
                         <div
+                            v-if="sortedUsers.otherUsers.length > 0"
                             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                         >
                             <div
-                                v-for="user in users"
+                                v-for="user in sortedUsers.otherUsers"
                                 :key="user.id"
-                                class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer"
+                                class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer hover:bg-gray-50"
                                 @click="
                                     isAdminMode
                                         ? handleAdminTransfer(user)
@@ -192,19 +237,10 @@ const isAdmin = (userId) => {
                                     >
                                         <div class="flex items-center">
                                             <span
-                                                :class="[
-                                                    'font-bold text-lg',
-                                                    showDeleteButtons
-                                                        ? 'text-gray-500 group-hover:text-red-500'
-                                                        : 'text-gray-500 group-hover:text-black',
-                                                ]"
+                                                class="font-bold text-lg group-hover:text-black"
                                             >
                                                 {{ user.name }}
                                             </span>
-                                            <i
-                                                v-if="isAdmin(user.id)"
-                                                class="bi bi-award-fill text-yellow-500 text-xl ml-2"
-                                            ></i>
                                         </div>
                                         <i
                                             v-if="showDeleteButtons"
@@ -214,17 +250,9 @@ const isAdmin = (userId) => {
                                 </div>
                             </div>
                         </div>
-
-                        <!-- データが存在しない場合 -->
-                        <div
-                            v-if="users.length === 0"
-                            class="p-8 text-center text-gray-500"
-                        >
-                            <i class="bi bi-people text-4xl mb-2 block"></i>
-                            <p class="text-lg font-medium">
-                                社員が登録されていません。
-                            </p>
-                        </div>
+                        <p v-else class="text-gray-500 mt-4">
+                            表示できるユーザーがいません
+                        </p>
                     </div>
                 </div>
             </div>
