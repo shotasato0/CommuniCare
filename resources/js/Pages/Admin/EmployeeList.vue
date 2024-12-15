@@ -1,5 +1,5 @@
 <script setup>
-import { Head, usePage, Link } from "@inertiajs/vue3";
+import { Head, usePage, Link, router } from "@inertiajs/vue3";
 import { ref, watchEffect } from "vue";
 import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -13,6 +13,9 @@ const showDeleteButtons = ref(false);
 
 const isUserProfileVisible = ref(false);
 const selectedUser = ref(null);
+const isAdminMode = ref(false);
+const confirmationDialog = ref(false);
+const targetUser = ref(null);
 
 const openUserProfile = (user) => {
     if (!showDeleteButtons.value) {
@@ -35,6 +38,38 @@ const deleteUser = (user) => {
         flashMessage.value = "社員が削除されました";
         showDeleteButtons.value = false;
     });
+};
+
+const handleAdminTransfer = (user) => {
+    if (!isAdminMode.value) return;
+
+    targetUser.value = user;
+    confirmationDialog.value = true;
+};
+
+const executeAdminTransfer = async () => {
+    try {
+        await router.post(
+            route("admin.transferAdmin"),
+            { new_admin_id: targetUser.value.id },
+            {
+                onSuccess: () => {
+                    flashMessage.value = `${targetUser.value.name}に管理者権限を譲渡しました`;
+                    confirmationDialog.value = false;
+                    targetUser.value = null;
+                },
+                onError: (errors) => {
+                    const errorMessage =
+                        errors.message || "管理者権限の移動に失敗しました";
+                    console.error("エラー:", errorMessage);
+                    flashMessage.value = errorMessage;
+                },
+            }
+        );
+    } catch (error) {
+        console.error("予期しないエラー:", error);
+        flashMessage.value = "管理者権限の移動中に問題が発生しました";
+    }
 };
 
 // flashMessageの変更を監視して、8秒後にフラッシュメッセージをクリア
@@ -74,6 +109,21 @@ watchEffect(() => {
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分 -->
                         <div class="flex justify-end mb-6 space-x-4">
+                            <button
+                                @click="isAdminMode = !isAdminMode"
+                                class="px-4 py-2 rounded-md transition"
+                                :class="
+                                    isAdminMode
+                                        ? 'bg-purple-600 text-white'
+                                        : 'bg-gray-100 text-gray-700'
+                                "
+                            >
+                                {{
+                                    isAdminMode
+                                        ? "管理者権限譲渡モード"
+                                        : "通常モード"
+                                }}
+                            </button>
                             <Link
                                 :href="route('register')"
                                 class="px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white"
@@ -93,6 +143,18 @@ watchEffect(() => {
                             </button>
                         </div>
 
+                        <!-- モード説明 -->
+                        <div
+                            v-if="isAdminMode"
+                            class="mb-4 p-4 bg-purple-100 rounded-lg"
+                        >
+                            <p class="text-purple-700">
+                                管理者権限譲渡モード:
+                                選択したユーザーに管理者権限を譲渡します。
+                                この操作を行うと、現在の管理者権限は失われます。
+                            </p>
+                        </div>
+
                         <!-- 社員一覧 -->
                         <div
                             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -102,12 +164,16 @@ watchEffect(() => {
                                 :key="user.id"
                                 :class="[
                                     'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer',
-                                    showDeleteButtons
-                                        ? 'hover:bg-red-50 cursor-pointer'
+                                    isAdminMode
+                                        ? 'hover:bg-purple-50'
+                                        : showDeleteButtons
+                                        ? 'hover:bg-red-50'
                                         : 'hover:bg-gray-50 hover:shadow-md',
                                 ]"
                                 @click="
-                                    showDeleteButtons
+                                    isAdminMode
+                                        ? handleAdminTransfer(user)
+                                        : showDeleteButtons
                                         ? deleteUser(user)
                                         : openUserProfile(user)
                                 "
@@ -155,6 +221,34 @@ watchEffect(() => {
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 確認ダイアログ -->
+        <div
+            v-if="confirmationDialog"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+        >
+            <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+                <h3 class="text-lg font-bold mb-4">管理者権限の譲渡確認</h3>
+                <p class="mb-4">
+                    {{ targetUser?.name }}さんに管理者権限を譲渡しますか？
+                    この操作を行うと、あなたの管理者権限は失われます。
+                </p>
+                <div class="flex justify-end space-x-4">
+                    <button
+                        @click="confirmationDialog = false"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md"
+                    >
+                        キャンセル
+                    </button>
+                    <button
+                        @click="executeAdminTransfer"
+                        class="px-4 py-2 bg-purple-600 text-white rounded-md"
+                    >
+                        譲渡する
+                    </button>
                 </div>
             </div>
         </div>
