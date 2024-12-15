@@ -187,6 +187,15 @@ const updateSearchQuery = (query) => {
 const updateSelectedUnit = (unit) => {
     selectedUnit.value = unit;
 };
+
+// propsの二重定義を避けるため、page.propsを直接使用
+const page = usePage();
+const currentAdminId = page.props.currentAdminId;
+
+// 管理者かどうかを判定
+const isAdmin = computed(() => {
+    return currentAdminId === page.props.auth.user.id;
+});
 </script>
 
 <template>
@@ -226,10 +235,8 @@ const updateSelectedUnit = (unit) => {
                             <div
                                 class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
                             >
-                                <!-- 新規登録と削除モードボタン -->
-                                <div
-                                    class="flex items-center space-x-4 order-1 sm:order-2"
-                                >
+                                <!-- 管理者のみに表示するボタン群 -->
+                                <div v-if="isAdmin" class="flex items-center space-x-4 order-1 sm:order-2">
                                     <!-- 新規登録ボタン -->
                                     <Link
                                         :href="route('residents.create')"
@@ -240,16 +247,9 @@ const updateSelectedUnit = (unit) => {
 
                                     <!-- 削除モードトグルボタン -->
                                     <button
-                                        @click="
-                                            showDeleteButtons =
-                                                !showDeleteButtons
-                                        "
+                                        @click="showDeleteButtons = !showDeleteButtons"
                                         class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
-                                        :class="
-                                            showDeleteButtons
-                                                ? 'bg-red-300 !text-white'
-                                                : 'bg-red-200 text-red-600'
-                                        "
+                                        :class="showDeleteButtons ? 'bg-red-300 !text-white' : 'bg-red-200 text-red-600'"
                                     >
                                         削除モード
                                     </button>
@@ -266,9 +266,9 @@ const updateSelectedUnit = (unit) => {
                                 />
                             </div>
 
-                            <!-- 削除モード説明（横並びの下に配置） -->
+                            <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
                             <div
-                                v-if="showDeleteButtons"
+                                v-if="isAdmin && showDeleteButtons"
                                 class="mt-4 p-4 bg-red-100 rounded-lg"
                             >
                                 <p class="text-red-700">

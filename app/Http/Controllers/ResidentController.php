@@ -6,6 +6,7 @@ use App\Models\Resident;
 use Illuminate\Http\Request;
 use App\Models\Unit;
 use Inertia\Inertia;
+use App\Models\User;
 
 class ResidentController extends Controller
 {
@@ -20,10 +21,15 @@ class ResidentController extends Controller
             return $query->where('unit_id', $unitId);
         })->with('unit')->get();
 
+        // 管理者ユーザーを取得
+        $currentAdmin = User::role('admin')->first();
+        $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
+
     return Inertia::render('Residents/Index', [
             'residents' => $residents,
             'units' => Unit::all(),
-            'selectedUnitId' => $unitId
+            'selectedUnitId' => $unitId,
+            'currentAdminId' => $currentAdminId,
         ]);
     }
 
