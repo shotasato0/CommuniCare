@@ -27,6 +27,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'username_id' => 'required|string|max:255|unique:users,username_id',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'unit_id' => 'required|exists:units,id',
         ]);
 
         // 現在のテナントIDを取得
@@ -41,6 +42,7 @@ class RegisteredUserController extends Controller
             'username_id' => $request->username_id,
             'password' => Hash::make($request->password),
             'tenant_id' => $currentTenantId,
+            'unit_id' => $request->unit_id,
         ]);
 
 

@@ -6,6 +6,13 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
+const props = defineProps({
+    units: {
+        type: Array,
+        required: true,
+    },
+});
+
 // CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
@@ -17,6 +24,7 @@ const form = useForm({
     username_id: "",
     password: "",
     password_confirmation: "",
+    unit_id: "",
     _token: csrfToken.value,
 });
 
@@ -37,14 +45,15 @@ const submit = () => {
 
 <template>
     <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $t("User registration") }}
+            </h2>
+        </template>
         <Head :title="$t('User registration')" />
 
         <!-- コンテンツを中央に寄せ、画面幅に応じて余白を調整 -->
         <div class="max-w-md mx-auto py-10 mt-16 px-4 sm:px-6 lg:px-8">
-            <h1 class="text-2xl font-bold mb-6">
-                {{ $t("User registration") }}
-            </h1>
-
             <form
                 @submit.prevent="submit"
                 class="bg-white p-6 rounded-lg shadow space-y-6"
@@ -112,10 +121,32 @@ const submit = () => {
                     />
                 </div>
 
+                <div>
+                    <InputLabel for="unit_id" :value="$t('Unit')" />
+                    <select
+                        id="unit_id"
+                        v-model="form.unit_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        required
+                    >
+                        <option value="" disabled>
+                            所属部署を選択してください
+                        </option>
+                        <option
+                            v-for="unit in units"
+                            :key="unit.id"
+                            :value="unit.id"
+                        >
+                            {{ unit.name }}
+                        </option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.unit_id" />
+                </div>
+
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="ms-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >

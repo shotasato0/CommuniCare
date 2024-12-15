@@ -19,14 +19,15 @@ const submit = () => {
 
 <template>
     <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ $t("Resident Registration") }}
+            </h2>
+        </template>
         <Head :title="$t('Resident Registration')" />
         <div
             class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 mt-16"
         >
-            <h1 class="text-2xl font-bold mb-6">
-                {{ $t("Resident Registration") }}
-            </h1>
-
             <!-- 利用者登録フォーム -->
             <form
                 @submit.prevent="submit"
