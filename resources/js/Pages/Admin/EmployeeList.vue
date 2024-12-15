@@ -101,7 +101,7 @@ watchEffect(() => {
                                 v-for="user in users"
                                 :key="user.id"
                                 :class="[
-                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer',
                                     showDeleteButtons
                                         ? 'hover:bg-red-50 cursor-pointer'
                                         : 'hover:bg-gray-50 hover:shadow-md',
