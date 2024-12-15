@@ -17,9 +17,15 @@ class UserController extends Controller
     {
         $users = User::all();
         $units = Unit::all();
+        
+        // 管理者ユーザーを取得
+        $currentAdmin = User::role('admin')->first();
+        $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
+        
         return Inertia::render('Admin/EmployeeList', [
             'users' => $users,
             'units' => $units,
+            'currentAdminId' => $currentAdminId,
         ]);
     }
 
