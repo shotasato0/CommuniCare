@@ -124,18 +124,14 @@ const sortedUsers = computed(() => {
                         <div class="flex justify-end mb-6 space-x-4">
                             <button
                                 @click="isAdminMode = !isAdminMode"
-                                class="px-4 py-2 rounded-md transition"
+                                class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
                                 :class="
                                     isAdminMode
-                                        ? 'bg-purple-600 text-white'
-                                        : 'bg-gray-100 text-gray-700'
+                                        ? 'bg-purple-300 !text-white'
+                                        : 'bg-purple-200 text-purple-600'
                                 "
                             >
-                                {{
-                                    isAdminMode
-                                        ? "管理者権限譲渡モード"
-                                        : "通常モード"
-                                }}
+                                管理者権限を渡す
                             </button>
                             <Link
                                 :href="route('register')"
@@ -162,9 +158,8 @@ const sortedUsers = computed(() => {
                             class="mb-4 p-4 bg-purple-100 rounded-lg"
                         >
                             <p class="text-purple-700">
-                                管理者権限譲渡モード:
-                                選択したユーザーに管理者権限を譲渡します。
-                                この操作を行うと、現在の管理者権限は失われます。
+                                管理者権限を他のユーザーに渡すことができます。
+                                この操作を行うと、現在の管理者権限が解除されます。
                             </p>
                         </div>
 
@@ -264,23 +259,23 @@ const sortedUsers = computed(() => {
             class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
         >
             <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-                <h3 class="text-lg font-bold mb-4">管理者権限の譲渡確認</h3>
+                <h3 class="text-lg font-bold mb-4">管理者権限の移動確認</h3>
                 <p class="mb-4">
-                    {{ targetUser?.name }}さんに管理者権限を譲渡しますか？
+                    {{ targetUser?.name }}さんに管理者権限を渡しますか？
                     この操作を行うと、あなたの管理者権限は失われます。
                 </p>
                 <div class="flex justify-end space-x-4">
                     <button
                         @click="confirmationDialog = false"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md"
+                        class="bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                     >
                         キャンセル
                     </button>
                     <button
                         @click="executeAdminTransfer"
-                        class="px-4 py-2 bg-purple-600 text-white rounded-md"
+                        class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
                     >
-                        譲渡する
+                        管理者権限を渡す
                     </button>
                 </div>
             </div>
