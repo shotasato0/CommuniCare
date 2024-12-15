@@ -187,6 +187,15 @@ const updateSearchQuery = (query) => {
 const updateSelectedUnit = (unit) => {
     selectedUnit.value = unit;
 };
+
+// propsの二重定義を避けるため、page.propsを直接使用
+const page = usePage();
+const currentAdminId = page.props.currentAdminId;
+
+// 管理者かどうかを判定
+const isAdmin = computed(() => {
+    return currentAdminId === page.props.auth.user.id;
+});
 </script>
 
 <template>
@@ -194,7 +203,7 @@ const updateSelectedUnit = (unit) => {
         <Head :title="$t('Residents')" />
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                利用者一覧
+                {{ $t("Residents") }}
             </h2>
         </template>
 
@@ -216,55 +225,57 @@ const updateSelectedUnit = (unit) => {
             </div>
         </transition>
 
-        <div class="py-12">
+        <div class="pb-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
-                        <!-- コントロール部分を修正 -->
-                        <div
-                            class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
-                        >
-                            <!-- 新規登録と削除モードボタン -->
+                        <!-- コントロール部分のコンテナ -->
+                        <div class="mb-6">
+                            <!-- ボタンと検索フォームの横並び部分 -->
                             <div
-                                class="flex items-center space-x-4 order-1 sm:order-2"
+                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
                             >
-                                <!-- 新規登録ボタン -->
-                                <Link
-                                    :href="route('residents.create')"
-                                    class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
-                                >
-                                    新規登録
-                                </Link>
+                                <!-- 管理者のみに表示するボタン群 -->
+                                <div v-if="isAdmin" class="flex items-center space-x-4 order-1 sm:order-2">
+                                    <!-- 新規登録ボタン -->
+                                    <Link
+                                        :href="route('residents.create')"
+                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                                    >
+                                        新規登録
+                                    </Link>
 
-                                <!-- 削除モードトグルボタン -->
-                                <button
-                                    @click="
-                                        showDeleteButtons = !showDeleteButtons
-                                    "
-                                    class="w-full sm:w-auto px-4 py-2 rounded-md transition delete-mode-button"
-                                    :class="
-                                        showDeleteButtons
-                                            ? 'bg-red-100 text-red-700 hover:bg-red-300 hover:text-white'
-                                            : 'bg-red-200 text-red-600 hover:bg-red-400 hover:text-white'
-                                    "
-                                >
-                                    {{
-                                        showDeleteButtons
-                                            ? "削除モード"
-                                            : "削除モード"
-                                    }}
-                                </button>
+                                    <!-- 削除モードトグルボタン -->
+                                    <button
+                                        @click="showDeleteButtons = !showDeleteButtons"
+                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
+                                        :class="showDeleteButtons ? 'bg-red-300 !text-white' : 'bg-red-200 text-red-600'"
+                                    >
+                                        削除モード
+                                    </button>
+                                </div>
+
+                                <!-- 検索フォーム -->
+                                <SearchForm
+                                    :units="units"
+                                    :selected-unit-id="selectedUnit"
+                                    :total-results="totalResidents"
+                                    @update:search-query="updateSearchQuery"
+                                    @update:selected-unit="updateSelectedUnit"
+                                    class="order-2 sm:order-1"
+                                />
                             </div>
 
-                            <!-- 検索フォームをコンポーネントに置き換え -->
-                            <SearchForm
-                                :units="units"
-                                :selected-unit-id="selectedUnit"
-                                :total-results="totalResidents"
-                                @update:search-query="updateSearchQuery"
-                                @update:selected-unit="updateSelectedUnit"
-                                class="order-2 sm:order-1"
-                            />
+                            <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
+                            <div
+                                v-if="isAdmin && showDeleteButtons"
+                                class="mt-4 p-4 bg-red-100 rounded-lg"
+                            >
+                                <p class="text-red-700">
+                                    削除したい利用者をクリックすると削除できます。
+                                    この操作は取り消しできませんのでご注意ください。
+                                </p>
+                            </div>
                         </div>
 
                         <!-- 利用者一覧 -->

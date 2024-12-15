@@ -43,7 +43,7 @@ console.log("User data:", props.auth.user);
         </template>
 
         <!-- ダッシュボードのコンテンツ全体に左右余白を追加 -->
-        <div class="py-12 px-4 sm:px-8 lg:px-16">
+        <div class="pb-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 flex items-center space-x-4">
@@ -77,7 +77,7 @@ console.log("User data:", props.auth.user);
                     'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
                         flashType === 'info',
                 }"
-                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
+                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
                 <p class="font-bold">{{ flashMessage }}</p>
             </div>
