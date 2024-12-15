@@ -208,14 +208,14 @@ const groupedUsers = computed(() => {
                         >
                             <!-- 検索とフィルター部分 -->
                             <div
-                                class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto"
+                                class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4"
                             >
                                 <!-- 部署選択プルダウン -->
-                                <div class="w-full sm:w-64">
+                                <div class="w-full sm:w-auto">
                                     <select
                                         v-model="selectedUnit"
                                         @change="handleUnitChange"
-                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                        class="w-full rounded-md border-gray-300 shadow-sm"
                                     >
                                         <option value="">全部署</option>
                                         <option
@@ -228,29 +228,45 @@ const groupedUsers = computed(() => {
                                     </select>
                                 </div>
 
-                                <!-- 検索バー -->
-                                <div class="w-full sm:w-64 relative">
-                                    <input
-                                        type="text"
-                                        v-model="searchQuery"
-                                        placeholder="社員名で検索..."
-                                        class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-4 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    />
-                                    <div
-                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                                    >
-                                        <i
-                                            class="bi bi-search text-gray-400"
-                                        ></i>
+                                <!-- 検索バィールドと結果表示 -->
+                                <div class="w-full sm:w-auto space-y-2">
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            v-model="searchQuery"
+                                            placeholder="社員名で検索..."
+                                            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
+                                        />
+                                        <!-- 検索アイコン -->
+                                        <div
+                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                        >
+                                            <i
+                                                class="bi bi-search text-gray-400"
+                                            ></i>
+                                        </div>
+                                        <!-- リセットアイコン -->
+                                        <div
+                                            v-if="searchQuery"
+                                            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                                            @click="searchQuery = ''"
+                                        >
+                                            <i
+                                                class="bi bi-x text-gray-400 hover:text-gray-600"
+                                            ></i>
+                                        </div>
                                     </div>
-                                    <!-- クリアボタン -->
-                                    <button
+                                    <!-- 検索結果件数表示 -->
+                                    <div
                                         v-if="searchQuery"
-                                        @click="searchQuery = ''"
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                        class="text-sm text-gray-600 absolute mt-1"
                                     >
-                                        <i class="bi bi-x"></i>
-                                    </button>
+                                        検索結果:
+                                        {{
+                                            Object.values(groupedUsers).flat()
+                                                .length
+                                        }}件
+                                    </div>
                                 </div>
                             </div>
 
