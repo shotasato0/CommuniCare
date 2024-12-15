@@ -111,6 +111,20 @@ const toggleAdminMode = () => {
         showDeleteButtons.value = false;
     }
 };
+
+// 部署ごとにグループ化された社員リストを返す算出プロパティ
+const groupedUsers = computed(() => {
+    return units.reduce((acc, unit) => {
+        const usersInUnit = users.value
+            .filter((user) => user.unit_id === unit.id)
+            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+
+        if (usersInUnit.length > 0) {
+            acc[unit.name] = usersInUnit;
+        }
+        return acc;
+    }, {});
+});
 </script>
 
 <template>
@@ -228,53 +242,81 @@ const toggleAdminMode = () => {
                         </div>
 
                         <!-- ユーザー一覧 -->
-                        <div
-                            v-if="sortedUsers.otherUsers.length > 0"
-                            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                        >
+                        <div class="bg-white shadow rounded-lg p-4">
+                            <!-- 部署ごとのユーザー一覧 -->
                             <div
-                                v-for="user in sortedUsers.otherUsers"
-                                :key="user.id"
-                                class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer hover:bg-gray-50"
-                                @click="
-                                    isAdminMode
-                                        ? handleAdminTransfer(user)
-                                        : showDeleteButtons
-                                        ? deleteUser(user)
-                                        : openUserProfile(user)
-                                "
+                                v-for="(unitUsers, unitName) in groupedUsers"
+                                :key="unitName"
+                                class="mb-8"
                             >
-                                <div class="flex items-center space-x-4">
-                                    <img
-                                        :src="
-                                            user.icon
-                                                ? `/storage/${user.icon}`
-                                                : 'https://via.placeholder.com/150'
-                                        "
-                                        alt="Profile Icon"
-                                        class="w-12 h-12 rounded-full"
-                                    />
-                                    <div
-                                        class="flex justify-between items-start w-full"
+                                <!-- 部署見出し -->
+                                <h3
+                                    class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4"
+                                >
+                                    {{ unitName }}
+                                    <span
+                                        class="text-sm font-normal text-gray-600 ml-2"
                                     >
-                                        <div class="flex items-center">
-                                            <span
-                                                class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                        ({{ unitUsers.length }}名)
+                                    </span>
+                                </h3>
+
+                                <!-- 部署ごとの社員一覧 -->
+                                <div
+                                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                                >
+                                    <div
+                                        v-for="user in unitUsers"
+                                        :key="user.id"
+                                        class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer hover:bg-gray-50"
+                                        @click="
+                                            isAdminMode
+                                                ? handleAdminTransfer(user)
+                                                : showDeleteButtons
+                                                ? deleteUser(user)
+                                                : openUserProfile(user)
+                                        "
+                                    >
+                                        <div
+                                            class="flex items-center space-x-4"
+                                        >
+                                            <img
+                                                :src="
+                                                    user.icon
+                                                        ? `/storage/${user.icon}`
+                                                        : 'https://via.placeholder.com/150'
+                                                "
+                                                alt="Profile Icon"
+                                                class="w-12 h-12 rounded-full"
+                                            />
+                                            <div
+                                                class="flex justify-between items-start w-full"
                                             >
-                                                {{ user.name }}
-                                            </span>
+                                                <div class="flex items-center">
+                                                    <span
+                                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                    >
+                                                        {{ user.name }}
+                                                    </span>
+                                                </div>
+                                                <i
+                                                    v-if="showDeleteButtons"
+                                                    class="bi bi-trash text-red-500"
+                                                ></i>
+                                            </div>
                                         </div>
-                                        <i
-                                            v-if="showDeleteButtons"
-                                            class="bi bi-trash text-red-500"
-                                        ></i>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- 表示する社員がいない場合 -->
+                            <p
+                                v-if="Object.keys(groupedUsers).length === 0"
+                                class="text-gray-500 mt-4"
+                            >
+                                表示できる社員がいません
+                            </p>
                         </div>
-                        <p v-else class="text-gray-500 mt-4">
-                            表示できるユーザーがいません
-                        </p>
                     </div>
                 </div>
             </div>
