@@ -19,6 +19,7 @@ const confirmationDialog = ref(false);
 const targetUser = ref(null);
 
 const selectedUnit = ref(""); // 選択された部署のID
+const searchQuery = ref(""); // 検索クエリ
 
 const openUserProfile = (user) => {
     if (!showDeleteButtons.value) {
@@ -121,11 +122,27 @@ const handleUnitChange = (event) => {
 
 // フィルタリングされた社員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
+    // 検索クエリを小文字に変換
+    const query = searchQuery.value.trim().toLowerCase();
+
+    // 検索とフィルタリングの共通ロジック
+    const filterUsers = (users) => {
+        return users
+            .filter((user) => {
+                const matchesSearch =
+                    !query || user.name.toLowerCase().includes(query);
+                return matchesSearch;
+            })
+            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+    };
+
     // 特定の部署が選択されている場合
     if (selectedUnit.value) {
-        const usersInUnit = users.value
-            .filter((user) => user.unit_id === Number(selectedUnit.value))
-            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+        const usersInUnit = filterUsers(
+            users.value.filter(
+                (user) => user.unit_id === Number(selectedUnit.value)
+            )
+        );
 
         if (usersInUnit.length > 0) {
             return {
@@ -136,11 +153,11 @@ const groupedUsers = computed(() => {
         return {};
     }
 
-    // 全部署表示の場合（既存のロジック）
+    // 全部署表示の場合
     const grouped = units.reduce((acc, unit) => {
-        const usersInUnit = users.value
-            .filter((user) => user.unit_id === unit.id)
-            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+        const usersInUnit = filterUsers(
+            users.value.filter((user) => user.unit_id === unit.id)
+        );
 
         if (usersInUnit.length > 0) {
             acc[unit.name] = usersInUnit;
@@ -149,9 +166,9 @@ const groupedUsers = computed(() => {
     }, {});
 
     // 未所属の社員を抽出
-    const unassignedUsers = users.value
-        .filter((user) => !user.unit_id)
-        .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+    const unassignedUsers = filterUsers(
+        users.value.filter((user) => !user.unit_id)
+    );
 
     // 未所属の社員がいる場合、未所属グループを追加
     if (unassignedUsers.length > 0) {
@@ -189,22 +206,52 @@ const groupedUsers = computed(() => {
                         <div
                             class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
                         >
-                            <!-- 部署選択プルダウン -->
-                            <div class="w-full sm:w-64">
-                                <select
-                                    v-model="selectedUnit"
-                                    @change="handleUnitChange"
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                >
-                                    <option value="">全部署</option>
-                                    <option
-                                        v-for="unit in units"
-                                        :key="unit.id"
-                                        :value="unit.id"
+                            <!-- 検索とフィルター部分 -->
+                            <div
+                                class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto"
+                            >
+                                <!-- 部署選択プルダウン -->
+                                <div class="w-full sm:w-64">
+                                    <select
+                                        v-model="selectedUnit"
+                                        @change="handleUnitChange"
+                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     >
-                                        {{ unit.name }}
-                                    </option>
-                                </select>
+                                        <option value="">全部署</option>
+                                        <option
+                                            v-for="unit in units"
+                                            :key="unit.id"
+                                            :value="unit.id"
+                                        >
+                                            {{ unit.name }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- 検索バー -->
+                                <div class="w-full sm:w-64 relative">
+                                    <input
+                                        type="text"
+                                        v-model="searchQuery"
+                                        placeholder="社員名で検索..."
+                                        class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-4 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                    <div
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                                    >
+                                        <i
+                                            class="bi bi-search text-gray-400"
+                                        ></i>
+                                    </div>
+                                    <!-- クリアボタン -->
+                                    <button
+                                        v-if="searchQuery"
+                                        @click="searchQuery = ''"
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- 既存のボタン群 -->
@@ -368,12 +415,12 @@ const groupedUsers = computed(() => {
                             </div>
 
                             <!-- 表示する社員がいない場合 -->
-                            <p
+                            <div
                                 v-if="Object.keys(groupedUsers).length === 0"
-                                class="text-gray-500 mt-4"
+                                class="text-center text-gray-500 mt-4"
                             >
-                                表示できる社員がいません
-                            </p>
+                                検索条件に一致する社員が見つかりませんでした。
+                            </div>
                         </div>
                     </div>
                 </div>
