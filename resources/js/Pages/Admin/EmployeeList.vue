@@ -208,22 +208,22 @@ const toggleAdminMode = () => {
                                         alt="Profile Icon"
                                         class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
                                     />
-                                    <div class="flex items-center">
+                                    <div class="flex items-center space-x-2">
                                         <p
                                             class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
                                         >
                                             {{ sortedUsers.currentAdmin.name }}
                                         </p>
                                         <i
-                                            class="bi bi-award-fill text-yellow-500 text-xl ml-2"
+                                            class="bi bi-award-fill text-yellow-500 text-xl mr-2"
                                         ></i>
+                                        <span
+                                            class="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                                        >
+                                            現在の管理者
+                                        </span>
                                     </div>
                                 </div>
-                                <p
-                                    class="text-xs sm:text-sm text-blue-500 mr-4"
-                                >
-                                    現在の管理者
-                                </p>
                             </div>
                         </div>
 
