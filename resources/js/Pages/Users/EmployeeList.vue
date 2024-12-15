@@ -190,12 +190,12 @@ const totalFilteredUsers = computed(() => {
 </script>
 
 <template>
-    <Head :title="$t('Employee List')" />
+    <Head :title="$t('Staff')" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $t("Employee List") }}
+                {{ $t("Staff") }}
             </h2>
         </template>
         <!-- フラッシュメッセージ -->
