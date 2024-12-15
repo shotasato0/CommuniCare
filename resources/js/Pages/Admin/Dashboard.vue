@@ -10,25 +10,6 @@ import { Link, Head } from "@inertiajs/vue3";
         </h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- 社員一覧 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                        {{ $t("Employee List") }}
-                    </h3>
-                    <p class="mt-2 max-w-4xl text-sm text-gray-500">
-                        {{ $t("Check the list of registered employees.") }}
-                    </p>
-                    <div class="mt-4">
-                        <Link
-                            :href="route('users.index')"
-                            class="text-blue-500 link-hover"
-                            >{{ $t("List page") }}</Link
-                        >
-                    </div>
-                </div>
-            </div>
-
             <!-- 部署管理 -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
