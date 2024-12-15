@@ -95,6 +95,22 @@ const sortedUsers = computed(() => {
     const otherUsers = users.value.filter((user) => user.id !== currentAdminId);
     return { currentAdmin, otherUsers };
 });
+
+// showDeleteButtonsの更新時にisAdminModeをfalseに
+const toggleDeleteMode = () => {
+    showDeleteButtons.value = !showDeleteButtons.value;
+    if (showDeleteButtons.value) {
+        isAdminMode.value = false;
+    }
+};
+
+// isAdminModeの更新時にshowDeleteButtonsをfalseに
+const toggleAdminMode = () => {
+    isAdminMode.value = !isAdminMode.value;
+    if (isAdminMode.value) {
+        showDeleteButtons.value = false;
+    }
+};
 </script>
 
 <template>
@@ -129,7 +145,7 @@ const sortedUsers = computed(() => {
                                 新規登録
                             </Link>
                             <button
-                                @click="showDeleteButtons = !showDeleteButtons"
+                                @click="toggleDeleteMode"
                                 class="px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
                                 :class="
                                     showDeleteButtons
@@ -140,7 +156,7 @@ const sortedUsers = computed(() => {
                                 削除モード
                             </button>
                             <button
-                                @click="isAdminMode = !isAdminMode"
+                                @click="toggleAdminMode"
                                 class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
                                 :class="
                                     isAdminMode
