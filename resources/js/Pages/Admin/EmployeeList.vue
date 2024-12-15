@@ -140,13 +140,13 @@ const toggleAdminMode = () => {
                         <div class="flex justify-end mb-6 space-x-4">
                             <Link
                                 :href="route('register')"
-                                class="px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white"
+                                class="w-32 px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-center"
                             >
                                 新規登録
                             </Link>
                             <button
                                 @click="toggleDeleteMode"
-                                class="px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
                                 :class="
                                     showDeleteButtons
                                         ? 'bg-red-300 !text-white'
@@ -157,14 +157,14 @@ const toggleAdminMode = () => {
                             </button>
                             <button
                                 @click="toggleAdminMode"
-                                class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                                class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
                                 :class="
                                     isAdminMode
                                         ? 'bg-purple-300 !text-white'
                                         : 'bg-purple-200 text-purple-600'
                                 "
                             >
-                                管理者権限を渡す
+                                管理者権限
                             </button>
                         </div>
 
