@@ -67,7 +67,7 @@ const confirmGuestLogout = (event) => {
                                     class="cursor-pointer"
                                 >
                                     <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-blue-900"
+                                        class="block h-6 sm:h-8 w-auto fill-current text-blue-900"
                                     />
                                 </div>
                             </div>
