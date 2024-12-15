@@ -47,25 +47,6 @@ import { Link, Head } from "@inertiajs/vue3";
                     </div>
                 </div>
             </div>
-
-            <!-- 管理者権限の譲渡 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">
-                        {{ $t("Transfer Admin Role") }}
-                    </h3>
-                    <p class="mt-2 max-w-4xl text-sm text-gray-500">
-                        {{ $t("Transfer admin privileges to another user.") }}
-                    </p>
-                    <div class="mt-4">
-                        <Link
-                            :href="route('admin.transfer.view')"
-                            class="text-blue-500 link-hover"
-                            >{{ $t("Transfer page") }}</Link
-                        >
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </template>

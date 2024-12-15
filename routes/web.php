@@ -71,8 +71,7 @@ Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(f
         // 利用者
         Route::resource('residents', ResidentController::class);
 
-        // テナントの管理者を移動
-        Route::get('/admin/transfer-admin', [AdminUserController::class, 'showTransferAdminForm'])->name('admin.transfer.view');
+        // 管理者権限の譲渡
         Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
     });
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
