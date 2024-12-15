@@ -114,7 +114,7 @@ const toggleAdminMode = () => {
 
 // 部署ごとにグループ化された社員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
-    return units.reduce((acc, unit) => {
+    const grouped = units.reduce((acc, unit) => {
         const usersInUnit = users.value
             .filter((user) => user.unit_id === unit.id)
             .sort((a, b) => a.name.localeCompare(b.name, "ja"));
@@ -124,6 +124,18 @@ const groupedUsers = computed(() => {
         }
         return acc;
     }, {});
+
+    // 未所属の社員を抽出
+    const unassignedUsers = users.value
+        .filter((user) => !user.unit_id)
+        .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+
+    // 未所属の社員がいる場合、未所属グループを追加
+    if (unassignedUsers.length > 0) {
+        grouped["未所属"] = unassignedUsers;
+    }
+
+    return grouped;
 });
 </script>
 
@@ -350,7 +362,7 @@ const groupedUsers = computed(() => {
             </div>
         </div>
 
-        <!-- プロフィールモーダル -->
+        <!-- ユーザー詳細モーダル -->
         <div
             v-if="isUserProfileVisible"
             class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
