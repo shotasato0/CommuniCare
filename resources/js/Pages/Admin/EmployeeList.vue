@@ -18,6 +18,8 @@ const isAdminMode = ref(false);
 const confirmationDialog = ref(false);
 const targetUser = ref(null);
 
+const selectedUnit = ref(""); // 選択された部署のID
+
 const openUserProfile = (user) => {
     if (!showDeleteButtons.value) {
         selectedUser.value = user;
@@ -112,8 +114,29 @@ const toggleAdminMode = () => {
     }
 };
 
-// 部署ごとにグループ化された社員リストを返す算出プロパティ
+// 選択された部署が変更された時の処理
+const handleUnitChange = (event) => {
+    selectedUnit.value = event.target.value;
+};
+
+// フィルタリングされた社員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
+    // 特定の部署が選択されている場合
+    if (selectedUnit.value) {
+        const usersInUnit = users.value
+            .filter((user) => user.unit_id === Number(selectedUnit.value))
+            .sort((a, b) => a.name.localeCompare(b.name, "ja"));
+
+        if (usersInUnit.length > 0) {
+            return {
+                [units.find((u) => u.id === Number(selectedUnit.value)).name]:
+                    usersInUnit,
+            };
+        }
+        return {};
+    }
+
+    // 全部署表示の場合（既存のロジック）
     const grouped = units.reduce((acc, unit) => {
         const usersInUnit = users.value
             .filter((user) => user.unit_id === unit.id)
@@ -163,35 +186,58 @@ const groupedUsers = computed(() => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分 -->
-                        <div class="flex justify-end mb-6 space-x-4">
-                            <Link
-                                :href="route('register')"
-                                class="w-32 px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-center"
-                            >
-                                新規登録
-                            </Link>
-                            <button
-                                @click="toggleDeleteMode"
-                                class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
-                                :class="
-                                    showDeleteButtons
-                                        ? 'bg-red-300 !text-white'
-                                        : 'bg-red-200 text-red-600'
-                                "
-                            >
-                                削除モード
-                            </button>
-                            <button
-                                @click="toggleAdminMode"
-                                class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
-                                :class="
-                                    isAdminMode
-                                        ? 'bg-purple-300 !text-white'
-                                        : 'bg-purple-200 text-purple-600'
-                                "
-                            >
-                                管理者権限
-                            </button>
+                        <div
+                            class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
+                        >
+                            <!-- 部署選択プルダウン -->
+                            <div class="w-full sm:w-64">
+                                <select
+                                    v-model="selectedUnit"
+                                    @change="handleUnitChange"
+                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                >
+                                    <option value="">全部署</option>
+                                    <option
+                                        v-for="unit in units"
+                                        :key="unit.id"
+                                        :value="unit.id"
+                                    >
+                                        {{ unit.name }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- 既存のボタン群 -->
+                            <div class="flex items-center space-x-4">
+                                <Link
+                                    :href="route('register')"
+                                    class="w-32 px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-center"
+                                >
+                                    新規登録
+                                </Link>
+                                <button
+                                    @click="toggleDeleteMode"
+                                    class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                    :class="
+                                        showDeleteButtons
+                                            ? 'bg-red-300 !text-white'
+                                            : 'bg-red-200 text-red-600'
+                                    "
+                                >
+                                    削除モード
+                                </button>
+                                <button
+                                    @click="toggleAdminMode"
+                                    class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                                    :class="
+                                        isAdminMode
+                                            ? 'bg-purple-300 !text-white'
+                                            : 'bg-purple-200 text-purple-600'
+                                    "
+                                >
+                                    管理者権限
+                                </button>
+                            </div>
                         </div>
 
                         <!-- モード説明 -->
