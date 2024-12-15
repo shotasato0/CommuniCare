@@ -4,6 +4,7 @@ import { ref, watchEffect, computed } from "vue";
 import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { deleteItem } from "@/Utils/deleteItem";
+import UserSearchForm from "./Components/UserSearchForm.vue";
 
 const { props } = usePage();
 const users = ref(props.users);
@@ -18,8 +19,17 @@ const isAdminMode = ref(false);
 const confirmationDialog = ref(false);
 const targetUser = ref(null);
 
-const selectedUnit = ref(""); // 選択された部署のID
-const searchQuery = ref(""); // 検索クエリ
+const selectedUnit = ref("");
+const searchQuery = ref("");
+
+// 検索フォームからの更新を処理
+const updateSelectedUnit = (newValue) => {
+    selectedUnit.value = newValue;
+};
+
+const updateSearchQuery = (newValue) => {
+    searchQuery.value = newValue;
+};
 
 const openUserProfile = (user) => {
     if (!showDeleteButtons.value) {
@@ -115,11 +125,6 @@ const toggleAdminMode = () => {
     }
 };
 
-// 選択された部署が変更された時の処理
-const handleUnitChange = (event) => {
-    selectedUnit.value = event.target.value;
-};
-
 // フィルタリングされた社員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
     // 検索クエリを小文字に変換
@@ -177,6 +182,11 @@ const groupedUsers = computed(() => {
 
     return grouped;
 });
+
+// 検索結果の総数を計算
+const totalFilteredUsers = computed(() => {
+    return Object.values(groupedUsers.value).flat().length;
+});
 </script>
 
 <template>
@@ -206,69 +216,14 @@ const groupedUsers = computed(() => {
                         <div
                             class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
                         >
-                            <!-- 検索とフィルター部分 -->
-                            <div
-                                class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4"
-                            >
-                                <!-- 部署選択プルダウン -->
-                                <div class="w-full sm:w-auto">
-                                    <select
-                                        v-model="selectedUnit"
-                                        @change="handleUnitChange"
-                                        class="w-full rounded-md border-gray-300 shadow-sm"
-                                    >
-                                        <option value="">全部署</option>
-                                        <option
-                                            v-for="unit in units"
-                                            :key="unit.id"
-                                            :value="unit.id"
-                                        >
-                                            {{ unit.name }}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- 検索バィールドと結果表示 -->
-                                <div class="w-full sm:w-auto space-y-2">
-                                    <div class="relative">
-                                        <input
-                                            type="text"
-                                            v-model="searchQuery"
-                                            placeholder="社員名で検索..."
-                                            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
-                                        />
-                                        <!-- 検索アイコン -->
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                                        >
-                                            <i
-                                                class="bi bi-search text-gray-400"
-                                            ></i>
-                                        </div>
-                                        <!-- リセットアイコン -->
-                                        <div
-                                            v-if="searchQuery"
-                                            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                                            @click="searchQuery = ''"
-                                        >
-                                            <i
-                                                class="bi bi-x text-gray-400 hover:text-gray-600"
-                                            ></i>
-                                        </div>
-                                    </div>
-                                    <!-- 検索結果件数表示 -->
-                                    <div
-                                        v-if="searchQuery"
-                                        class="text-sm text-gray-600 absolute mt-1"
-                                    >
-                                        検索結果:
-                                        {{
-                                            Object.values(groupedUsers).flat()
-                                                .length
-                                        }}件
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- 検索フォームコンポーネント -->
+                            <UserSearchForm
+                                :units="units"
+                                :selected-unit-id="selectedUnit"
+                                :total-results="totalFilteredUsers"
+                                @update:selected-unit="updateSelectedUnit"
+                                @update:search-query="updateSearchQuery"
+                            />
 
                             <!-- 既存のボタン群 -->
                             <div class="flex items-center space-x-4">
