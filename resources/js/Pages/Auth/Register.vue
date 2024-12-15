@@ -6,6 +6,13 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
+const props = defineProps({
+    units: {
+        type: Array,
+        required: true,
+    },
+});
+
 // CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
@@ -17,6 +24,7 @@ const form = useForm({
     username_id: "",
     password: "",
     password_confirmation: "",
+    unit_id: "",
     _token: csrfToken.value,
 });
 
@@ -111,6 +119,28 @@ const submit = () => {
                         class="mt-2"
                         :message="form.errors.password_confirmation"
                     />
+                </div>
+
+                <div>
+                    <InputLabel for="unit_id" :value="$t('Unit')" />
+                    <select
+                        id="unit_id"
+                        v-model="form.unit_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        required
+                    >
+                        <option value="" disabled>
+                            所属部署を選択してください
+                        </option>
+                        <option
+                            v-for="unit in units"
+                            :key="unit.id"
+                            :value="unit.id"
+                        >
+                            {{ unit.name }}
+                        </option>
+                    </select>
+                    <InputError class="mt-2" :message="form.errors.unit_id" />
                 </div>
 
                 <div class="flex items-center justify-end">
