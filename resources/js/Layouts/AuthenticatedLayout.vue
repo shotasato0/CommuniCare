@@ -48,6 +48,8 @@ const confirmGuestLogout = (event) => {
         }
     }
 };
+
+const isForumPage = ref(window.location.pathname === "/forum");
 </script>
 
 <template>
@@ -78,7 +80,7 @@ const confirmGuestLogout = (event) => {
                             >
                                 <NavLink
                                     @click="navigateToForum"
-                                    :active="false"
+                                    :active="isForumPage"
                                     class="cursor-pointer"
                                 >
                                     {{ $t("Forum") }}
@@ -248,7 +250,7 @@ const confirmGuestLogout = (event) => {
 
                         <ResponsiveNavLink
                             @click="navigateToForum"
-                            :active="false"
+                            :active="isForumPage"
                             class="cursor-pointer"
                         >
                             {{ $t("Forum") }}
