@@ -55,7 +55,7 @@ const submitQuotePost = () => {
             <textarea
                 v-model="newPostContent"
                 class="w-full border rounded p-2 mb-4"
-                placeholder="ここにコメントを入力してください"
+                placeholder="投稿文を入力してください"
                 rows="4"
             ></textarea>
 
