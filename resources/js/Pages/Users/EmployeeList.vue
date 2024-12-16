@@ -49,7 +49,7 @@ const deleteUser = (user) => {
             users.value.splice(index, 1);
         }
         // 削除成功時にフラッシュメッセージを設定
-        flashMessage.value = "社員が削除されました";
+        flashMessage.value = "職員が削除されました";
         showDeleteButtons.value = false;
     });
 };
@@ -125,7 +125,7 @@ const toggleAdminMode = () => {
     }
 };
 
-// フィルタリングされた社員リストを返す算出プロパティ
+// フィルタリングされた職員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
     // 検索クエリを小文字に変換
     const query = searchQuery.value.trim().toLowerCase();
@@ -170,12 +170,12 @@ const groupedUsers = computed(() => {
         return acc;
     }, {});
 
-    // 未所属の社員を抽出
+    // 未所属の職員を抽出
     const unassignedUsers = filterUsers(
         users.value.filter((user) => !user.unit_id)
     );
 
-    // 未所属の社員がいる場合、未所属グループを追加
+    // 未所属の職員がいる場合、未所属グループを追加
     if (unassignedUsers.length > 0) {
         grouped["未所属"] = unassignedUsers;
     }
@@ -190,12 +190,12 @@ const totalFilteredUsers = computed(() => {
 </script>
 
 <template>
-    <Head :title="$t('Employee List')" />
+    <Head :title="$t('Staff')" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $t("Employee List") }}
+                {{ $t("Staff") }}
             </h2>
         </template>
         <!-- フラッシュメッセージ -->
@@ -264,7 +264,7 @@ const totalFilteredUsers = computed(() => {
                             class="mb-4 p-4 bg-red-100 rounded-lg"
                         >
                             <p class="text-red-700">
-                                削除したい社員をクリックすると削除できます。
+                                削除したい職員をクリックすると削除できます。
                                 この操作は取り消しできませんのでご注意ください。
                             </p>
                         </div>
@@ -275,7 +275,7 @@ const totalFilteredUsers = computed(() => {
                             class="mb-4 p-4 bg-purple-100 rounded-lg"
                         >
                             <p class="text-purple-700">
-                                管理者権限を他の社員に渡すことができます。
+                                管理者権限を他の職員に渡すことができます。
                                 この操作を行うと、現在の管理者権限が解除されます。
                             </p>
                         </div>
@@ -337,7 +337,7 @@ const totalFilteredUsers = computed(() => {
                                     </span>
                                 </h3>
 
-                                <!-- 部署ごとの社員一覧 -->
+                                <!-- 部署ごとの職員一覧 -->
                                 <div
                                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
                                 >
@@ -385,12 +385,12 @@ const totalFilteredUsers = computed(() => {
                                 </div>
                             </div>
 
-                            <!-- 表示する社員がいない場合 -->
+                            <!-- 表示する職員がいない場合 -->
                             <div
                                 v-if="Object.keys(groupedUsers).length === 0"
                                 class="text-center text-gray-500 mt-4"
                             >
-                                検索条件に一致する社員が見つかりませんでした。
+                                検索条件に一致する職員が見つかりませんでした。
                             </div>
                         </div>
                     </div>

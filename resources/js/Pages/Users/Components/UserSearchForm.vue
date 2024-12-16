@@ -56,7 +56,7 @@ const resetSearch = () => {
                     type="text"
                     v-model="searchQuery"
                     @input="emit('update:searchQuery', searchQuery)"
-                    placeholder="社員名で検索..."
+                    placeholder="職員名で検索..."
                     class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
                 />
                 <!-- 検索アイコン -->

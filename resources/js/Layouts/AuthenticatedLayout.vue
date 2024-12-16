@@ -48,6 +48,8 @@ const confirmGuestLogout = (event) => {
         }
     }
 };
+
+const isForumPage = ref(window.location.pathname === "/forum");
 </script>
 
 <template>
@@ -67,7 +69,7 @@ const confirmGuestLogout = (event) => {
                                     class="cursor-pointer"
                                 >
                                     <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-blue-900"
+                                        class="block h-6 sm:h-8 w-auto fill-current text-blue-900"
                                     />
                                 </div>
                             </div>
@@ -77,10 +79,19 @@ const confirmGuestLogout = (event) => {
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    href="/forum"
+                                    @click.prevent="navigateToForum"
+                                    :active="isForumPage"
+                                    class="cursor-pointer"
                                 >
-                                    {{ $t("Dashboard") }}
+                                    {{ $t("Forum") }}
+                                </NavLink>
+
+                                <NavLink
+                                    :href="route('users.index')"
+                                    :active="route().current('users.index')"
+                                >
+                                    {{ $t("Staff") }}
                                 </NavLink>
 
                                 <NavLink
@@ -88,6 +99,13 @@ const confirmGuestLogout = (event) => {
                                     :active="route().current('residents.index')"
                                 >
                                     {{ $t("Residents") }}
+                                </NavLink>
+
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    {{ $t("Dashboard") }}
                                 </NavLink>
                             </div>
                         </div>
@@ -211,6 +229,29 @@ const confirmGuestLogout = (event) => {
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
+                            href="/forum"
+                            @click.prevent="navigateToForum"
+                            :active="isForumPage"
+                            class="cursor-pointer"
+                        >
+                            {{ $t("Forum") }}
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('users.index')"
+                            :active="route().current('users.index')"
+                        >
+                            {{ $t("Staff") }}
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            :href="route('residents.index')"
+                            :active="route().current('residents.index')"
+                        >
+                            {{ $t("Residents") }}
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
@@ -220,63 +261,29 @@ const confirmGuestLogout = (event) => {
 
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
-                            :href="route('residents.index')"
-                            :active="route().current('residents.index')"
+                            :href="route('profile.edit')"
+                            :active="route().current('profile.edit')"
                         >
-                            {{ $t("Residents") }}
+                            {{ $t("Profile") }}
                         </ResponsiveNavLink>
-                    </div>
-
-                    <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-gray-200">
-                        <div class="px-4">
-                            <!-- user.nameがnullでないことを確認 -->
-                            <div v-if="auth.user">
-                                <div
-                                    class="font-medium text-base text-gray-800"
-                                >
-                                    {{ auth.user.name }}
-                                </div>
-                                <div class="font-medium text-sm text-gray-500">
-                                    {{ auth.user.email }}
-                                </div>
-                            </div>
-                            <div v-else>
-                                <!-- ゲストセッションの切断など、予期せぬauth.userのnull状態に対応するため保持 -->
-                                <div
-                                    class="font-medium text-base text-gray-800"
-                                >
-                                    ゲスト
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink
-                                :href="route('profile.edit')"
-                                class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                        <form
+                            :action="route('logout')"
+                            method="post"
+                            class="inline"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                :value="csrfToken"
+                            />
+                            <button
+                                type="submit"
+                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                @click="confirmGuestLogout"
                             >
-                                {{ $t("Profile") }}
-                            </ResponsiveNavLink>
-                            <form
-                                :action="route('logout')"
-                                method="post"
-                                class="inline"
-                            >
-                                <input
-                                    type="hidden"
-                                    name="_token"
-                                    :value="csrfToken"
-                                />
-                                <button
-                                    type="submit"
-                                    class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
-                                    @click="confirmGuestLogout"
-                                >
-                                    {{ $t("Log Out") }}
-                                </button>
-                            </form>
-                        </div>
+                                {{ $t("Log Out") }}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </nav>
