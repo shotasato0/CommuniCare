@@ -48,6 +48,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        return redirect()->route('dashboard')->with(['success' => '社員の登録が完了しました。']);
+        return redirect()->route('dashboard')->with(['success' => '職員の登録が完了しました。']);
     }
 }

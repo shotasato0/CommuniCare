@@ -150,7 +150,7 @@ public function updateIcon(Request $request)
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->route('users.index')->with('success', '社員が削除されました。');
+        return redirect()->route('users.index')->with('success', '職員が削除されました。');
     }
 
     // ユーザーの所属ユニットのforum_idを取得
