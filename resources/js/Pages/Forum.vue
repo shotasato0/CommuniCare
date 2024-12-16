@@ -193,12 +193,12 @@ const handleCommentDeletion = (commentId) => {
         if (deleted) {
             // Vueに変更を通知
             posts.value.data[postIndex].comments = [...comments];
-            console.log(`コメント削除成功: ${commentId}`);
+            console.log(`返信削除成功: ${commentId}`);
         } else {
-            console.error(`コメント削除に失敗しました: ${commentId}`);
+            console.error(`返信削除に失敗しました: ${commentId}`);
         }
     } else {
-        console.error(`削除対象のコメントが見つかりませんでした: ${commentId}`);
+        console.error(`削除対象の返信が見つかりませんでした: ${commentId}`);
     }
 };
 
