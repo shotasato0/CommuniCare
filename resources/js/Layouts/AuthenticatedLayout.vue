@@ -88,13 +88,6 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 </NavLink>
 
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    {{ $t("Dashboard") }}
-                                </NavLink>
-
-                                <NavLink
                                     :href="route('users.index')"
                                     :active="route().current('users.index')"
                                 >
@@ -106,6 +99,13 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :active="route().current('residents.index')"
                                 >
                                     {{ $t("Residents") }}
+                                </NavLink>
+
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    {{ $t("Dashboard") }}
                                 </NavLink>
                             </div>
                         </div>
@@ -229,10 +229,12 @@ const isForumPage = ref(window.location.pathname === "/forum");
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                            href="/forum"
+                            @click.prevent="navigateToForum"
+                            :active="isForumPage"
+                            class="cursor-pointer"
                         >
-                            {{ $t("Dashboard") }}
+                            {{ $t("Forum") }}
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
@@ -250,12 +252,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
-                            href="/forum"
-                            @click.prevent="navigateToForum"
-                            :active="isForumPage"
-                            class="cursor-pointer"
+                            :href="route('dashboard')"
+                            :active="route().current('dashboard')"
                         >
-                            {{ $t("Forum") }}
+                            {{ $t("Dashboard") }}
                         </ResponsiveNavLink>
                     </div>
 
