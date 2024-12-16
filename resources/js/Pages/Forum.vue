@@ -273,7 +273,7 @@ const handleForumSelected = (unitId) => {
                 <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
-                        class="text-lg font-bold cursor-pointer toggle-button"
+                        class="text-lg font-bold cursor-pointer text-gray-500 hover:text-black p-2 toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
