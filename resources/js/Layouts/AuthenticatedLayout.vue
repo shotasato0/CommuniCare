@@ -175,7 +175,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="flex items-center lg:hidden">
+                        <div class="flex items-center lg:hidden my-auto">
                             <button
                                 @click="
                                     showingNavigationDropdown =
