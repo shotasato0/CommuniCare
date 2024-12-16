@@ -54,14 +54,25 @@ const quotePost = (post) => {
 };
 
 onMounted(() => {
-    // マウント時にselectedForumIdを初期化
     initSelectedForumId(selectedForumId);
-    // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
-    // 保存された部署IDを復元
-    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
-    if (savedUnitId) {
-        activeUnitId.value = parseInt(savedUnitId);
+
+    // URLパラメータからactive_unit_idを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUnitId = urlParams.get("active_unit_id");
+
+    if (urlUnitId) {
+        // URLパラメータがある場合はそれを優先
+        activeUnitId.value = parseInt(urlUnitId);
+        localStorage.setItem("lastSelectedUnitId", urlUnitId);
+    } else {
+        // URLパラメータがない場合は既存のロジックを使用
+        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+        if (savedUnitId) {
+            activeUnitId.value = parseInt(savedUnitId);
+        } else if (auth.user.unit_id) {
+            activeUnitId.value = auth.user.unit_id;
+        }
     }
 });
 
