@@ -77,6 +77,14 @@ const confirmGuestLogout = (event) => {
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
+                                    @click="navigateToForum"
+                                    :active="false"
+                                    class="cursor-pointer"
+                                >
+                                    {{ $t("Forum") }}
+                                </NavLink>
+
+                                <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
@@ -236,6 +244,14 @@ const confirmGuestLogout = (event) => {
                             :active="route().current('residents.index')"
                         >
                             {{ $t("Residents") }}
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            @click="navigateToForum"
+                            :active="false"
+                            class="cursor-pointer"
+                        >
+                            {{ $t("Forum") }}
                         </ResponsiveNavLink>
                     </div>
 
