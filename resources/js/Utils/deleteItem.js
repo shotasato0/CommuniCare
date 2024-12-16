@@ -12,7 +12,7 @@ export const deleteItem = (type, id, onSuccessCallback) => {
         type === "post"
             ? "本当に投稿を削除しますか？"
             : type === "comment"
-            ? "本当にコメントを削除しますか？"
+            ? "本当に返信を削除しますか？"
             : "本当に職員を削除しますか？";
 
     if (confirm(confirmMessage)) {

@@ -73,12 +73,12 @@ const props = defineProps({
                         <i class="bi bi-reply"></i>
                     </button>
 
-                    <!-- コメント削除ボタン -->
+                    <!-- 返信削除ボタン -->
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="onDeleteItem('comment', comment.id)"
                         class="px-4 py-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer flex items-center"
-                        title="コメントの削除"
+                        title="返信の削除"
                     >
                         <i class="bi bi-trash"></i>
                     </button>
