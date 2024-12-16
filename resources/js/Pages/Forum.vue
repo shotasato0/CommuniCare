@@ -21,7 +21,6 @@ import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
-import axios from "axios";
 
 // props を構造分解して取得
 const {
