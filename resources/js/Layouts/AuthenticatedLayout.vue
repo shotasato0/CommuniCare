@@ -108,9 +108,9 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             </div>
                         </div>
 
-                        <div class="hidden lg:flex lg:items-center lg:ms-6">
+                        <div class="hidden lg:flex lg:items-center">
                             <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
+                            <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -326,5 +326,17 @@ const isForumPage = ref(window.location.pathname === "/forum");
     .lg\:hidden {
         display: none;
     }
+}
+
+.lg\:flex {
+    align-items: center;
+    height: 100%;
+}
+
+.relative {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.75rem;
 }
 </style>
