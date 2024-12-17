@@ -318,46 +318,8 @@ const handleForumSelected = (unitId) => {
                     class="bg-white rounded-md shadow-md mb-6 p-4"
                 >
                     <div>
-                        <p class="mb-2 text-xs text-gray-500">
-                            {{ formatDate(post.created_at) }}
-                            <span
-                                v-if="post.user"
-                                class="flex items-center space-x-2"
-                            >
-                                <!-- ユーザーアイコンの表示 -->
-                                <img
-                                    v-if="post.user.icon"
-                                    :src="
-                                        post.user.icon.startsWith('/storage/')
-                                            ? post.user.icon
-                                            : `/storage/${post.user.icon}`
-                                    "
-                                    alt="User Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                    @click="openUserProfile(post)"
-                                />
-                                <img
-                                    v-else
-                                    src="https://via.placeholder.com/40"
-                                    alt="Default Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                    @click="openUserProfile(post)"
-                                />
-
-                                <!-- 投稿者名の表示 -->
-                                <span
-                                    @click="openUserProfile(post)"
-                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
-                                >
-                                    ＠{{ post.user.name }}
-                                </span>
-                            </span>
-                            <span v-else>＠Unknown</span>
-                        </p>
-                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
-
-                        <!-- 引用投稿がある場合の表示 -->
-                        <div>
+                        <!-- 引用投稿がある場合の表示を最初に移動 -->
+                        <div class="mb-4">
                             <!-- 削除済みの場合 -->
                             <template v-if="post.quoted_post_deleted === 1">
                                 <p
@@ -370,7 +332,7 @@ const handleForumSelected = (unitId) => {
                             <!-- 削除されていない場合 -->
                             <template v-else-if="post.quoted_post">
                                 <div
-                                    class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                    class="quoted-post p-2 border-l-4 border-gray-300 bg-gray-100"
                                 >
                                     <div class="flex items-center space-x-2">
                                         <img
@@ -428,6 +390,44 @@ const handleForumSelected = (unitId) => {
                             </template>
                         </div>
 
+                        <!-- ユーザー情報と投稿内容 -->
+                        <p class="mb-2 text-xs text-gray-500">
+                            {{ formatDate(post.created_at) }}
+                            <span
+                                v-if="post.user"
+                                class="flex items-center space-x-2"
+                            >
+                                <!-- ユーザーアイコンの表示 -->
+                                <img
+                                    v-if="post.user.icon"
+                                    :src="
+                                        post.user.icon.startsWith('/storage/')
+                                            ? post.user.icon
+                                            : `/storage/${post.user.icon}`
+                                    "
+                                    alt="User Icon"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    @click="openUserProfile(post)"
+                                />
+                                <img
+                                    v-else
+                                    src="https://via.placeholder.com/40"
+                                    alt="Default Icon"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    @click="openUserProfile(post)"
+                                />
+
+                                <!-- 投稿者名の表示 -->
+                                <span
+                                    @click="openUserProfile(post)"
+                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
+                                >
+                                    ＠{{ post.user.name }}
+                                </span>
+                            </span>
+                            <span v-else>＠Unknown</span>
+                        </p>
+                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                         <p class="mb-2 whitespace-pre-wrap">
                             {{ post.message }}
                         </p>
