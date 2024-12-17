@@ -21,7 +21,6 @@ import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
-import axios from "axios";
 
 // props を構造分解して取得
 const {
@@ -55,14 +54,25 @@ const quotePost = (post) => {
 };
 
 onMounted(() => {
-    // マウント時にselectedForumIdを初期化
     initSelectedForumId(selectedForumId);
-    // マウント時に選択されたユニットのユーザーと名前を復元
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
-    // 保存された部署IDを復元
-    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
-    if (savedUnitId) {
-        activeUnitId.value = parseInt(savedUnitId);
+
+    // URLパラメータからactive_unit_idを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUnitId = urlParams.get("active_unit_id");
+
+    if (urlUnitId) {
+        // URLパラメータがある場合はそれを優先
+        activeUnitId.value = parseInt(urlUnitId);
+        localStorage.setItem("lastSelectedUnitId", urlUnitId);
+    } else {
+        // URLパラメータがない場合は既存のロジックを使用
+        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+        if (savedUnitId) {
+            activeUnitId.value = parseInt(savedUnitId);
+        } else if (auth.user.unit_id) {
+            activeUnitId.value = auth.user.unit_id;
+        }
     }
 });
 
@@ -194,12 +204,12 @@ const handleCommentDeletion = (commentId) => {
         if (deleted) {
             // Vueに変更を通知
             posts.value.data[postIndex].comments = [...comments];
-            console.log(`コメント削除成功: ${commentId}`);
+            console.log(`返信削除成功: ${commentId}`);
         } else {
-            console.error(`コメント削除に失敗しました: ${commentId}`);
+            console.error(`返信削除に失敗しました: ${commentId}`);
         }
     } else {
-        console.error(`削除対象のコメントが見つかりませんでした: ${commentId}`);
+        console.error(`削除対象の返信が見つかりませんでした: ${commentId}`);
     }
 };
 
@@ -263,7 +273,7 @@ const handleForumSelected = (unitId) => {
                 <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
-                        class="text-lg font-bold cursor-pointer toggle-button"
+                        class="text-lg font-bold cursor-pointer text-gray-500 hover:text-black p-2 toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
@@ -308,46 +318,8 @@ const handleForumSelected = (unitId) => {
                     class="bg-white rounded-md shadow-md mb-6 p-4"
                 >
                     <div>
-                        <p class="mb-2 text-xs text-gray-500">
-                            {{ formatDate(post.created_at) }}
-                            <span
-                                v-if="post.user"
-                                class="flex items-center space-x-2"
-                            >
-                                <!-- ユーザーアイコンの表示 -->
-                                <img
-                                    v-if="post.user.icon"
-                                    :src="
-                                        post.user.icon.startsWith('/storage/')
-                                            ? post.user.icon
-                                            : `/storage/${post.user.icon}`
-                                    "
-                                    alt="User Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                    @click="openUserProfile(post)"
-                                />
-                                <img
-                                    v-else
-                                    src="https://via.placeholder.com/40"
-                                    alt="Default Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                    @click="openUserProfile(post)"
-                                />
-
-                                <!-- 投稿者名の表示 -->
-                                <span
-                                    @click="openUserProfile(post)"
-                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
-                                >
-                                    ＠{{ post.user.name }}
-                                </span>
-                            </span>
-                            <span v-else>＠Unknown</span>
-                        </p>
-                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
-
-                        <!-- 引用投稿がある場合の表示 -->
-                        <div>
+                        <!-- 引用投稿がある場合の表示を最初に移動 -->
+                        <div class="mb-4">
                             <!-- 削除済みの場合 -->
                             <template v-if="post.quoted_post_deleted === 1">
                                 <p
@@ -360,7 +332,7 @@ const handleForumSelected = (unitId) => {
                             <!-- 削除されていない場合 -->
                             <template v-else-if="post.quoted_post">
                                 <div
-                                    class="quoted-post mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                    class="quoted-post p-2 border-l-4 border-gray-300 bg-gray-100"
                                 >
                                     <div class="flex items-center space-x-2">
                                         <img
@@ -418,6 +390,44 @@ const handleForumSelected = (unitId) => {
                             </template>
                         </div>
 
+                        <!-- ユーザー情報と投稿内容 -->
+                        <p class="mb-2 text-xs text-gray-500">
+                            {{ formatDate(post.created_at) }}
+                            <span
+                                v-if="post.user"
+                                class="flex items-center space-x-2"
+                            >
+                                <!-- ユーザーアイコンの表示 -->
+                                <img
+                                    v-if="post.user.icon"
+                                    :src="
+                                        post.user.icon.startsWith('/storage/')
+                                            ? post.user.icon
+                                            : `/storage/${post.user.icon}`
+                                    "
+                                    alt="User Icon"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    @click="openUserProfile(post)"
+                                />
+                                <img
+                                    v-else
+                                    src="https://via.placeholder.com/40"
+                                    alt="Default Icon"
+                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    @click="openUserProfile(post)"
+                                />
+
+                                <!-- 投稿者名の表示 -->
+                                <span
+                                    @click="openUserProfile(post)"
+                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
+                                >
+                                    ＠{{ post.user.name }}
+                                </span>
+                            </span>
+                            <span v-else>＠Unknown</span>
+                        </p>
+                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
                         <p class="mb-2 whitespace-pre-wrap">
                             {{ post.message }}
                         </p>
@@ -524,6 +534,8 @@ const handleForumSelected = (unitId) => {
             <RightSidebar
                 :unit-users="selectedUnitUsers"
                 :unit-name="selectedUnitName"
+                :users="users"
+                :active-unit-id="activeUnitId"
                 class="p-4 lg:mt-16 sm:block"
                 @user-selected="onUserSelected"
             />
