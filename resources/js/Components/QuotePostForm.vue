@@ -63,13 +63,13 @@ const submitQuotePost = () => {
             <div class="flex justify-end space-x-2">
                 <button
                     @click="cancel"
-                    class="px-3 py-1 rounded bg-gray-300 text-gray-800 link-hover"
+                    class="my-2 py-2 px-4 rounded-md bg-gray-300 text-gray-700 font-medium transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     <i class="bi bi-x-lg"></i>
                 </button>
                 <button
                     @click="submitQuotePost"
-                    class="px-3 py-1 rounded bg-blue-500 text-white link-hover"
+                    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
                 >
                     <i class="bi bi-send"></i>
                 </button>
