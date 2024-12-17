@@ -7,6 +7,9 @@
 
     <title inertia>{{ config('app.name', 'CommuniCare') }}</title>
 
+    <!-- ファビコンの設定 -->
+    <link rel="icon" type="image/x-icon" href="{{ url('favicon.ico') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
