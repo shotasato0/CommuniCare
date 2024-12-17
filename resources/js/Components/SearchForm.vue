@@ -49,32 +49,30 @@ const compositionEnd = () => {
 </script>
 
 <template>
-    <div class="relative">
+    <div class="relative flex items-center">
+        <!-- 検索アイコン -->
+        <div class="absolute left-3 text-gray-400">
+            <i class="bi bi-search"></i>
+        </div>
+
         <!-- 検索ボックス -->
         <input
             v-model="search"
             type="text"
             placeholder="投稿を検索"
-            class="border p-2 w-full pr-12 rounded shadow-sm focus:ring-2 focus:border-blue-500"
+            class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
             @keydown.enter="searchPosts"
             @compositionstart="compositionStart"
             @compositionend="compositionEnd"
         />
 
-        <!-- 検索アイコン -->
-        <div
-            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-        >
-            <i class="bi bi-search text-gray-400"></i>
-        </div>
-
         <!-- リセットアイコン（×ボタン） -->
         <div
             v-if="search"
-            class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+            class="absolute right-3 cursor-pointer text-gray-400 hover:text-gray-600"
             @click="resetSearch"
         >
-            <i class="bi bi-x text-gray-400 hover:text-gray-600"></i>
+            <i class="bi bi-x"></i>
         </div>
     </div>
 </template>

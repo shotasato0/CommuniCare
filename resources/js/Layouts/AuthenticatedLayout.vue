@@ -75,9 +75,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             </div>
 
                             <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
+                            <div class="hidden lg:flex space-x-8 -my-px ms-10">
                                 <NavLink
                                     href="/forum"
                                     @click.prevent="navigateToForum"
@@ -110,9 +108,9 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             </div>
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ms-6">
+                        <div class="hidden lg:flex lg:items-center">
                             <!-- Settings Dropdown -->
-                            <div class="ms-3 relative">
+                            <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -177,7 +175,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
+                        <div class="flex items-center lg:hidden my-auto">
                             <button
                                 @click="
                                     showingNavigationDropdown =
@@ -225,7 +223,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
+                    class="lg:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
@@ -304,3 +302,41 @@ const isForumPage = ref(window.location.pathname === "/forum");
         <Footer />
     </div>
 </template>
+
+<style scoped>
+@media (max-width: 861px) {
+    .lg\:flex {
+        display: none;
+    }
+
+    .lg\:hidden {
+        display: block;
+    }
+
+    .hidden.lg\:hidden {
+        display: none;
+    }
+}
+
+@media (min-width: 862px) {
+    .hidden.lg\:flex {
+        display: flex;
+    }
+
+    .lg\:hidden {
+        display: none;
+    }
+}
+
+.lg\:flex {
+    align-items: center;
+    height: 100%;
+}
+
+.relative {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.75rem;
+}
+</style>

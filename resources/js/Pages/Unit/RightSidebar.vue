@@ -1,5 +1,6 @@
 <!-- RightSidebar.vue -->
 <script setup>
+import { computed } from "vue";
 
 const props = defineProps({
     unitUsers: {
@@ -10,9 +11,22 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    users: {
+        type: Array,
+        default: () => [],
+    },
+    activeUnitId: {
+        type: Number,
+        default: null,
+    },
 });
-console.log("props.unitUsers", props.unitUsers);
-console.log("props.unitName", props.unitName);
+
+// 現在の部署のユーザーを動的に計算
+const currentUnitUsers = computed(() => {
+    if (!props.activeUnitId) return props.unitUsers;
+
+    return props.users.filter((user) => user.unit_id === props.activeUnitId);
+});
 </script>
 
 <template>
@@ -22,10 +36,13 @@ console.log("props.unitName", props.unitName);
         <h2 class="text-lg font-bold mb-4">
             {{ unitName + "職員" || "部署メンバー" }}
         </h2>
-        <ul v-if="unitUsers && unitUsers.length > 0">
+        <ul
+            v-if="currentUnitUsers.length > 0"
+            :key="currentUnitUsers.map((u) => u.id).join(',')"
+        >
             <li
-                v-for="user in unitUsers"
-                :key="user.id"
+                v-for="user in currentUnitUsers"
+                :key="user.id + user.icon"
                 class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer flex items-center space-x-4 font-bold"
                 @click="$emit('user-selected', user)"
             >

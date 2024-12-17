@@ -32,13 +32,17 @@ export const redirectToForum = async (
                     JSON.stringify(unitUsers)
                 );
                 sessionStorage.setItem("selectedUnitName", unit.name);
+                localStorage.setItem("lastSelectedUnitId", userUnitId);
             }
         } else {
             console.warn("User does not belong to a unit.");
         }
 
         if (forumId) {
-            router.get(route(routeName, { forum_id: forumId }), {
+            router.get(route(routeName, { 
+                forum_id: forumId,
+                active_unit_id: userUnitId 
+            }), {
                 preserveState: false,
             });
         } else {
