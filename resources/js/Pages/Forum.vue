@@ -534,6 +534,8 @@ const handleForumSelected = (unitId) => {
             <RightSidebar
                 :unit-users="selectedUnitUsers"
                 :unit-name="selectedUnitName"
+                :users="users"
+                :active-unit-id="activeUnitId"
                 class="p-4 lg:mt-16 sm:block"
                 @user-selected="onUserSelected"
             />
