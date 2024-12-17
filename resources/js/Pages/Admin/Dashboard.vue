@@ -3,9 +3,9 @@ import { Link, Head } from "@inertiajs/vue3";
 </script>
 
 <template>
-    <Head :title="$t('Admin Dashboard')" />
+    <Head :title="$t('Dashboard')" />
     <div class="max-w-6xl mx-auto py-10 px-4 sm:px-8 lg:px-16">
-        <h1 class="text-2xl font-bold mb-6">
+        <h1 class="text-xl font-bold mb-6">
             {{ $t("Admin Dashboard") }}
         </h1>
 
