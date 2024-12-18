@@ -16,6 +16,13 @@ const form = useForm({
 // フォーム送信処理
 const submit = () => {
     form.post(route("tenant.register"), {
+        preserveScroll: true,
+        onError: () => {
+            document.getElementById("registration-form")?.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+            });
+        },
         onFinish: () => {
             if (Object.keys(form.errors).length === 0) {
                 form.reset("business_name", "tenant_domain_id");
@@ -148,6 +155,7 @@ const guestLogin = () => {
                         <div class="grid md:grid-cols-5 gap-6">
                             <!-- フォーム：3カラム分 -->
                             <form
+                                id="registration-form"
                                 @submit.prevent="submit"
                                 class="md:col-span-3 bg-white rounded-xl shadow-sm border p-6"
                             >
