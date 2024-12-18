@@ -7,7 +7,6 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
-import Footer from "@/Layouts/Footer.vue";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
@@ -298,8 +297,6 @@ const isForumPage = ref(window.location.pathname === "/forum");
                 <slot />
             </main>
         </div>
-
-        <Footer />
     </div>
 </template>
 
