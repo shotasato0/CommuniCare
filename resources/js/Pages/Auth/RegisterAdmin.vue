@@ -4,8 +4,8 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { ref } from "vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
 
-// CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
@@ -19,6 +19,7 @@ const form = useForm({
     _token: csrfToken.value,
 });
 
+// フォームの送信
 const submit = () => {
     form.post(route("register-admin"), {
         onFinish: () => {
@@ -35,13 +36,11 @@ const submit = () => {
 </script>
 
 <template>
-    <div
-        class="min-h-screen flex flex-col items-center justify-center bg-gray-100"
-    >
+    <GuestLayout>
         <Head :title="$t('Admin Registration')" />
 
         <!-- フォームコンテナ -->
-        <div class="max-w-md w-full bg-white shadow-md rounded-lg px-8 py-10">
+        <div class="w-full sm:max-w-md px-6 py-4 mx-auto mt-6">
             <h1 class="text-xl font-bold text-center mb-6">
                 {{ $t("Admin Registration") }}
             </h1>
@@ -65,7 +64,7 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
-                <!-- ユーザー名フィールド -->
+                <!-- ユーザーIDフィールド -->
                 <div>
                     <InputLabel for="username_id" :value="$t('Username_ID')" />
                     <TextInput
@@ -128,5 +127,5 @@ const submit = () => {
                 </div>
             </form>
         </div>
-    </div>
+    </GuestLayout>
 </template>
