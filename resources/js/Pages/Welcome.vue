@@ -43,7 +43,7 @@ const guestLogin = () => {
             </p>
             <button
                 @click="guestLogin"
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
             >
                 ゲストログイン
             </button>
