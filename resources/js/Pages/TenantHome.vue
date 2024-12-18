@@ -1,7 +1,7 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
-
+import Footer from "@/Layouts/Footer.vue";
 defineProps({
     adminExists: Boolean,
 });
@@ -89,4 +89,5 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
             </div>
         </div>
     </div>
+    <Footer />
 </template>
