@@ -33,7 +33,9 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
             >
                 <!-- タイトルロゴ -->
                 <div class="mb-6 w-full max-w-md">
-                    <ApplicationLogo class="w-full text-blue-900 text-4xl" />
+                    <ApplicationLogo
+                        class="w-full text-blue-900 text-5xl md:text-5xl"
+                    />
                     <div
                         class="w-1/2 sm:w-full h-1 bg-blue-900 mx-auto sm:mx-0 mt-4"
                     ></div>
