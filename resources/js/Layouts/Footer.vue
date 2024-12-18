@@ -1,26 +1,18 @@
 <template>
-    <footer class="text-gray-600 body-font">
-        <div class="bg-gray-100">
-            <div
-                class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row items-center"
-            >
-                <div class="flex">
-                    <p
-                        class="text-gray-500 text-sm text-center mb-3 sm:mb-0 mr-1"
-                    >
-                        © 2024 CommuniCare
-                    </p>
-                    <p
-                        class="hidden sm:block text-gray-500 text-sm text-center mb-3 sm:mb-0"
-                    >
-                        —
-                    </p>
+    <!-- フッター -->
+    <footer class="bg-white border-t">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-center items-center space-x-6">
+                <!-- コピーライト -->
+                <div class="text-sm text-gray-500">
+                    © 2024 CommuniCare. All rights reserved.
                 </div>
-                <div class="flex flex-row">
+                <!-- ソーシャルリンク -->
+                <div class="flex space-x-4">
                     <a
                         href="https://twitter.com/shoprogramming"
                         rel="noopener noreferrer"
-                        class="text-gray-600 ml-3"
+                        class="text-gray-600 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
@@ -28,7 +20,7 @@
                             stroke-linecap="round"
                             stroke-linejoin="round"
                             stroke-width="2"
-                            class="w-4 h-5"
+                            class="w-5 h-5"
                             viewBox="0 0 24 24"
                         >
                             <path
@@ -39,13 +31,13 @@
                     <a
                         href="https://github.com/shotasato0"
                         rel="noopener noreferrer"
-                        class="text-gray-600 ml-3"
+                        class="text-gray-600 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor"
-                            class="bi bi-github w-4 h-5"
+                            class="bi bi-github w-5 h-5"
                             viewBox="0 0 16 16"
                         >
                             <path
@@ -67,7 +59,6 @@ export default {
 
 <style scoped>
 footer {
-    position: fixed;
     bottom: 0;
     width: 100%;
 }

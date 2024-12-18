@@ -2,6 +2,7 @@
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
+import Footer from "@/Layouts/Footer.vue";
 
 const currentPage = usePage().component;
 </script>
@@ -27,4 +28,5 @@ const currentPage = usePage().component;
             <slot />
         </div>
     </div>
+    <Footer />
 </template>
