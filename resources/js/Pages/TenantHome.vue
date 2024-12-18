@@ -1,7 +1,7 @@
 <script setup>
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
-
+import Footer from "@/Layouts/Footer.vue";
 defineProps({
     adminExists: Boolean,
 });
@@ -33,7 +33,9 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
             >
                 <!-- タイトルロゴ -->
                 <div class="mb-6 w-full max-w-md">
-                    <ApplicationLogo class="w-full text-blue-900 text-4xl" />
+                    <ApplicationLogo
+                        class="w-full text-blue-900 text-5xl md:text-5xl"
+                    />
                     <div
                         class="w-1/2 sm:w-full h-1 bg-blue-900 mx-auto sm:mx-0 mt-4"
                     ></div>
@@ -63,14 +65,14 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
                     <Link
                         v-if="isGuestHome"
                         :href="route('guest.user.login')"
-                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
+                        class="bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         ゲストユーザーとしてログイン
                     </Link>
                     <Link
                         v-else
                         :href="route('login')"
-                        class="bg-gray-300 text-gray-700 text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
+                        class="bg-gray-200 text-gray-700 hover:bg-gray-400 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         ログイン
                     </Link>
@@ -79,7 +81,7 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
                     <Link
                         v-if="!adminExists"
                         :href="route('register-admin.form')"
-                        class="bg-blue-500 text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg link-hover"
+                        class="bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         管理者登録
                     </Link>
@@ -87,10 +89,5 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
             </div>
         </div>
     </div>
+    <Footer />
 </template>
-
-<style scoped>
-.link-hover:hover {
-    opacity: 70%;
-}
-</style>

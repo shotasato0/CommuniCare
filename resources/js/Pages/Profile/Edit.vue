@@ -39,7 +39,7 @@ watch(successMessage, (newVal) => {
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head :title="$t('Profile')" />
 
     <AuthenticatedLayout>
         <template #header>

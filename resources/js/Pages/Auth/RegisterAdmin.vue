@@ -4,8 +4,8 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { ref } from "vue";
+import GuestLayout from "@/Layouts/GuestLayout.vue";
 
-// CSRFトークンを取得
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
@@ -19,6 +19,7 @@ const form = useForm({
     _token: csrfToken.value,
 });
 
+// フォームの送信
 const submit = () => {
     form.post(route("register-admin"), {
         onFinish: () => {
@@ -35,18 +36,17 @@ const submit = () => {
 </script>
 
 <template>
-    <!-- 独自のレイアウトを適用 -->
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    <GuestLayout>
         <Head :title="$t('Admin Registration')" />
 
         <!-- フォームコンテナ -->
-        <div class="max-w-md w-full bg-white shadow-md rounded px-8 py-10">
-            <h1 class="text-2xl font-bold text-center mb-6">
+        <div class="w-full sm:max-w-md px-6 py-4 mx-auto mt-6">
+            <h1 class="text-xl font-bold text-center mb-6">
                 {{ $t("Admin Registration") }}
             </h1>
 
             <!-- 登録フォーム -->
-            <form @submit.prevent="submit" class="space-y-6">
+            <form @submit.prevent="submit" class="space-y-6" autocomplete="on">
                 <input type="hidden" name="_token" :value="csrfToken" />
 
                 <!-- 名前フィールド -->
@@ -64,7 +64,7 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
-                <!-- ユーザー名フィールド -->
+                <!-- ユーザーIDフィールド -->
                 <div>
                     <InputLabel for="username_id" :value="$t('Username_ID')" />
                     <TextInput
@@ -73,6 +73,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         v-model="form.username_id"
                         required
+                        autocomplete="username"
                     />
                     <InputError
                         class="mt-2"
@@ -118,7 +119,7 @@ const submit = () => {
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        class="bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 hover:text-white focus:outline-none focus:shadow-outline"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
@@ -127,5 +128,5 @@ const submit = () => {
                 </div>
             </form>
         </div>
-    </div>
+    </GuestLayout>
 </template>
