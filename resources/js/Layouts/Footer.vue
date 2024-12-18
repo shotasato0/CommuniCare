@@ -1,10 +1,10 @@
 <template>
     <!-- フッター -->
     <footer class="bg-white border-t">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col items-center space-y-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-center items-center space-x-6">
                 <!-- コピーライト -->
-                <div class="text-center text-sm text-gray-500">
+                <div class="text-sm text-gray-500">
                     © 2024 CommuniCare. All rights reserved.
                 </div>
                 <!-- ソーシャルリンク -->
@@ -52,14 +52,14 @@
 </template>
 
 <script>
-    export default {
-        name: "Footer",
-    };
-    </script>
+export default {
+    name: "Footer",
+};
+</script>
 
-    <style scoped>
-        footer {
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+<style scoped>
+footer {
+    bottom: 0;
+    width: 100%;
+}
+</style>
