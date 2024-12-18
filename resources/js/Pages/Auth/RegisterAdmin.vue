@@ -35,13 +35,14 @@ const submit = () => {
 </script>
 
 <template>
-    <!-- 独自のレイアウトを適用 -->
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+    <div
+        class="min-h-screen flex flex-col items-center justify-center bg-gray-100"
+    >
         <Head :title="$t('Admin Registration')" />
 
         <!-- フォームコンテナ -->
-        <div class="max-w-md w-full bg-white shadow-md rounded px-8 py-10">
-            <h1 class="text-2xl font-bold text-center mb-6">
+        <div class="max-w-md w-full bg-white shadow-md rounded-lg px-8 py-10">
+            <h1 class="text-xl font-bold text-center mb-6">
                 {{ $t("Admin Registration") }}
             </h1>
 
@@ -118,7 +119,7 @@ const submit = () => {
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        class="bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 hover:text-white focus:outline-none focus:shadow-outline"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >
