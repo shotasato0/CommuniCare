@@ -250,7 +250,7 @@ const guestLogin = () => {
                                             https://example.communicare.com
                                         </code>
                                         <p class="text-xs text-blue-600 mt-2">
-                                            ※英字のみ使用可能です
+                                            ※英数字のみ使用可能です
                                         </p>
                                     </div>
                                 </div>
