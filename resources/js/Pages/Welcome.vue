@@ -149,7 +149,7 @@ const guestLogin = () => {
                                 施設登録
                             </h2>
                             <p class="mt-2 text-gray-600">
-                                専用の管理環境を数分で作成できます
+                                専用の管理環境を数秒で作成できます
                             </p>
                         </div>
 
@@ -174,7 +174,7 @@ const guestLogin = () => {
                                             v-model="form.business_name"
                                             required
                                             autofocus
-                                            placeholder="例：コミュニケア介護施設"
+                                            placeholder="例：社会福祉法人コミュニケア"
                                         />
                                         <InputError
                                             class="mt-2"
