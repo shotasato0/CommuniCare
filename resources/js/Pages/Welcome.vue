@@ -43,7 +43,9 @@ const guestLogin = () => {
         <!-- ヘッダー -->
         <header class="w-full py-6">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <ApplicationLogo class="h-12 text-blue-900" />
+                <ApplicationLogo
+                    class="w-full text-blue-900 text-3xl md:text-5xl"
+                />
             </div>
         </header>
 
