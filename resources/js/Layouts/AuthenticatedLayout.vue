@@ -77,6 +77,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             <!-- Navigation Links -->
                             <div class="hidden lg:flex space-x-8 -my-px ms-10">
                                 <NavLink
+                                    href="#"
                                     @click.prevent="navigateToForum"
                                     :active="isForumPage"
                                     class="cursor-pointer"
@@ -226,7 +227,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                 >
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
-                            href="/forum"
+                            href="#"
                             @click.prevent="navigateToForum"
                             :active="isForumPage"
                             class="cursor-pointer"
