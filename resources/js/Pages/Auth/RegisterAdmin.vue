@@ -46,7 +46,7 @@ const submit = () => {
             </h1>
 
             <!-- 登録フォーム -->
-            <form @submit.prevent="submit" class="space-y-6">
+            <form @submit.prevent="submit" class="space-y-6" autocomplete="on">
                 <input type="hidden" name="_token" :value="csrfToken" />
 
                 <!-- 名前フィールド -->
@@ -73,6 +73,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         v-model="form.username_id"
                         required
+                        autocomplete="username"
                     />
                     <InputError
                         class="mt-2"
