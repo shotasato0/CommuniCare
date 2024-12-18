@@ -77,7 +77,6 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             <!-- Navigation Links -->
                             <div class="hidden lg:flex space-x-8 -my-px ms-10">
                                 <NavLink
-                                    href="/forum"
                                     @click.prevent="navigateToForum"
                                     :active="isForumPage"
                                     class="cursor-pointer"
