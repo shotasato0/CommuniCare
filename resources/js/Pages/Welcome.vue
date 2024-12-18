@@ -1,10 +1,10 @@
 <script setup>
-import GuestLayout from "@/Layouts/GuestLayout.vue";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, useForm, Link } from "@inertiajs/vue3";
 
 // フォーム定義
 const form = useForm({
@@ -24,99 +24,242 @@ const submit = () => {
     });
 };
 
-// ゲストログイン処理
 const guestLogin = () => {
-    console.log("guestLogin");
     form.get(route("guest.login"));
-    console.log("guestLogin completed");
 };
 </script>
 
 <template>
-    <GuestLayout>
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-white">
         <Head :title="'施設登録'" />
 
-        <!-- ゲストログインボタン -->
-        <div class="text-center mb-8">
-            <p class="text-gray-600 mb-4">
-                施設の登録が面倒な場合は、以下のボタンでゲストログインをお試しください。
-            </p>
-            <button
-                @click="guestLogin"
-                class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
-            >
-                ゲストログイン
-            </button>
-        </div>
+        <!-- ヘッダー -->
+        <header class="w-full py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ApplicationLogo class="h-12 text-blue-900" />
+            </div>
+        </header>
 
-        <!-- 説明文 -->
-        <div class="max-w-md mx-auto text-center">
-            <h1 class="text-2xl font-bold mb-4">介護施設の登録</h1>
+        <!-- メインコンテンツ -->
+        <main>
+            <!-- ヒーローセクション -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <!-- 左側：テキストコンテンツ -->
+                    <div class="space-y-6">
+                        <h1
+                            class="text-4xl font-bold text-gray-900 leading-tight"
+                        >
+                            職員間の<span class="text-blue-600"
+                                >コミュニケーション</span
+                            >を、 <br />もっとスムーズに
+                        </h1>
+                        <div class="space-y-4">
+                            <p class="text-lg text-gray-600 leading-relaxed">
+                                CommuniCareは、介護施設の職員間のコミュニケーションを活性化し、
+                                利用者様の情報を一元管理するプラットフォームです。
+                            </p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <svg
+                                        class="h-6 w-6 text-blue-500 mt-0.5 flex-shrink-0"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                                        />
+                                    </svg>
+                                    <span class="ml-2 text-gray-600"
+                                        >リアルタイムの情報共有で、職員間の連携をスムーズに</span
+                                    >
+                                </li>
+                                <li class="flex items-start">
+                                    <svg
+                                        class="h-6 w-6 text-blue-500 mt-0.5 flex-shrink-0"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                        />
+                                    </svg>
+                                    <span class="ml-2 text-gray-600"
+                                        >利用者様の情報を安全に一元管理</span
+                                    >
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button
+                                @click="guestLogin"
+                                class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                            >
+                                <span class="mr-2">デモで体験する</span>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                >
+                                    <path
+                                        fill-rule="evenodd"
+                                        d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
 
-            <p class="text-gray-600 leading-relaxed">
-                あなたの施設専用の管理サイトを作成できます。登録が完了すると、職員や利用者データを安全に管理できる専用の環境をご利用いただけます。
-            </p>
-
-            <p class="text-sm text-gray-500 mt-6 leading-relaxed">
-                以下の情報を入力し、「登録する」ボタンをクリックしてください。
-            </p>
-        </div>
-
-        <!-- フォーム部分 -->
-        <form @submit.prevent="submit" class="max-w-md mx-auto bg-white p-8">
-            <div class="mb-6">
-                <InputLabel for="business_name" value="施設名" />
-
-                <TextInput
-                    id="business_name"
-                    type="text"
-                    class="mt-2 block w-full"
-                    v-model="form.business_name"
-                    required
-                    autofocus
-                />
-
-                <InputError class="mt-2" :message="form.errors.business_name" />
+                    <!-- 右側：イラスト -->
+                    <div class="relative hidden lg:block">
+                        <img
+                            src="/images/top_image.png"
+                            alt="Welcome Image"
+                            class="w-full object-contain max-h-[400px] lg:max-h-[500px]"
+                        />
+                    </div>
+                </div>
             </div>
 
-            <div class="mb-6">
-                <InputLabel for="tenant_domain_id" value="施設ドメインID" />
+            <!-- 登録フォームセクション -->
+            <div class="bg-white py-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-xl mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-2xl font-semibold text-gray-900">
+                                施設登録
+                            </h2>
+                            <p class="mt-2 text-gray-600">
+                                専用の管理環境を数分で作成できます
+                            </p>
+                        </div>
 
-                <TextInput
-                    id="tenant_domain_id"
-                    type="text"
-                    class="mt-2 block w-full"
-                    v-model="form.tenant_domain_id"
-                    required
-                />
+                        <!-- フォームとドメインID説明を並べて配置 -->
+                        <div class="grid md:grid-cols-5 gap-6">
+                            <!-- フォーム：3カラム分 -->
+                            <form
+                                @submit.prevent="submit"
+                                class="md:col-span-3 bg-white rounded-xl shadow-sm border p-6"
+                            >
+                                <div class="space-y-5">
+                                    <div>
+                                        <InputLabel
+                                            for="business_name"
+                                            value="施設名"
+                                        />
+                                        <TextInput
+                                            id="business_name"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            v-model="form.business_name"
+                                            required
+                                            autofocus
+                                            placeholder="例：コミュニケア介護施設"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="form.errors.business_name"
+                                        />
+                                    </div>
 
-                <InputError
-                    class="mt-2"
-                    :message="form.errors.tenant_domain_id"
-                />
+                                    <div>
+                                        <InputLabel
+                                            for="tenant_domain_id"
+                                            value="施設ドメインID"
+                                        />
+                                        <TextInput
+                                            id="tenant_domain_id"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            v-model="form.tenant_domain_id"
+                                            required
+                                            placeholder="例：example"
+                                        />
+                                        <InputError
+                                            class="mt-2"
+                                            :message="
+                                                form.errors.tenant_domain_id
+                                            "
+                                        />
+                                    </div>
+
+                                    <div class="pt-2">
+                                        <PrimaryButton
+                                            class="w-full justify-center"
+                                            :class="{
+                                                'opacity-25': form.processing,
+                                            }"
+                                            :disabled="form.processing"
+                                        >
+                                            登録する
+                                        </PrimaryButton>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- ドメインID説明：2カラム分 -->
+                            <div
+                                class="md:col-span-2 flex flex-col justify-center"
+                            >
+                                <div class="bg-blue-50 rounded-xl p-5">
+                                    <div
+                                        class="flex items-center space-x-2 mb-3"
+                                    >
+                                        <svg
+                                            class="h-5 w-5 text-blue-600 flex-shrink-0"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                        <span class="font-medium text-blue-800"
+                                            >ドメインIDについて</span
+                                        >
+                                    </div>
+                                    <div class="text-sm text-blue-700">
+                                        <p class="break-words">
+                                            施設ドメインIDは、以下の形式でURLとなります：
+                                        </p>
+                                        <code
+                                            class="block px-3 py-2 bg-blue-100 rounded text-xs mt-2 break-all"
+                                        >
+                                            https://example.communicare.com
+                                        </code>
+                                        <p class="text-xs text-blue-600 mt-2">
+                                            ※英字のみ使用可能です
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </main>
 
-            <!-- ヒントや補足 -->
-            <div class="text-sm text-gray-500 mb-6 leading-relaxed">
-                <p>
-                    <strong>施設ドメインID</strong>
-                    は、施設を一意に識別するために使用されます。英字のみで入力してください。
-                </p>
-                <p class="mt-3">
-                    例：「example」と入力すると、次のようなURLでアクセスできます：
-                    <strong>https://example.communicare.com</strong>
-                </p>
+        <!-- フッター -->
+        <footer class="bg-white border-t">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="text-center text-sm text-gray-500">
+                    © 2024 CommuniCare. All rights reserved.
+                </div>
             </div>
-
-            <div class="flex items-center justify-end">
-                <PrimaryButton
-                    class="ms-4 px-6 py-2"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    登録する
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
+        </footer>
+    </div>
 </template>
