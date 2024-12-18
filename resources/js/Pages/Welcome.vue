@@ -61,11 +61,11 @@ const guestLogin = () => {
                         >
                             職員間の<span class="text-blue-600"
                                 >コミュニケーション</span
-                            >を、 <br />もっとスムーズに
+                            >を <br />もっとスムーズに
                         </h1>
                         <div class="space-y-4">
                             <p class="text-lg text-gray-600 leading-relaxed">
-                                CommuniCareは、介護施設の職員間のコミュニケーションを活性化し、スムーズな情報伝達を可能にすることで、
+                                CommuniCareは、介護施設の職員間のコミュニケーションを活性化し、正確で円滑な情報伝達を可能にすることで、
                                 利用者様の情報や連絡事項を安全かつ効率的に一元管理できるプラットフォームです。
                             </p>
                             <ul class="space-y-3">
@@ -84,7 +84,7 @@ const guestLogin = () => {
                                         />
                                     </svg>
                                     <span class="ml-2 text-gray-600"
-                                        >リアルタイムの情報共有で、職員間の連携をスムーズに</span
+                                        >職員間の連携を強化する、タイムリーな情報共有</span
                                     >
                                 </li>
                                 <li class="flex items-start">
