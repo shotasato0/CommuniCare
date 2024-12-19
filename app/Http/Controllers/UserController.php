@@ -22,7 +22,7 @@ class UserController extends Controller
         $currentAdmin = User::role('admin')->first();
         $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
         
-        return Inertia::render('Users/EmployeeList', [
+        return Inertia::render('Users/Index', [
             'users' => $users,
             'units' => $units,
             'currentAdminId' => $currentAdminId,
