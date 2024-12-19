@@ -12,8 +12,8 @@ class RolePermissionSeeder extends Seeder
     {
         // 権限を作成 (存在しない場合のみ作成)
         Permission::firstOrCreate(['name' => 'view admin dashboard', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'register employees', 'guard_name' => 'web']);
-        Permission::firstOrCreate(['name' => 'view employee list', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'register staff', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'view staff list', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'register unit names', 'guard_name' => 'web']);
 
         // ロールを作成 (存在しない場合のみ作成)
@@ -23,8 +23,8 @@ class RolePermissionSeeder extends Seeder
         // 管理者ロールに権限を割り当てる (すでに割り当てられている場合はスキップ)
         $adminRole->syncPermissions([
             'view admin dashboard',
-            'register employees',
-            'view employee list',
+            'register staff',
+            'view staff list',
             'register unit names',
         ]);
     }
