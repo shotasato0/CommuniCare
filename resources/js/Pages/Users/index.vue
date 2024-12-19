@@ -226,7 +226,10 @@ const totalFilteredUsers = computed(() => {
                             />
 
                             <!-- 管理者のみに表示するボタン群 -->
-                            <div v-if="isAdmin" class="flex items-center space-x-4">
+                            <div
+                                v-if="isAdmin"
+                                class="flex items-center space-x-4"
+                            >
                                 <Link
                                     :href="route('register')"
                                     class="w-32 px-4 py-2 rounded-md transition bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-center"
@@ -344,12 +347,19 @@ const totalFilteredUsers = computed(() => {
                                     <div
                                         v-for="user in unitUsers"
                                         :key="user.id"
-                                        class="relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer hover:bg-gray-50"
+                                        :class="[
+                                            'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                            showDeleteButtons
+                                                ? 'hover:bg-red-50 cursor-pointer'
+                                                : isAdminMode
+                                                ? 'hover:bg-purple-50 cursor-pointer'
+                                                : 'hover:bg-gray-50 hover:shadow-md',
+                                        ]"
                                         @click="
-                                            isAdminMode
-                                                ? handleAdminTransfer(user)
-                                                : showDeleteButtons
+                                            showDeleteButtons
                                                 ? deleteUser(user)
+                                                : isAdminMode
+                                                ? handleAdminTransfer(user)
                                                 : openUserProfile(user)
                                         "
                                     >
@@ -370,7 +380,14 @@ const totalFilteredUsers = computed(() => {
                                             >
                                                 <div class="flex items-center">
                                                     <span
-                                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                        :class="[
+                                                            'font-bold text-lg transition-colors',
+                                                            showDeleteButtons
+                                                                ? 'text-gray-500 group-hover:text-red-500'
+                                                                : isAdminMode
+                                                                ? 'text-gray-500 group-hover:text-purple-500'
+                                                                : 'text-gray-500 group-hover:text-black',
+                                                        ]"
                                                     >
                                                         {{ user.name }}
                                                     </span>
