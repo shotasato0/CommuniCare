@@ -199,7 +199,13 @@ const totalFilteredUsers = computed(() => {
             </h2>
         </template>
         <!-- フラッシュメッセージ -->
-        <transition name="fade">
+        <transition
+            enter-active-class="transition-opacity duration-500 ease-in-out"
+            leave-active-class="transition-opacity duration-500 ease-in-out"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
             <div
                 v-if="flashMessage"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50"
@@ -455,14 +461,3 @@ const totalFilteredUsers = computed(() => {
         </div>
     </AuthenticatedLayout>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
