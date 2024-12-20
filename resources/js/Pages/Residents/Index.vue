@@ -221,7 +221,7 @@ const isAdmin = computed(() => {
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
             >
-                <p class="font-bold">{{ localFlashMessage }}</p>
+                <p class="font-bold text-center">{{ localFlashMessage }}</p>
             </div>
         </transition>
 
