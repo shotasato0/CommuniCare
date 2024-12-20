@@ -4,7 +4,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
     user: {
@@ -40,13 +40,25 @@ const units = props.units;
 const form = useForm({
     name: user.name,
     username_id: user.username_id,
-    tel: user.tel || "", // telに初期値を設定
-    email: user.email || "", // emailに初期値を設定
-    unit_id: user.unit_id ? String(user.unit_id) : "", // unit_idに初期値を設定
+    tel: user.tel || "",
+    email: user.email || "",
+    unit_id: user.unit_id ? String(user.unit_id) : "",
     _token: document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content"),
 });
+
+// カスタムの成功メッセージ状態
+const isSuccess = ref(false);
+
+// フォーム送信の処理を修正
+const submitForm = async () => {
+    await form.patch(route("profile.update"));
+    isSuccess.value = true;
+    setTimeout(() => {
+        isSuccess.value = false;
+    }, 8000); // 8秒後にメッセージを非表示
+};
 
 // アイコン編集を開く関数
 const handleOpenIconEdit = () => {
@@ -82,7 +94,7 @@ const handleOpenIconEdit = () => {
             leave-to-class="opacity-0"
         >
             <div
-                v-if="form.recentlySuccessful"
+                v-if="isSuccess"
                 class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded shadow-lg"
             >
                 <p class="font-medium text-center">
@@ -91,10 +103,7 @@ const handleOpenIconEdit = () => {
             </div>
         </Transition>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
+        <form @submit.prevent="submitForm" class="mt-6 space-y-6">
             <!-- プロフィール画像表示と編集ボタン -->
             <div class="relative w-24 h-24 group">
                 <button
