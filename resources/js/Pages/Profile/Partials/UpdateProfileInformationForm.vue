@@ -88,16 +88,18 @@ const handleOpenIconEdit = () => {
 
         <!-- プロフィール情報更新成功メッセージ表示 -->
         <Transition
-            enter-active-class="transition ease-in-out"
-            enter-from-class="opacity-0"
-            leave-active-class="transition ease-in-out"
-            leave-to-class="opacity-0"
+            enter-active-class="transition ease-in-out duration-300"
+            enter-from-class="opacity-0 transform translate-y-2"
+            enter-to-class="opacity-100 transform translate-y-0"
+            leave-active-class="transition ease-in-out duration-300"
+            leave-from-class="opacity-100 transform translate-y-0"
+            leave-to-class="opacity-0 transform translate-y-2"
         >
             <div
                 v-if="isSuccess"
-                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded shadow-lg"
+                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
-                <p class="font-medium text-center">
+                <p class="font-bold">
                     {{ $t("Saved.") }}
                 </p>
             </div>
