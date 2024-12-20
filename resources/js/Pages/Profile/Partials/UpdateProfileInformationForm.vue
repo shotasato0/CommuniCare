@@ -83,7 +83,7 @@ const handleOpenIconEdit = () => {
         >
             <div
                 v-if="form.recentlySuccessful"
-                class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
+                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded shadow-lg"
             >
                 <p class="font-medium text-center">
                     {{ $t("Saved.") }}
