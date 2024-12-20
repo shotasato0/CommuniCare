@@ -57,12 +57,20 @@ const submitForm = async () => {
     isSuccess.value = true;
     setTimeout(() => {
         isSuccess.value = false;
-    }, 8000); // 8秒後にメッセージを非表示
+    }, 8000);
 };
 
 // アイコン編集を開く関数
 const handleOpenIconEdit = () => {
     emit("openIconEdit");
+};
+
+// アイコン更新成功時のメッセージ表示
+const handleSuccessMessage = (message) => {
+    isSuccess.value = true;
+    setTimeout(() => {
+        isSuccess.value = false;
+    }, 8000);
 };
 </script>
 
@@ -78,14 +86,6 @@ const handleOpenIconEdit = () => {
             </p>
         </header>
 
-        <!-- プロフィール画像更新成功メッセージ表示 -->
-        <div
-            v-if="successMessage"
-            class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
-        >
-            {{ successMessage }}
-        </div>
-
         <!-- プロフィール情報更新成功メッセージ表示 -->
         <Transition
             enter-active-class="transition ease-in-out duration-300"
@@ -96,11 +96,11 @@ const handleOpenIconEdit = () => {
             leave-to-class="opacity-0 transform translate-y-2"
         >
             <div
-                v-if="isSuccess"
+                v-if="isSuccess || successMessage"
                 class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
-                <p class="font-bold">
-                    {{ $t("Saved.") }}
+                <p class="font-bold text-center">
+                    {{ successMessage || $t("Saved.") }}
                 </p>
             </div>
         </Transition>
