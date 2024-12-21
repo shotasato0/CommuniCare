@@ -199,12 +199,19 @@ const totalFilteredUsers = computed(() => {
             </h2>
         </template>
         <!-- フラッシュメッセージ -->
-        <transition name="fade">
+        <transition
+            enter-active-class="transition ease-in-out duration-300"
+            enter-from-class="opacity-0 transform translate-y-2"
+            enter-to-class="opacity-100 transform translate-y-0"
+            leave-active-class="transition ease-in-out duration-300"
+            leave-from-class="opacity-100 transform translate-y-0"
+            leave-to-class="opacity-0 transform translate-y-2"
+        >
             <div
                 v-if="flashMessage"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50"
             >
-                <p class="font-bold">{{ flashMessage }}</p>
+                <p class="font-bold text-center">{{ flashMessage }}</p>
             </div>
         </transition>
 
@@ -455,14 +462,3 @@ const totalFilteredUsers = computed(() => {
         </div>
     </AuthenticatedLayout>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>

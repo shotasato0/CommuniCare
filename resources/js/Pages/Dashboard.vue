@@ -77,7 +77,7 @@ console.log("User data:", props.auth.user);
                     'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
                         flashType === 'info',
                 }"
-                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
+                class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg text-center"
             >
                 <p class="font-bold">{{ flashMessage }}</p>
             </div>
