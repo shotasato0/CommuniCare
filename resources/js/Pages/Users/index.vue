@@ -200,11 +200,12 @@ const totalFilteredUsers = computed(() => {
         </template>
         <!-- フラッシュメッセージ -->
         <transition
-            enter-active-class="transition-opacity duration-500 ease-in-out"
-            leave-active-class="transition-opacity duration-500 ease-in-out"
-            enter-from-class="opacity-0"
-            enter-to-class="opacity-100"
-            leave-to-class="opacity-0"
+            enter-active-class="transition ease-in-out duration-300"
+            enter-from-class="opacity-0 transform translate-y-2"
+            enter-to-class="opacity-100 transform translate-y-0"
+            leave-active-class="transition ease-in-out duration-300"
+            leave-from-class="opacity-100 transform translate-y-0"
+            leave-to-class="opacity-0 transform translate-y-2"
         >
             <div
                 v-if="flashMessage"
