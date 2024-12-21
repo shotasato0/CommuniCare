@@ -4,7 +4,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const props = defineProps({
     user: {
@@ -40,17 +40,37 @@ const units = props.units;
 const form = useForm({
     name: user.name,
     username_id: user.username_id,
-    tel: user.tel || "", // telに初期値を設定
-    email: user.email || "", // emailに初期値を設定
-    unit_id: user.unit_id ? String(user.unit_id) : "", // unit_idに初期値を設定
+    tel: user.tel || "",
+    email: user.email || "",
+    unit_id: user.unit_id ? String(user.unit_id) : "",
     _token: document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content"),
 });
 
+// カスタムの成功メッセージ状態
+const isSuccess = ref(false);
+
+// フォーム送信の処理を修正
+const submitForm = async () => {
+    await form.patch(route("profile.update"));
+    isSuccess.value = true;
+    setTimeout(() => {
+        isSuccess.value = false;
+    }, 8000);
+};
+
 // アイコン編集を開く関数
 const handleOpenIconEdit = () => {
     emit("openIconEdit");
+};
+
+// アイコン更新成功時のメッセージ表示
+const handleSuccessMessage = (message) => {
+    isSuccess.value = true;
+    setTimeout(() => {
+        isSuccess.value = false;
+    }, 8000);
 };
 </script>
 
@@ -66,35 +86,26 @@ const handleOpenIconEdit = () => {
             </p>
         </header>
 
-        <!-- プロフィール画像更新成功メッセージ表示 -->
-        <div
-            v-if="successMessage"
-            class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
-        >
-            {{ successMessage }}
-        </div>
-
         <!-- プロフィール情報更新成功メッセージ表示 -->
         <Transition
-            enter-active-class="transition ease-in-out"
-            enter-from-class="opacity-0"
-            leave-active-class="transition ease-in-out"
-            leave-to-class="opacity-0"
+            enter-active-class="transition ease-in-out duration-300"
+            enter-from-class="opacity-0 transform translate-y-2"
+            enter-to-class="opacity-100 transform translate-y-0"
+            leave-active-class="transition ease-in-out duration-300"
+            leave-from-class="opacity-100 transform translate-y-0"
+            leave-to-class="opacity-0 transform translate-y-2"
         >
             <div
-                v-if="form.recentlySuccessful"
-                class="bg-green-100 text-green-700 p-3 mt-4 mb-6 rounded"
+                v-if="isSuccess || successMessage"
+                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
-                <p class="font-medium text-center">
-                    {{ $t("Saved.") }}
+                <p class="font-bold text-center">
+                    {{ successMessage || $t("Saved.") }}
                 </p>
             </div>
         </Transition>
 
-        <form
-            @submit.prevent="form.patch(route('profile.update'))"
-            class="mt-6 space-y-6"
-        >
+        <form @submit.prevent="submitForm" class="mt-6 space-y-6">
             <!-- プロフィール画像表示と編集ボタン -->
             <div class="relative w-24 h-24 group">
                 <button

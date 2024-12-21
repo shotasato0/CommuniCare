@@ -207,8 +207,15 @@ const isAdmin = computed(() => {
             </h2>
         </template>
 
-        <!-- フラッシュメッセージの条件を修正 -->
-        <transition name="fade">
+        <!-- フラッシュメッセージのスタイル -->
+        <transition
+            enter-active-class="transition ease-in-out duration-300"
+            enter-from-class="opacity-0 transform translate-y-2"
+            enter-to-class="opacity-100 transform translate-y-0"
+            leave-active-class="transition ease-in-out duration-300"
+            leave-from-class="opacity-100 transform translate-y-0"
+            leave-to-class="opacity-0 transform translate-y-2"
+        >
             <div
                 v-if="localFlashMessage && showFlashMessage"
                 :class="{
@@ -221,7 +228,7 @@ const isAdmin = computed(() => {
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
             >
-                <p class="font-bold">{{ localFlashMessage }}</p>
+                <p class="font-bold text-center">{{ localFlashMessage }}</p>
             </div>
         </transition>
 
@@ -236,7 +243,10 @@ const isAdmin = computed(() => {
                                 class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
                             >
                                 <!-- 管理者のみに表示するボタン群 -->
-                                <div v-if="isAdmin" class="flex items-center space-x-4 order-1 sm:order-2">
+                                <div
+                                    v-if="isAdmin"
+                                    class="flex items-center space-x-4 order-1 sm:order-2"
+                                >
                                     <!-- 新規登録ボタン -->
                                     <Link
                                         :href="route('residents.create')"
@@ -247,9 +257,16 @@ const isAdmin = computed(() => {
 
                                     <!-- 削除モードトグルボタン -->
                                     <button
-                                        @click="showDeleteButtons = !showDeleteButtons"
+                                        @click="
+                                            showDeleteButtons =
+                                                !showDeleteButtons
+                                        "
                                         class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
-                                        :class="showDeleteButtons ? 'bg-red-300 !text-white' : 'bg-red-200 text-red-600'"
+                                        :class="
+                                            showDeleteButtons
+                                                ? 'bg-red-300 !text-white'
+                                                : 'bg-red-200 text-red-600'
+                                        "
                                     >
                                         削除モード
                                     </button>
@@ -383,15 +400,3 @@ const isAdmin = computed(() => {
         </div>
     </AuthenticatedLayout>
 </template>
-
-<style>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.5s;
-}
-
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
