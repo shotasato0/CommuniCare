@@ -25,6 +25,7 @@ RUN apt-get update \
        php8.3-intl php8.3-readline php8.3-ldap \
        php8.3-msgpack php8.3-igbinary php8.3-redis php8.3-swoole \
        php8.3-memcached php8.3-pcov php8.3-xdebug \
+       php8.3-fpm \
     && curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
@@ -39,12 +40,15 @@ RUN apt-get update \
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.3
 
-# Cronジョブの設定
-RUN echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1" | crontab -
+# sailユーザーとグループの作成
+RUN groupadd --force -g $WWWGROUP sail
+RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 
-# Cronサービスを起動するスクリプトの作成
-RUN echo '#!/bin/sh\nservice cron start && php-fpm' > /usr/local/bin/start-container
-RUN chmod +x /usr/local/bin/start-container
+# Supervisordの設定
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Cronジョブの設定
+RUN echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1" | crontab -u sail -
 
 COPY start-supervisord.sh /usr/local/bin/start-supervisord
 RUN chmod +x /usr/local/bin/start-supervisord
