@@ -10,4 +10,8 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 
-app(Schedule::class)->command('cleanup:guest-users')->hourly();
+app(Schedule::class)->command('cleanup:guest-users')
+    ->hourly()
+    ->runInBackground()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/scheduler.log'));
