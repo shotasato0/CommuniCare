@@ -1,10 +1,15 @@
 <script setup>
+import { usePage } from "@inertiajs/vue3";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
+
 defineProps({
     adminExists: Boolean,
 });
+
+const page = usePage();
+const tenant = page.props.tenant || {};
 
 // 現在のURLが特定のパスかをチェック
 const guestTenantUrl =
@@ -56,6 +61,14 @@ const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
                     職員間のスムーズなコミュニケーションと利用者様の情報を一元管理する
                     プラットフォームです。
                 </p>
+
+                <!-- テナント名 -->
+                <div
+                    v-if="tenant?.business_name"
+                    class="text-blue-900 text-lg sm:text-xl font-medium bg-blue-50 px-6 py-2 rounded-lg shadow-sm border border-blue-100 mb-6"
+                >
+                    {{ tenant.business_name }}
+                </div>
 
                 <!-- ボタンセクション -->
                 <div
