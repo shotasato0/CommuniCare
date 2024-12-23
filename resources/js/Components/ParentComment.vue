@@ -107,7 +107,7 @@ const getCommentCountRecursive = (comments) => {
                 </div>
 
                 <!-- コメント本文 -->
-                <p class="mt-3">{{ comment.message }}</p>
+                <p class="mt-3 whitespace-pre-wrap">{{ comment.message }}</p>
 
                 <!-- 子コメント -->
                 <div
