@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,11 +30,17 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $tenantInfo = null;
+        if (tenant()) {
+            $tenantInfo = DB::table('tenant_info')->first();
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            'tenant' => $tenantInfo,
             'isGuest' => $request->user() && $request->user()->guest_session_id ? true : false,
             'guestSessionId' => $request->user() && $request->user()->guest_session_id ? $request->user()->guest_session_id : null,
             'flash' => [
