@@ -55,7 +55,7 @@ const props = defineProps({
                 </div>
 
                 <!-- コメント本文 -->
-                <p class="mt-2">{{ comment.message }}</p>
+                <p class="mt-2 whitespace-pre-wrap">{{ comment.message }}</p>
 
                 <div class="flex justify-end space-x-2 mt-2">
                     <!-- 返信ボタン -->
