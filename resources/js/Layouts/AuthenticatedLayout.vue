@@ -105,6 +105,14 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     {{ $t("Dashboard") }}
                                 </NavLink>
                             </div>
+
+                            <!-- テナント名を表示 -->
+                            <div
+                                v-if="page.props.tenant?.business_name"
+                                class="hidden lg:flex items-center ml-4 text-gray-600"
+                            >
+                                {{ page.props.tenant.business_name }}
+                            </div>
                         </div>
 
                         <div class="hidden lg:flex lg:items-center">
