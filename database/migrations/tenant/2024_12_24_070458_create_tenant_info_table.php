@@ -6,21 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('tenant_info', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 36)->primary();
+            $table->string('business_name')->default('default_name');
+            $table->string('tenant_domain_id')->default('default_domain');
+            $table->json('data')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('tenant_info');
     }
