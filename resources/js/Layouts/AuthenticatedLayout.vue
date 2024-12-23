@@ -108,6 +108,14 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </div>
 
                         <div class="hidden lg:flex lg:items-center">
+                            <!-- テナント名を表示 -->
+                            <div
+                                v-if="page.props.tenant?.business_name"
+                                class="text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
+                            >
+                                {{ page.props.tenant.business_name }}
+                            </div>
+
                             <!-- Settings Dropdown -->
                             <div class="relative">
                                 <Dropdown align="right" width="48">

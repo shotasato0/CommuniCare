@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class TenantRegisterController extends Controller
 {
@@ -55,6 +56,18 @@ class TenantRegisterController extends Controller
 
         // テナント登録後にそのテナントのデータベースに切り替える
         tenancy()->initialize($tenant);
+
+        // テナントDBにテナント情報を複製
+        $tenant->run(function () use ($tenant) {
+            DB::table('tenant_info')->insert([
+                'id' => $tenant->id,
+                'business_name' => $tenant->business_name,
+                'tenant_domain_id' => $tenant->tenant_domain_id,
+                'data' => null,  // 必要に応じてデータを追加
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
 
         // セッションのドメインを動的に設定
         Config::set('session.domain', $domain);
