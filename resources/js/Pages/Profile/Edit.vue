@@ -49,12 +49,11 @@ watch(successMessage, (newVal) => {
         </template>
 
         <!-- ゲスト向け説明文 -->
-        <div
-            v-if="isGuest"
-            class="p-4 mb-6 bg-yellow-100 text-yellow-800 rounded"
-        >
-            現在、ゲストユーザーとしてログインしています。一部の機能（パスワード変更、アカウント削除など）は利用できません。
-            通常のアカウントでログインすることで、これらの機能をご利用いただけます。
+        <div v-if="isGuest" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="p-4 sm:p-8 bg-yellow-100 text-yellow-800 rounded-lg">
+                現在、ゲストユーザーとしてログインしています。一部の機能（パスワード変更、アカウント削除など）は利用できません。
+                通常のアカウントでログインすることで、これらの機能をご利用いただけます。
+            </div>
         </div>
 
         <div class="py-12">

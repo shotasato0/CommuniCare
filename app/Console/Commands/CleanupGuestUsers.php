@@ -27,41 +27,51 @@ class CleanupGuestUsers extends Command
      * Execute the console command.
      */
     public function handle()
-{
-    $tenantDomainId = env('TENANT_DOMAIN_ID');
-    if (!$tenantDomainId) {
-        $this->error('TENANT_DOMAIN_ID が設定されていません。');
-        return;
-    }
+    {
+        $tenantDomainId = env('TENANT_DOMAIN_ID');
+        $this->info("設定されているTENANT_DOMAIN_ID: " . ($tenantDomainId ?? 'null'));
 
-    $tenant = Tenant::whereJsonContains('data->tenant_domain_id', $tenantDomainId)->first();
-    if (!$tenant) {
-        $this->error("指定されたテナントが見つかりません: {$tenantDomainId}");
-        return;
-    }
-
-    try {
-        // テナントの初期化
-        Tenancy::initialize($tenant);
-        $this->info("Using database connection: " . \DB::connection()->getDatabaseName());
-
-        // guest_session_id の確認
-        if (!\Schema::hasColumn('users', 'guest_session_id')) {
-            $this->error("'guest_session_id' カラムが 'users' テーブルに存在しません。");
+        if (!$tenantDomainId) {
+            $this->error('TENANT_DOMAIN_ID が設定されていません。');
             return;
         }
 
-        // ゲストユーザー削除
-        $deletedCount = User::whereNotNull('guest_session_id')
-            ->where('created_at', '<', now()->subHours(1))
-            ->delete();
+        // テナントの検索処理をデバッグ
+        $tenant = Tenant::whereJsonContains('data->tenant_domain_id', $tenantDomainId)->first();
+        $this->info("検索クエリ結果: " . ($tenant ? "テナントが見つかりました" : "テナントが見つかりません"));
+        
+        if ($tenant) {
+            $this->info("テナントデータ: " . json_encode($tenant->data));
+        }
 
-        $this->info("Deleted {$deletedCount} guest users.");
-    } catch (\Exception $e) {
-        $this->error("エラーが発生しました: " . $e->getMessage());
-    } finally {
-        // テナントの終了
-        Tenancy::end();
+        if (!$tenant) {
+            $this->error("指定されたテナントが見つかりません: {$tenantDomainId}");
+            return;
+        }
+
+        try {
+            // テナントの初期化
+            Tenancy::initialize($tenant);
+            $this->info("データベース接続: " . \DB::connection()->getDatabaseName());
+
+            // 削除対象のユーザー数を事前に確認
+            $targetUsers = User::whereNotNull('guest_session_id')
+                ->where('created_at', '<', now()->subHours(1))
+                ->get();
+            
+            $this->info("削除対象ユーザー数: " . $targetUsers->count());
+            $this->info("対象ユーザー情報: " . json_encode($targetUsers->toArray()));
+
+            $deletedCount = User::whereNotNull('guest_session_id')
+                ->where('created_at', '<', now()->subHours(1))
+                ->delete();
+
+            $this->info("削除完了。削除数: {$deletedCount}");
+        } catch (\Exception $e) {
+            $this->error("エラーが発生しました: " . $e->getMessage());
+            $this->error("スタックトレース: " . $e->getTraceAsString());
+        } finally {
+            Tenancy::end();
+        }
     }
-}
 }
