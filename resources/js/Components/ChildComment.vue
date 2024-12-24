@@ -38,7 +38,7 @@ const props = defineProps({
                     />
                     <img
                         v-else
-                        src="https://via.placeholder.com/40"
+                        src="/images/default_user_icon.png"
                         alt="Default Icon"
                         class="w-6 h-6 rounded-full cursor-pointer border border-gray-300"
                         @click="openUserProfile(comment)"
