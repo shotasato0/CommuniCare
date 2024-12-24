@@ -359,7 +359,7 @@ const handleForumSelected = (unitId) => {
                                             v-else
                                             src="/images/default_user_icon.png"
                                             alt="Default Icon"
-                                            class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                             @click="
                                                 openUserProfile(
                                                     post.quoted_post
