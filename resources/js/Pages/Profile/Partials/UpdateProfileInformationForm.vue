@@ -123,7 +123,7 @@ const handleSuccessMessage = (message) => {
                                 ? user.icon
                                 : user.icon
                                 ? `/storage/${user.icon}`
-                                : 'https://via.placeholder.com/100'
+                                : '/images/default_user_icon.png'
                         "
                         alt="ユーザーのプロフィール写真"
                         class="w-full h-full rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
