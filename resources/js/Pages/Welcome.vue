@@ -254,6 +254,9 @@ const guestLogin = () => {
                                         <p class="text-xs text-blue-600 mt-2">
                                             ※英数字のみ使用可能です
                                         </p>
+                                        <p class="mt-3">
+                                            発行されたURLにアクセスすることで、以降は専用の管理画面からサービスをご利用いただけます。
+                                        </p>
                                     </div>
                                 </div>
                             </div>

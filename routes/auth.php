@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\TenantRegisterController;
-use App\Http\Controllers\Auth\TenantLoginController;
+// use App\Http\Controllers\Auth\TenantLoginController;
 use App\Http\Controllers\Auth\GuestTenantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
@@ -25,8 +25,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/tenant/register', [TenantRegisterController::class, 'register'])->name('tenant.register.post');
 
     // テナントログインルート
-    Route::get('/tenant/login', [TenantLoginController::class, 'showLoginForm'])->name('tenant.login');
-    Route::post('/tenant/login', [TenantLoginController::class, 'store'])->name('tenant.login.post');
+    // Route::get('/tenant/login', [TenantLoginController::class, 'showLoginForm'])->name('tenant.login');
+    // Route::post('/tenant/login', [TenantLoginController::class, 'store'])->name('tenant.login.post');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
