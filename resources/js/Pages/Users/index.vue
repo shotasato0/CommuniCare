@@ -303,7 +303,7 @@ const totalFilteredUsers = computed(() => {
                                         :src="
                                             sortedUsers.currentAdmin.icon
                                                 ? `/storage/${sortedUsers.currentAdmin.icon}`
-                                                : 'https://via.placeholder.com/150'
+                                                : '/images/default_user_icon.png'
                                         "
                                         alt="Profile Icon"
                                         class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
@@ -377,7 +377,7 @@ const totalFilteredUsers = computed(() => {
                                                 :src="
                                                     user.icon
                                                         ? `/storage/${user.icon}`
-                                                        : 'https://via.placeholder.com/150'
+                                                        : '/images/default_user_icon.png'
                                                 "
                                                 alt="Profile Icon"
                                                 class="w-12 h-12 rounded-full"
