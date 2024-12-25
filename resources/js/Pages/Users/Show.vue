@@ -50,7 +50,7 @@ export default {
                 :src="
                     user.icon
                         ? `/storage/${user.icon}`
-                        : 'https://via.placeholder.com/100'
+                        : '/images/default_user_icon.png'
                 "
                 alt="ユーザーのプロフィール写真"
                 class="w-24 h-24 rounded-full object-cover mx-auto mb-4"

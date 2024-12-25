@@ -165,9 +165,19 @@ const onDeleteItem = (type, id) => {
     deleteItem(type, id, async (deletedId) => {
         if (type === "post") {
             // まずローカルでデータを更新
-            posts.value.data = posts.value.data.filter(
-                (post) => post.id !== deletedId
-            );
+            posts.value.data = posts.value.data
+                .map((post) => {
+                    // 引用投稿が削除された投稿を更新
+                    if (post.quoted_post && post.quoted_post.id === deletedId) {
+                        return {
+                            ...post,
+                            quoted_post_deleted: 1,
+                            quoted_post: null,
+                        };
+                    }
+                    return post;
+                })
+                .filter((post) => post.id !== deletedId);
 
             // 削除後に正しいURLに遷移（履歴を置き換える）
             const currentUrl = route("forum.index", {
@@ -318,7 +328,7 @@ const handleForumSelected = (unitId) => {
                     class="bg-white rounded-md shadow-md mb-6 p-4"
                 >
                     <div>
-                        <!-- 引用投稿がある場合の表示を最初に移動 -->
+                        <!-- 引用投稿がある場合の表示 -->
                         <div class="mb-4">
                             <!-- 削除済みの場合 -->
                             <template v-if="post.quoted_post_deleted === 1">
@@ -348,7 +358,7 @@ const handleForumSelected = (unitId) => {
                                                     : `/storage/${post.quoted_post.user.icon}`
                                             "
                                             alt="User Icon"
-                                            class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                             @click="
                                                 openUserProfile(
                                                     post.quoted_post
@@ -357,9 +367,9 @@ const handleForumSelected = (unitId) => {
                                         />
                                         <img
                                             v-else
-                                            src="https://via.placeholder.com/40"
+                                            src="/images/default_user_icon.png"
                                             alt="Default Icon"
-                                            class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                             @click="
                                                 openUserProfile(
                                                     post.quoted_post
@@ -406,14 +416,14 @@ const handleForumSelected = (unitId) => {
                                             : `/storage/${post.user.icon}`
                                     "
                                     alt="User Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
                                 <img
                                     v-else
-                                    src="https://via.placeholder.com/40"
+                                    src="/images/default_user_icon.png"
                                     alt="Default Icon"
-                                    class="w-12 h-12 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                    class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
 

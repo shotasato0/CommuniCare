@@ -58,7 +58,7 @@ const currentUnitUsers = computed(() => {
                 />
                 <img
                     v-else
-                    src="https://via.placeholder.com/40"
+                    src="/images/default_user_icon.png"
                     alt="Default Icon"
                     class="w-12 h-12 rounded-full"
                 />

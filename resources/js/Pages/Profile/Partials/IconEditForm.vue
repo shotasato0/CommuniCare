@@ -15,13 +15,14 @@ const form = useForm({
 
 // アイコンのプレビューURLを定義
 const previewUrl = ref(
-    props.user.icon && typeof props.user.icon === 'string' && props.user.icon.startsWith("/storage/")
+    props.user.icon &&
+        typeof props.user.icon === "string" &&
+        props.user.icon.startsWith("/storage/")
         ? props.user.icon
         : props.user.icon
         ? `/storage/${props.user.icon}`
-        : "https://via.placeholder.com/100"
+        : "/images/default_user_icon.png"
 );
-
 
 // ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
 const isLocalPreview = ref(false);
@@ -75,8 +76,8 @@ const submit = () => {
                 emit("updateIcon", previewUrl.value);
                 emit("successMessage", "プロフィール画像が更新されました");
             } else {
-                // パスがない場合はプレースホルダーに戻す
-                previewUrl.value = "https://via.placeholder.com/100";
+                // パスがない場合はデフォルトアイコンに戻す
+                previewUrl.value = "/images/default_user_icon.png";
             }
 
             // サクセスメッセージをemitして親コンポーネントで表示させる
@@ -99,7 +100,8 @@ const submit = () => {
             if (errors.icon) {
                 localErrorMessage.value = errors.icon;
             } else {
-                localErrorMessage.value = "プロフィール画像の更新に失敗しました";
+                localErrorMessage.value =
+                    "プロフィール画像の更新に失敗しました";
             }
         },
     });

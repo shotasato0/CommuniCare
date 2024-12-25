@@ -303,7 +303,7 @@ const totalFilteredUsers = computed(() => {
                                         :src="
                                             sortedUsers.currentAdmin.icon
                                                 ? `/storage/${sortedUsers.currentAdmin.icon}`
-                                                : 'https://via.placeholder.com/150'
+                                                : '/images/default_user_icon.png'
                                         "
                                         alt="Profile Icon"
                                         class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
@@ -355,7 +355,7 @@ const totalFilteredUsers = computed(() => {
                                         v-for="user in unitUsers"
                                         :key="user.id"
                                         :class="[
-                                            'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
+                                            'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer',
                                             showDeleteButtons
                                                 ? 'hover:bg-red-50 cursor-pointer'
                                                 : isAdminMode
@@ -377,7 +377,7 @@ const totalFilteredUsers = computed(() => {
                                                 :src="
                                                     user.icon
                                                         ? `/storage/${user.icon}`
-                                                        : 'https://via.placeholder.com/150'
+                                                        : '/images/default_user_icon.png'
                                                 "
                                                 alt="Profile Icon"
                                                 class="w-12 h-12 rounded-full"
