@@ -165,17 +165,19 @@ const onDeleteItem = (type, id) => {
     deleteItem(type, id, async (deletedId) => {
         if (type === "post") {
             // まずローカルでデータを更新
-            posts.value.data = posts.value.data.map(post => {
-                // 引用投稿が削除された投稿を更新
-                if (post.quoted_post && post.quoted_post.id === deletedId) {
-                    return {
-                        ...post,
-                        quoted_post_deleted: 1,
-                        quoted_post: null
-                    };
-                }
-                return post;
-            }).filter(post => post.id !== deletedId);
+            posts.value.data = posts.value.data
+                .map((post) => {
+                    // 引用投稿が削除された投稿を更新
+                    if (post.quoted_post && post.quoted_post.id === deletedId) {
+                        return {
+                            ...post,
+                            quoted_post_deleted: 1,
+                            quoted_post: null,
+                        };
+                    }
+                    return post;
+                })
+                .filter((post) => post.id !== deletedId);
 
             // 削除後に正しいURLに遷移（履歴を置き換える）
             const currentUrl = route("forum.index", {
