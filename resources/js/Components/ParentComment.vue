@@ -85,14 +85,14 @@ const getCommentCountRecursive = (comments) => {
                                 : `/storage/${comment.user.icon}`
                         "
                         alt="User Icon"
-                        class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
+                        class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
                     />
                     <img
                         v-else
                         src="/images/default_user_icon.png"
                         alt="Default Icon"
-                        class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300"
+                        class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
                     />
 
