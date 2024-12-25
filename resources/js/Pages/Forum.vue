@@ -348,7 +348,7 @@ const handleForumSelected = (unitId) => {
                                                     : `/storage/${post.quoted_post.user.icon}`
                                             "
                                             alt="User Icon"
-                                            class="w-8 h-8 rounded-full border border-gray-300 shadow-sm cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
+                                            class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                             @click="
                                                 openUserProfile(
                                                     post.quoted_post
