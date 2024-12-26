@@ -15,14 +15,11 @@ class AddColumnsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('username_id')->nullable(false);
-            $table->unsignedBigInteger('unit_id')->nullable();
             $table->unsignedBigInteger('tenant_id')->nullable();
             $table->string('icon')->nullable();
             $table->string('tel', 20)->nullable();
 
             // 外部キー制約を追加
-            // usernames テーブルが存在しないため、ここでは外部キー制約を設定しません
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
@@ -36,11 +33,10 @@ class AddColumnsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // 外部キー制約を削除
-            $table->dropForeign(['unit_id']);
             $table->dropForeign(['tenant_id']);
 
             // カラムを削除
-            $table->dropColumn(['username_id', 'unit_id', 'tenant_id', 'icon', 'tel']);
+            $table->dropColumn(['username_id', 'tenant_id', 'icon', 'tel']);
         });
     }
 }
