@@ -12,21 +12,27 @@ class ModifyIdColumnInTenantsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->unsignedBigInteger('new_id')->nullable()->first();
+        // 外部キー制約を削除
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_tenant_id_foreign');
         });
 
-        DB::statement('UPDATE tenants SET new_id = CAST(id AS UNSIGNED)');
-
+        // id カラムの変更を実行
         Schema::table('tenants', function (Blueprint $table) {
             $table->dropColumn('id');
-            $table->renameColumn('new_id', 'id');
+            // 新しい id カラムの定義
+            $table->uuid('id')->primary();
         });
 
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->primary('id');
+        // 外部キー制約を再作成
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
@@ -35,21 +41,24 @@ class ModifyIdColumnInTenantsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->string('new_id')->nullable()->first();
+        // ロールバック時の処理
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_tenant_id_foreign');
         });
-
-        DB::statement('UPDATE tenants SET new_id = id');
 
         Schema::table('tenants', function (Blueprint $table) {
             $table->dropColumn('id');
-            $table->renameColumn('new_id', 'id');
+            $table->id(); // 元の auto-increment の id に戻す
         });
 
-        Schema::table('tenants', function (Blueprint $table) {
-            $table->primary('id');
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 }
