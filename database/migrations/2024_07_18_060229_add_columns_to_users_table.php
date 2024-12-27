@@ -11,16 +11,19 @@ class AddColumnsToUsersTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
             $table->unsignedBigInteger('username_id')->nullable(false);
-            $table->unsignedBigInteger('tenant_id')->nullable();
+            $table->unsignedBigInteger('tenant_id')->after('id');
             $table->string('icon')->nullable();
             $table->string('tel', 20)->nullable();
 
             // 外部キー制約を追加
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onDelete('cascade');
         });
     }
 
