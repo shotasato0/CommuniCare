@@ -10,15 +10,13 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
         Schema::create('domains', function (Blueprint $table) {
             $table->increments('id');  // 自動インクリメントの主キー
             $table->string('domain', 255)->unique();  // ドメイン名、ユニーク制約付き
-            $table->unsignedBigInteger('tenant_id');  // tenantsテーブルのidに合わせてunsignedBigInteger型
+            $table->uuid('tenant_id');  // tenantsテーブルのidに合わせてuuid型
             
             $table->timestamps();
             
@@ -36,8 +34,6 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
