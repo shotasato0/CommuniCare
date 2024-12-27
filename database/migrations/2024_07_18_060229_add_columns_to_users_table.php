@@ -14,8 +14,7 @@ class AddColumnsToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('username_id')->nullable(false);
-            $table->unsignedBigInteger('tenant_id')->after('id');
+            $table->string('tenant_id')->after('id');
             $table->string('icon')->nullable();
             $table->string('tel', 20)->nullable();
 
@@ -32,14 +31,16 @@ class AddColumnsToUsersTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
             // 外部キー制約を削除
             $table->dropForeign(['tenant_id']);
 
             // カラムを削除
-            $table->dropColumn(['username_id', 'tenant_id', 'icon', 'tel']);
+            $table->dropColumn('tenant_id');
+            $table->dropColumn('icon');
+            $table->dropColumn('tel');
         });
     }
 }
