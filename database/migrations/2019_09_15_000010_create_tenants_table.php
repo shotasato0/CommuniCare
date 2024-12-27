@@ -16,11 +16,11 @@ return new class extends Migration
         // tenants テーブルの作成
         Schema::create('tenants', function (Blueprint $table) {
             $table->id();  // 自動インクリメントの主キー
-            $table->string('business_name')->nullable()->after('id');  // 事業所名
-            $table->string('tenant_domain_id')->nullable();  // ドメインID
+            $table->string('business_name')->after('id');  // 事業所名
+            $table->string('tenant_domain_id')->unique();  // ドメインID
             $table->timestamps();
             $table->json('data')->nullable();  // JSONデータ保存用
-        });
+        });        
     }
 
     /**
