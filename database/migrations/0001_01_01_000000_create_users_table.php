@@ -13,28 +13,37 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('forum_id')->nullable();
+            $table->foreign('forum_id')->references('id')->on('forums')->onDelete('cascade');
+            $table->unsignedBigInteger('username_id')->unique()->nullable();
+            $table->unsignedBigInteger('unit_id')->nullable();
+            $table->unsignedBigInteger('tenant_id');  // tenant_idをbigintに修正
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');  // 外部キー
+            $table->string('icon')->nullable();
+            $table->string('tel')->nullable();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('guest_session_id')->nullable()->after('password')->comment('セッションIDを格納してゲストを特定する');
             $table->rememberToken();
             $table->timestamps();
         });
-
+        
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
-
+        
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->unsignedBigInteger('user_id')->nullable()->index();  // user_idもbigint
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
-        });
+        });               
     }
 
     /**
