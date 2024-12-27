@@ -11,10 +11,24 @@ class AddForeignKeyToDomainsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
+        // 既存の外部キー制約があれば削除
         Schema::table('domains', function (Blueprint $table) {
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
+            $table->dropForeign(['tenant_id']);
+        });
+
+        // tenant_id カラムの型を変更
+        Schema::table('domains', function (Blueprint $table) {
+            $table->uuid('tenant_id')->change();
+        });
+
+        // 外部キー制約を追加
+        Schema::table('domains', function (Blueprint $table) {
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onDelete('cascade');
         });
     }
 
@@ -23,10 +37,11 @@ class AddForeignKeyToDomainsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('domains', function (Blueprint $table) {
             $table->dropForeign(['tenant_id']);
+            $table->bigInteger('tenant_id')->change();  // 元の型に戻す
         });
     }
 }
