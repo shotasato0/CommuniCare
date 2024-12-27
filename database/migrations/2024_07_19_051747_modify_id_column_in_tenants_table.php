@@ -16,13 +16,17 @@ class ModifyIdColumnInTenantsTable extends Migration
     {
         // 外部キー制約を削除
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('users_tenant_id_foreign');
+            $table->dropForeign(['tenant_id']);
+        });
+
+        // users テーブルの tenant_id カラムの型を変更
+        Schema::table('users', function (Blueprint $table) {
+            $table->uuid('tenant_id')->change();
         });
 
         // id カラムの変更を実行
         Schema::table('tenants', function (Blueprint $table) {
             $table->dropColumn('id');
-            // 新しい id カラムの定義
             $table->uuid('id')->primary();
         });
 
@@ -43,16 +47,23 @@ class ModifyIdColumnInTenantsTable extends Migration
      */
     public function down(): void
     {
-        // ロールバック時の処理
+        // 外部キー制約を削除
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign('users_tenant_id_foreign');
+            $table->dropForeign(['tenant_id']);
         });
 
+        // users テーブルの tenant_id を元の型に戻す
+        Schema::table('users', function (Blueprint $table) {
+            $table->bigInteger('tenant_id')->change();
+        });
+
+        // tenants テーブルの id を元の型に戻す
         Schema::table('tenants', function (Blueprint $table) {
             $table->dropColumn('id');
-            $table->id(); // 元の auto-increment の id に戻す
+            $table->id();  // 元の auto-increment の id に戻す
         });
 
+        // 外部キー制約を再作成
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('tenant_id')
                 ->references('id')
