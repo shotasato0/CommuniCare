@@ -6,32 +6,29 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTenantsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
+        // tenants テーブルの作成
         Schema::create('tenants', function (Blueprint $table) {
-            $table->string('id')->primary();
-
-            // your custom columns may go here
-
+            $table->uuid('id')->primary();  // UUIDの主キー
+            $table->string('business_name')->default('未設定');  // 事業所名
+            $table->string('tenant_domain_id')->default('未設定')->unique();  // ドメインID
             $table->timestamps();
-            $table->json('data')->nullable();
+            $table->json('data')->nullable();  // JSONデータ保存用
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
+        // tenants テーブルの削除
         Schema::dropIfExists('tenants');
     }
-}
+};
