@@ -6,32 +6,37 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDomainsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
         Schema::create('domains', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('domain', 255)->unique();
-            $table->string('tenant_id');
-
+            $table->increments('id');  // 自動インクリメントの主キー
+            $table->string('domain', 255)->unique();  // ドメイン名、ユニーク制約付き
+            $table->uuid('tenant_id');  // tenantsテーブルのidに合わせてuuid型
+            
             $table->timestamps();
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
+            
+            // 外部キー制約の追加
+            $table->foreign('tenant_id')
+                ->references('id')
+                ->on('tenants')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            // tenant_id にユニークインデックスを追加
+            $table->unique('tenant_id');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
         Schema::dropIfExists('domains');
     }
-}
+};
