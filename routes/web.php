@@ -75,7 +75,6 @@ Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function ()
             // 管理者権限の譲渡
             Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
         });
-        Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     });
 });
 
