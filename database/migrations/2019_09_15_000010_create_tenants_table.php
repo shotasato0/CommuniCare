@@ -16,8 +16,8 @@ return new class extends Migration
         // tenants テーブルの作成
         Schema::create('tenants', function (Blueprint $table) {
             $table->uuid('id')->primary();  // UUIDの主キー
-            $table->string('business_name')->default('未設定');  // 事業所名
-            $table->string('tenant_domain_id')->default('未設定')->unique();  // ドメインID
+            $table->string('business_name')->nullable();  // 事業所名
+            $table->string('tenant_domain_id')->nullable()->unique();  // ドメインID
             $table->timestamps();
             $table->json('data')->nullable();  // JSONデータ保存用
         });
