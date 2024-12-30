@@ -27,7 +27,7 @@ Route::middleware([])->group(function () {
     })->name('welcome');
 });
 
-Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function () {
+// Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function () {
     // テナント識別を行うルート
     Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
         Route::get('/home', [TenantHomeController::class, 'index'])
@@ -76,6 +76,6 @@ Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function ()
             Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
         });
     });
-});
+// });
 
 require __DIR__.'/auth.php';
