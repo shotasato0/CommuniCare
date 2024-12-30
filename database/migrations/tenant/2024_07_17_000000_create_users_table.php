@@ -14,17 +14,17 @@ return new class extends Migration
         // 初期のusersテーブル作成
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('forum_id')->nullable()->after('id');  // 掲示板ID
-            $table->string('username_id')->unique()->nullable()->after('forum_id');  // ユーザーID
-            $table->unsignedBigInteger('unit_id')->nullable()->after('username_id');  // ユニットID
-            $table->string('tenant_id')->after('unit_id');  // テナントID
-            $table->string('icon')->nullable()->after('tenant_id');  // アイコン
-            $table->string('tel')->nullable()->after('icon');  // 電話番号
+            $table->unsignedBigInteger('forum_id')->nullable();  // 掲示板ID
+            $table->string('username_id')->unique()->nullable();  // ユーザーID
+            $table->unsignedBigInteger('unit_id')->nullable();  // ユニットID
+            $table->string('tenant_id');  // テナントID
+            $table->string('icon')->nullable();  // アイコン
+            $table->string('tel')->nullable();  // 電話番号
             $table->string('name');
             $table->string('email')->nullable()->unique();  // メールアドレス
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('guest_session_id')->nullable()->after('password')->comment('セッションIDを格納してゲストを特定する');  // ゲストセッションID
+            $table->string('guest_session_id')->nullable()->comment('セッションIDを格納してゲストを特定する');  // ゲストセッションID
             $table->rememberToken();
             $table->timestamps();
         });
