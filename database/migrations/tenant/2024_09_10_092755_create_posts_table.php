@@ -15,10 +15,9 @@ class CreatePostsTable extends Migration
         // postsテーブルの作成
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('quoted_post_id')->nullable()->after('id');  // 引用元の投稿ID
-            $table->boolean('quoted_post_deleted')->default(false)->after('quoted_post_id');  // 引用元削除フラグ
+            $table->unsignedBigInteger('quoted_post_id')->nullable();  // 引用元の投稿ID
+            $table->boolean('quoted_post_deleted')->default(false);  // 引用元削除フラグ
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->unsignedBigInteger('forum_id')->nullable(false);  // 掲示板ID
             $table->string('title')->nullable();  // タイトルをnullableに
             $table->text('message');
             $table->integer('like_count')->default(0);
@@ -49,13 +48,7 @@ class CreatePostsTable extends Migration
         Schema::table('posts', function (Blueprint $table) {
             // 外部キーの削除
             $table->dropForeign(['quoted_post_id']);
-            $table->dropColumn('quoted_post_id');
-            $table->dropColumn('quoted_post_deleted');
-        });
-
-        // titleカラムを元のnullable(false)に戻す
-        Schema::table('posts', function (Blueprint $table) {
-            $table->string('title')->nullable(false)->change();
+            $table->dropColumn(['quoted_post_id', 'quoted_post_deleted']);
         });
 
         Schema::dropIfExists('posts');
