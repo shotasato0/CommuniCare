@@ -32,8 +32,11 @@ class TenantRegisterController extends Controller
             ],
         ]);
 
+        // 環境に応じてベースドメインを設定
+        $baseDomain = app()->environment('production') ? 'communi-care.jp' : 'localhost';
+
         // ドメイン名を生成
-        $domain = strtolower(preg_replace('/[^\x20-\x7E]/', '', str_replace(' ', '-', $validatedData['tenant_domain_id']))) . '.localhost';
+        $domain = strtolower(preg_replace('/[^\x20-\x7E]/', '', str_replace(' ', '-', $validatedData['tenant_domain_id']))) . '.' . $baseDomain;
 
         // ドメインの重複チェック
         if (Domain::where('domain', $domain)->exists()) {
@@ -70,10 +73,11 @@ class TenantRegisterController extends Controller
         });
 
         // セッションのドメインを動的に設定
-        Config::set('session.domain', $domain);
+        $sessionDomain = app()->environment('production') ? '.communi-care.jp' : '.localhost';
+        Config::set('session.domain', $sessionDomain);
 
         // クッキーの設定
-        $cookie = Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $domain, false, true, false, 'Lax');
+        $cookie = Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $sessionDomain, false, true, false, 'Lax');
         Cookie::queue($cookie);
 
         // テナントIDをセッションに保存
