@@ -14,20 +14,27 @@ use Illuminate\Support\Facades\DB;
 
 class TenantRegisterController extends Controller
 {
+    /**
+     * テナント登録フォームの表示
+     */
     public function showRegistrationForm()
     {
         return Inertia::render('Auth/TenantRegister');
     }
 
+    /**
+     * テナント登録処理
+     */
     public function register(Request $request)
     {
+        // バリデーション
         $validatedData = $request->validate([
             'business_name' => 'required|string|max:255',
             'tenant_domain_id' => [
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z0-9]+$/',
+                'regex:/^[a-zA-Z0-9]+$/',  // 英数字のみ
                 'unique:tenants,tenant_domain_id',
             ],
         ]);
@@ -57,22 +64,17 @@ class TenantRegisterController extends Controller
             'domain' => $domain,
         ]);
 
-        // テナント登録後にそのテナントのデータベースに切り替える
-        tenancy()->initialize($tenant);
+        // 単一データベースにテナント情報を直接保存 (tenant_info テーブル)
+        DB::table('tenant_info')->insert([
+            'id' => $tenant->id,
+            'business_name' => $tenant->business_name,
+            'tenant_domain_id' => $tenant->tenant_domain_id,
+            'data' => null,  // 必要に応じてデータを追加
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-        // テナントDBにテナント情報を複製
-        $tenant->run(function () use ($tenant) {
-            DB::table('tenant_info')->insert([
-                'id' => $tenant->id,
-                'business_name' => $tenant->business_name,
-                'tenant_domain_id' => $tenant->tenant_domain_id,
-                'data' => null,  // 必要に応じてデータを追加
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        });
-
-        // セッションのドメインを動的に設定
+        // セッションのドメインを設定
         $sessionDomain = app()->environment('production') ? '.communi-care.jp' : '.localhost';
         Config::set('session.domain', $sessionDomain);
 
@@ -83,7 +85,7 @@ class TenantRegisterController extends Controller
         // テナントIDをセッションに保存
         session(['tenant_id' => $tenant->id]);
 
-        // テナント初期化後にリダイレクト
+        // テナント登録後にリダイレクト
         return Inertia::location('http://' . $domain . '/home');
     }
 }
