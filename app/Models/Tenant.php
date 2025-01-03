@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
-use Stancl\Tenancy\Contracts\TenantWithDatabase as TenantWithDatabaseContract;
-use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 
-class Tenant extends BaseTenant implements TenantWithDatabaseContract
+class Tenant extends BaseTenant
 {
-    use HasDatabase, HasDomains;
+    use HasDomains;
 
     protected $fillable = ['business_name', 'tenant_domain_id'];
 
@@ -17,36 +15,6 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
     protected $casts = [
         'data' => 'json',
     ];
-
-    /**
-     * Get the database name for this tenant.
-     *
-     * @return string
-     */
-    public function getDatabaseName()
-    {
-        return 'tenant_' . $this->id;
-    }
-
-    /**
-     * Get the database user for this tenant.
-     *
-     * @return string
-     */
-    public function getDatabaseUser()
-    {
-        return 'tenant_user_' . $this->id;
-    }
-
-    /**
-     * Get the database password for this tenant.
-     *
-     * @return string
-     */
-    public function getDatabasePassword()
-    {
-        return 'tenant_password_' . $this->id;
-    }
 
     /**
      * Get the domain associated with the tenant.
@@ -58,8 +26,11 @@ class Tenant extends BaseTenant implements TenantWithDatabaseContract
         return $this->hasOne(Domain::class);
     }
 
+    /**
+     * テナントに関連付けられたユーザー
+     */
     public function users()
-{
-    return $this->hasMany(User::class);
-}
+    {
+        return $this->hasMany(User::class);
+    }
 }
