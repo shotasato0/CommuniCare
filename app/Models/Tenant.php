@@ -2,35 +2,57 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 
+/**
+ * テナントモデル
+ *
+ * マルチテナンシーの基本となるモデルクラス
+ */
 class Tenant extends BaseTenant
 {
     use HasDomains;
 
-    protected $fillable = ['business_name', 'tenant_domain_id'];
+    /**
+     * マスアサインメントを許可する属性
+     */
+    protected $guarded = [];
 
-    // 'data' カラムを JSON としてキャスト
+    /**
+     * 属性のキャスト設定
+     */
     protected $casts = [
-        'data' => 'json',
+        'data' => 'array'
     ];
 
     /**
-     * Get the domain associated with the tenant.
+     * テナントのカスタムカラムを定義
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return array
      */
-    public function domain()
+    public static function getCustomColumns(): array
     {
-        return $this->hasOne(Domain::class);
+        return [
+            'id',
+            'business_name',
+            'tenant_domain_id',
+        ];
     }
 
     /**
-     * テナントに関連付けられたユーザー
+     * モデルの初期起動時の処理
      */
-    public function users()
+    protected static function boot()
     {
-        return $this->hasMany(User::class);
+        parent::boot();
+
+        // 新規作成時にUUIDを自動生成
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid()->toString();
+            }
+        });
     }
 }
