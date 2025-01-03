@@ -18,7 +18,11 @@ class Tenant extends BaseTenant
     /**
      * マスアサインメントを許可する属性
      */
-    protected $guarded = [];
+    protected $fillable = [
+        'business_name',
+        'tenant_domain_id',
+        'data'
+    ];
 
     /**
      * 属性のキャスト設定
