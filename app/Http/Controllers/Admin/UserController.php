@@ -14,45 +14,54 @@ class UserController extends Controller
 {
     public function showRegisterAdminForm()
     {
-        // 管理者が存在するかを確認
-        $adminExists = User::role('admin')->exists();
+        // テナントIDを取得
+        $tenantId = tenant('id');
+
+        // このテナントに管理者が存在するかを確認
+        $adminExists = User::role('admin')
+            ->where('tenant_id', $tenantId)
+            ->exists();
 
         return inertia('Auth/RegisterAdmin', [
             'adminExists' => $adminExists,
         ]);
     }
 
-public function registerAdmin(Request $request)
-{
-    Tenancy::initialize(tenant());
+    public function registerAdmin(Request $request)
+    {
+        Tenancy::initialize(tenant());
 
-    // バリデーション
-    $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'username_id' => 'required|string|max:255|unique:users',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
+        // バリデーション
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username_id' => 'required|string|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
 
-    // テナント ID を取得
-    $tenantId = tenant('id'); // 現在のテナント ID を取得
+        $tenantId = tenant('id');
 
-    // 新しいユーザーを作成
-    $user = User::create([
-        'name' => $validated['name'],
-        'username_id' => $validated['username_id'],
-        'password' => bcrypt($validated['password']), // bcrypt を明示的に適用
-        'tenant_id' => $tenantId, // テナント ID を設定
-    ]);
+        // このテナントに管理者が存在するかを確認
+        $adminExists = User::role('admin')
+            ->where('tenant_id', $tenantId)
+            ->exists();
 
-    // ロール割り当て
-    if (!User::role('admin')->exists()) {
-        $user->assignRole('admin'); // 管理者ロールを付与
-    } else {
-        $user->assignRole('user'); // 一般ユーザーロールを付与
-    }
+        // 新しいユーザーを作成
+        $user = User::create([
+            'name' => $validated['name'],
+            'username_id' => $validated['username_id'],
+            'password' => bcrypt($validated['password']),
+            'tenant_id' => $tenantId,
+        ]);
 
-    // 登録後にログインセッションを開始
-    Auth::login($user);
+        // ロール割り当て
+        if (!$adminExists) {
+            $user->assignRole('admin'); // 管理者ロールを付与
+        } else {
+            $user->assignRole('user'); // 一般ユーザーロールを付与
+        }
+
+        // 登録後にログインセッションを開始
+        Auth::login($user);
 
         return redirect()->route('dashboard')->with('success', '管理者の登録が完了しました。');
     }
