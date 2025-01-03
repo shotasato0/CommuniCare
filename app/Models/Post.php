@@ -5,12 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant;
 
-    protected $fillable = ['user_id', 'title', 'message', 'forum_id', 'quoted_post_id'];
+    protected $fillable = ['user_id', 'title', 'message', 'forum_id', 'quoted_post_id', 'tenant_id'];
 
     public function user()
     {
