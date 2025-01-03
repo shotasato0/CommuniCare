@@ -30,9 +30,12 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $tenantInfo = null;
+        $tenant = null;
         if (tenant()) {
-            $tenantInfo = DB::table('tenant_info')->first();
+            $tenant = DB::table('tenants')
+                ->select('id', 'business_name')
+                ->where('id', tenant('id'))
+                ->first();
         }
 
         return [
@@ -40,7 +43,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'tenant' => $tenantInfo,
+            'tenant' => $tenant,
             'isGuest' => $request->user() && $request->user()->guest_session_id ? true : false,
             'guestSessionId' => $request->user() && $request->user()->guest_session_id ? $request->user()->guest_session_id : null,
             'flash' => [
