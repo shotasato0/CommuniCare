@@ -25,9 +25,12 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $units = Unit::select('id', 'name')->get();
-        $forums = Forum::all();
-        return inertia("Unit/Register", [
+        $units = Unit::select('id', 'name')
+            ->where('tenant_id', auth()->user()->tenant_id)
+            ->get();
+        $forums = Forum::where('tenant_id', auth()->user()->tenant_id)->get();
+        
+        return Inertia::render("Unit/Register", [
             'units' => $units,
             'forums' => $forums,
         ]);
