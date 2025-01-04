@@ -13,6 +13,7 @@ use Inertia\Inertia;
 use Stancl\Tenancy\Facades\Tenancy;
 use Illuminate\Support\Facades\Log;
 use App\Models\Unit;
+use Illuminate\Validation\Rule;
 
 class RegisteredUserController extends Controller
 {
@@ -27,10 +28,16 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
-            'name' => 'required|string|max:255',
-            'username_id' => 'required|string|max:255|unique:users,username_id',
+            'name' => ['required', 'string', 'max:255'],
+            'username_id' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users')->where(function ($query) {
+                    return $query->where('tenant_id', session('tenant_id'));
+                })
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'unit_id' => 'required|exists:units,id',
         ]);
@@ -49,7 +56,6 @@ class RegisteredUserController extends Controller
             'tenant_id' => $currentTenantId,
             'unit_id' => $request->unit_id,
         ]);
-
 
         event(new Registered($user));
 
