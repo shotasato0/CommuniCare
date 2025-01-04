@@ -12,12 +12,17 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Stancl\Tenancy\Facades\Tenancy;
 use Illuminate\Support\Facades\Log;
+use App\Models\Unit;
 
 class RegisteredUserController extends Controller
 {
     public function create()
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'units' => Unit::where('tenant_id', tenant('id'))
+                        ->orderBy('name')
+                        ->get()
+        ]);
     }
 
     public function store(Request $request)
