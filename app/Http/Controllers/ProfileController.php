@@ -20,9 +20,16 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        // 現在のテナントに属する部署のみを取得
+        $units = Unit::where('tenant_id', auth()->user()->tenant_id)
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'units' => Unit::all(),
+            'units' => $units,  // フィルタリングされた部署データ
+            'user' => $request->user(),
         ]);
     }
 
