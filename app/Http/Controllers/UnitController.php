@@ -42,7 +42,7 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "name" => "required|string|max:255|unique:units,name",
+            "name" => "required|string|max:255|unique:units,name,NULL,id,tenant_id," . auth()->user()->tenant_id,
         ], [
             "name.required" => "部署名は必須です。",
             "name.string" => "部署名は文字列で入力してください。",
