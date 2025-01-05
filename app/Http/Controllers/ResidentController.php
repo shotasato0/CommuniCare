@@ -49,7 +49,12 @@ class ResidentController extends Controller
             'unit_id' => 'required|exists:units,id',
         ]);
 
-        Resident::create($validated);
+        $data = array_merge($validated, [
+            'tenant_id' => auth()->user()->tenant_id
+        ]);
+
+        Resident::create($data);
+
         return to_route('residents.index')
             ->with('success', '利用者を登録しました。');
     }
