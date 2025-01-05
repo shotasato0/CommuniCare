@@ -26,6 +26,7 @@ class CommentController extends Controller
 
         // コメントの作成
         $comment = new Comment();
+        $comment->tenant_id = auth()->user()->tenant_id;
         $comment->post_id = $validated['post_id'];
         $comment->parent_id = $validated['parent_id'] ?? null;
         $comment->message = $validated['message'];
