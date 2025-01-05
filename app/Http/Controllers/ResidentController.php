@@ -21,15 +21,11 @@ class ResidentController extends Controller
             return $query->where('unit_id', $unitId);
         })->with('unit')->get();
 
-        // 管理者ユーザーを取得
-        $currentAdmin = User::role('admin')->first();
-        $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
-
-    return Inertia::render('Residents/Index', [
+        return Inertia::render('Residents/Index', [
             'residents' => $residents,
             'units' => Unit::all(),
             'selectedUnitId' => $unitId,
-            'currentAdminId' => $currentAdminId,
+            'isAdmin' => auth()->user()->hasRole('admin'),
         ]);
     }
 
