@@ -325,53 +325,54 @@ const isAdmin = computed(() => page.props.isAdmin);
                                         <div
                                             v-for="resident in residents"
                                             :key="resident.id"
-                                            :class="[
-                                                'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group',
-                                                showDeleteButtons
-                                                    ? 'hover:bg-red-50 cursor-pointer'
-                                                    : 'hover:bg-gray-50 hover:shadow-md',
-                                            ]"
-                                            @click="
-                                                showDeleteButtons
-                                                    ? deleteResident(
-                                                          resident.id
-                                                      )
-                                                    : null
-                                            "
                                         >
-                                            <!-- リンク要素を絶対配置で全体に広げる -->
+                                            <!-- 削除モード時 -->
+                                            <div
+                                                v-if="showDeleteButtons"
+                                                :class="[
+                                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-red-50 cursor-pointer',
+                                                ]"
+                                                @click="
+                                                    deleteResident(resident.id)
+                                                "
+                                            >
+                                                <div
+                                                    class="flex justify-between items-start"
+                                                >
+                                                    <span
+                                                        class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
+                                                    >
+                                                        {{ resident.name }}
+                                                    </span>
+                                                    <i
+                                                        class="bi bi-trash text-red-500"
+                                                    ></i>
+                                                </div>
+                                            </div>
+
+                                            <!-- 通常モード時 -->
                                             <Link
-                                                v-if="!showDeleteButtons"
+                                                v-else
                                                 :href="
                                                     route(
                                                         'residents.show',
                                                         resident.id
                                                     )
                                                 "
-                                                class="absolute inset-0 w-full h-full"
-                                            />
-                                            <div
-                                                class="flex justify-between items-start relative"
+                                                :class="[
+                                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-gray-50 hover:shadow-md',
+                                                ]"
                                             >
-                                                <span
-                                                    class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                <div
+                                                    class="flex justify-between items-start"
                                                 >
-                                                    {{ resident.name }}
-                                                </span>
-                                            </div>
-                                            <div
-                                                v-if="showDeleteButtons"
-                                                class="flex justify-between items-start"
-                                            >
-                                                <span
-                                                    class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
-                                                >
-                                                    {{ resident.name }}
-                                                </span>
-                                                <i
-                                                    class="bi bi-trash text-red-500"
-                                                ></i>
-                                            </div>
+                                                    <span
+                                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                    >
+                                                        {{ resident.name }}
+                                                    </span>
+                                                </div>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
