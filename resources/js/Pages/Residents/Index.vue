@@ -190,12 +190,7 @@ const updateSelectedUnit = (unit) => {
 
 // propsの二重定義を避けるため、page.propsを直接使用
 const page = usePage();
-const currentAdminId = page.props.currentAdminId;
-
-// 管理者かどうかを判定
-const isAdmin = computed(() => {
-    return currentAdminId === page.props.auth.user.id;
-});
+const isAdmin = computed(() => page.props.isAdmin);
 </script>
 
 <template>
@@ -338,17 +333,26 @@ const isAdmin = computed(() => {
                                             ]"
                                             @click="
                                                 showDeleteButtons
-                                                    ? deleteResident(resident.id)
+                                                    ? deleteResident(
+                                                          resident.id
+                                                      )
                                                     : null
                                             "
                                         >
                                             <!-- リンク要素を絶対配置で全体に広げる -->
                                             <Link
                                                 v-if="!showDeleteButtons"
-                                                :href="route('residents.show', resident.id)"
+                                                :href="
+                                                    route(
+                                                        'residents.show',
+                                                        resident.id
+                                                    )
+                                                "
                                                 class="absolute inset-0 w-full h-full"
                                             />
-                                            <div class="flex justify-between items-start relative">
+                                            <div
+                                                class="flex justify-between items-start relative"
+                                            >
                                                 <span
                                                     class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
                                                 >
@@ -364,7 +368,9 @@ const isAdmin = computed(() => {
                                                 >
                                                     {{ resident.name }}
                                                 </span>
-                                                <i class="bi bi-trash text-red-500"></i>
+                                                <i
+                                                    class="bi bi-trash text-red-500"
+                                                ></i>
                                             </div>
                                         </div>
                                     </div>
