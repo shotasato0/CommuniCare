@@ -4,12 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Unit extends Model
 {
     use HasFactory;
 
     protected $fillable = ['name', 'tenant_id'];
+
+    protected static function booted()
+    {
+        static::addGlobalScope('tenant', function (Builder $builder) {
+            $builder->where('tenant_id', auth()->user()->tenant_id);
+        });
+    }
 
     public function users()
     {
