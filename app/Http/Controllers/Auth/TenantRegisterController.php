@@ -60,16 +60,6 @@ class TenantRegisterController extends Controller
                 'domain' => $domain,
             ]);
 
-            // tenant_infoテーブルへの登録（主にビュー表示用）
-            DB::table('tenant_info')->insert([
-                'id' => $tenant->id,
-                'business_name' => $tenant->business_name,
-                'tenant_domain_id' => $tenant->tenant_domain_id,
-                'data' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
