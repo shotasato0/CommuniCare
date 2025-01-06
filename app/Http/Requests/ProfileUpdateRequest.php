@@ -17,7 +17,17 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'username_id' => ['required', 'string', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
+            'username_id' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users')->where(function ($query) {
+                    return $query->where('tenant_id', auth()->user()->tenant_id);
+                })->ignore($this->user()->id)
+            ],
+            'tel' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
+            'unit_id' => ['nullable', 'exists:units,id'],
         ];
     }
 }

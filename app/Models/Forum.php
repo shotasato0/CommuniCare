@@ -20,6 +20,7 @@ class Forum extends Model
         'description',
         'visibility',
         'status',
+        'tenant_id',
     ];
 
     /**

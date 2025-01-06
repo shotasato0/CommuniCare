@@ -20,9 +20,16 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        // 現在のテナントに属する部署のみを取得
+        $units = Unit::where('tenant_id', auth()->user()->tenant_id)
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'units' => Unit::all(),
+            'units' => $units,  // フィルタリングされた部署データ
+            'user' => $request->user(),
         ]);
     }
 
@@ -69,17 +76,15 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username_id' => 'required|string|max:255',
-            'tel' => 'nullable|string|max:255',
-            'email' => 'nullable|string|email|max:255',
-            'unit_id' => 'nullable|exists:units,id',
-        ]);
-        // リクエストから 'name' と 'username_id' のデータを抽出。only メソッドは、指定されたキーに対応するデータを配列で返す。
-        $request->user()->fill($request->only('name', 'username_id', 'tel', 'email', 'unit_id'));
+        // ProfileUpdateRequestのバリデーションは自動的に実行されます
+        // 追加のバリデーションは不要です
 
-        // モデルの変更をデータベースに保存
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
         $request->user()->save();
 
         return Redirect::route('profile.edit');

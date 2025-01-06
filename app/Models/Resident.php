@@ -12,6 +12,7 @@ class Resident extends Model
     protected $fillable = [
         "name",
         "unit_id",
+        "tenant_id",
         "meal_support",
         "toilet_support",
         "bathing_support",

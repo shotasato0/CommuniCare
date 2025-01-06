@@ -14,76 +14,66 @@ use Illuminate\Support\Facades\DB;
 
 class TenantRegisterController extends Controller
 {
+    /**
+     * テナント登録フォームの表示
+     */
     public function showRegistrationForm()
     {
         return Inertia::render('Auth/TenantRegister');
     }
 
+    /**
+     * テナントの登録
+     */
     public function register(Request $request)
     {
+        // バリデーション
         $validatedData = $request->validate([
             'business_name' => 'required|string|max:255',
             'tenant_domain_id' => [
                 'required',
                 'string',
                 'max:255',
-                'regex:/^[a-zA-Z0-9]+$/',
-                'unique:tenants,tenant_domain_id',
+                'regex:/^[a-zA-Z0-9]+$/',  // 英数字のみ許可
+                'unique:tenants,tenant_domain_id',  // 重複チェック
             ],
         ]);
 
-        // 環境に応じてベースドメインを設定
+        // ドメイン名の生成
         $baseDomain = app()->environment('production') ? 'communi-care.jp' : 'localhost';
+        $domain = strtolower($validatedData['tenant_domain_id']) . '.' . $baseDomain;
 
-        // ドメイン名を生成
-        $domain = strtolower(preg_replace('/[^\x20-\x7E]/', '', str_replace(' ', '-', $validatedData['tenant_domain_id']))) . '.' . $baseDomain;
+        try {
+            DB::beginTransaction();
 
-        // ドメインの重複チェック
-        if (Domain::where('domain', $domain)->exists()) {
-            throw ValidationException::withMessages([
-                'tenant_domain_id' => 'このドメインは既に使用されています。',
+            // テナントの作成
+            $tenant = new Tenant();
+            $tenant->forceFill([
+                'business_name' => $validatedData['business_name'],
+                'tenant_domain_id' => $validatedData['tenant_domain_id'],
             ]);
+            $tenant->save();
+
+            // テナントドメインの作成
+            Domain::create([
+                'tenant_id' => $tenant->id,
+                'domain' => $domain,
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
 
-        // テナントの作成
-        $tenant = Tenant::create([
-            'business_name' => $validatedData['business_name'],
-            'tenant_domain_id' => $validatedData['tenant_domain_id'],
-        ]);
-
-        // ドメインの登録
-        Domain::create([
-            'tenant_id' => $tenant->id,
-            'domain' => $domain,
-        ]);
-
-        // テナント登録後にそのテナントのデータベースに切り替える
-        tenancy()->initialize($tenant);
-
-        // テナントDBにテナント情報を複製
-        $tenant->run(function () use ($tenant) {
-            DB::table('tenant_info')->insert([
-                'id' => $tenant->id,
-                'business_name' => $tenant->business_name,
-                'tenant_domain_id' => $tenant->tenant_domain_id,
-                'data' => null,  // 必要に応じてデータを追加
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        });
-
-        // セッションのドメインを動的に設定
+        // セッションとクッキーの設定
+        session(['tenant_id' => $tenant->id]);
         $sessionDomain = app()->environment('production') ? '.communi-care.jp' : '.localhost';
         Config::set('session.domain', $sessionDomain);
+        Cookie::queue(Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $sessionDomain, false, true, false, 'Lax'));
 
-        // クッキーの設定
-        $cookie = Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $sessionDomain, false, true, false, 'Lax');
-        Cookie::queue($cookie);
-
-        // テナントIDをセッションに保存
-        session(['tenant_id' => $tenant->id]);
-
-        // テナント初期化後にリダイレクト
+        // テナントのホームページにリダイレクト
         return Inertia::location('http://' . $domain . '/home');
     }
+
 }

@@ -30,7 +30,7 @@ class LikeController extends Controller
             $isLiked = false;
         } else {
             // 新しいいいねを作成
-            $likeable->likes()->create(['user_id' => $user->id]);
+            $likeable->likes()->create(['tenant_id' => $user->tenant_id, 'user_id' => $user->id]);
             $isLiked = true;
         }
 

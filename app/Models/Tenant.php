@@ -2,64 +2,61 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
-use Stancl\Tenancy\Contracts\TenantWithDatabase as TenantWithDatabaseContract;
-use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 
-class Tenant extends BaseTenant implements TenantWithDatabaseContract
+/**
+ * テナントモデル
+ *
+ * マルチテナンシーの基本となるモデルクラス
+ */
+class Tenant extends BaseTenant
 {
-    use HasDatabase, HasDomains;
+    use HasDomains;
 
-    protected $fillable = ['business_name', 'tenant_domain_id'];
-
-    // 'data' カラムを JSON としてキャスト
-    protected $casts = [
-        'data' => 'json',
+    /**
+     * マスアサインメントを許可する属性
+     */
+    protected $fillable = [
+        'business_name',
+        'tenant_domain_id',
+        'data'
     ];
 
     /**
-     * Get the database name for this tenant.
-     *
-     * @return string
+     * 属性のキャスト設定
      */
-    public function getDatabaseName()
+    protected $casts = [
+        'data' => 'array'
+    ];
+
+    /**
+     * テナントのカスタムカラムを定義
+     *
+     * @return array
+     */
+    public static function getCustomColumns(): array
     {
-        return 'tenant_' . $this->id;
+        return [
+            'id',
+            'business_name',
+            'tenant_domain_id',
+        ];
     }
 
     /**
-     * Get the database user for this tenant.
-     *
-     * @return string
+     * モデルの初期起動時の処理
      */
-    public function getDatabaseUser()
+    protected static function boot()
     {
-        return 'tenant_user_' . $this->id;
-    }
+        parent::boot();
 
-    /**
-     * Get the database password for this tenant.
-     *
-     * @return string
-     */
-    public function getDatabasePassword()
-    {
-        return 'tenant_password_' . $this->id;
+        // 新規作成時にUUIDを自動生成
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid()->toString();
+            }
+        });
     }
-
-    /**
-     * Get the domain associated with the tenant.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function domain()
-    {
-        return $this->hasOne(Domain::class);
-    }
-
-    public function users()
-{
-    return $this->hasMany(User::class);
-}
 }

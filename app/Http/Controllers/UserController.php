@@ -14,20 +14,24 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $users = User::all();
-        $units = Unit::all();
-        
-        // 管理者ユーザーを取得
-        $currentAdmin = User::role('admin')->first();
-        $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
-        
-        return Inertia::render('Users/Index', [
-            'users' => $users,
-            'units' => $units,
-            'currentAdminId' => $currentAdminId,
-        ]);
-    }
+{
+    $tenantId = auth()->user()->tenant_id;  // 現在のユーザーのテナントIDを取得
+
+    $users = User::where('tenant_id', $tenantId)->get();  // テナントIDでユーザーを絞り込み
+    $units = Unit::where('tenant_id', $tenantId)->get();  // ユニットも同様にフィルタリング
+    
+    // 管理者ユーザーを取得
+    $currentAdmin = User::role('admin')
+        ->where('tenant_id', $tenantId)  // 管理者も同じテナント内のユーザーに限定
+        ->first();
+    $currentAdminId = $currentAdmin ? $currentAdmin->id : null;
+    
+    return Inertia::render('Users/Index', [
+        'users' => $users,
+        'units' => $units,
+        'currentAdminId' => $currentAdminId,
+    ]);
+}
 
     /**
      * Show the form for creating a new resource.

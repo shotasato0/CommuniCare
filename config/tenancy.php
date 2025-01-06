@@ -29,7 +29,7 @@ return [
      * To configure their behavior, see the config keys below.
      */
     'bootstrappers' => [
-        Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
+        // Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class,
@@ -196,4 +196,10 @@ return [
         '--class' => 'DatabaseSeeder', // root seeder class
         // '--force' => true,
     ],
+
+    'domain_suffix' => [
+        'local' => '.localhost',
+        'production' => '.communicare-app.jp',
+        'staging' => '.staging.communicare-app.jp',
+    ]
 ];
