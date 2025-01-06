@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Tenant;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -32,18 +33,32 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
+        // ドメインからテナントを特定
+        $domain = $request->getHost();
+
+        // 環境に応じてドメインからテナントIDを抽出
+        $tenantDomainId = match(config('app.env')) {
+            'local' => str_replace('.localhost', '', $domain),
+            'production' => str_replace('.communicare-app.jp', '', $domain),
+            default => $domain
+        };
+
+        $tenant = Tenant::where('tenant_domain_id', $tenantDomainId)->first();
+
+        if (!$tenant) {
+            return back()->withErrors([
+                'username_id' => '無効なドメインです。',
+            ]);
+        }
+
+        // ベース認証情報
         $credentials = $request->only('username_id', 'password');
+        // tenant_idを自動的に追加
+        $credentials['tenant_id'] = $tenant->id;
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // 現在のリクエストからホスト名を取得し、セッションに保存
-            $domain = $request->getHost();
-            session(['tenant_domain' => $domain]);
-
-            // セッションにリロードフラグを設定
             session()->flash('reload_page', true);
-
             return inertia::location('dashboard');
         }
 

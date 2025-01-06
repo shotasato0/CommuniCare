@@ -25,9 +25,12 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $units = Unit::select('id', 'name')->get();
-        $forums = Forum::all();
-        return inertia("Unit/Register", [
+        $units = Unit::select('id', 'name')
+            ->where('tenant_id', auth()->user()->tenant_id)
+            ->get();
+        $forums = Forum::where('tenant_id', auth()->user()->tenant_id)->get();
+        
+        return Inertia::render("Unit/Register", [
             'units' => $units,
             'forums' => $forums,
         ]);
@@ -39,7 +42,7 @@ class UnitController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            "name" => "required|string|max:255|unique:units,name",
+            "name" => "required|string|max:255|unique:units,name,NULL,id,tenant_id," . auth()->user()->tenant_id,
         ], [
             "name.required" => "部署名は必須です。",
             "name.string" => "部署名は文字列で入力してください。",
@@ -47,14 +50,18 @@ class UnitController extends Controller
             "name.unique" => "この部署名は既に登録されています。",
         ]);
 
-        $unit = Unit::create($request->all());
+        $unit = Unit::create([
+            'name' => $request->name,
+            'tenant_id' => auth()->user()->tenant_id,
+        ]);
 
         $forum = Forum::create([
             'name' => $request->name,
             'unit_id' => $unit->id,
-            'description' => 'この掲示板は' . $request->name . 'の掲示板です。',
-            'visibility' => 'public',
+            'description' => $request->description ?? '',
+            'visibility' => $request->visibility ?? 'public',
             'status' => 'active',
+            'tenant_id' => auth()->user()->tenant_id,
         ]);
         return redirect()->route("dashboard")->with(["success" => "部署登録が完了しました。"]);
     }

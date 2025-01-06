@@ -14,48 +14,59 @@ class UserController extends Controller
 {
     public function showRegisterAdminForm()
     {
-        // 管理者が存在するかを確認
-        $adminExists = User::role('admin')->exists();
+        // テナントIDを取得
+        $tenantId = tenant('id');
+
+        // このテナントに管理者が存在するかを確認
+        $adminExists = User::role('admin')
+            ->where('tenant_id', $tenantId)
+            ->exists();
 
         return inertia('Auth/RegisterAdmin', [
             'adminExists' => $adminExists,
         ]);
     }
 
-public function registerAdmin(Request $request)
+    public function registerAdmin(Request $request)
 {
     Tenancy::initialize(tenant());
 
     // バリデーション
     $validated = $request->validate([
         'name' => 'required|string|max:255',
-        'username_id' => 'required|string|max:255|unique:users',
+        'username_id' => 'required|string|max:255|unique:users,username_id,NULL,id,tenant_id,' . tenant('id'), // tenant_idを考慮
         'password' => 'required|string|min:8|confirmed',
     ]);
 
-    // テナント ID を取得
-    $tenantId = tenant('id'); // 現在のテナント ID を取得
+    $tenantId = tenant('id');
+
+    // このテナントに管理者が存在するかを確認
+    $adminExists = User::role('admin')
+        ->where('tenant_id', $tenantId)
+        ->exists();
 
     // 新しいユーザーを作成
     $user = User::create([
         'name' => $validated['name'],
         'username_id' => $validated['username_id'],
-        'password' => bcrypt($validated['password']), // bcrypt を明示的に適用
-        'tenant_id' => $tenantId, // テナント ID を設定
+        'password' => bcrypt($validated['password']),
+        'tenant_id' => $tenantId,
     ]);
 
     // ロール割り当て
-    if (!User::role('admin')->exists()) {
-        $user->assignRole('admin'); // 管理者ロールを付与
+    $adminRole = Role::findByName('admin');
+    $userRole = Role::findByName('user');
+
+    if (!$adminExists) {
+        $user->assignRole($adminRole); // 管理者ロールを付与
     } else {
-        $user->assignRole('user'); // 一般ユーザーロールを付与
+        $user->assignRole($userRole); // 一般ユーザーロールを付与
     }
 
-    // 登録後にログインセッションを開始
+    // ログイン
     Auth::login($user);
-
-        return redirect()->route('dashboard')->with('success', '管理者の登録が完了しました。');
-    }
+    return redirect()->route('dashboard')->with('success', '管理者の登録が完了しました。');
+}
 
     // テナントの管理者を移動するためのフォームを表示
     public function showTransferAdminForm()

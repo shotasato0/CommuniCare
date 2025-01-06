@@ -12,8 +12,14 @@ class TenantHomeController extends Controller
     {
         // セッションからドメイン名を取得
         $domain = Session::get('tenant_domain', '不明なドメイン');
+        
+        // テナントIDを取得
+        $tenantId = tenant('id');
 
-        $adminExists = User::role('admin')->exists();
+        // このテナントに管理者が存在するかを確認
+        $adminExists = User::role('admin')
+            ->where('tenant_id', $tenantId)
+            ->exists();
 
         return Inertia::render('TenantHome', [
             'canLogin' => \Route::has('login'),
