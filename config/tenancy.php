@@ -196,4 +196,10 @@ return [
         '--class' => 'DatabaseSeeder', // root seeder class
         // '--force' => true,
     ],
+
+    'domain_suffix' => [
+        'local' => '.localhost',
+        'production' => '.communicare-app.jp',
+        'staging' => '.staging.communicare-app.jp',
+    ]
 ];

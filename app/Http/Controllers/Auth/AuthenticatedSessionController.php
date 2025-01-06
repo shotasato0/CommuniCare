@@ -35,8 +35,13 @@ class AuthenticatedSessionController extends Controller
     {
         // ドメインからテナントを特定
         $domain = $request->getHost();
-        // .localhost を除去してテナントIDを取得
-        $tenantDomainId = str_replace('.localhost', '', $domain);
+
+        // 環境に応じてドメインからテナントIDを抽出
+        $tenantDomainId = match(config('app.env')) {
+            'local' => str_replace('.localhost', '', $domain),
+            'production' => str_replace('.communicare-app.jp', '', $domain),
+            default => $domain
+        };
 
         $tenant = Tenant::where('tenant_domain_id', $tenantDomainId)->first();
 
