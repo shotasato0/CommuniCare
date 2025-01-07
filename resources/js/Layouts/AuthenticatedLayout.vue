@@ -79,7 +79,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     href="#"
                                     @click.prevent="navigateToForum"
                                     :active="isForumPage"
-                                    class="cursor-pointer"
+                                    class="cursor-pointer whitespace-nowrap"
                                 >
                                     {{ $t("Forum") }}
                                 </NavLink>
@@ -87,6 +87,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('users.index')"
                                     :active="route().current('users.index')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Staff") }}
                                 </NavLink>
@@ -94,6 +95,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('residents.index')"
                                     :active="route().current('residents.index')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Residents") }}
                                 </NavLink>
@@ -101,6 +103,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Dashboard") }}
                                 </NavLink>
