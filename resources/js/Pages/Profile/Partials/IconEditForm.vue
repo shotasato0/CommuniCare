@@ -153,14 +153,14 @@ const submit = () => {
                 <div class="flex justify-between">
                     <button
                         type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                     >
                         更新
                     </button>
                     <button
                         type="button"
                         @click="$emit('close')"
-                        class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                        class="w-32 px-4 py-2 bg-gray-300 text-gray-700 rounded-md transition hover:bg-gray-500 hover:text-white text-center"
                     >
                         キャンセル
                     </button>
