@@ -127,7 +127,7 @@ watchEffect(() => {
                         <span class="text-gray-800">{{ unit.name }}</span>
                         <button
                             @click="deleteUnit(unit.id)"
-                            class="w-full sm:w-auto px-4 py-2 bg-red-100 text-red-700 rounded-md transition hover:bg-red-300 hover:text-white text-center"
+                            class="px-4 py-2 bg-red-100 text-red-700 rounded-md transition hover:bg-red-300 hover:text-white text-center"
                         >
                             <i class="bi bi-trash"></i>
                         </button>
