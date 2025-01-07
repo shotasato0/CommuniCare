@@ -54,12 +54,13 @@ console.log("User data:", props.auth.user);
                             {{ $t("Logged in as guest user") }}
                         </div>
                         <!-- 掲示板へのリンクボタン -->
-                        <button
-                            @click="navigateToForum"
-                            class="text-blue-500 link-hover"
+                        <ResponsiveNavLink
+                            href="#"
+                            @click.prevent="navigateToForum"
+                            class="cursor-pointer text-blue-500"
                         >
                             {{ $t("Go to Forum") }}
-                        </button>
+                        </ResponsiveNavLink>
                     </div>
                 </div>
             </div>
