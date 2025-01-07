@@ -17,7 +17,7 @@ import { Link, Head } from "@inertiajs/vue3";
                         {{ $t("Unit Management") }}
                     </h3>
                     <p class="mt-2 max-w-4xl text-sm text-gray-500">
-                        {{ $t("Manage unit.") }}
+                        {{ $t("Register or delete departments.") }}
                     </p>
                     <div class="mt-4">
                         <Link

@@ -4,6 +4,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
+import Show from "@/Pages/Users/Show.vue";
 
 const { props } = usePage();
 const isAdmin = props.isAdmin;
@@ -30,6 +31,21 @@ const navigateToForum = () => {
 };
 
 console.log("User data:", props.auth.user);
+
+// モーダル制御用の状態
+const isUserProfileVisible = ref(false);
+const selectedUser = ref(null);
+
+// モーダルを開く関数
+const openUserProfile = (user) => {
+    selectedUser.value = user;
+    isUserProfileVisible.value = true;
+};
+
+// モーダルを閉じる関数
+const closeUserProfile = () => {
+    isUserProfileVisible.value = false;
+};
 </script>
 
 <template>
@@ -46,20 +62,50 @@ console.log("User data:", props.auth.user);
         <div class="pb-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 flex items-center space-x-4">
-                        <div v-if="!isGuest">
-                            {{ $t("You're logged in") }}
-                        </div>
-                        <div v-else>
-                            {{ $t("Logged in as guest user") }}
-                        </div>
-                        <!-- 掲示板へのリンクボタン -->
-                        <button
-                            @click="navigateToForum"
-                            class="text-blue-500 link-hover"
+                    <div class="p-6 text-gray-900">
+                        <div
+                            class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
                         >
-                            {{ $t("Go to Forum") }}
-                        </button>
+                            <!-- 左側：ログインメッセージと掲示板リンク -->
+                            <div class="flex items-center space-x-4">
+                                <div v-if="!isGuest">
+                                    {{ $t("You're logged in") }}
+                                </div>
+                                <div v-else>
+                                    {{ $t("Logged in as guest user") }}
+                                </div>
+                                <button
+                                    href="#"
+                                    @click.prevent="navigateToForum"
+                                    class="text-blue-500 link-hover whitespace-nowrap"
+                                >
+                                    {{ $t("Go to Forum") }}
+                                </button>
+                            </div>
+
+                            <!-- 右側：ユーザーアイコンと名前 -->
+                            <div
+                                @click="openUserProfile(props.auth.user)"
+                                class="flex items-center space-x-4 group hover:bg-gray-50 rounded-lg p-2 cursor-pointer"
+                            >
+                                <img
+                                    :src="
+                                        props.auth.user.icon
+                                            ? `/storage/${props.auth.user.icon}`
+                                            : '/images/default_user_icon.png'
+                                    "
+                                    alt="Profile Icon"
+                                    class="w-12 h-12 rounded-full"
+                                />
+                                <div class="flex items-center">
+                                    <span
+                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                    >
+                                        {{ props.auth.user.name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -86,6 +132,17 @@ console.log("User data:", props.auth.user);
         <!-- 管理者ページ -->
         <div v-if="isAdmin">
             <AdminDashboard />
+        </div>
+
+        <!-- モーダルコンポーネント -->
+        <div
+            v-if="isUserProfileVisible"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            @click="closeUserProfile"
+        >
+            <div @click.stop>
+                <Show v-if="selectedUser" :user="selectedUser" :units="units" />
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>

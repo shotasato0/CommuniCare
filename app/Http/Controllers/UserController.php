@@ -58,6 +58,7 @@ class UserController extends Controller
          $user->load('unit'); // ユニット情報をロードする
          return Inertia::render('Users/Show', [
              'user' => $user,
+             'units' => Unit::all(),
          ]);
      }
 
