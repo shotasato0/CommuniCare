@@ -46,7 +46,9 @@ console.log("User data:", props.auth.user);
         <div class="pb-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 flex items-center space-x-4">
+                    <div
+                        class="p-6 text-gray-900 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
+                    >
                         <div v-if="!isGuest">
                             {{ $t("You're logged in") }}
                         </div>
@@ -57,7 +59,7 @@ console.log("User data:", props.auth.user);
                         <button
                             href="#"
                             @click.prevent="navigateToForum"
-                            class="text-blue-500 link-hover"
+                            class="text-blue-500 link-hover whitespace-nowrap"
                         >
                             {{ $t("Go to Forum") }}
                         </button>
