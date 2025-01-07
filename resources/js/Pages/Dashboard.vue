@@ -4,7 +4,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
-import { Link } from "@inertiajs/vue3";
+import Show from "@/Pages/Users/Show.vue";
 
 const { props } = usePage();
 const isAdmin = props.isAdmin;
@@ -31,6 +31,21 @@ const navigateToForum = () => {
 };
 
 console.log("User data:", props.auth.user);
+
+// モーダル制御用の状態
+const isUserProfileVisible = ref(false);
+const selectedUser = ref(null);
+
+// モーダルを開く関数
+const openUserProfile = (user) => {
+    selectedUser.value = user;
+    isUserProfileVisible.value = true;
+};
+
+// モーダルを閉じる関数
+const closeUserProfile = () => {
+    isUserProfileVisible.value = false;
+};
 </script>
 
 <template>
@@ -69,9 +84,9 @@ console.log("User data:", props.auth.user);
                             </div>
 
                             <!-- 右側：ユーザーアイコンと名前 -->
-                            <Link
-                                :href="`/users/${props.auth.user.id}`"
-                                class="flex items-center space-x-4 group hover:bg-gray-50 rounded-lg p-2"
+                            <div
+                                @click="openUserProfile(props.auth.user)"
+                                class="flex items-center space-x-4 group hover:bg-gray-50 rounded-lg p-2 cursor-pointer"
                             >
                                 <img
                                     :src="
@@ -89,7 +104,7 @@ console.log("User data:", props.auth.user);
                                         {{ props.auth.user.name }}
                                     </span>
                                 </div>
-                            </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,6 +132,17 @@ console.log("User data:", props.auth.user);
         <!-- 管理者ページ -->
         <div v-if="isAdmin">
             <AdminDashboard />
+        </div>
+
+        <!-- モーダルコンポーネント -->
+        <div
+            v-if="isUserProfileVisible"
+            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            @click="closeUserProfile"
+        >
+            <div @click.stop>
+                <Show v-if="selectedUser" :user="selectedUser" :units="units" />
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>
