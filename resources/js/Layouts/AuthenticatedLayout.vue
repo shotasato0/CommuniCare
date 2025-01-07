@@ -111,7 +111,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             <!-- テナント名を表示 -->
                             <div
                                 v-if="page.props.tenant?.business_name"
-                                class="text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
+                                class="hidden xl:block text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
                             >
                                 {{ page.props.tenant.business_name }}
                             </div>
@@ -344,5 +344,11 @@ const isForumPage = ref(window.location.pathname === "/forum");
     align-items: center;
     height: 100%;
     padding: 0 0.75rem;
+}
+
+@media (min-width: 1120px) {
+    .xl\:block {
+        display: block;
+    }
 }
 </style>
