@@ -274,23 +274,14 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         >
                             {{ $t("Profile") }}
                         </ResponsiveNavLink>
-                        <form
-                            :action="route('logout')"
-                            method="post"
-                            class="inline"
-                        >
-                            <input
-                                type="hidden"
-                                name="_token"
-                                :value="csrfToken"
-                            />
-                            <button
-                                type="submit"
-                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                        <form method="POST" @submit.prevent="logout">
+                            <ResponsiveNavLink
+                                as="button"
+                                href="#"
                                 @click="confirmGuestLogout"
                             >
                                 {{ $t("Log Out") }}
-                            </button>
+                            </ResponsiveNavLink>
                         </form>
                     </div>
                 </div>
