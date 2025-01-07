@@ -79,7 +79,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     href="#"
                                     @click.prevent="navigateToForum"
                                     :active="isForumPage"
-                                    class="cursor-pointer"
+                                    class="cursor-pointer whitespace-nowrap"
                                 >
                                     {{ $t("Forum") }}
                                 </NavLink>
@@ -87,6 +87,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('users.index')"
                                     :active="route().current('users.index')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Staff") }}
                                 </NavLink>
@@ -94,6 +95,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('residents.index')"
                                     :active="route().current('residents.index')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Residents") }}
                                 </NavLink>
@@ -101,6 +103,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
+                                    class="whitespace-nowrap"
                                 >
                                     {{ $t("Dashboard") }}
                                 </NavLink>
@@ -111,7 +114,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             <!-- テナント名を表示 -->
                             <div
                                 v-if="page.props.tenant?.business_name"
-                                class="text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
+                                class="hidden xl:block text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
                             >
                                 {{ page.props.tenant.business_name }}
                             </div>
@@ -271,23 +274,14 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         >
                             {{ $t("Profile") }}
                         </ResponsiveNavLink>
-                        <form
-                            :action="route('logout')"
-                            method="post"
-                            class="inline"
-                        >
-                            <input
-                                type="hidden"
-                                name="_token"
-                                :value="csrfToken"
-                            />
-                            <button
-                                type="submit"
-                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                        <form method="POST" @submit.prevent="logout">
+                            <ResponsiveNavLink
+                                as="button"
+                                href="#"
                                 @click="confirmGuestLogout"
                             >
                                 {{ $t("Log Out") }}
-                            </button>
+                            </ResponsiveNavLink>
                         </form>
                     </div>
                 </div>
@@ -344,5 +338,11 @@ const isForumPage = ref(window.location.pathname === "/forum");
     align-items: center;
     height: 100%;
     padding: 0 0.75rem;
+}
+
+@media (min-width: 1120px) {
+    .xl\:block {
+        display: block;
+    }
 }
 </style>
