@@ -123,5 +123,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    'tenant_base_domain' => env('TENANT_BASE_DOMAIN', 'communi-care.jp'),
+    'tenant_base_domain' => env('TENANT_BASE_DOMAIN', 'communicare-app.jp'),
 ];
