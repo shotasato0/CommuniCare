@@ -19,7 +19,7 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        'communi-care.jp',//本番のセントラルドメイン
+        'communicare-app.jp',//本番のセントラルドメイン
     ],
 
     /**
@@ -199,7 +199,7 @@ return [
 
     'domain_suffix' => [
         'local' => '.localhost',
-        'production' => '.communi-care.jp',
-        'staging' => '.staging.communi-care.jp',
+        'production' => '.communicare-app.jp',
+        'staging' => '.staging.communicare-app.jp',
     ]
 ];
