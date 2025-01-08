@@ -199,7 +199,7 @@ return [
 
     'domain_suffix' => [
         'local' => '.localhost',
-        'production' => '.communicare-app.jp',
-        'staging' => '.staging.communicare-app.jp',
+        'production' => '.communi-care.jp',
+        'staging' => '.staging.communi-care.jp',
     ]
 ];
