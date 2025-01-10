@@ -40,7 +40,7 @@ class TenantRegisterController extends Controller
         ]);
 
         // ドメイン名の生成
-        $baseDomain = app()->environment('production') ? 'communicare-app.jp' : 'localhost';
+        $baseDomain = app()->environment('production') ? 'communi-care.jp' : 'localhost';
         $domain = strtolower($validatedData['tenant_domain_id']) . '.' . $baseDomain;
 
         try {
@@ -68,7 +68,7 @@ class TenantRegisterController extends Controller
 
         // セッションとクッキーの設定
         session(['tenant_id' => $tenant->id]);
-        $sessionDomain = app()->environment('production') ? '.communicare-app.jp' : '.localhost';
+        $sessionDomain = app()->environment('production') ? '.communi-care.jp' : '.localhost';
         Config::set('session.domain', $sessionDomain);
         Cookie::queue(Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $sessionDomain, false, true, false, 'Lax'));
 
