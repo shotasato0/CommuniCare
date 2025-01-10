@@ -151,6 +151,20 @@ const guestLogin = () => {
                             <p class="mt-2 text-gray-600">
                                 専用の管理環境を数秒で作成できます
                             </p>
+
+                            <!-- 注意書きを追加 -->
+                            <div
+                                class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
+                            >
+                                <p class="text-yellow-800 text-sm">
+                                    現在、サブドメイン登録機能は提供を一時停止しております。<br />
+                                    ゲストアカウントで試用版のサービスをご利用いただけます。
+                                </p>
+                                <p class="text-yellow-800 text-sm mt-2">
+                                    専用のテナントやサブドメインをご希望の方は、<br />
+                                    X（旧Twitter）のDMにてお問い合わせください。
+                                </p>
+                            </div>
                         </div>
 
                         <!-- フォームとドメインID説明を並べて配置 -->
@@ -175,6 +189,7 @@ const guestLogin = () => {
                                             required
                                             autofocus
                                             placeholder="例：社会福祉法人コミュニケア"
+                                            disabled
                                         />
                                         <InputError
                                             class="mt-2"
@@ -194,6 +209,7 @@ const guestLogin = () => {
                                             v-model="form.tenant_domain_id"
                                             required
                                             placeholder="例：example"
+                                            disabled
                                         />
                                         <InputError
                                             class="mt-2"
@@ -209,7 +225,7 @@ const guestLogin = () => {
                                             :class="{
                                                 'opacity-25': form.processing,
                                             }"
-                                            :disabled="form.processing"
+                                            :disabled="true"
                                         >
                                             登録する
                                         </PrimaryButton>
