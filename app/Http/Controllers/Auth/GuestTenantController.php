@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
 
@@ -13,8 +12,12 @@ class GuestTenantController extends Controller
 {
     public function redirectToGuestTenant()
     {
-        // ゲスト用テナントのドメインを指定
-        $guestDomain = 'guestdemo.localhost';
+        // 環境に基づいてゲストドメインを切り替える
+        $guestDomain = match (config('app.env')) {
+            'local' => env('GUEST_DOMAIN_LOCAL', 'guestdemo.localhost'),
+            'staging' => env('GUEST_DOMAIN_STAGING', 'guestdemo.staging.communi-care.jp'),
+            default => env('GUEST_DOMAIN_PRODUCTION', 'guestdemo.communi-care.jp'),
+        };
 
         // ゲスト用ドメインが存在するか確認
         $domain = Domain::where('domain', $guestDomain)->first();
@@ -24,19 +27,18 @@ class GuestTenantController extends Controller
 
         // テナントの初期化
         $tenant = Tenant::find($domain->tenant_id);
+        if (!$tenant) {
+            abort(404, 'テナントが見つかりません。');
+        }
         tenancy()->initialize($tenant);
 
-        // セッションのドメインを動的に設定
-        Config::set('session.domain', $guestDomain);
-
-        // クッキーの設定（必要に応じて）
-        $cookie = Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $guestDomain, false, true, false, 'Lax');
-        Cookie::queue($cookie);
-
-        // テナントIDをセッションに保存（任意）
+        // セッションのドメインを設定
+        Cookie::queue(Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $guestDomain, false, true, false, 'Lax'));
         session(['tenant_id' => $tenant->id]);
 
-        // ゲスト用テナントにリダイレクト
-        return Inertia::location('http://' . $guestDomain . '/home');
+        // 環境に応じてHTTP/HTTPSを切り替えてリダイレクト
+        $protocol = config('app.env') === 'local' ? 'http' : 'https';
+        return Inertia::location($protocol . '://' . $guestDomain . '/home');
     }
 }
+
