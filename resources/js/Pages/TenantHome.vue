@@ -13,7 +13,9 @@ const tenant = page.props.tenant || {};
 
 // 現在のURLが特定のパスかをチェック
 const guestTenantUrl =
-    import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost";
+    import.meta.env.VITE_GUEST_TENANT_URL ||
+    "http://guestdemo.localhost" ||
+    "https://guestdemo.communi-care.jp";
 const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
 </script>
 
