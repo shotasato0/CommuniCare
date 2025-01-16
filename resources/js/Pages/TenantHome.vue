@@ -16,9 +16,13 @@ const currentUrl = new URL(window.location.href);
 const guestTenantUrl = new URL(
     import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost"
 );
-const isGuestHome = 
-    currentUrl.hostname === guestTenantUrl.hostname && 
+const isGuestHome =
+    currentUrl.hostname === guestTenantUrl.hostname &&
     currentUrl.pathname === "/home";
+
+console.log("Current URL:", currentUrl.href);
+console.log("Guest Tenant URL:", guestTenantUrl.href);
+console.log("Is Guest Home:", isGuestHome);
 </script>
 
 <template>
