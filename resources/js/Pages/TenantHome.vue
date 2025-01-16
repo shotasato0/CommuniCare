@@ -11,12 +11,14 @@ defineProps({
 const page = usePage();
 const tenant = page.props.tenant || {};
 
-// 現在のURLが特定のパスかをチェック
-const guestTenantUrl =
-    import.meta.env.VITE_GUEST_TENANT_URL ||
-    "http://guestdemo.localhost" ||
-    "https://guestdemo.communi-care.jp";
-const isGuestHome = window.location.href === `${guestTenantUrl}/home`;
+// URLの判定ロジックを実装
+const currentUrl = new URL(window.location.href);
+const guestTenantUrl = new URL(
+    import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost"
+);
+const isGuestHome = 
+    currentUrl.hostname === guestTenantUrl.hostname && 
+    currentUrl.pathname === "/home";
 </script>
 
 <template>
