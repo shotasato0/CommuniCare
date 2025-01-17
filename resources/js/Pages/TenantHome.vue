@@ -11,31 +11,23 @@ defineProps({
 const page = usePage();
 const tenant = page.props.tenant || {};
 
-// URLの判定ロジックを実装
-let currentUrl;
-let guestTenantUrl;
-let isGuestHome = false;
+let currentUrl; // 現在のページURLを格納する変数
+let guestTenantUrl; // 環境変数で指定されたゲストテナントのURL
+let isGuestHome = false; // 現在のページがゲストホームかどうかのフラグ
 
+// try-catchでエラーハンドリング
 try {
-    currentUrl = new URL(window.location.href);
+    currentUrl = new URL(window.location.href); // 現在のURLをインスタンス化
     guestTenantUrl = new URL(
-        import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost"
+        import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost" // ゲストテナントのURLをインスタンス化
     );
 
     isGuestHome =
         currentUrl.hostname === guestTenantUrl.hostname &&
-        currentUrl.pathname === "/home";
-
-    console.log("Current URL:", currentUrl.href);
-    console.log("Guest Tenant URL:", guestTenantUrl.href);
-    console.log("Is Guest Home:", isGuestHome);
+        currentUrl.pathname === "/home"; // ゲストホームかどうかを判定
 } catch (error) {
-    console.error("Error in URL processing:", error);
-    console.log(
-        "VITE_GUEST_TENANT_URL:",
-        import.meta.env.VITE_GUEST_TENANT_URL
-    );
-    console.log("Window location:", window.location.href);
+    // エラーが発生した場合の処理を記述
+    console.error("URLの処理中にエラーが発生しました:", error);
 }
 </script>
 
