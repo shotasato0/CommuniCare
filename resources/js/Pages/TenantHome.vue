@@ -12,17 +12,31 @@ const page = usePage();
 const tenant = page.props.tenant || {};
 
 // URLの判定ロジックを実装
-const currentUrl = new URL(window.location.href);
-const guestTenantUrl = new URL(
-    import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost"
-);
-const isGuestHome =
-    currentUrl.hostname === guestTenantUrl.hostname &&
-    currentUrl.pathname === "/home";
+let currentUrl;
+let guestTenantUrl;
+let isGuestHome = false;
 
-console.log("Current URL:", currentUrl.href);
-console.log("Guest Tenant URL:", guestTenantUrl.href);
-console.log("Is Guest Home:", isGuestHome);
+try {
+    currentUrl = new URL(window.location.href);
+    guestTenantUrl = new URL(
+        import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost"
+    );
+
+    isGuestHome =
+        currentUrl.hostname === guestTenantUrl.hostname &&
+        currentUrl.pathname === "/home";
+
+    console.log("Current URL:", currentUrl.href);
+    console.log("Guest Tenant URL:", guestTenantUrl.href);
+    console.log("Is Guest Home:", isGuestHome);
+} catch (error) {
+    console.error("Error in URL processing:", error);
+    console.log(
+        "VITE_GUEST_TENANT_URL:",
+        import.meta.env.VITE_GUEST_TENANT_URL
+    );
+    console.log("Window location:", window.location.href);
+}
 </script>
 
 <template>
