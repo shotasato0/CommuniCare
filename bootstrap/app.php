@@ -3,8 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\Middleware\AuthenticateSession;
+use App\Http\Middleware\HandleInertiaRequests;
+use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use App\Http\Middleware\InitializeTenancyCustom;
 use App\Http\Middleware\SetTenantCookie;
+use App\Http\Middleware\SetSessionDomain;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,11 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(prepend: [
-            \Illuminate\Session\Middleware\AuthenticateSession::class,
-            \App\Http\Middleware\HandleInertiaRequests::class,
-            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            AuthenticateSession::class,
+            HandleInertiaRequests::class,
+            AddLinkHeadersForPreloadedAssets::class,
             InitializeTenancyCustom::class,
             SetTenantCookie::class,
+            SetSessionDomain::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
