@@ -5,12 +5,14 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import { Head, useForm } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 // URLの判定
 const currentUrl = window.location.href;
-const isGuestUrl = ref(currentUrl.includes("guestdemo.localhost/login")); // ゲスト用URLの判定
+const guestDomain =
+    import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost";
+const isGuestUrl = ref(currentUrl.includes(`${guestDomain}/login`));
 
 // フォームデータにusername_idを使用
 const form = useForm({

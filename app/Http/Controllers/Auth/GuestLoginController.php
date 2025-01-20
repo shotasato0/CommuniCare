@@ -48,7 +48,7 @@ class GuestLoginController extends Controller
     // ゲストユーザーのセッションIDを更新
     $guestUser->update(['guest_session_id' => $newSessionId]);
 
-    // ダッシュボードページにリダイレクト
+    // ダッシュボードページに遷移
     return Inertia::render('Dashboard', [
         'auth' => [
             'user' => Auth::user(),
