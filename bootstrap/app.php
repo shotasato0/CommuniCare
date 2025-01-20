@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\InitializeTenancyCustom;
 use App\Http\Middleware\SetTenantCookie;
+use App\Http\Middleware\SetSessionDomain;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             InitializeTenancyCustom::class,
             SetTenantCookie::class,
+            SetSessionDomain::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
