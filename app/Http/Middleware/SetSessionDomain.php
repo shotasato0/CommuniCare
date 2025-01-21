@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class SetSessionDomain
 {
@@ -16,14 +17,17 @@ class SetSessionDomain
      */
     public function handle($request, Closure $next)
     {
-        // 現在のホストを取得
+        // 現在のリクエストのホスト名を取得
         $currentHost = $request->getHost();
 
-        // ドメインを動的に設定（例: サブドメインの設定を抽出）
+        // リクエストホストに基づいて適切なセッションドメインを解決
         $dynamicDomain = $this->resolveDomain($currentHost);
 
-        // セッションドメインを動的に設定
+        // セッションドメインを設定
         Config::set('session.domain', $dynamicDomain);
+
+        // セッションドメインの設定をログ出力
+        Log::info('SetSessionDomain: ' . $dynamicDomain);
 
         return $next($request);
     }
@@ -36,11 +40,12 @@ class SetSessionDomain
      */
     protected function resolveDomain(string $host): ?string
     {
-        if (strpos($host, 'guestdemo.communi-care.jp') !== false) {
-            return 'guestdemo.communi-care.jp';
+        // communi-care.jp ドメインおよびサブドメインを許可
+        if (preg_match('/^.+\.communi-care\.jp$/', $host)) {
+            return $host;
         }
 
-        // デフォルト値を返す
+        // デフォルトのセッションドメインを返す
         return config('session.domain', null);
     }
 }
