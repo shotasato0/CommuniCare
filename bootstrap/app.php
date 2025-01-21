@@ -8,6 +8,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use App\Http\Middleware\InitializeTenancyCustom;
 use App\Http\Middleware\SetTenantCookie;
+use App\Http\Middleware\SetSessionDomain;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(prepend: [
+            SetSessionDomain::class,
             AuthenticateSession::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
