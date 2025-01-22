@@ -1,5 +1,6 @@
 <script setup>
 import { usePage } from "@inertiajs/vue3";
+import { ref } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import { Link } from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
@@ -14,6 +15,19 @@ const tenant = page.props.tenant || {};
 let currentUrl; // 現在のページURLを格納する変数
 let guestTenantUrl; // 環境変数で指定されたゲストテナントのURL
 let isGuestHome = false; // 現在のページがゲストホームかどうかのフラグ
+
+// フラッシュメッセージの処理
+const { props } = usePage();
+const flash = props.flash;
+const flashMessage = ref(flash.message || null);
+const showFlashMessage = ref(!!flashMessage.value);
+
+// フラッシュメッセージを8秒後に非表示にする
+if (showFlashMessage.value) {
+    setTimeout(() => {
+        showFlashMessage.value = false;
+    }, 8000);
+}
 
 // try-catchでエラーハンドリング
 try {
@@ -32,6 +46,16 @@ try {
 </script>
 
 <template>
+    <!-- フラッシュメッセージ -->
+    <transition name="fade">
+        <div
+            v-if="flashMessage && showFlashMessage"
+            class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg text-center bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4"
+        >
+            <p class="font-bold">{{ flashMessage }}</p>
+        </div>
+    </transition>
+
     <div
         class="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col justify-center items-center text-center px-4"
     >
@@ -118,3 +142,15 @@ try {
     </div>
     <Footer />
 </template>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
