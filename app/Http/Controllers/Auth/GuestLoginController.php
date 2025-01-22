@@ -49,7 +49,7 @@ class GuestLoginController extends Controller
     $guestUser->update(['guest_session_id' => $newSessionId]);
 
     // ダッシュボードページに遷移
-    return redirect()->route('dashboard')->with('message', 'ゲストとしてログインしました！');
+    return redirect()->route('dashboard')->with('success', 'ゲストとしてログインしました');
 }
 
 
@@ -78,7 +78,7 @@ class GuestLoginController extends Controller
     session()->regenerateToken();
 
     // ホーム画面にリダイレクト
-    return redirect('/home')->with('message', '操作内容がリセットされました。');
+    return redirect('/home')->with('message', 'ログアウトしました');
 }
 
 }

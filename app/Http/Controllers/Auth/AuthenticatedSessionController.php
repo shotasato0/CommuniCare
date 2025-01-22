@@ -58,8 +58,8 @@ class AuthenticatedSessionController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            session()->flash('reload_page', true);
-            return inertia::location('dashboard');
+            session()->flash('success', 'ログインしました');
+            return Inertia::location(route('dashboard'));
         }
 
         return back()->withErrors([
@@ -81,6 +81,7 @@ class AuthenticatedSessionController extends Controller
         // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
         $domain = session('tenant_domain', $request->getHost());
 
-        return redirect('http://' . $domain . '/home');
+        return redirect('http://' . $domain . '/home')
+            ->with('message', 'ログアウトしました');
     }
 }
