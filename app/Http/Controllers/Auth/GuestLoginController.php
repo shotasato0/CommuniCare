@@ -49,7 +49,7 @@ class GuestLoginController extends Controller
     $guestUser->update(['guest_session_id' => $newSessionId]);
 
     // ダッシュボードページに遷移
-    return redirect()->route('dashboard')->with('message', 'ゲストとしてログインしました！');
+    return redirect()->route('dashboard')->with('message', 'ゲストとしてログインしました');
 }
 
 
