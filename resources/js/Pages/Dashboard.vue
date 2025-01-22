@@ -11,7 +11,8 @@ const isAdmin = props.isAdmin;
 const flash = props.flash;
 const isGuest = props.isGuest;
 
-const flashMessage = ref(flash.success || flash.error || flash.info || null);
+const flashMessage = ref(flash.success || flash.error || null);
+
 const flashType = ref(
     flash.success ? "success" : flash.error ? "error" : "info"
 );
