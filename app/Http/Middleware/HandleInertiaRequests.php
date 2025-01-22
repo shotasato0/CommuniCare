@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             'isGuest' => $request->user() && $request->user()->guest_session_id ? true : false,
             'guestSessionId' => $request->user() && $request->user()->guest_session_id ? $request->user()->guest_session_id : null,
             'flash' => [
+                'message' => $request->session()->get('message'),
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
                 'info' => $request->session()->get('info'),
