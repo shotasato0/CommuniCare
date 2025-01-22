@@ -11,9 +11,11 @@ const isAdmin = props.isAdmin;
 const flash = props.flash;
 const isGuest = props.isGuest;
 
-const flashMessage = ref(flash.success || flash.error || flash.info || null);
+const flashMessage = ref(flash.message || flash.success || flash.error || flash.info || null);
 const flashType = ref(
-    flash.success ? "success" : flash.error ? "error" : "info"
+    flash.success ? "success" :
+    flash.error ? "error" :
+    flash.message ? "info" : "info"
 );
 
 // 8秒後にフラッシュメッセージをフェードアウトさせる
