@@ -36,7 +36,10 @@ const navigateToForum = () => {
     redirectToForum(units, users, userUnitId);
 };
 
-// ログアウト処理を関数として定義
+// フォーム送信用のref
+const logoutForm = ref(null);
+
+// ログアウト処理をより簡潔に
 const handleLogout = async (event) => {
     event.preventDefault();
 
@@ -50,20 +53,8 @@ const handleLogout = async (event) => {
         }
     }
 
-    // フォームを作成して送信
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = isGuest ? route("logout-guest") : route("logout");
-
-    // CSRFトークンを追加
-    const tokenInput = document.createElement("input");
-    tokenInput.type = "hidden";
-    tokenInput.name = "_token";
-    tokenInput.value = csrfToken.value;
-    form.appendChild(tokenInput);
-
-    document.body.appendChild(form);
-    form.submit();
+    // フォームを直接参照して送信
+    logoutForm.value?.submit();
 };
 
 const isForumPage = ref(window.location.pathname === "/forum");
@@ -176,6 +167,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                             {{ $t("Profile") }}
                                         </DropdownLink>
                                         <form
+                                            ref="logoutForm"
                                             :action="
                                                 isGuest
                                                     ? route('logout-guest')
