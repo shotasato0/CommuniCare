@@ -36,16 +36,25 @@ const navigateToForum = () => {
     redirectToForum(units, users, userUnitId);
 };
 
-// ゲストログアウト時の確認アラート
-const confirmGuestLogout = (event) => {
-    if (auth.user.guest_session_id) {
+// フォーム送信用のref
+const logoutForm = ref(null);
+
+// ログアウト処理
+const handleLogout = async (event) => {
+    event.preventDefault();
+
+    // ゲストユーザーの場合の確認
+    if (auth.user?.guest_session_id) {
         const confirmed = window.confirm(
             "ログアウトするとゲストユーザーが削除されます。本当にログアウトしてよろしいですか？"
         );
         if (!confirmed) {
-            event.preventDefault(); // ログアウト処理をキャンセル
+            return;
         }
     }
+
+    // フォームを直接参照して送信
+    logoutForm.value?.submit();
 };
 
 const isForumPage = ref(window.location.pathname === "/forum");
@@ -158,6 +167,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                             {{ $t("Profile") }}
                                         </DropdownLink>
                                         <form
+                                            ref="logoutForm"
                                             :action="
                                                 isGuest
                                                     ? route('logout-guest')
@@ -174,7 +184,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                             <button
                                                 type="submit"
                                                 class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
-                                                @click="confirmGuestLogout"
+                                                @click="handleLogout"
                                             >
                                                 {{ $t("Log Out") }}
                                             </button>
@@ -274,15 +284,13 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         >
                             {{ $t("Profile") }}
                         </ResponsiveNavLink>
-                        <form method="POST" @submit.prevent="logout">
-                            <ResponsiveNavLink
-                                as="button"
-                                href="#"
-                                @click="confirmGuestLogout"
-                            >
-                                {{ $t("Log Out") }}
-                            </ResponsiveNavLink>
-                        </form>
+                        <ResponsiveNavLink
+                            href="#"
+                            @click="handleLogout"
+                            class="cursor-pointer"
+                        >
+                            {{ $t("Log Out") }}
+                        </ResponsiveNavLink>
                     </div>
                 </div>
             </nav>
