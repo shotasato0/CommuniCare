@@ -39,7 +39,7 @@ const navigateToForum = () => {
 // フォーム送信用のref
 const logoutForm = ref(null);
 
-// ログアウト処理をより簡潔に
+// ログアウト処理
 const handleLogout = async (event) => {
     event.preventDefault();
 
