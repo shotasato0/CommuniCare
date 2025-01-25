@@ -60,6 +60,6 @@ class TenantLoginController extends Controller
     $request->session()->regenerate();
 
     // テナント初期化後にInertiaでリダイレクト
-    return Inertia::location('http://' . $domain->domain . '/home');
+    return Inertia::location('http://' . $domain->domain . '/');
 }
 }
