@@ -38,7 +38,7 @@ class GuestTenantController extends Controller
 
         // 環境に応じてHTTP/HTTPSを切り替えてリダイレクト
         $protocol = config('app.env') === 'local' ? 'http' : 'https';
-        return Inertia::location($protocol . '://' . $guestDomain . '/home');
+        return Inertia::location($protocol . '://' . $guestDomain . '/');
     }
 }
 
