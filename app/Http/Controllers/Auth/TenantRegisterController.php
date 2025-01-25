@@ -73,7 +73,7 @@ class TenantRegisterController extends Controller
         Cookie::queue(Cookie::make('XSRF-TOKEN', csrf_token(), 120, '/', $sessionDomain, false, true, false, 'Lax'));
 
         // テナントのホームページにリダイレクト
-        return Inertia::location('http://' . $domain . '/home');
+        return Inertia::location('http://' . $domain . '/');
     }
 
 }
