@@ -45,6 +45,11 @@ class SetSessionDomain
             return $host;
         }
 
+        // localhost の場合も、サブドメインごとにセッションを分離
+        if (preg_match('/^.+\.localhost$/', $host)) {
+            return $host; // サブドメインをそのまま返す
+        }
+
         // デフォルトのセッションドメインを返す
         return config('session.domain', null);
     }
