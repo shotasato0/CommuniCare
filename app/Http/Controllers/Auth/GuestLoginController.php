@@ -78,7 +78,7 @@ class GuestLoginController extends Controller
     session()->regenerateToken();
 
     // ホーム画面にリダイレクト
-    return redirect('/home')->with('message', 'ログアウトしました');
+    return redirect('/')->with('message', 'ログアウトしました');
 }
 
 }
