@@ -112,7 +112,7 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
         Log::info('セッションが再生成されました');
 
-        return Redirect::to('http://' . $domain . '/home'); // 必要に応じて 'http://' を 'https://' に変更
+        return Redirect::to('http://' . $domain . '/'); // 必要に応じて 'http://' を 'https://' に変更
     }
 
 }
