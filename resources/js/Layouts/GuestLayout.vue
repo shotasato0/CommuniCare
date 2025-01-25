@@ -14,7 +14,7 @@ const currentPage = usePage().component;
         <!-- ロゴ部分 -->
         <div class="w-full flex justify-center">
             <Link
-                href="/home"
+                href="/"
                 :class="{ 'pointer-events-none': currentPage === 'Welcome' }"
             >
                 <ApplicationLogo class="w-full text-blue-900 text-center" />

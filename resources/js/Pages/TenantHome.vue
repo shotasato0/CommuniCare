@@ -38,7 +38,7 @@ try {
 
     isGuestHome =
         currentUrl.hostname === guestTenantUrl.hostname &&
-        currentUrl.pathname === "/home"; // ゲストホームかどうかを判定
+        currentUrl.pathname === "/"; // ゲストホームかどうかを判定
 } catch (error) {
     // エラーが発生した場合の処理を記述
     console.error("URLの処理中にエラーが発生しました:", error);

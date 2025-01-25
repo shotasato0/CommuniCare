@@ -13,7 +13,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\TenantHomeController;
 use App\Http\Controllers\ResidentController;
 
 // テナント識別をスキップするルート
@@ -30,8 +29,6 @@ Route::middleware([])->group(function () {
 // Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function () {
     // テナント識別を行うルート
     Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
-        Route::get('/home', [TenantHomeController::class, 'index'])
-        ->name('tenant-home');
 
         Route::middleware(['auth'])->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
