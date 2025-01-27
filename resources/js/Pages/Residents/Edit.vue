@@ -210,8 +210,11 @@ const submit = () => {
                                     <div class="mt-2">
                                         <textarea
                                             v-model="form.memo"
-                                            rows="3"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            class="w-full p-3 bg-white rounded-md border border-gray-300 min-h-[12rem]"
+                                            :class="{
+                                                'border-red-500':
+                                                    form.errors.memo,
+                                            }"
                                         ></textarea>
                                         <div
                                             v-if="form.errors.memo"
