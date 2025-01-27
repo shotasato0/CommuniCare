@@ -2,6 +2,7 @@
     <div
         v-if="isVisible"
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        style="z-index: 1000"
     >
         <div class="bg-white p-6 rounded shadow-lg">
             <p>{{ message }}</p>
