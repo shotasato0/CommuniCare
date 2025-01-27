@@ -5,6 +5,8 @@ import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { deleteItem } from "@/Utils/deleteItem";
 import UserSearchForm from "./Components/UserSearchForm.vue";
+import { useDialog } from "@/composables/dialog";
+import CustomDialog from "@/Components/CustomDialog.vue";
 
 const { props } = usePage();
 const users = ref(props.users);
@@ -42,7 +44,20 @@ const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
 
-const deleteUser = (user) => {
+const dialog = useDialog();
+
+const deleteUser = async (user) => {
+    // ダイアログを表示して削除確認
+    const result = await dialog.showDialog(
+        `${user.name}さんを本当に削除しますか？`
+    );
+
+    if (!result) {
+        console.log("削除がキャンセルされました");
+        return;
+    }
+
+    // 削除処理を実行
     deleteItem("user", user.id, (deletedUserId) => {
         const index = users.value.findIndex((u) => u.id === deletedUserId);
         if (index !== -1) {
@@ -193,6 +208,14 @@ const totalFilteredUsers = computed(() => {
     <Head :title="$t('Staff')" />
 
     <AuthenticatedLayout>
+        <!-- カスタムダイアログ -->
+        <CustomDialog
+            :is-visible="dialog.state.isVisible"
+            :message="dialog.state.message"
+            @confirm="dialog.confirm"
+            @cancel="dialog.cancel"
+        />
+
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ $t("Staff") }}
