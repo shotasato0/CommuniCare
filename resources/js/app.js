@@ -10,6 +10,7 @@ import { createI18n } from "vue-i18n"; // vue-i18nをインポート
 import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja.jsonを読み込み
 
 import SlideUpDown from "vue-slide-up-down"; // vue-slide-up-downをインポート
+import { useDialog } from "./composables/dialog"; // dialog.jsのインポート
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -37,6 +38,12 @@ createInertiaApp({
         // グローバルにSlideUpDownコンポーネントを登録
         app.component("slide-up-down", SlideUpDown);
 
+        // ダイアログの設定
+        const dialog = useDialog();
+        app.config.globalProperties.$alert = (message) => {
+            return dialog.showDialog(message);
+        };
+
         app.mount(el);
 
         document.addEventListener("inertia:finish", (event) => {
@@ -52,15 +59,15 @@ createInertiaApp({
                 );
                 alert("セッションが切れています。リロードします。");
                 window.location.reload();
-            // } else {
-            //     // 特定のページでリロードする場合（例: ダッシュボード）
-            //     const currentPath = window.location.pathname;
-            //     if (currentPath === "/home" || currentPath === "/dashboard") {
-            //         console.log(
-            //             "ホームまたはダッシュボードにリダイレクトされました。リロードします。"
-            //         );
-            //         window.location.reload();
-            //     }
+                // } else {
+                //     // 特定のページでリロードする場合（例: ダッシュボード）
+                //     const currentPath = window.location.pathname;
+                //     if (currentPath === "/home" || currentPath === "/dashboard") {
+                //         console.log(
+                //             "ホームまたはダッシュボードにリダイレクトされました。リロードします。"
+                //         );
+                //         window.location.reload();
+                //     }
             }
         });
     },
