@@ -3,6 +3,8 @@ import { Head } from "@inertiajs/vue3";
 import { useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { ref, watchEffect } from "vue";
+import CustomDialog from "@/Components/CustomDialog.vue";
+import { useDialog } from "@/composables/dialog";
 
 const { props } = usePage();
 const flashMessage = ref(props.flash.success || null);
@@ -27,20 +29,26 @@ const submit = () => {
 const { units = [] } = usePage().props;
 console.log("units", units);
 
+const dialog = useDialog();
+
 // 部署削除機能
-const deleteUnit = (id) => {
-    if (confirm("本当に削除しますか？")) {
-        form.delete(route("units.destroy", id), {
-            onSuccess: () => {
-                // 成功した場合にローカルステートから部署を削除
-                const index = units.findIndex((unit) => unit.id === id);
-                if (index !== -1) {
-                    units.splice(index, 1);
-                }
-                flashMessage.value = "部署が削除されました。";
-            },
-        });
+const deleteUnit = async (id) => {
+    const result = await dialog.showDialog("本当に削除しますか？");
+    if (!result) {
+        console.log("削除がキャンセルされました");
+        return;
     }
+
+    form.delete(route("units.destroy", id), {
+        onSuccess: () => {
+            // 成功した場合にローカルステートから部署を削除
+            const index = units.findIndex((unit) => unit.id === id);
+            if (index !== -1) {
+                units.splice(index, 1);
+            }
+            flashMessage.value = "部署が削除されました。";
+        },
+    });
 };
 
 // flashMessageの変更を監視して非表示タイマーを設定
@@ -58,6 +66,14 @@ watchEffect(() => {
 
 <template>
     <AuthenticatedLayout>
+        <!-- カスタムダイアログ -->
+        <CustomDialog
+            :is-visible="dialog.state.isVisible"
+            :message="dialog.state.message"
+            @confirm="dialog.confirm"
+            @cancel="dialog.cancel"
+        />
+
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ $t("Unit Management") }}
