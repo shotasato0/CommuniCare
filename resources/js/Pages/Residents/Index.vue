@@ -54,14 +54,16 @@ watch(
 const dialog = useDialog();
 
 // 削除処理
-const deleteResident = async (residentId) => {
-    const result = await dialog.showDialog("本当にこの利用者を削除しますか？");
+const deleteResident = async (resident) => {
+    const result = await dialog.showDialog(
+        `${resident.name}さんを削除してもよろしいですか？`
+    );
     if (!result) {
         console.log("削除がキャンセルされました");
         return;
     }
 
-    router.delete(route("residents.destroy", residentId), {
+    router.delete(route("residents.destroy", resident.id), {
         preserveScroll: true,
         onSuccess: (page) => {
             showDeleteButtons.value = false;
@@ -349,7 +351,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                                     'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-red-50 cursor-pointer',
                                                 ]"
                                                 @click="
-                                                    deleteResident(resident.id)
+                                                    deleteResident(resident)
                                                 "
                                             >
                                                 <div
