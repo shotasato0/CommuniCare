@@ -33,7 +33,7 @@ const dialog = useDialog();
 
 // 部署削除機能
 const deleteUnit = async (unit) => {
-    const result = await dialog.showDialog(`${unit.name}を削除しますか？`);
+    const result = await dialog.showDialog(`${unit.name}を削除してもよろしいですか？`);
     if (!result) {
         console.log("削除がキャンセルされました");
         return;
