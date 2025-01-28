@@ -9,13 +9,13 @@
             <div class="flex justify-end space-x-2 mt-4">
                 <button
                     @click="confirm"
-                    class="w-24 py-2 text-center bg-blue-500 text-white rounded"
+                    class="w-32 bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     OK
                 </button>
                 <button
                     @click="cancel"
-                    class="w-24 py-2 text-center bg-gray-300 rounded"
+                    class="w-32 bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     キャンセル
                 </button>
