@@ -32,17 +32,17 @@ console.log("units", units);
 const dialog = useDialog();
 
 // 部署削除機能
-const deleteUnit = async (id) => {
-    const result = await dialog.showDialog("本当に削除しますか？");
+const deleteUnit = async (unit) => {
+    const result = await dialog.showDialog(`${unit.name}を削除しますか？`);
     if (!result) {
         console.log("削除がキャンセルされました");
         return;
     }
 
-    form.delete(route("units.destroy", id), {
+    form.delete(route("units.destroy", unit.id), {
         onSuccess: () => {
             // 成功した場合にローカルステートから部署を削除
-            const index = units.findIndex((unit) => unit.id === id);
+            const index = units.findIndex((unit) => unit.id === unit.id);
             if (index !== -1) {
                 units.splice(index, 1);
             }
@@ -142,7 +142,7 @@ watchEffect(() => {
                     >
                         <span class="text-gray-800">{{ unit.name }}</span>
                         <button
-                            @click="deleteUnit(unit.id)"
+                            @click="deleteUnit(unit)"
                             class="px-4 py-2 bg-red-100 text-red-700 rounded-md transition hover:bg-red-300 hover:text-white text-center"
                         >
                             <i class="bi bi-trash"></i>
