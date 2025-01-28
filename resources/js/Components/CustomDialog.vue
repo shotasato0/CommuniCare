@@ -9,11 +9,14 @@
             <div class="flex justify-end space-x-2 mt-4">
                 <button
                     @click="confirm"
-                    class="px-4 py-2 bg-blue-500 text-white rounded"
+                    class="w-24 py-2 text-center bg-blue-500 text-white rounded"
                 >
                     OK
                 </button>
-                <button @click="cancel" class="px-4 py-2 bg-gray-300 rounded">
+                <button
+                    @click="cancel"
+                    class="w-24 py-2 text-center bg-gray-300 rounded"
+                >
                     キャンセル
                 </button>
             </div>
@@ -37,7 +40,3 @@ const cancel = () => {
     emit("cancel");
 };
 </script>
-
-<style scoped>
-/* 必要に応じてスタイルを追加 */
-</style>
