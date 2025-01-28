@@ -6,7 +6,7 @@
     >
         <div class="bg-white p-6 rounded-md shadow-lg">
             <p>{{ message }}</p>
-            <div class="flex justify-end space-x-2 mt-4">
+            <div class="flex justify-center space-x-2 mt-4">
                 <button
                     @click="confirm"
                     class="w-32 bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 hover:text-white focus:outline-none focus:shadow-outline"
