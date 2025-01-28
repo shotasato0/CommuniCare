@@ -4,7 +4,7 @@
         class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
         style="z-index: 1000"
     >
-        <div class="bg-white p-6 rounded shadow-lg">
+        <div class="bg-white p-6 rounded-md shadow-lg">
             <p>{{ message }}</p>
             <div class="flex justify-end space-x-2 mt-4">
                 <button
