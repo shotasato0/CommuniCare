@@ -169,10 +169,10 @@ const dialog = useDialog();
 const onDeleteItem = async (type, id) => {
     const confirmMessage =
         type === "post"
-            ? "本当に投稿を削除しますか？"
+            ? "この投稿を削除してもよろしいですか？"
             : type === "comment"
-            ? "本当に返信を削除しますか？"
-            : "本当に削除しますか？";
+            ? "この返信を削除してもよろしいですか？"
+            : "この投稿を削除してもよろしいですか？";
     // 削除確認ダイアログを表示
     const result = await dialog.showDialog(confirmMessage);
     if (!result) {

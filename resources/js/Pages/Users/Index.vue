@@ -49,7 +49,7 @@ const dialog = useDialog();
 const deleteUser = async (user) => {
     // ダイアログを表示して削除確認
     const result = await dialog.showDialog(
-        `${user.name}さんを本当に削除しますか？`
+        `${user.name}さんを削除してもよろしいですか？`
     );
 
     if (!result) {
