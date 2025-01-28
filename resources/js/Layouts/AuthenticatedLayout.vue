@@ -8,6 +8,8 @@ import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
 import Footer from "@/Layouts/Footer.vue";
+import CustomDialog from "@/Components/CustomDialog.vue";
+
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
 const users = page.props.users || []; // Inertiaから`users`を取得
@@ -32,8 +34,25 @@ const userUnitId = auth.user?.unit_id || null;
 console.log("Logged in user data:", auth.user);
 console.log("auth.user.unit_id:", userUnitId);
 
+// ダイアログの状態を管理
+const isDialogVisible = ref(false);
+const dialogMessage = ref("");
+const dialogOnConfirm = ref(null);
+
+// ダイアログを表示する関数
+const showDialog = ({ message, onConfirm }) => {
+    dialogMessage.value = message;
+    dialogOnConfirm.value = onConfirm;
+    isDialogVisible.value = true;
+};
+
+// ダイアログを非表示にする関数
+const hideDialog = () => {
+    isDialogVisible.value = false;
+};
+
 const navigateToForum = () => {
-    redirectToForum(units, users, userUnitId);
+    redirectToForum(units, users, userUnitId, "forum.index", showDialog);
 };
 
 // フォーム送信用のref
@@ -84,38 +103,62 @@ const isForumPage = ref(window.location.pathname === "/forum");
 
                             <!-- Navigation Links -->
                             <div class="hidden lg:flex space-x-8 -my-px ms-10">
-                                <NavLink
-                                    href="#"
+                                <div
                                     @click.prevent="navigateToForum"
-                                    :active="isForumPage"
-                                    class="cursor-pointer whitespace-nowrap"
+                                    :class="[
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                        isForumPage
+                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ]"
                                 >
                                     {{ $t("Forum") }}
-                                </NavLink>
+                                </div>
 
-                                <NavLink
-                                    :href="route('users.index')"
-                                    :active="route().current('users.index')"
-                                    class="whitespace-nowrap"
+                                <div
+                                    :class="[
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                        route().current('users.index')
+                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ]"
+                                    @click="
+                                        () => $inertia.get(route('users.index'))
+                                    "
                                 >
                                     {{ $t("Staff") }}
-                                </NavLink>
+                                </div>
 
-                                <NavLink
-                                    :href="route('residents.index')"
-                                    :active="route().current('residents.index')"
-                                    class="whitespace-nowrap"
+                                <div
+                                    :class="[
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                        route().current('residents.index')
+                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ]"
+                                    @click="
+                                        () =>
+                                            $inertia.get(
+                                                route('residents.index')
+                                            )
+                                    "
                                 >
                                     {{ $t("Residents") }}
-                                </NavLink>
+                                </div>
 
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                    class="whitespace-nowrap"
+                                <div
+                                    :class="[
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                        route().current('dashboard')
+                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ]"
+                                    @click="
+                                        () => $inertia.get(route('dashboard'))
+                                    "
                                 >
                                     {{ $t("Dashboard") }}
-                                </NavLink>
+                                </div>
                             </div>
                         </div>
 
@@ -309,6 +352,15 @@ const isForumPage = ref(window.location.pathname === "/forum");
         </div>
         <Footer />
     </div>
+
+    <!-- カスタムダイアログ -->
+    <CustomDialog
+        :isVisible="isDialogVisible"
+        :message="dialogMessage"
+        :onConfirm="dialogOnConfirm"
+        @confirm="hideDialog"
+        @cancel="hideDialog"
+    />
 </template>
 
 <style scoped>
