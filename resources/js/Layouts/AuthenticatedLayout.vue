@@ -289,51 +289,78 @@ const isForumPage = ref(window.location.pathname === "/forum");
                     class="lg:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink
-                            href="#"
+                        <div
                             @click.prevent="navigateToForum"
-                            :active="isForumPage"
-                            class="cursor-pointer"
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                isForumPage
+                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Forum") }}
-                        </ResponsiveNavLink>
+                        </div>
 
-                        <ResponsiveNavLink
-                            :href="route('users.index')"
-                            :active="route().current('users.index')"
+                        <div
+                            @click="() => $inertia.get(route('users.index'))"
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                route().current('users.index')
+                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Staff") }}
-                        </ResponsiveNavLink>
+                        </div>
 
-                        <ResponsiveNavLink
-                            :href="route('residents.index')"
-                            :active="route().current('residents.index')"
+                        <div
+                            @click="
+                                () => $inertia.get(route('residents.index'))
+                            "
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                route().current('residents.index')
+                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Residents") }}
-                        </ResponsiveNavLink>
+                        </div>
 
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
+                        <div
+                            @click="() => $inertia.get(route('dashboard'))"
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                route().current('dashboard')
+                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Dashboard") }}
-                        </ResponsiveNavLink>
+                        </div>
                     </div>
 
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink
-                            :href="route('profile.edit')"
-                            :active="route().current('profile.edit')"
+                        <div
+                            @click="() => $inertia.get(route('profile.edit'))"
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                route().current('profile.edit')
+                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Profile") }}
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href="#"
+                        </div>
+                        <div
                             @click="handleLogout"
-                            class="cursor-pointer"
+                            :class="[
+                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                            ]"
                         >
                             {{ $t("Log Out") }}
-                        </ResponsiveNavLink>
+                        </div>
                     </div>
                 </div>
             </nav>
