@@ -383,6 +383,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
         :isVisible="isDialogVisible"
         :message="dialogMessage"
         :onConfirm="dialogOnConfirm"
+        :showProfileLink="true"
         @confirm="hideDialog"
         @cancel="hideDialog"
     />
