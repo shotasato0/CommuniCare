@@ -290,7 +290,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click.prevent="navigateToForum"
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 isForumPage
                                     ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
                                     : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
@@ -302,7 +302,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('users.index'))"
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 route().current('users.index')
                                     ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
                                     : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
@@ -316,7 +316,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 () => $inertia.get(route('residents.index'))
                             "
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 route().current('residents.index')
                                     ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
                                     : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
@@ -328,7 +328,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('dashboard'))"
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 route().current('dashboard')
                                     ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
                                     : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
@@ -342,7 +342,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('profile.edit'))"
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 route().current('profile.edit')
                                     ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
                                     : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
@@ -353,7 +353,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="handleLogout"
                             :class="[
-                                'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
                             ]"
                         >
