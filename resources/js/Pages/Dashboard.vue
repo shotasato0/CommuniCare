@@ -175,6 +175,7 @@ const closeUserProfile = () => {
             :isVisible="isDialogVisible"
             :message="dialogMessage"
             :onConfirm="dialogOnConfirm"
+            :showProfileLink="true"
             @confirm="hideDialog"
             @cancel="hideDialog"
         />
