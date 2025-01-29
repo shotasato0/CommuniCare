@@ -290,10 +290,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click.prevent="navigateToForum"
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 isForumPage
-                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ? 'bg-indigo-100 text-gray-900 focus:outline-none'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Forum") }}
@@ -302,10 +302,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('users.index'))"
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('users.index')
-                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ? 'bg-indigo-100 text-gray-900 focus:outline-none'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Staff") }}
@@ -316,10 +316,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 () => $inertia.get(route('residents.index'))
                             "
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('residents.index')
-                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ? 'bg-indigo-100 text-gray-900 focus:outline-none'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Residents") }}
@@ -328,10 +328,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('dashboard'))"
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('dashboard')
-                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ? 'bg-indigo-100 text-gray-900 focus:outline-none'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Dashboard") }}
@@ -342,10 +342,10 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="() => $inertia.get(route('profile.edit'))"
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('profile.edit')
-                                    ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                    ? 'bg-indigo-100 text-gray-900 focus:outline-none'
+                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Profile") }}
@@ -353,8 +353,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         <div
                             @click="handleLogout"
                             :class="[
-                                'block px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
-                                'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                'block px-1 pt-1 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
+                                'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
                             ]"
                         >
                             {{ $t("Log Out") }}
