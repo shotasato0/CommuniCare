@@ -14,6 +14,7 @@
                     OK
                 </button>
                 <button
+                    v-if="showCancel"
                     @click="cancel"
                     class="w-32 bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                 >
@@ -28,6 +29,10 @@
 const props = defineProps({
     isVisible: Boolean,
     message: String,
+    showCancel: {  // キャンセルボタンの表示/非表示を制御
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(["confirm", "cancel"]);
