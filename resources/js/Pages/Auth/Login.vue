@@ -14,6 +14,10 @@ const guestDomain =
     import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost";
 const isGuestUrl = ref(currentUrl.includes(`${guestDomain}/login`));
 
+const isAdminMode = ref(
+    new URLSearchParams(window.location.search).has("admin")
+);
+
 // フォームデータにusername_idを使用
 const form = useForm({
     username_id: "",
@@ -35,15 +39,15 @@ const submit = () => {
     <GuestLayout>
         <Head :title="$t('Login')" />
 
-        <!-- 説明テキスト -->
+        <!-- ゲストデモテナントでかつ admin パラメータがない場合はフォーム非表示 -->
         <div
-            v-if="isGuestUrl"
+            v-if="isGuestUrl && !isAdminMode"
             class="p-6 bg-yellow-100 text-yellow-800 rounded"
         >
             セッションが切れました。アプリケーションロゴをクリックして、新たなゲストユーザーとしてログインし直してください。
         </div>
 
-        <!-- 通常ログインフォーム -->
+        <!-- admin パラメータがあれば通常のログインフォームを表示 -->
         <form v-else @submit.prevent="submit">
             <div>
                 <InputLabel for="username_id" :value="$t('Username_ID')" />
