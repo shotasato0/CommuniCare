@@ -21,6 +21,9 @@ import { restoreSelectedUnit } from "@/Utils/sessionUtils";
 import { initSelectedForumId } from "@/Utils/initUtils";
 import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
+import CustomDialog from "@/Components/CustomDialog.vue"; // ダイアログコンポーネントをインポート
+import { useDialog } from "../composables/dialog"; // dialog.js の useDialog をインポート
+
 
 // props を構造分解して取得
 const {
@@ -161,7 +164,23 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value = { ...commentFormVisibility.value };
 };
 
-const onDeleteItem = (type, id) => {
+const dialog = useDialog();
+
+const onDeleteItem = async (type, id) => {
+    const confirmMessage =
+        type === "post"
+            ? "この投稿を削除してもよろしいですか？"
+            : type === "comment"
+            ? "この返信を削除してもよろしいですか？"
+            : "この投稿を削除してもよろしいですか？";
+    // 削除確認ダイアログを表示
+    const result = await dialog.showDialog(confirmMessage);
+    if (!result) {
+        console.log("削除がキャンセルされました");
+        return; // キャンセル時は処理を中断
+    }
+
+    // ユーザーがOKを押した場合のみ削除処理を実行
     deleteItem(type, id, async (deletedId) => {
         if (type === "post") {
             // まずローカルでデータを更新
@@ -257,6 +276,14 @@ const handleForumSelected = (unitId) => {
     <Head :title="$t('Forum')" />
 
     <AuthenticatedLayout>
+        <!-- カスタムダイアログ -->
+        <CustomDialog
+            :is-visible="dialog.state.isVisible"
+            :message="dialog.state.message"
+            @confirm="dialog.confirm"
+            @cancel="dialog.cancel"
+        />
+
         <div class="flex mt-16">
             <!-- オーバーレイ (サイドバー表示時のみ) -->
             <div

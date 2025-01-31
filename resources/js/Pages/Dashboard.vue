@@ -5,6 +5,7 @@ import { ref, onMounted } from "vue";
 import AdminDashboard from "@/Pages/Admin/Dashboard.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
 import Show from "@/Pages/Users/Show.vue";
+import CustomDialog from "@/Components/CustomDialog.vue";
 
 const { props } = usePage();
 const isAdmin = props.isAdmin;
@@ -27,8 +28,31 @@ onMounted(() => {
     }
 });
 
+const isDialogVisible = ref(false); // ダイアログの表示状態
+const dialogMessage = ref(""); // ダイアログのメッセージ
+const dialogOnConfirm = ref(null); // ダイアログのOKボタンの処理
+
+// ダイアログを表示する関数
+const showDialog = ({ message, onConfirm }) => {
+    dialogMessage.value = message; // メッセージをセット
+    dialogOnConfirm.value = onConfirm; // 配列ではなく関数をそのまま代入
+    isDialogVisible.value = true; // ダイアログを表示
+};
+
+// ダイアログを非表示にする関数
+const hideDialog = () => {
+    isDialogVisible.value = false;
+};
+
+// 掲示板に移動する関数
 const navigateToForum = () => {
-    redirectToForum(props.units, props.users, props.auth.user.unit_id);
+    redirectToForum(
+        props.units,
+        props.users,
+        props.auth.user.unit_id,
+        "forum.index",
+        showDialog
+    );
 };
 
 console.log("User data:", props.auth.user);
@@ -145,6 +169,16 @@ const closeUserProfile = () => {
                 <Show v-if="selectedUser" :user="selectedUser" :units="units" />
             </div>
         </div>
+
+        <!-- カスタムダイアログ -->
+        <CustomDialog
+            :isVisible="isDialogVisible"
+            :message="dialogMessage"
+            :onConfirm="dialogOnConfirm"
+            :showProfileLink="true"
+            @confirm="hideDialog"
+            @cancel="hideDialog"
+        />
     </AuthenticatedLayout>
 </template>
 

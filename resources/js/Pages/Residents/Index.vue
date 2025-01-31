@@ -3,6 +3,8 @@ import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { router, Link, usePage, Head } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import SearchForm from "./Components/SearchForm.vue";
+import CustomDialog from "@/Components/CustomDialog.vue";
+import { useDialog } from "@/composables/dialog";
 
 const props = defineProps({
     residents: {
@@ -49,17 +51,25 @@ watch(
     { immediate: true }
 );
 
+const dialog = useDialog();
+
 // 削除処理
-const deleteResident = (residentId) => {
-    if (confirm("本当にこの利用者を削除しますか？")) {
-        router.delete(route("residents.destroy", residentId), {
-            preserveScroll: true,
-            onSuccess: (page) => {
-                showDeleteButtons.value = false;
-                displayFlashMessage(page.props.flash.success);
-            },
-        });
+const deleteResident = async (resident) => {
+    const result = await dialog.showDialog(
+        `${resident.name}さんを削除してもよろしいですか？`
+    );
+    if (!result) {
+        console.log("削除がキャンセルされました");
+        return;
     }
+
+    router.delete(route("residents.destroy", resident.id), {
+        preserveScroll: true,
+        onSuccess: (page) => {
+            showDeleteButtons.value = false;
+            displayFlashMessage(page.props.flash.success);
+        },
+    });
 };
 
 // 部署変更時の処理
@@ -195,6 +205,14 @@ const isAdmin = computed(() => page.props.isAdmin);
 
 <template>
     <AuthenticatedLayout>
+        <!-- カスタムダイアログ -->
+        <CustomDialog
+            :is-visible="dialog.state.isVisible"
+            :message="dialog.state.message"
+            @confirm="dialog.confirm"
+            @cancel="dialog.cancel"
+        />
+
         <Head :title="$t('Residents')" />
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -333,7 +351,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                                     'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-red-50 cursor-pointer',
                                                 ]"
                                                 @click="
-                                                    deleteResident(resident.id)
+                                                    deleteResident(resident)
                                                 "
                                             >
                                                 <div
