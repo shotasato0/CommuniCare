@@ -246,10 +246,20 @@ const totalFilteredUsers = computed(() => {
                         <div
                             class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
                         >
+                            <!-- 検索フォームコンポーネント -->
+                            <UserSearchForm
+                                :units="units"
+                                :selected-unit-id="selectedUnit"
+                                :total-results="totalFilteredUsers"
+                                @update:selected-unit="updateSelectedUnit"
+                                @update:search-query="updateSearchQuery"
+                                class="order-2 sm:order-1"
+                            />
+
                             <!-- 管理者のみに表示するボタン群 -->
                             <div
                                 v-if="isAdmin"
-                                class="flex items-center space-x-4"
+                                class="flex items-center space-x-4 order-1 sm:order-2"
                             >
                                 <Link
                                     :href="route('register')"
@@ -280,15 +290,6 @@ const totalFilteredUsers = computed(() => {
                                     管理者権限
                                 </button>
                             </div>
-
-                            <!-- 検索フォームコンポーネント -->
-                            <UserSearchForm
-                                :units="units"
-                                :selected-unit-id="selectedUnit"
-                                :total-results="totalFilteredUsers"
-                                @update:selected-unit="updateSelectedUnit"
-                                @update:search-query="updateSearchQuery"
-                            />
                         </div>
 
                         <!-- モード説明 -->
