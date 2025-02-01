@@ -117,13 +117,6 @@ const isAdmin = computed(() => {
     return currentAdminId === props.auth.user.id;
 });
 
-// 管理者とその他ユーザーの分類
-const sortedUsers = computed(() => {
-    const currentAdmin = users.value.find((user) => user.id === currentAdminId);
-    const otherUsers = users.value.filter((user) => user.id !== currentAdminId);
-    return { currentAdmin, otherUsers };
-});
-
 // showDeleteButtonsの更新時にisAdminModeをfalseに
 const toggleDeleteMode = () => {
     showDeleteButtons.value = !showDeleteButtons.value;
