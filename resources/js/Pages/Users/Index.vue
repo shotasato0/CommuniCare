@@ -314,7 +314,7 @@ const totalFilteredUsers = computed(() => {
                         </div>
 
                         <!-- 現在の管理者 -->
-                        <div v-if="sortedUsers.currentAdmin" class="mb-8">
+                        <div v-if="sortedUsers.currentAdmin" class="my-8">
                             <div
                                 class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between border-l-4 border-blue-500 group cursor-pointer hover:bg-gray-50 transition-all"
                                 @click="
