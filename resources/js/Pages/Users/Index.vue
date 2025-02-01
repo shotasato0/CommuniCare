@@ -246,15 +246,6 @@ const totalFilteredUsers = computed(() => {
                         <div
                             class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start mb-6"
                         >
-                            <!-- 検索フォームコンポーネント -->
-                            <UserSearchForm
-                                :units="units"
-                                :selected-unit-id="selectedUnit"
-                                :total-results="totalFilteredUsers"
-                                @update:selected-unit="updateSelectedUnit"
-                                @update:search-query="updateSearchQuery"
-                            />
-
                             <!-- 管理者のみに表示するボタン群 -->
                             <div
                                 v-if="isAdmin"
@@ -289,6 +280,15 @@ const totalFilteredUsers = computed(() => {
                                     管理者権限
                                 </button>
                             </div>
+
+                            <!-- 検索フォームコンポーネント -->
+                            <UserSearchForm
+                                :units="units"
+                                :selected-unit-id="selectedUnit"
+                                :total-results="totalFilteredUsers"
+                                @update:selected-unit="updateSelectedUnit"
+                                @update:search-query="updateSearchQuery"
+                            />
                         </div>
 
                         <!-- モード説明 -->
