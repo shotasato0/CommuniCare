@@ -69,7 +69,7 @@ const resetSearch = () => {
                     class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                     @click="resetSearch"
                 >
-                    <i class="bi bi-x text-gray-400 hover:text-gray-600"></i>
+                    <i class="bi bi-x-lg text-gray-400 hover:text-gray-600"></i>
                 </div>
             </div>
             <!-- 検索結果件数表示 -->
