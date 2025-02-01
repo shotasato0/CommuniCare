@@ -306,10 +306,10 @@ const totalFilteredUsers = computed(() => {
                             </p>
                         </div>
 
-                        <!-- 既存の管理者モード説明 -->
+                        <!-- 管理者権限譲渡モード説明 -->
                         <div
                             v-if="isAdminMode"
-                            class="mb-4 p-4 bg-purple-100 rounded-lg"
+                            class="mt-4 p-4 bg-purple-100 rounded-lg"
                         >
                             <p class="text-purple-700">
                                 管理者権限を他の職員に渡すことができます。
