@@ -271,17 +271,17 @@ const totalFilteredUsers = computed(() => {
                                 <!-- 管理者専用ボタン群 -->
                                 <div
                                     v-if="isAdmin"
-                                    class="flex items-center space-x-4 order-1 sm:order-2"
+                                    class="flex items-center space-x-1 sm:space-x-4 order-1 sm:order-2"
                                 >
                                     <Link
                                         :href="route('register')"
-                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center whitespace-nowrap"
                                     >
                                         新規登録
                                     </Link>
                                     <button
                                         @click="toggleDeleteMode"
-                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
+                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center whitespace-nowrap"
                                         :class="
                                             showDeleteButtons
                                                 ? 'bg-red-300 !text-white'
@@ -292,7 +292,7 @@ const totalFilteredUsers = computed(() => {
                                     </button>
                                     <button
                                         @click="toggleAdminMode"
-                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white text-center"
+                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white text-center whitespace-nowrap"
                                         :class="
                                             isAdminMode
                                                 ? 'bg-purple-300 !text-white'
