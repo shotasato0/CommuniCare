@@ -435,7 +435,7 @@ const totalFilteredUsers = computed(() => {
                             <!-- 表示する職員がいない場合 -->
                             <div
                                 v-if="Object.keys(groupedUsers).length === 0"
-                                class="text-center text-gray-500 mt-4"
+                                class="text-center text-gray-500 mt-4 text-lg font-medium"
                             >
                                 検索条件に一致する職員が見つかりませんでした。
                             </div>
