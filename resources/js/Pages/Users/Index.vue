@@ -1,6 +1,6 @@
 <script setup>
 import { Head, usePage, Link, router } from "@inertiajs/vue3";
-import { ref, watchEffect, computed } from "vue";
+import { ref, watchEffect, computed, onMounted, onUnmounted } from "vue";
 import Show from "@/Pages/Users/Show.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { deleteItem } from "@/Utils/deleteItem";
@@ -24,13 +24,58 @@ const targetUser = ref(null);
 const selectedUnit = ref("");
 const searchQuery = ref("");
 
-// 検索フォームからの更新を処理
+const dialog = useDialog();
+
 const updateSelectedUnit = (newValue) => {
     selectedUnit.value = newValue;
 };
 
 const updateSearchQuery = (newValue) => {
     searchQuery.value = newValue;
+};
+
+// 削除モードと管理者モードを解除するためのクリックイベントハンドラ
+const handleClickOutside = (event) => {
+    const adminButtons = document.querySelectorAll(
+        ".admin-mode-button, .delete-mode-button"
+    );
+    const isClickInsideButton = Array.from(adminButtons).some((button) =>
+        button.contains(event.target)
+    );
+
+    if (
+        (showDeleteButtons.value || isAdminMode.value) &&
+        !isClickInsideButton
+    ) {
+        showDeleteButtons.value = false;
+        isAdminMode.value = false;
+    }
+};
+
+// コンポーネントがマウントされた時にイベントリスナーを追加
+onMounted(() => {
+    document.addEventListener("click", handleClickOutside);
+});
+
+// コンポーネントがアンマウントされる時にイベントリスナーを削除
+onUnmounted(() => {
+    document.removeEventListener("click", handleClickOutside);
+});
+
+const toggleDeleteMode = (event) => {
+    event.stopPropagation();
+    showDeleteButtons.value = !showDeleteButtons.value;
+    if (showDeleteButtons.value) {
+        isAdminMode.value = false;
+    }
+};
+
+const toggleAdminMode = (event) => {
+    event.stopPropagation();
+    isAdminMode.value = !isAdminMode.value;
+    if (isAdminMode.value) {
+        showDeleteButtons.value = false;
+    }
 };
 
 const openUserProfile = (user) => {
@@ -43,8 +88,6 @@ const openUserProfile = (user) => {
 const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
-
-const dialog = useDialog();
 
 const deleteUser = async (user) => {
     // ダイアログを表示して削除確認
@@ -116,22 +159,6 @@ watchEffect(() => {
 const isAdmin = computed(() => {
     return currentAdminId === props.auth.user.id;
 });
-
-// showDeleteButtonsの更新時にisAdminModeをfalseに
-const toggleDeleteMode = () => {
-    showDeleteButtons.value = !showDeleteButtons.value;
-    if (showDeleteButtons.value) {
-        isAdminMode.value = false;
-    }
-};
-
-// isAdminModeの更新時にshowDeleteButtonsをfalseに
-const toggleAdminMode = () => {
-    isAdminMode.value = !isAdminMode.value;
-    if (isAdminMode.value) {
-        showDeleteButtons.value = false;
-    }
-};
 
 // フィルタリングされた職員リストを返す算出プロパティ
 const groupedUsers = computed(() => {
