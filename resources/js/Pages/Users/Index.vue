@@ -264,24 +264,14 @@ const totalFilteredUsers = computed(() => {
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分のコンテナ -->
                         <div class="mb-6">
-                            <!-- デスクトップでは横並び、モバイルでは縦並び -->
+                            <!-- 親コンテナ -->
                             <div
-                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 sm:items-center"
+                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
                             >
-                                <!-- 検索フォームとプルダウン -->
-                                <UserSearchForm
-                                    :units="units"
-                                    :selected-unit-id="selectedUnit"
-                                    :total-results="totalFilteredUsers"
-                                    @update:selected-unit="updateSelectedUnit"
-                                    @update:search-query="updateSearchQuery"
-                                    class="order-2 sm:order-1"
-                                />
-
                                 <!-- 管理者専用ボタン群 -->
                                 <div
                                     v-if="isAdmin"
-                                    class="flex space-x-2 order-1 sm:order-2"
+                                    class="flex items-center space-x-4 order-1 sm:order-2"
                                 >
                                     <Link
                                         :href="route('register')"
@@ -291,7 +281,7 @@ const totalFilteredUsers = computed(() => {
                                     </Link>
                                     <button
                                         @click="toggleDeleteMode"
-                                        class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
                                         :class="
                                             showDeleteButtons
                                                 ? 'bg-red-300 !text-white'
@@ -302,7 +292,7 @@ const totalFilteredUsers = computed(() => {
                                     </button>
                                     <button
                                         @click="toggleAdminMode"
-                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white text-center"
                                         :class="
                                             isAdminMode
                                                 ? 'bg-purple-300 !text-white'
@@ -312,29 +302,39 @@ const totalFilteredUsers = computed(() => {
                                         管理者権限
                                     </button>
                                 </div>
+
+                                <!-- 検索フォームとプルダウン -->
+                                <UserSearchForm
+                                    :units="units"
+                                    :selected-unit-id="selectedUnit"
+                                    :total-results="totalFilteredUsers"
+                                    @update:selected-unit="updateSelectedUnit"
+                                    @update:search-query="updateSearchQuery"
+                                    class="order-2 sm:order-1"
+                                />
                             </div>
-                        </div>
 
-                        <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
-                        <div
-                            v-if="isAdmin && showDeleteButtons"
-                            class="mt-4 p-4 bg-red-100 rounded-lg"
-                        >
-                            <p class="text-red-700">
-                                削除したい職員をクリックすると削除できます。
-                                この操作は取り消しできませんのでご注意ください。
-                            </p>
-                        </div>
+                            <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
+                            <div
+                                v-if="isAdmin && showDeleteButtons"
+                                class="mt-4 p-4 bg-red-100 rounded-lg"
+                            >
+                                <p class="text-red-700">
+                                    削除したい職員をクリックすると削除できます。
+                                    この操作は取り消しできませんのでご注意ください。
+                                </p>
+                            </div>
 
-                        <!-- 管理者権限譲渡モード説明 -->
-                        <div
-                            v-if="isAdminMode"
-                            class="mt-4 p-4 bg-purple-100 rounded-lg"
-                        >
-                            <p class="text-purple-700">
-                                管理者権限を他の職員に渡すことができます。
-                                この操作を行うと、現在の管理者権限が解除されます。
-                            </p>
+                            <!-- 管理者権限譲渡モード説明 -->
+                            <div
+                                v-if="isAdminMode"
+                                class="mt-4 p-4 bg-purple-100 rounded-lg"
+                            >
+                                <p class="text-purple-700">
+                                    管理者権限を他の職員に渡すことができます。
+                                    この操作を行うと、現在の管理者権限が解除されます。
+                                </p>
+                            </div>
                         </div>
 
                         <!-- ユーザー一覧 -->
