@@ -34,7 +34,7 @@ const resetSearch = () => {
 </script>
 
 <template>
-    <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
+    <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 mt-4 sm:mt-0 space-x-4">
         <!-- 部署選択プルダウン -->
         <div class="w-full sm:w-auto">
             <select
