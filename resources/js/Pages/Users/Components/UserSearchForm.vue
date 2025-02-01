@@ -35,7 +35,7 @@ const resetSearch = () => {
 
 <template>
     <div
-        class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:justify-between"
+        class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4 "
     >
         <!-- 部署選択プルダウン -->
         <div class="w-full sm:w-auto">
