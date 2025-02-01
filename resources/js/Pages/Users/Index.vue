@@ -264,11 +264,11 @@ const totalFilteredUsers = computed(() => {
                     <div class="p-6 bg-white border-b border-gray-200">
                         <!-- コントロール部分のコンテナ -->
                         <div class="mb-6">
-                            <!-- ボタンと検索フォームの横並び部分 -->
+                            <!-- デスクトップでは横並び、モバイルでは縦並び -->
                             <div
-                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
+                                class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 sm:items-center"
                             >
-                                <!-- 検索フォーム -->
+                                <!-- 検索フォームとプルダウン -->
                                 <UserSearchForm
                                     :units="units"
                                     :selected-unit-id="selectedUnit"
@@ -277,42 +277,42 @@ const totalFilteredUsers = computed(() => {
                                     @update:search-query="updateSearchQuery"
                                     class="order-2 sm:order-1"
                                 />
-                            </div>
-                        </div>
 
-                        <!-- 管理者のみに表示するボタン群 -->
-                        <div
-                            v-if="isAdmin"
-                            class="flex items-center space-x-4 order-1 sm:order-2"
-                        >
-                            <Link
-                                :href="route('register')"
-                                class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
-                            >
-                                新規登録
-                            </Link>
-                            <button
-                                @click="toggleDeleteMode"
-                                class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
-                                :class="
-                                    showDeleteButtons
-                                        ? 'bg-red-300 !text-white'
-                                        : 'bg-red-200 text-red-600'
-                                "
-                            >
-                                削除モード
-                            </button>
-                            <button
-                                @click="toggleAdminMode"
-                                class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
-                                :class="
-                                    isAdminMode
-                                        ? 'bg-purple-300 !text-white'
-                                        : 'bg-purple-200 text-purple-600'
-                                "
-                            >
-                                管理者権限
-                            </button>
+                                <!-- 管理者専用ボタン群 -->
+                                <div
+                                    v-if="isAdmin"
+                                    class="flex space-x-2 order-1 sm:order-2"
+                                >
+                                    <Link
+                                        :href="route('register')"
+                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                                    >
+                                        新規登録
+                                    </Link>
+                                    <button
+                                        @click="toggleDeleteMode"
+                                        class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                        :class="
+                                            showDeleteButtons
+                                                ? 'bg-red-300 !text-white'
+                                                : 'bg-red-200 text-red-600'
+                                        "
+                                    >
+                                        削除モード
+                                    </button>
+                                    <button
+                                        @click="toggleAdminMode"
+                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                                        :class="
+                                            isAdminMode
+                                                ? 'bg-purple-300 !text-white'
+                                                : 'bg-purple-200 text-purple-600'
+                                        "
+                                    >
+                                        管理者権限
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
