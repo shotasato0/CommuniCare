@@ -34,7 +34,9 @@ const resetSearch = () => {
 </script>
 
 <template>
-    <div class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 mt-4 sm:mt-0 space-x-4">
+    <div
+        class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:justify-between sm:items-start mt-4 sm:mt-0"
+    >
         <!-- 部署選択プルダウン -->
         <div class="w-full sm:w-auto">
             <select
@@ -50,7 +52,7 @@ const resetSearch = () => {
         </div>
 
         <!-- 検索フィールドと結果表示 -->
-        <div class="w-full sm:w-auto space-y-2">
+        <div class="w-full sm:w-auto space-y-2 ml-4">
             <div class="relative">
                 <input
                     type="text"
@@ -60,7 +62,9 @@ const resetSearch = () => {
                     class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
                 />
                 <!-- 検索アイコン -->
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div
+                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
                     <i class="bi bi-search text-gray-400"></i>
                 </div>
                 <!-- リセットアイコン -->
@@ -73,7 +77,7 @@ const resetSearch = () => {
                 </div>
             </div>
             <!-- 検索結果件数表示 -->
-            <div v-if="searchQuery" class="text-sm text-gray-600 absolute mt-1">
+            <div v-if="searchQuery" class="text-sm text-gray-600">
                 検索結果: {{ totalResults }}件
             </div>
         </div>
