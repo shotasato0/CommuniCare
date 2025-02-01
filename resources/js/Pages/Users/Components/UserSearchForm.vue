@@ -35,7 +35,7 @@ const resetSearch = () => {
 
 <template>
     <div
-        class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:justify-between sm:items-start mt-4 sm:mt-0"
+        class="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:justify-between"
     >
         <!-- 部署選択プルダウン -->
         <div class="w-full sm:w-auto">
@@ -52,7 +52,7 @@ const resetSearch = () => {
         </div>
 
         <!-- 検索フィールドと結果表示 -->
-        <div class="w-full sm:w-auto space-y-2 ml-4">
+        <div class="w-full sm:w-auto space-y-2">
             <div class="relative">
                 <input
                     type="text"
