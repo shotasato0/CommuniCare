@@ -248,41 +248,6 @@ const totalFilteredUsers = computed(() => {
                             <div
                                 class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-start"
                             >
-                                <!-- 管理者のみに表示するボタン群 -->
-                                <div
-                                    v-if="isAdmin"
-                                    class="flex items-center space-x-4 order-1 sm:order-2"
-                                >
-                                    <Link
-                                        :href="route('register')"
-                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
-                                    >
-                                        新規登録
-                                    </Link>
-                                    <button
-                                        @click="toggleDeleteMode"
-                                        class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
-                                        :class="
-                                            showDeleteButtons
-                                                ? 'bg-red-300 !text-white'
-                                                : 'bg-red-200 text-red-600'
-                                        "
-                                    >
-                                        削除モード
-                                    </button>
-                                    <button
-                                        @click="toggleAdminMode"
-                                        class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
-                                        :class="
-                                            isAdminMode
-                                                ? 'bg-purple-300 !text-white'
-                                                : 'bg-purple-200 text-purple-600'
-                                        "
-                                    >
-                                        管理者権限
-                                    </button>
-                                </div>
-
                                 <!-- 検索フォーム -->
                                 <UserSearchForm
                                     :units="units"
@@ -293,17 +258,52 @@ const totalFilteredUsers = computed(() => {
                                     class="order-2 sm:order-1"
                                 />
                             </div>
+                        </div>
 
-                            <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
-                            <div
-                                v-if="isAdmin && showDeleteButtons"
-                                class="mt-4 p-4 bg-red-100 rounded-lg"
+                        <!-- 管理者のみに表示するボタン群 -->
+                        <div
+                            v-if="isAdmin"
+                            class="flex items-center space-x-4 order-1 sm:order-2"
+                        >
+                            <Link
+                                :href="route('register')"
+                                class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
                             >
-                                <p class="text-red-700">
-                                    削除したい職員をクリックすると削除できます。
-                                    この操作は取り消しできませんのでご注意ください。
-                                </p>
-                            </div>
+                                新規登録
+                            </Link>
+                            <button
+                                @click="toggleDeleteMode"
+                                class="w-32 px-4 py-2 rounded-md transition bg-red-100 text-red-700 hover:bg-red-300 hover:text-white"
+                                :class="
+                                    showDeleteButtons
+                                        ? 'bg-red-300 !text-white'
+                                        : 'bg-red-200 text-red-600'
+                                "
+                            >
+                                削除モード
+                            </button>
+                            <button
+                                @click="toggleAdminMode"
+                                class="w-32 px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                                :class="
+                                    isAdminMode
+                                        ? 'bg-purple-300 !text-white'
+                                        : 'bg-purple-200 text-purple-600'
+                                "
+                            >
+                                管理者権限
+                            </button>
+                        </div>
+
+                        <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
+                        <div
+                            v-if="isAdmin && showDeleteButtons"
+                            class="mt-4 p-4 bg-red-100 rounded-lg"
+                        >
+                            <p class="text-red-700">
+                                削除したい職員をクリックすると削除できます。
+                                この操作は取り消しできませんのでご注意ください。
+                            </p>
                         </div>
 
                         <!-- 既存の管理者モード説明 -->
@@ -315,43 +315,6 @@ const totalFilteredUsers = computed(() => {
                                 管理者権限を他の職員に渡すことができます。
                                 この操作を行うと、現在の管理者権限が解除されます。
                             </p>
-                        </div>
-
-                        <!-- 現在の管理者 -->
-                        <div v-if="sortedUsers.currentAdmin" class="my-8">
-                            <div
-                                class="bg-white w-11/12 mx-auto sm:w-full overflow-hidden shadow rounded-lg p-3 flex items-center justify-between border-l-4 border-blue-500 group cursor-pointer hover:bg-gray-50 transition-all"
-                                @click="
-                                    openUserProfile(sortedUsers.currentAdmin)
-                                "
-                            >
-                                <div class="flex items-center space-x-4">
-                                    <img
-                                        :src="
-                                            sortedUsers.currentAdmin.icon
-                                                ? `/storage/${sortedUsers.currentAdmin.icon}`
-                                                : '/images/default_user_icon.png'
-                                        "
-                                        alt="Profile Icon"
-                                        class="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
-                                    />
-                                    <div class="flex items-center space-x-2">
-                                        <p
-                                            class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
-                                        >
-                                            {{ sortedUsers.currentAdmin.name }}
-                                        </p>
-                                        <i
-                                            class="bi bi-award-fill text-yellow-500 text-xl mr-2"
-                                        ></i>
-                                        <span
-                                            class="text-xs sm:text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
-                                        >
-                                            現在の管理者
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- ユーザー一覧 -->
@@ -425,6 +388,23 @@ const totalFilteredUsers = computed(() => {
                                                     >
                                                         {{ user.name }}
                                                     </span>
+                                                    <!-- 管理者アイコンとテキスト -->
+                                                    <div
+                                                        v-if="
+                                                            user.id ===
+                                                            currentAdminId
+                                                        "
+                                                        class="flex items-center ml-2"
+                                                    >
+                                                        <i
+                                                            class="bi bi-award-fill text-yellow-500 text-xl"
+                                                        ></i>
+                                                        <span
+                                                            class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-1"
+                                                        >
+                                                            現在の管理者
+                                                        </span>
+                                                    </div>
                                                 </div>
                                                 <i
                                                     v-if="showDeleteButtons"
