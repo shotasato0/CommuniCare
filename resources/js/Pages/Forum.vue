@@ -284,7 +284,7 @@ const handleForumSelected = (unitId) => {
             @cancel="dialog.cancel"
         />
 
-        <div class="flex mt-16">
+        <div class="flex mt-16 gap-4">
             <!-- オーバーレイ (サイドバー表示時のみ) -->
             <div
                 v-if="sidebarVisible"
@@ -306,7 +306,7 @@ const handleForumSelected = (unitId) => {
             />
 
             <!-- メインコンテンツエリア -->
-            <div class="flex-1 max-w-4xl mx-auto p-4">
+            <div class="flex-1 p-4">
                 <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
@@ -660,6 +660,7 @@ const handleForumSelected = (unitId) => {
 @media (min-width: 1366px) {
     .flex-1 {
         margin-left: 280px; /* サイドバー幅より広い余白を設定 */
+        margin-right: 280px; /* サイドバー幅より広い余白を設定 */
     }
 }
 
