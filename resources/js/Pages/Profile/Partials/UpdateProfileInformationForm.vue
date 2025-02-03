@@ -164,6 +164,7 @@ const handleSuccessMessage = (message) => {
                     v-model="form.name"
                     required
                     autocomplete="name"
+                    placeholder="例: 山田太郎"
                 />
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
@@ -176,6 +177,7 @@ const handleSuccessMessage = (message) => {
                     class="mt-1 block w-full"
                     v-model="form.username_id"
                     required
+                    placeholder="任意の英数字（255文字以内）"
                 />
                 <InputError class="mt-2" :message="form.errors.username_id" />
                 <!-- ゲストユーザー向けの説明文 -->
@@ -194,6 +196,7 @@ const handleSuccessMessage = (message) => {
                     type="text"
                     class="mt-1 block w-full"
                     v-model="form.tel"
+                    placeholder="例: 090-1234-5678（任意）"
                 />
             </div>
 
@@ -204,6 +207,7 @@ const handleSuccessMessage = (message) => {
                     type="email"
                     class="mt-1 block w-full"
                     v-model="form.email"
+                    placeholder="例: example@example.com（任意）"
                 />
             </div>
 
