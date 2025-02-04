@@ -16,6 +16,7 @@ const postData = ref({
 const image = ref(null); // 画像ファイル用
 const imagePreview = ref(null); // プレビュー用
 const fileInput = ref(null);
+const isModalOpen = ref(false); // モーダルの開閉状態を管理
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -136,7 +137,8 @@ const submitPost = () => {
                 <img
                     :src="imagePreview"
                     alt="画像プレビュー"
-                    class="w-32 h-32 object-cover rounded-md"
+                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                    @click="isModalOpen = true"
                 />
                 <!-- 削除ボタン -->
                 <div
@@ -149,6 +151,18 @@ const submitPost = () => {
                         class="bi bi-x-circle text-black hover:text-gray-500"
                     ></i>
                 </div>
+            </div>
+
+            <!-- モーダル表示 -->
+            <div
+                v-if="isModalOpen"
+                class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+                @click.self="isModalOpen = false"
+            >
+                <img
+                    :src="imagePreview"
+                    class="max-w-full max-h-full rounded-lg"
+                />
             </div>
 
             <!-- 送信ボタン -->
