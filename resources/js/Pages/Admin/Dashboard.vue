@@ -23,7 +23,7 @@ import { Link, Head } from "@inertiajs/vue3";
                         <Link
                             :href="route('units.create')"
                             class="text-blue-500 link-hover"
-                            >{{ $t("Management page") }}</Link
+                            >{{ $t("Unit Management page") }}</Link
                         >
                     </div>
                 </div>
