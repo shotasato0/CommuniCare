@@ -2,6 +2,7 @@
 import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
+import ImageModal from "./ImageModal.vue"; // ImageModalコンポーネントをインポート
 
 const props = defineProps({
     forumId: [String, Number], // String または Number 型を許容
@@ -154,16 +155,12 @@ const submitPost = () => {
             </div>
 
             <!-- モーダル表示 -->
-            <div
-                v-if="isModalOpen"
-                class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-                @click.self="isModalOpen = false"
-            >
+            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
                 <img
                     :src="imagePreview"
                     class="max-w-full max-h-full rounded-lg"
                 />
-            </div>
+            </ImageModal>
 
             <!-- 送信ボタン -->
             <div class="flex justify-end mt-2">
