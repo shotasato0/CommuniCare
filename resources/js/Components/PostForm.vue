@@ -41,6 +41,9 @@ const triggerFileInput = () => {
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = ""; // ファイル入力の値をリセット
+    }
 };
 
 // 投稿の送信処理（画像やファイルを添付に対応）
@@ -142,7 +145,9 @@ const submitPost = () => {
                     title="画像を削除"
                     style="width: 24px; height: 24px"
                 >
-                    <i class="bi bi-x-circle text-black hover:text-gray-500"></i>
+                    <i
+                        class="bi bi-x-circle text-black hover:text-gray-500"
+                    ></i>
                 </div>
             </div>
 
