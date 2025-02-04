@@ -38,6 +38,11 @@ const triggerFileInput = () => {
     fileInput.value.click();
 };
 
+const removeImage = () => {
+    image.value = null;
+    imagePreview.value = null;
+};
+
 // 投稿の送信処理（画像やファイルを添付に対応）
 const submitPost = () => {
     if (!postData.value.forum_id || postData.value.forum_id === 0) {
@@ -124,12 +129,21 @@ const submitPost = () => {
             </div>
 
             <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="mt-2">
+            <div v-if="imagePreview" class="relative mt-2 inline-block">
                 <img
                     :src="imagePreview"
                     alt="画像プレビュー"
                     class="w-32 h-32 object-cover rounded-md"
                 />
+                <!-- 削除ボタン -->
+                <div
+                    class="absolute top-0 right-0 bg-white rounded-full p-1 cursor-pointer flex items-center justify-center"
+                    @click="removeImage"
+                    title="画像を削除"
+                    style="width: 24px; height: 24px"
+                >
+                    <i class="bi bi-x-circle text-black hover:text-gray-500"></i>
+                </div>
             </div>
 
             <!-- 送信ボタン -->
