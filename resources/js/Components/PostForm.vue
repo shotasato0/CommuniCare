@@ -109,6 +109,7 @@ const submitPost = () => {
                     class="absolute right-2 bottom-2 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
+                    title="ファイルを選択"
                 >
                     <i class="bi bi-file-earmark text-xl"></i>
                 </div>
