@@ -99,13 +99,14 @@ const submitPost = () => {
                 <p class="font-medium">本文</p>
                 <textarea
                     v-model="postData.message"
-                    class="border-gray-300 rounded-md px-2 pr-12"
+                    class="w-full p-2 border border-gray-300 rounded-md"
                     required
                     placeholder="本文を入力してください"
+                    rows="3"
                 ></textarea>
                 <!-- ファイル選択アイコン -->
                 <div
-                    class="absolute right-2 bottom-3 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    class="absolute right-2 bottom-2 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                 >
