@@ -15,6 +15,7 @@ const postData = ref({
 
 const image = ref(null); // 画像ファイル用
 const imagePreview = ref(null); // プレビュー用
+const fileInput = ref(null);
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -31,6 +32,10 @@ const handleImageUpload = (event) => {
         image.value = file;
         imagePreview.value = URL.createObjectURL(file); // プレビュー用URLを生成
     }
+};
+
+const triggerFileInput = () => {
+    fileInput.value.click();
 };
 
 // 投稿の送信処理（画像やファイルを添付に対応）
@@ -90,23 +95,26 @@ const submitPost = () => {
             </div>
 
             <!-- 本文 -->
-            <div class="flex flex-col mt-2">
+            <div class="flex flex-col mt-2 relative">
                 <p class="font-medium">本文</p>
                 <textarea
                     v-model="postData.message"
-                    class="border-gray-300 rounded-md px-2"
+                    class="border-gray-300 rounded-md px-2 pr-12"
                     required
                     placeholder="本文を入力してください"
                 ></textarea>
-            </div>
-
-            <!-- 画像アップロード -->
-            <div class="flex flex-col mt-2">
-                <p class="font-medium">画像添付 (オプション)</p>
+                <!-- ファイル選択アイコン -->
+                <i
+                    class="bi bi-file-earmark absolute right-2 bottom-2 text-xl cursor-pointer"
+                    @click="triggerFileInput"
+                ></i>
+                <!-- 隠しファイル入力 -->
                 <input
                     type="file"
                     accept="image/*"
+                    ref="fileInput"
                     @change="handleImageUpload"
+                    style="display: none"
                 />
             </div>
 
