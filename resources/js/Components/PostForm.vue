@@ -14,10 +14,11 @@ const postData = ref({
     forum_id: props.forumId ? Number(props.forumId) : null, // forum_id を追加し、初期値を適切に設定
 });
 
-const image = ref(null); // 画像ファイル用
-const imagePreview = ref(null); // プレビュー用
-const fileInput = ref(null);
-const isModalOpen = ref(false); // モーダルの開閉状態を管理
+const image = ref(null); // 画像ファイル
+const imagePreview = ref(null); // 画像プレビュー
+const fileInput = ref(null); // ファイル入力
+const isModalOpen = ref(false); // モーダル表示
+const localErrorMessage = ref(null); // エラーメッセージ
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -27,19 +28,40 @@ watch(
     }
 );
 
-// 画像選択時の処理
-const handleImageUpload = (event) => {
-    const file = event.target.files[0];
+// 画像ファイルのチェック
+const handleImageChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
-        image.value = file;
-        imagePreview.value = URL.createObjectURL(file); // プレビュー用URLを生成
+        // 画像形式のチェック（jpeg, png, gif などのみ許可）
+        const validImageTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+        ];
+        if (!validImageTypes.includes(file.type)) {
+            localErrorMessage.value =
+                "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
+
+            // 8秒後にエラーメッセージを自動的に消す処理
+            setTimeout(() => {
+                localErrorMessage.value = null;
+            }, 8000);
+
+            return;
+        }
+
+        image.value = file; // 画像ファイルを設定
+        imagePreview.value = URL.createObjectURL(file); // ローカルプレビュー用にBlob URLをセット
     }
 };
 
+// ファイル選択ボタンをクリックしたときの処理
 const triggerFileInput = () => {
     fileInput.value.click();
 };
 
+// 画像を削除する処理
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
@@ -55,26 +77,30 @@ const submitPost = () => {
         return;
     }
 
+    // フォームデータを作成
     const formData = new FormData();
     formData.append("title", postData.value.title);
     formData.append("message", postData.value.message);
     formData.append("forum_id", postData.value.forum_id);
     formData.append("_token", getCsrfToken());
 
+    // 画像データが存在する場合、フォームデータに追加
     if (image.value) {
         formData.append("image", image.value); // 画像データの追加
     }
 
+    // 投稿の送信
     router.post(route("forum.store"), formData, {
         onSuccess: () => {
-            postData.value = {
+            // 投稿成功後の処理
+            postData.value = { // フォームデータをリセット
                 title: "",
                 message: "",
                 forum_id: props.forumId,
             };
-            image.value = null;
-            imagePreview.value = null;
-            router.get(
+            image.value = null; // 画像ファイルをリセット
+            imagePreview.value = null; // 画像プレビューをリセット
+            router.get( // 投稿成功後、掲示板のトップページにリダイレクト
                 route("forum.index", { forum_id: postData.value.forum_id }),
                 {
                     preserveState: true,
@@ -128,9 +154,14 @@ const submitPost = () => {
                     type="file"
                     accept="image/*"
                     ref="fileInput"
-                    @change="handleImageUpload"
+                    @change="handleImageChange"
                     style="display: none"
                 />
+            </div>
+
+            <!-- エラーメッセージ表示 -->
+            <div v-if="localErrorMessage" class="text-red-500 mt-2">
+                {{ localErrorMessage }}
             </div>
 
             <!-- プレビュー表示 -->
