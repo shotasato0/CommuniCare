@@ -104,10 +104,13 @@ const submitPost = () => {
                     placeholder="本文を入力してください"
                 ></textarea>
                 <!-- ファイル選択アイコン -->
-                <i
-                    class="bi bi-file-earmark absolute right-2 bottom-2 text-xl cursor-pointer"
+                <div
+                    class="absolute right-2 bottom-3 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    style="width: 40px; height: 40px"
                     @click="triggerFileInput"
-                ></i>
+                >
+                    <i class="bi bi-file-earmark text-xl"></i>
+                </div>
                 <!-- 隠しファイル入力 -->
                 <input
                     type="file"
