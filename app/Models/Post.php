@@ -11,7 +11,7 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes, BelongsToTenant;
 
-    protected $fillable = ['user_id', 'title', 'message', 'forum_id', 'quoted_post_id', 'tenant_id'];
+    protected $fillable = ['user_id', 'title', 'message', 'img', 'forum_id', 'quoted_post_id', 'tenant_id'];
 
     public function user()
     {

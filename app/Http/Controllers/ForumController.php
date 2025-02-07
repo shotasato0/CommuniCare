@@ -71,6 +71,7 @@ class ForumController extends Controller
                 'id' => $post->id,
                 'title' => $post->title,
                 'message' => $post->message,
+                'img' => $post->img,
                 'created_at' => $post->created_at,
                 'user' => $post->user,
                 'like_count' => $post->likes_count, // 投稿のいいね数
