@@ -578,11 +578,7 @@ const openModal = (imageSrc) => {
                 </div>
 
                 <!-- モーダル表示 -->
-                <ImageModal
-                    :isOpen="isModalOpen"
-                    @close="isModalOpen = false"
-                    class="forum-image-modal"
-                >
+                <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
                     <img
                         :src="currentImage"
                         alt="投稿画像"
@@ -714,10 +710,5 @@ const openModal = (imageSrc) => {
         margin-top: 0 !important; /* この範囲ではmt-16を無効化 */
         width: 50% !important;
     }
-}
-
-/* 投稿画像モーダルの背景色を変更 */
-.forum-image-modal {
-    background-color: rgba(0, 0, 0, 0.1) !important; /* 強制的に透明度を適用 */
 }
 </style>
