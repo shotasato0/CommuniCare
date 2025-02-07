@@ -469,6 +469,15 @@ const handleForumSelected = (unitId) => {
                             {{ post.message }}
                         </p>
 
+                        <!-- 投稿画像の表示 -->
+                        <div v-if="post.img">
+                            <img
+                                :src="`/storage/${post.img}`"
+                                alt="投稿画像"
+                                class="w-48 h-48 object-cover rounded-md"
+                            />
+                        </div>
+
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
                             <LikeButton
