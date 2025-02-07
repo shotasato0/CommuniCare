@@ -93,14 +93,16 @@ const submitPost = () => {
     router.post(route("forum.store"), formData, {
         onSuccess: () => {
             // 投稿成功後の処理
-            postData.value = { // フォームデータをリセット
+            postData.value = {
+                // フォームデータをリセット
                 title: "",
                 message: "",
                 forum_id: props.forumId,
             };
             image.value = null; // 画像ファイルをリセット
             imagePreview.value = null; // 画像プレビューをリセット
-            router.get( // 投稿成功後、掲示板のトップページにリダイレクト
+            router.get(
+                // 投稿成功後、掲示板のトップページにリダイレクト
                 route("forum.index", { forum_id: postData.value.forum_id }),
                 {
                     preserveState: true,
@@ -117,7 +119,7 @@ const submitPost = () => {
 <template>
     <!-- 投稿フォーム -->
     <div class="bg-white rounded-md mt-5 p-3">
-        <form @submit.prevent="submitPost">
+        <form @submit.prevent="submitPost" enctype="multipart/form-data">
             <!-- 件名 -->
             <div class="flex mt-2">
                 <p class="font-medium">件名</p>
