@@ -149,7 +149,7 @@ const submitPost = () => {
                     @click="triggerFileInput"
                     title="ファイルを選択"
                 >
-                    <i class="bi bi-file-earmark text-xl"></i>
+                    <i class="bi bi-card-image text-2xl"></i>
                 </div>
                 <!-- 隠しファイル入力 -->
                 <input
