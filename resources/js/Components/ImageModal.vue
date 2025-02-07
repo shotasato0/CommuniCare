@@ -13,13 +13,9 @@ const close = () => {
 <template>
     <div
         v-if="isOpen"
-        class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
         @click.self="close"
     >
         <slot></slot>
     </div>
 </template>
-
-<style scoped>
-/* 必要に応じてスタイルを追加 */
-</style>
