@@ -487,19 +487,6 @@ const openModal = (imageSrc) => {
                             />
                         </div>
 
-                        <!-- モーダル表示 -->
-                        <ImageModal
-                            :isOpen="isModalOpen"
-                            @close="isModalOpen = false"
-                            class="forum-image-modal"
-                        >
-                            <img
-                                :src="currentImage"
-                                alt="投稿画像"
-                                class="max-w-full max-h-full rounded-lg"
-                            />
-                        </ImageModal>
-
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
                             <LikeButton
@@ -589,6 +576,19 @@ const openModal = (imageSrc) => {
                 >
                     投稿がありません。
                 </div>
+
+                <!-- モーダル表示 -->
+                <ImageModal
+                    :isOpen="isModalOpen"
+                    @close="isModalOpen = false"
+                    class="forum-image-modal"
+                >
+                    <img
+                        :src="currentImage"
+                        alt="投稿画像"
+                        class="max-w-full max-h-full rounded-lg"
+                    />
+                </ImageModal>
 
                 <!-- 下部ページネーション -->
                 <Pagination
