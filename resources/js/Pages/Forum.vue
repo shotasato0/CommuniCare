@@ -23,7 +23,7 @@ import { fetchPostsByForumId } from "@/Utils/fetchPosts";
 import { deleteItem } from "@/Utils/deleteItem";
 import CustomDialog from "@/Components/CustomDialog.vue"; // ダイアログコンポーネントをインポート
 import { useDialog } from "../composables/dialog"; // dialog.js の useDialog をインポート
-
+import ImageModal from "@/Components/ImageModal.vue";
 
 // props を構造分解して取得
 const {
@@ -50,6 +50,8 @@ const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
 const activeUnitId = ref(null); // 選択中の部署IDを管理
+const isModalOpen = ref(false); // モーダル表示
+const currentImage = ref(null); // 現在の画像を保持
 
 const quotePost = (post) => {
     quotedPost.value = post; // post全体をセットする
@@ -270,6 +272,12 @@ const handleForumSelected = (unitId) => {
     localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
     onForumSelected(unitId);
 };
+
+// モーダルを開く関数
+const openModal = (imageSrc) => {
+    currentImage.value = imageSrc; // クリックした画像をセット
+    isModalOpen.value = true; // モーダルを開く
+};
 </script>
 
 <template>
@@ -474,9 +482,22 @@ const handleForumSelected = (unitId) => {
                             <img
                                 :src="`/storage/${post.img}`"
                                 alt="投稿画像"
-                                class="w-48 h-48 object-cover rounded-md"
+                                class="w-48 h-48 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                                @click="openModal(`/storage/${post.img}`)"
                             />
                         </div>
+
+                        <!-- モーダル表示 -->
+                        <ImageModal
+                            :isOpen="isModalOpen"
+                            @close="isModalOpen = false"
+                        >
+                            <img
+                                :src="currentImage"
+                                alt="投稿画像"
+                                class="max-w-full max-h-full rounded-lg"
+                            />
+                        </ImageModal>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
                         <div class="flex justify-end space-x-2 mt-2">
