@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
+import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
     postId: {
@@ -54,26 +55,8 @@ onMounted(() => {
 });
 
 // 画像ファイルのチェック
-const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const validImageTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-        ];
-        if (!validImageTypes.includes(file.type)) {
-            localErrorMessage.value =
-                "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
-            setTimeout(() => {
-                localErrorMessage.value = null;
-            }, 8000);
-            return;
-        }
-        image.value = file;
-        imagePreview.value = URL.createObjectURL(file);
-    }
+const onImageChange = (event) => {
+    handleImageChange(event, image, imagePreview, localErrorMessage);
 };
 
 // ファイル選択ボタンをクリックしたときの処理
@@ -166,7 +149,7 @@ const handleCancel = () => {
                 type="file"
                 accept="image/*"
                 ref="fileInput"
-                @change="handleImageChange"
+                @change="onImageChange"
                 style="display: none"
             />
             <!-- エラーメッセージ表示 -->
