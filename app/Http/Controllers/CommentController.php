@@ -13,26 +13,31 @@ class CommentController extends Controller
 {
     public function store(Request $request)
     {
-        // バリデーション
         $validated = $request->validate([
             'post_id' => 'required|exists:posts,id',
-            'parent_id' => 'nullable|exists:comments,id', // 返信先のコメントIDは任意
+            'parent_id' => 'nullable|exists:comments,id',
             'message' => 'required|string|max:1000',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // 投稿から forum_id を取得
-        $post = Post::find($validated['post_id']);
-        $forumId = $post->forum_id;
+        // 画像がアップロードされた場合は保存
+        $imgPath = null;
+        if ($request->hasFile('img')) {
+            $imgPath = $request->file('img')->store('images', 'public');
+        }
 
-        // コメントの作成
-        $comment = new Comment();
-        $comment->tenant_id = auth()->user()->tenant_id;
-        $comment->post_id = $validated['post_id'];
-        $comment->parent_id = $validated['parent_id'] ?? null;
-        $comment->message = $validated['message'];
-        $comment->user_id = Auth::id();
-        $comment->forum_id = $forumId; // forum_idを設定
-        $comment->save();
+        $post = Post::find($validated['post_id']); // 投稿を取得
+
+        // モデルを使用してコメントを作成
+        $comment = Comment::create([
+            'tenant_id' => auth()->user()->tenant_id,
+            'user_id' => Auth::id(),
+            'post_id' => $validated['post_id'],
+            'parent_id' => $validated['parent_id'] ?? null,
+            'message' => $validated['message'],
+            'forum_id' => $post->forum_id,
+            'img' => $imgPath
+        ]);
 
         // コメントに関連するユーザー情報をロード
         $comment->load('user');
@@ -40,7 +45,7 @@ class CommentController extends Controller
         // ユニット情報の取得
         $units = Unit::all();
 
-        // Inertiaレスポンスを返す
+        // inertiaレスポンスを返して掲示板ページを表示
         return Inertia::render('Forum', [
             'units' => $units,
         ]);
