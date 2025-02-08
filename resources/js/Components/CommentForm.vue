@@ -41,8 +41,8 @@ const commentData = ref({
 });
 
 // 画像関連のrefを追加
-const image = ref(null);
-const imagePreview = ref(null);
+const img = ref(null);
+const imgPreview = ref(null);
 const fileInput = ref(null);
 const isModalOpen = ref(false);
 const localErrorMessage = ref(null);
@@ -56,7 +56,7 @@ onMounted(() => {
 
 // 画像ファイルのチェック
 const onImageChange = (event) => {
-    handleImageChange(event, image, imagePreview, localErrorMessage);
+    handleImageChange(event, img, imgPreview, localErrorMessage);
 };
 
 // ファイル選択ボタンをクリックしたときの処理
@@ -66,8 +66,8 @@ const triggerFileInput = () => {
 
 // 画像を削除する処理
 const removeImage = () => {
-    image.value = null;
-    imagePreview.value = null;
+    img.value = null;
+    imgPreview.value = null;
     if (fileInput.value) {
         fileInput.value.value = "";
     }
@@ -83,8 +83,8 @@ const submitComment = () => {
     formData.append("post_id", commentData.value.post_id);
     formData.append("_token", commentData.value._token);
 
-    if (image.value) {
-        formData.append("image", image.value);
+    if (img.value) {
+        formData.append("img", img.value);
     }
 
     router.post(route("comment.store", { post: props.postId }), formData, {
@@ -95,8 +95,8 @@ const submitComment = () => {
                 parent_id: props.parentId,
                 message: "",
             };
-            image.value = null;
-            imagePreview.value = null;
+            img.value = null;
+            imgPreview.value = null;
             router.visit(
                 route("forum.index", { forum_id: props.selectedForumId }),
                 {
@@ -157,9 +157,9 @@ const handleCancel = () => {
                 {{ localErrorMessage }}
             </div>
             <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="relative mt-2 inline-block">
+            <div v-if="imgPreview" class="relative mt-2 inline-block">
                 <img
-                    :src="imagePreview"
+                    :src="imgPreview"
                     alt="画像プレビュー"
                     class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
                     @click="isModalOpen = true"
@@ -177,7 +177,7 @@ const handleCancel = () => {
             </div>
             <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
                 <img
-                    :src="imagePreview"
+                    :src="imgPreview"
                     class="max-w-full max-h-full rounded-lg"
                 />
             </ImageModal>
