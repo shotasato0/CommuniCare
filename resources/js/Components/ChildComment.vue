@@ -57,6 +57,16 @@ const props = defineProps({
                 <!-- コメント本文 -->
                 <p class="mt-2 whitespace-pre-wrap">{{ comment.message }}</p>
 
+                <!-- コメント画像 -->
+                <div v-if="comment.img" class="mt-3">
+                    <img
+                        :src="`/storage/${comment.img}`"
+                        alt="添付画像"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="openModal(`/storage/${comment.img}`)"
+                    />
+                </div>
+
                 <div class="flex justify-end space-x-2 mt-2">
                     <!-- 返信ボタン -->
                     <button
