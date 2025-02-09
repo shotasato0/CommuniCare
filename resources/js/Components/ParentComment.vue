@@ -109,6 +109,15 @@ const getCommentCountRecursive = (comments) => {
                 <!-- コメント本文 -->
                 <p class="mt-3 whitespace-pre-wrap">{{ comment.message }}</p>
 
+                <!-- コメント画像 -->
+                <div v-if="comment.img" class="mt-3">
+                    <img
+                        :src="`/storage/${comment.img}`"
+                        alt="添付画像"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                    />
+                </div>
+
                 <!-- 子コメント -->
                 <div
                     v-if="comment.children && comment.children.length > 0"
