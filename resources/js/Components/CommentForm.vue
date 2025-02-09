@@ -85,6 +85,11 @@ const submitComment = () => {
     formData.append("post_id", commentData.value.post_id); // 投稿IDを追加
     formData.append("_token", commentData.value._token); // CSRFトークンを追加
 
+    // 親コメントIDが存在する場合はフォームデータに追加
+    if (props.parentId) {
+        formData.append("parent_id", props.parentId); // 親コメントIDを追加
+    }
+
     // 画像データが存在する場合はフォームデータに追加
     if (img.value) { // 画像データが存在する場合
         formData.append("img", img.value); // 画像データをフォームデータに追加
