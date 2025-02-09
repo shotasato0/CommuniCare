@@ -5,48 +5,49 @@ import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
 import { handleImageChange } from "@/Utils/imageHandler";
 
+// コメントフォームのプロパティを定義
 const props = defineProps({
-    postId: {
+    postId: { // 投稿ID
         type: Number,
         required: true,
     },
-    parentId: {
+    parentId: { // 親コメントID
         type: Number,
         default: null,
     },
-    selectedForumId: {
+    selectedForumId: { // 選択中の掲示版ID
         type: Number,
         required: true,
     },
-    replyToName: {
+    replyToName: { // 返信先のユーザー名
         type: String,
         default: "",
     },
-    title: {
+    title: { // フォームのタイトル
         type: String,
         default: "返信",
     },
 });
 
-const emit = defineEmits(["cancel"]);
-const message = ref("");
-const placeholder = ref(`@${props.replyToName} さんへの返信を入力`);
+const emit = defineEmits(["cancel"]); // キャンセルイベントを発行するためのemit
+const placeholder = ref(`@${props.replyToName} さんへの返信を入力`); // プレースホルダー
 
 // コメントデータを管理するref
-const commentData = ref({
-    post_id: props.postId,
-    parent_id: props.parentId,
-    message: "",
-    replyToName: props.replyToName,
+const commentData = ref({ // コメントデータ
+    post_id: props.postId, // 投稿ID
+    parent_id: props.parentId, // 親コメントID
+    message: "", // コメントメッセージ
+    replyToName: props.replyToName, // 返信先のユーザー名
 });
 
 // 画像関連のrefを追加
-const img = ref(null);
-const imgPreview = ref(null);
-const fileInput = ref(null);
-const isModalOpen = ref(false);
-const localErrorMessage = ref(null);
+const img = ref(null); // 画像ファイル
+const imgPreview = ref(null); // 画像プレビュー
+const fileInput = ref(null); // ファイル選択ボタン
+const isModalOpen = ref(false); // モーダル表示
+const localErrorMessage = ref(null); // エラーメッセージ
 
+// コンポーネントのマウント時に初期値を設定
 onMounted(() => {
     // コメントに対する返信の場合のみメンションを追加
     if (props.replyToName && props.parentId) {
@@ -75,38 +76,41 @@ const removeImage = () => {
 
 // コメントの送信処理に画像データを追加
 const submitComment = () => {
-    commentData.value._token = getCsrfToken();
-    commentData.value.post_id = props.postId;
+    commentData.value._token = getCsrfToken(); // CSRFトークンを追加
+    commentData.value.post_id = props.postId; // 投稿IDを追加
 
+    // フォームデータを作成
     const formData = new FormData();
-    formData.append("message", commentData.value.message);
-    formData.append("post_id", commentData.value.post_id);
-    formData.append("_token", commentData.value._token);
+    formData.append("message", commentData.value.message); // コメントメッセージを追加
+    formData.append("post_id", commentData.value.post_id); // 投稿IDを追加
+    formData.append("_token", commentData.value._token); // CSRFトークンを追加
 
-    if (img.value) {
-        formData.append("img", img.value);
+    // 画像データが存在する場合はフォームデータに追加
+    if (img.value) { // 画像データが存在する場合
+        formData.append("img", img.value); // 画像データをフォームデータに追加
     }
 
+    // コメントの投稿処理を実行
     router.post(route("comment.store", { post: props.postId }), formData, {
-        preserveScroll: true,
-        onSuccess: () => {
+        preserveScroll: true, // スクロール位置を維持
+        onSuccess: () => { // 投稿成功時の処理
             commentData.value = {
-                post_id: props.postId,
-                parent_id: props.parentId,
-                message: "",
+                post_id: props.postId, // 投稿IDをリセット
+                parent_id: props.parentId, // 親コメントIDをリセット
+                message: "", // コメントメッセージをリセット
             };
-            img.value = null;
-            imgPreview.value = null;
+            img.value = null; // 画像ファイルをリセット
+            imgPreview.value = null; // 画像プレビューをリセット
             router.visit(
-                route("forum.index", { forum_id: props.selectedForumId }),
+                route("forum.index", { forum_id: props.selectedForumId }), // 掲示板にリダイレクト
                 {
-                    preserveScroll: true,
-                    replace: true,
+                    preserveScroll: true, // スクロール位置を維持
+                    replace: true, // ページを置換
                 }
             );
         },
-        onError: (errors) => {
-            console.error("コメントの投稿に失敗しました:", errors);
+        onError: (errors) => { // 投稿失敗時の処理
+            console.error("コメントの投稿に失敗しました:", errors); // エラーメッセージをコンソールに出力
         },
     });
 };
@@ -115,13 +119,13 @@ const submitComment = () => {
 const handleCancel = () => {
     // フォームをリセット
     commentData.value = {
-        post_id: props.postId,
-        parent_id: props.parentId,
-        message: "",
-        replyToName: props.replyToName,
+        post_id: props.postId, // 投稿IDをリセット
+        parent_id: props.parentId, // 親コメントIDをリセット
+        message: "", // コメントメッセージをリセット
+        replyToName: props.replyToName, // 返信先のユーザー名をリセット
     };
     // 親コンポーネントにキャンセルイベントを発行
-    emit("cancel");
+    emit("cancel"); // キャンセルイベントを発行
 };
 </script>
 
