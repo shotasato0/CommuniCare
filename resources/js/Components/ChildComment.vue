@@ -1,5 +1,7 @@
 <script setup>
+import { ref } from "vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
+import ImageModal from "./ImageModal.vue";
 
 const props = defineProps({
     childComments: Array, // 子コメントリスト
@@ -12,6 +14,16 @@ const props = defineProps({
     openUserProfile: Function, // ユーザープロフィールを開く関数
     selectedForumId: Number, // 選択されたフォーラムのID
 });
+
+// コメント画像モーダルの表示状態を管理
+const isModalOpen = ref(false); // コメント画像モーダルの表示状態
+const currentImage = ref(null); // 現在表示中の画像パス
+
+// コメント画像モーダルを開く
+const openModal = (imagePath) => {
+    currentImage.value = imagePath; // 現在表示中の画像パスを更新
+    isModalOpen.value = true; // コメント画像モーダルを開く
+};
 </script>
 
 <template>
@@ -124,4 +136,13 @@ const props = defineProps({
             </div>
         </div>
     </div>
+
+    <!-- コメント画像モーダル -->
+    <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+        <img
+            :src="currentImage"
+            alt="投稿画像"
+            class="max-w-full max-h-full rounded-lg"
+        />
+    </ImageModal>
 </template>
