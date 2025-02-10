@@ -1,5 +1,7 @@
 <script setup>
+import { ref } from "vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
+import ImageModal from "./ImageModal.vue";
 
 const props = defineProps({
     childComments: Array, // 子コメントリスト
@@ -12,6 +14,16 @@ const props = defineProps({
     openUserProfile: Function, // ユーザープロフィールを開く関数
     selectedForumId: Number, // 選択されたフォーラムのID
 });
+
+// コメント画像モーダルの表示状態を管理
+const isModalOpen = ref(false); // コメント画像モーダルの表示状態
+const currentImage = ref(null); // 現在表示中の画像パス
+
+// コメント画像モーダルを開く
+const openModal = (imagePath) => {
+    currentImage.value = imagePath; // 現在表示中の画像パスを更新
+    isModalOpen.value = true; // コメント画像モーダルを開く
+};
 </script>
 
 <template>
@@ -56,6 +68,16 @@ const props = defineProps({
 
                 <!-- コメント本文 -->
                 <p class="mt-2 whitespace-pre-wrap">{{ comment.message }}</p>
+
+                <!-- コメント画像 -->
+                <div v-if="comment.img" class="mt-3">
+                    <img
+                        :src="`/storage/${comment.img}`"
+                        alt="添付画像"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="openModal(`/storage/${comment.img}`)"
+                    />
+                </div>
 
                 <div class="flex justify-end space-x-2 mt-2">
                     <!-- 返信ボタン -->
@@ -114,4 +136,13 @@ const props = defineProps({
             </div>
         </div>
     </div>
+
+    <!-- コメント画像モーダル -->
+    <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+        <img
+            :src="currentImage"
+            alt="投稿画像"
+            class="max-w-full max-h-full rounded-lg"
+        />
+    </ImageModal>
 </template>

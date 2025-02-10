@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue"; // ImageModalコンポーネントをインポート
+import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
     forumId: [String, Number], // String または Number 型を許容
@@ -29,31 +30,8 @@ watch(
 );
 
 // 画像ファイルのチェック
-const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        // 画像形式のチェック（jpeg, png, gif などのみ許可）
-        const validImageTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-        ];
-        if (!validImageTypes.includes(file.type)) {
-            localErrorMessage.value =
-                "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
-
-            // 8秒後にエラーメッセージを自動的に消す処理
-            setTimeout(() => {
-                localErrorMessage.value = null;
-            }, 8000);
-
-            return;
-        }
-
-        image.value = file; // 画像ファイルを設定
-        imagePreview.value = URL.createObjectURL(file); // ローカルプレビュー用にBlob URLをセット
-    }
+const onImageChange = (e) => {
+    handleImageChange(e, image, imagePreview, localErrorMessage);
 };
 
 // ファイル選択ボタンをクリックしたときの処理
@@ -156,7 +134,7 @@ const submitPost = () => {
                     type="file"
                     accept="image/*"
                     ref="fileInput"
-                    @change="handleImageChange"
+                    @change="onImageChange"
                     style="display: none"
                 />
             </div>
