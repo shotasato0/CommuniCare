@@ -42,5 +42,14 @@ class Comment extends Model
     {
         return $this->belongsTo(Forum::class);
     }
+
+    public function getFormattedMessageAttribute()
+    {
+        return nl2br(preg_replace(
+            '/(https?:\/\/[^\s]+)/',
+            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>',
+            e($this->message)
+        ));
+    }
 }
 
