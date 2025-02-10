@@ -47,8 +47,8 @@ const commentData = ref({
 });
 
 // 画像関連のrefを追加
-const img = ref(null); // 画像ファイル
-const imgPreview = ref(null); // 画像プレビュー
+const image = ref(null); // 画像ファイル
+const imagePreview = ref(null); // 画像プレビュー
 const fileInput = ref(null); // ファイル選択ボタン
 const isModalOpen = ref(false); // モーダル表示
 const localErrorMessage = ref(null); // エラーメッセージ
@@ -63,7 +63,7 @@ onMounted(() => {
 
 // 画像ファイルのチェック
 const onImageChange = (event) => {
-    handleImageChange(event, img, imgPreview, localErrorMessage);
+    handleImageChange(event, image, imagePreview, localErrorMessage);
 };
 
 // ファイル選択ボタンをクリックしたときの処理
@@ -73,8 +73,8 @@ const triggerFileInput = () => {
 
 // 画像を削除する処理
 const removeImage = () => {
-    img.value = null;
-    imgPreview.value = null;
+    image.value = null;
+    imagePreview.value = null;
     if (fileInput.value) {
         fileInput.value.value = "";
     }
@@ -97,9 +97,9 @@ const submitComment = () => {
     }
 
     // 画像データが存在する場合はフォームデータに追加
-    if (img.value) {
+    if (image.value) {
         // 画像データが存在する場合
-        formData.append("img", img.value); // 画像データをフォームデータに追加
+        formData.append("image", image.value); // 画像データをフォームデータに追加
     }
 
     // コメントの投稿処理を実行
@@ -112,8 +112,8 @@ const submitComment = () => {
                 parent_id: props.parentId, // 親コメントIDをリセット
                 message: "", // コメントメッセージをリセット
             };
-            img.value = null; // 画像ファイルをリセット
-            imgPreview.value = null; // 画像プレビューをリセット
+            image.value = null; // 画像ファイルをリセット
+            imagePreview.value = null; // 画像プレビューをリセット
             router.visit(
                 route("forum.index", { forum_id: props.selectedForumId }), // 掲示板にリダイレクト
                 {
@@ -181,10 +181,10 @@ const handleCancel = () => {
                 {{ localErrorMessage }}
             </div>
             <!-- プレビュー表示 -->
-            <div v-if="imgPreview" class="relative mt-2 inline-block">
+            <div v-if="imagePreview" class="relative mt-2 inline-block">
                 <!-- プレビュー画像 -->
                 <img
-                    :src="imgPreview"
+                    :src="imagePreview"
                     alt="画像プレビュー"
                     class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
                     @click="isModalOpen = true"
@@ -205,7 +205,7 @@ const handleCancel = () => {
             <!-- コメント画像モーダル -->
             <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
                 <img
-                    :src="imgPreview"
+                    :src="imagePreview"
                     class="max-w-full max-h-full rounded-lg"
                 />
             </ImageModal>
