@@ -148,11 +148,10 @@ const handleCancel = () => {
         <!-- コメントフォーム -->
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
             <div class="relative">
-
                 <!-- コメントメッセージ入力欄 -->
                 <textarea
                     v-model="commentData.message"
-                    class="w-full p-2 border rounded-md"
+                    class="w-full p-2 border border-gray-300 rounded-md"
                     required
                     :placeholder="placeholder"
                     rows="3"
