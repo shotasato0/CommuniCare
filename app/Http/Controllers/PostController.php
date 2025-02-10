@@ -17,7 +17,7 @@ class PostController extends Controller
             'message' => 'required|string',
             'forum_id' => 'required|exists:forums,id',
             'quoted_post_id' => 'nullable|exists:posts,id',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
         $imgPath = null;
