@@ -4,24 +4,29 @@ import { router } from "@inertiajs/vue3";
 import { handleImageChange } from "@/Utils/imageHandler";
 import ImageModal from "./ImageModal.vue";
 
+// 引用付き投稿フォームのprops
 const props = defineProps({
-    show: Boolean,
-    quotedPost: Object,
-    forumId: Number,
+    show: Boolean, // フォームの表示
+    quotedPost: Object, // 引用元の投稿
+    forumId: Number, // 論壇ID
 });
 
-const emit = defineEmits(["close"]);
+// 引用付き投稿フォームのemit
+const emit = defineEmits(["close"]); // フォームを閉じる
 
-const newPostContent = ref("");
-const newPostTitle = ref("");
+// 新しい投稿の内容
+const newPostContent = ref(""); // 投稿の内容
+const newPostTitle = ref(""); // 投稿のタイトル
 
-const img = ref(null);
-const imgPreview = ref(null);
-const isModalOpen = ref(false);
-const fileInput = ref(null);
+// 画像関連のref
+const img = ref(null); // 画像ファイル
+const imgPreview = ref(null); // 画像プレビュー
+const isModalOpen = ref(false); // モーダル表示
+const fileInput = ref(null); // ファイル選択ボタン
 
-const localErrorMessage = ref(null);
+const localErrorMessage = ref(null); // エラーメッセージ
 
+// 画像変更時の処理
 const onImageChange = (event) => {
     handleImageChange(event, img, imgPreview, localErrorMessage);
 };
@@ -33,27 +38,28 @@ const triggerFileInput = () => {
 
 // 画像を削除する
 const removeImage = () => {
-    img.value = null;
-    imgPreview.value = null;
-    localErrorMessage.value = null;
+    img.value = null; // 画像を削除
+    imgPreview.value = null; // 画像プレビューを削除
+    localErrorMessage.value = null; // エラーメッセージを削除
 };
 
 // キャンセルボタン
 const cancel = () => {
-    emit("close");
+    emit("close"); // フォームを閉じる
 };
 
 // 引用付き投稿を送信
 const submitQuotePost = () => {
     router.post(route("forum.store"), {
         title: newPostTitle.value || null, // 投稿のタイトルを追加
-        message: newPostContent.value,
+        message: newPostContent.value, // 投稿の内容を追加
         forum_id: props.forumId, // Forum IDを追加
-        quoted_post_id: props.quotedPost.id,
+        quoted_post_id: props.quotedPost.id, // 引用元の投稿IDを追加
     });
 
+    // 画像が存在する場合はフォームデータに追加
     if (img.value) {
-        formData.append("img", img.value);
+        formData.append("img", img.value); // 画像を追加
     }
 
     emit("close"); // フォームを閉じる
