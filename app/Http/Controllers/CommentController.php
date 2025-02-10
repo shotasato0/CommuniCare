@@ -22,8 +22,8 @@ class CommentController extends Controller
 
         // 画像がアップロードされた場合は保存
         $imgPath = null;
-        if ($request->hasFile('img')) {
-            $imgPath = $request->file('img')->store('images', 'public');
+        if ($request->hasFile('image')) {
+            $imgPath = $request->file('image')->store('images', 'public');
         }
 
         $post = Post::find($validated['post_id']); // 投稿を取得

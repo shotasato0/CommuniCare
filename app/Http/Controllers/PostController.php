@@ -12,6 +12,7 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        // バリデーション
         $validated = $request->validate([
             'title' => $request->input('quoted_post_id') ? 'nullable|string|max:255' : 'required|string|max:255',
             'message' => 'required|string',
@@ -20,11 +21,13 @@ class PostController extends Controller
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
+        // 画像パスを取得
         $imgPath = null;
         if ($request->hasFile('image')) {
             $imgPath = $request->file('image')->store('images', 'public');
         }
 
+        // 投稿を作成
         $post = Post::create([
             'user_id' => auth()->id(),
             'title' => $validated['title'],
@@ -34,14 +37,8 @@ class PostController extends Controller
             'img' => $imgPath
         ]);
 
-        // 引用投稿の場合は Inertia::location、通常投稿の場合はリダイレクト
-        if ($request->has('quoted_post_id')) {
-            // Inertia::locationでリロードしつつ、フォーラムページへ
-            return Inertia::location(route('forum.index', ['forum_id' => $validated['forum_id']]));
-        } else {
-            // 通常投稿はリダイレクトでフォーラムページへ
-            return redirect()->route('forum.index');
-        }
+        // 掲示板ページにリダイレクト
+        return redirect()->route('forum.index');
     }
 
     public function destroy($id)
