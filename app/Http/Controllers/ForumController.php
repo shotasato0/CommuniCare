@@ -86,19 +86,8 @@ class ForumController extends Controller
                     'title' => $post->quotedPost->trashed() ? null : $post->quotedPost->title,
                     'user' => $post->quotedPost->trashed() ? null : $post->quotedPost->user,
                 ] : null,
-                'comments' => $post->comments->map(function ($comment) use ($user) {
-                    return [
-                        'id' => $comment->id,
-                        'message' => $comment->message,
-                        'formatted_message' => $comment->formatted_message, //ここでモデルで定義したアクセサを適用
-                        'img' => $comment->img,
-                        'created_at' => $comment->created_at,
-                        'user' => $comment->user,
-                        'like_count' => $comment->likes_count, // コメントのいいね数
-                        'is_liked_by_user' => $comment->likes->isNotEmpty(), // ユーザーがコメントにいいねしているか
-                        'children' => $comment->children,
-                    ];
-                }),
+                // コメントデータをフォーマット
+                'comments' => $post->comments->map(fn($comment) => $this->formatComment($comment, $user)),
             ];
         });
 
@@ -112,5 +101,20 @@ class ForumController extends Controller
             // デバッグ用ログ
             'debugPosts' => $posts->toArray(),
         ]);
+    }
+
+    // コメントデータをフォーマット
+    private function formatComment($comment, $user) {
+        return [
+            'id' => $comment->id,
+            'message' => $comment->message,
+            'formatted_message' => $comment->formatted_message,
+            'img' => $comment->img,
+            'created_at' => $comment->created_at,
+            'user' => $comment->user,
+            'like_count' => $comment->likes_count,
+            'is_liked_by_user' => $comment->likes->isNotEmpty(),
+            'children' => $comment->children->map(fn($child) => $this->formatComment($child, $user)), // 再帰的に適用
+        ];
     }
 }
