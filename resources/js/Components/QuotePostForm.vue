@@ -1,38 +1,106 @@
 <script setup>
 import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import { handleImageChange } from "@/Utils/imageHandler";
+import ImageModal from "./ImageModal.vue";
 
+// 引用付き投稿フォームのprops
 const props = defineProps({
-    show: Boolean,
-    quotedPost: Object,
-    forumId: Number,
+    show: Boolean, // フォームの表示
+    quotedPost: Object, // 引用元の投稿
+    forumId: Number, // 論壇ID
 });
 
-const emit = defineEmits(["close"]);
+// 引用付き投稿フォームのemit
+const emit = defineEmits(["close"]); // フォームを閉じる
 
-const newPostContent = ref("");
-const newPostTitle = ref("");
+// 新しい投稿の内容
+const newPostContent = ref(""); // 投稿の内容
+const newPostTitle = ref(""); // 投稿のタイトル
+
+// 画像関連のref
+const image = ref(null); // 画像ファイル
+const imagePreview = ref(null); // 画像プレビュー
+const isModalOpen = ref(false); // モーダル表示
+const fileInput = ref(null); // ファイル選択ボタン
+
+const localErrorMessage = ref(null); // エラーメッセージ
+
+// CSRFトークンを取得する関数
+function getCsrfToken() {
+    const token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    if (!token) {
+        console.error("CSRFトークンが見つかりません。");
+    }
+    return token;
+}
+
+// 画像変更時の処理
+const onImageChange = (event) => {
+    handleImageChange(event, image, imagePreview, localErrorMessage);
+};
+
+// ファイル選択ボタンをクリックしたときの処理
+const triggerFileInput = () => {
+    fileInput.value.click();
+};
+
+// 画像を削除する
+const removeImage = () => {
+    image.value = null; // 画像を削除
+    imagePreview.value = null; // 画像プレビューを削除
+    localErrorMessage.value = null; // エラーメッセージを削除
+    if (fileInput.value) {
+        fileInput.value.value = ""; // ファイル入力の値をリセット
+    }
+};
 
 // キャンセルボタン
 const cancel = () => {
-    emit("close");
+    emit("close"); // フォームを閉じる
 };
 
 // 引用付き投稿を送信
 const submitQuotePost = () => {
-    router.post(route("forum.store"), {
-        title: newPostTitle.value || null, // 投稿のタイトルを追加
-        message: newPostContent.value,
-        forum_id: props.forumId, // Forum IDを追加
-        quoted_post_id: props.quotedPost.id,
+    // 掲示板IDが選択されていない場合はエラー
+    if (!props.forumId || props.forumId === 0) {
+        console.error("有効な掲示板IDが選択されていません。");
+        return;
+    }
+
+    // フォームデータを作成
+    const formData = new FormData();
+    formData.append("title", newPostTitle.value || ""); // タイトルが空の場合は空文字を設定
+    formData.append("message", newPostContent.value); // 投稿の内容を追加
+    formData.append("forum_id", props.forumId); // Forum IDを追加
+    formData.append("quoted_post_id", props.quotedPost.id); // 引用元の投稿IDを追加
+    formData.append("_token", getCsrfToken()); // CSRFトークンを追加
+
+    // 画像データが存在する場合、フォームデータに追加
+    if (image.value) {
+        formData.append("image", image.value);
+    }
+
+    // 投稿の送信
+    router.post(route("forum.store"), formData, {
+        onSuccess: () => {
+            // 投稿成功後の処理
+            newPostTitle.value = ""; // タイトルをリセット
+            newPostContent.value = ""; // 投稿内容をリセット
+            image.value = null; // 画像をリセット
+            imagePreview.value = null; // 画像プレビューをリセット
+            // 掲示板ページにリダイレクト
+            router.get(route("forum.index", { forum_id: props.forumId }), {
+                preserveState: true, // ページの状態を保存
+            });
+            emit("close"); // フォームを閉じる
+        },
+        onError: (errors) => {
+            console.error("投稿に失敗しました:", errors);
+        },
     });
-
-    console.log("props.quotedPost.id:", props.quotedPost.id);
-    console.log("props.forumId:", props.forumId);
-    console.log("newPostTitle.value:", newPostTitle.value);
-    console.log("newPostContent.value:", newPostContent.value);
-
-    emit("close"); // フォームを閉じる
 };
 </script>
 
@@ -52,12 +120,57 @@ const submitQuotePost = () => {
             </div>
 
             <!-- 新しい投稿の入力フォーム -->
-            <textarea
-                v-model="newPostContent"
-                class="w-full border rounded p-2 mb-4"
-                placeholder="投稿文を入力してください"
-                rows="4"
-            ></textarea>
+            <div class="relative">
+                <textarea
+                    v-model="newPostContent"
+                    class="w-full border rounded p-2 mb-4"
+                    placeholder="投稿文を入力してください"
+                    rows="4"
+                ></textarea>
+                <!-- ファイル選択アイコン -->
+                <div
+                    class="absolute right-2 bottom-8 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    style="width: 40px; height: 40px"
+                    @click="triggerFileInput"
+                    title="ファイルを選択"
+                >
+                    <i class="bi bi-card-image text-2xl"></i>
+                </div>
+            </div>
+
+            <!-- 隠しファイル入力 -->
+            <input
+                type="file"
+                accept="image/*"
+                ref="fileInput"
+                @change="onImageChange"
+                style="display: none"
+            />
+            <!-- エラーメッセージ表示 -->
+            <div v-if="localErrorMessage" class="text-red-500 mt-2">
+                {{ localErrorMessage }}
+            </div>
+            <!-- プレビュー表示 -->
+            <div v-if="imagePreview" class="relative mt-2 inline-block">
+                <!-- プレビュー画像 -->
+                <img
+                    :src="imagePreview"
+                    alt="画像プレビュー"
+                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                    @click="isModalOpen = true"
+                />
+                <!-- プレビュー画像削除ボタン -->
+                <div
+                    class="absolute top-0 right-0 bg-white rounded-full p-1 cursor-pointer flex items-center justify-center"
+                    @click="removeImage"
+                    title="画像を削除"
+                    style="width: 24px; height: 24px"
+                >
+                    <i
+                        class="bi bi-x-circle text-black hover:text-gray-500"
+                    ></i>
+                </div>
+            </div>
 
             <!-- 送信ボタン -->
             <div class="flex justify-end space-x-2">
@@ -75,6 +188,15 @@ const submitQuotePost = () => {
                 </button>
             </div>
         </div>
+
+        <!-- 引用投稿の画像モーダル -->
+        <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+            <img
+                :src="imagePreview"
+                alt="投稿画像"
+                class="max-w-full max-h-full rounded-lg"
+            />
+        </ImageModal>
     </div>
 </template>
 
