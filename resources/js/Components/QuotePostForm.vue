@@ -41,6 +41,9 @@ const removeImage = () => {
     img.value = null; // 画像を削除
     imgPreview.value = null; // 画像プレビューを削除
     localErrorMessage.value = null; // エラーメッセージを削除
+    if (fileInput.value) {
+        fileInput.value.value = ""; // ファイル入力の値をリセット
+    }
 };
 
 // キャンセルボタン
