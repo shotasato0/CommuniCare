@@ -19,8 +19,8 @@ const newPostContent = ref(""); // 投稿の内容
 const newPostTitle = ref(""); // 投稿のタイトル
 
 // 画像関連のref
-const img = ref(null); // 画像ファイル
-const imgPreview = ref(null); // 画像プレビュー
+const image = ref(null); // 画像ファイル
+const imagePreview = ref(null); // 画像プレビュー
 const isModalOpen = ref(false); // モーダル表示
 const fileInput = ref(null); // ファイル選択ボタン
 
@@ -39,7 +39,7 @@ function getCsrfToken() {
 
 // 画像変更時の処理
 const onImageChange = (event) => {
-    handleImageChange(event, img, imgPreview, localErrorMessage);
+    handleImageChange(event, image, imagePreview, localErrorMessage);
 };
 
 // ファイル選択ボタンをクリックしたときの処理
@@ -49,8 +49,8 @@ const triggerFileInput = () => {
 
 // 画像を削除する
 const removeImage = () => {
-    img.value = null; // 画像を削除
-    imgPreview.value = null; // 画像プレビューを削除
+    image.value = null; // 画像を削除
+    imagePreview.value = null; // 画像プレビューを削除
     localErrorMessage.value = null; // エラーメッセージを削除
     if (fileInput.value) {
         fileInput.value.value = ""; // ファイル入力の値をリセット
@@ -79,8 +79,8 @@ const submitQuotePost = () => {
     formData.append("_token", getCsrfToken()); // CSRFトークンを追加
 
     // 画像データが存在する場合、フォームデータに追加
-    if (img.value) {
-        formData.append("img", img.value);
+    if (image.value) {
+        formData.append("image", image.value);
     }
 
     // 投稿の送信
@@ -89,8 +89,8 @@ const submitQuotePost = () => {
             // 投稿成功後の処理
             newPostTitle.value = ""; // タイトルをリセット
             newPostContent.value = ""; // 投稿内容をリセット
-            img.value = null; // 画像をリセット
-            imgPreview.value = null; // 画像プレビューをリセット
+            image.value = null; // 画像をリセット
+            imagePreview.value = null; // 画像プレビューをリセット
             // 掲示板ページにリダイレクト
             router.get(route("forum.index", { forum_id: props.forumId }), {
                 preserveState: true, // ページの状態を保存
@@ -151,10 +151,10 @@ const submitQuotePost = () => {
                 {{ localErrorMessage }}
             </div>
             <!-- プレビュー表示 -->
-            <div v-if="imgPreview" class="relative mt-2 inline-block">
+            <div v-if="imagePreview" class="relative mt-2 inline-block">
                 <!-- プレビュー画像 -->
                 <img
-                    :src="imgPreview"
+                    :src="imagePreview"
                     alt="画像プレビュー"
                     class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
                     @click="isModalOpen = true"
@@ -192,7 +192,7 @@ const submitQuotePost = () => {
         <!-- 引用投稿の画像モーダル -->
         <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
             <img
-                :src="imgPreview"
+                :src="imagePreview"
                 alt="投稿画像"
                 class="max-w-full max-h-full rounded-lg"
             />
