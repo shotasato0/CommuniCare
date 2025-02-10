@@ -118,7 +118,7 @@ const getCommentCountRecursive = (comments) => {
 
                 <!-- コメント本文 -->
                 <p
-                    class="mt-3 whitespace-pre-wrap"
+                    class="mt-3 mb-2 whitespace-pre-wrap"
                     v-html="comment.formatted_message"
                 ></p>
 
