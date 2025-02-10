@@ -1,6 +1,7 @@
 <script setup>
 import { useForm, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
+import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
     user: Object,
@@ -13,6 +14,10 @@ const form = useForm({
     icon: null, // アイコンを追加
 });
 
+// 画像プレビュー用の `ref` を定義
+const image = ref(null);
+const imagePreview = ref(null);
+
 // アイコンのプレビューURLを定義
 const previewUrl = ref(
     props.user.icon &&
@@ -24,39 +29,18 @@ const previewUrl = ref(
         : "/images/default_user_icon.png"
 );
 
-// ローカルプレビュー用の一時的なBlob URLかどうかを識別するフラグ
-const isLocalPreview = ref(false);
-
 // 成功メッセージとエラーメッセージのrefを定義
 const localSuccessMessage = ref(null); // 初期値をnullに設定
 const localErrorMessage = ref(null); // 初期値をnullに設定
 
 // 画像ファイルのチェック
-const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        // 画像形式のチェック（jpeg, png, gif などのみ許可）
-        const validImageTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-        ];
-        if (!validImageTypes.includes(file.type)) {
-            localErrorMessage.value =
-                "対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。";
+const onImageChange = (e) => {
+    handleImageChange(e, image, imagePreview, localErrorMessage);
 
-            // 8秒後にエラーメッセージを自動的に消す処理
-            setTimeout(() => {
-                localErrorMessage.value = null;
-            }, 8000);
-
-            return;
-        }
-
-        form.icon = file;
-        previewUrl.value = URL.createObjectURL(file); // ローカルプレビュー用にBlob URLをセット
-        isLocalPreview.value = true; // ローカルプレビュー用のフラグを立てる
+    // プレビューURLを更新する
+    if (image.value) {
+        form.icon = image.value;
+        previewUrl.value = imagePreview.value;
     }
 };
 
@@ -146,7 +130,7 @@ const submit = () => {
                     <input
                         type="file"
                         id="icon"
-                        @change="handleImageChange"
+                        @change="onImageChange"
                         class="w-full border border-gray-300 p-2 rounded"
                     />
                 </div>

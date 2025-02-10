@@ -88,6 +88,7 @@ class ForumController extends Controller
                     return [
                         'id' => $comment->id,
                         'message' => $comment->message,
+                        'img' => $comment->img,
                         'created_at' => $comment->created_at,
                         'user' => $comment->user,
                         'like_count' => $comment->likes_count, // コメントのいいね数

@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ChildComment from "./ChildComment.vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
 import LikeButton from "./LikeButton.vue";
+import ImageModal from "./ImageModal.vue";
 
 const props = defineProps({
     comments: Array, // 親コメントからのコメントデータ
@@ -18,6 +19,15 @@ const props = defineProps({
 
 // 子コメントの折りたたみ状態を管理
 const collapsedComments = ref({});
+
+// コメント画像モーダルの表示状態を管理
+const isModalOpen = ref(false);
+const currentImage = ref(null);
+
+const openModal = (imagePath) => {
+    currentImage.value = imagePath;
+    isModalOpen.value = true;
+};
 
 // コンポーネントのマウント時に初期値を設定
 onMounted(() => {
@@ -108,6 +118,16 @@ const getCommentCountRecursive = (comments) => {
 
                 <!-- コメント本文 -->
                 <p class="mt-3 whitespace-pre-wrap">{{ comment.message }}</p>
+
+                <!-- コメント画像 -->
+                <div v-if="comment.img" class="mt-3">
+                    <img
+                        :src="`/storage/${comment.img}`"
+                        alt="添付画像"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="openModal(`/storage/${comment.img}`)"
+                    />
+                </div>
 
                 <!-- 子コメント -->
                 <div
@@ -200,4 +220,12 @@ const getCommentCountRecursive = (comments) => {
             </div>
         </div>
     </div>
+
+    <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+        <img
+            :src="currentImage"
+            alt="投稿画像"
+            class="max-w-full max-h-full rounded-lg"
+        />
+    </ImageModal>
 </template>
