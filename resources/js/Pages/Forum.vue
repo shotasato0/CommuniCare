@@ -472,7 +472,11 @@ const openModal = (imageSrc) => {
                             </span>
                             <span v-else>＠Unknown</span>
                         </p>
+
+                        <!-- 投稿タイトルの表示 -->
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
+
+                        <!-- 投稿メッセージの表示 -->
                         <p
                             class="mb-2 whitespace-pre-wrap"
                             v-html="post.formatted_message"
