@@ -71,6 +71,7 @@ class ForumController extends Controller
                 'id' => $post->id,
                 'title' => $post->title,
                 'message' => $post->message,
+                'formatted_message' => $post->formatted_message,
                 'img' => $post->img,
                 'created_at' => $post->created_at,
                 'user' => $post->user,
@@ -81,6 +82,7 @@ class ForumController extends Controller
                 'quoted_post' => $post->quotedPost ? [
                     'id' => $post->quotedPost->id,
                     'message' => $post->quotedPost->trashed() ? null : $post->quotedPost->message,
+                    'formatted_message' => $post->quotedPost->trashed() ? null : $post->quotedPost->formatted_message,
                     'title' => $post->quotedPost->trashed() ? null : $post->quotedPost->title,
                     'user' => $post->quotedPost->trashed() ? null : $post->quotedPost->user,
                 ] : null,
@@ -88,6 +90,7 @@ class ForumController extends Controller
                     return [
                         'id' => $comment->id,
                         'message' => $comment->message,
+                        'formatted_message' => $comment->formatted_message,
                         'img' => $comment->img,
                         'created_at' => $comment->created_at,
                         'user' => $comment->user,
