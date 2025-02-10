@@ -17,7 +17,7 @@ class CommentController extends Controller
             'post_id' => 'required|exists:posts,id',
             'parent_id' => 'nullable|exists:comments,id',
             'message' => 'required|string|max:1000',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ]);
 
         // 画像がアップロードされた場合は保存
