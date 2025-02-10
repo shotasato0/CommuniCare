@@ -52,11 +52,6 @@ const submitQuotePost = () => {
         quoted_post_id: props.quotedPost.id,
     });
 
-    console.log("props.quotedPost.id:", props.quotedPost.id);
-    console.log("props.forumId:", props.forumId);
-    console.log("newPostTitle.value:", newPostTitle.value);
-    console.log("newPostContent.value:", newPostContent.value);
-
     if (img.value) {
         formData.append("img", img.value);
     }
