@@ -712,4 +712,15 @@ const openModal = (imageSrc) => {
         width: 50% !important;
     }
 }
+
+p.mb-2 a {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+p.mb-2 a:hover {
+    opacity: 0.7;
+}
+
 </style>
