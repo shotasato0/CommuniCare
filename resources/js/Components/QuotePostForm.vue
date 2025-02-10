@@ -26,6 +26,17 @@ const fileInput = ref(null); // ファイル選択ボタン
 
 const localErrorMessage = ref(null); // エラーメッセージ
 
+// CSRFトークンを取得する関数
+function getCsrfToken() {
+    const token = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
+    if (!token) {
+        console.error("CSRFトークンが見つかりません。");
+    }
+    return token;
+}
+
 // 画像変更時の処理
 const onImageChange = (event) => {
     handleImageChange(event, img, imgPreview, localErrorMessage);
@@ -53,19 +64,43 @@ const cancel = () => {
 
 // 引用付き投稿を送信
 const submitQuotePost = () => {
-    router.post(route("forum.store"), {
-        title: newPostTitle.value || null, // 投稿のタイトルを追加
-        message: newPostContent.value, // 投稿の内容を追加
-        forum_id: props.forumId, // Forum IDを追加
-        quoted_post_id: props.quotedPost.id, // 引用元の投稿IDを追加
-    });
-
-    // 画像が存在する場合はフォームデータに追加
-    if (img.value) {
-        formData.append("img", img.value); // 画像を追加
+    // 掲示板IDが選択されていない場合はエラー
+    if (!props.forumId || props.forumId === 0) {
+        console.error("有効な掲示板IDが選択されていません。");
+        return;
     }
 
-    emit("close"); // フォームを閉じる
+    // フォームデータを作成
+    const formData = new FormData();
+    formData.append("title", newPostTitle.value || ""); // タイトルが空の場合は空文字を設定
+    formData.append("message", newPostContent.value); // 投稿の内容を追加
+    formData.append("forum_id", props.forumId); // Forum IDを追加
+    formData.append("quoted_post_id", props.quotedPost.id); // 引用元の投稿IDを追加
+    formData.append("_token", getCsrfToken()); // CSRFトークンを追加
+
+    // 画像データが存在する場合、フォームデータに追加
+    if (img.value) {
+        formData.append("img", img.value);
+    }
+
+    // 投稿の送信
+    router.post(route("forum.store"), formData, {
+        onSuccess: () => {
+            // 投稿成功後の処理
+            newPostTitle.value = ""; // タイトルをリセット
+            newPostContent.value = ""; // 投稿内容をリセット
+            img.value = null; // 画像をリセット
+            imgPreview.value = null; // 画像プレビューをリセット
+            // 掲示板ページにリダイレクト
+            router.get(route("forum.index", { forum_id: props.forumId }), {
+                preserveState: true, // ページの状態を保存
+            });
+            emit("close"); // フォームを閉じる
+        },
+        onError: (errors) => {
+            console.error("投稿に失敗しました:", errors);
+        },
+    });
 };
 </script>
 
@@ -154,7 +189,7 @@ const submitQuotePost = () => {
             </div>
         </div>
 
-        <!-- コメント画像モーダル -->
+        <!-- 引用投稿の画像モーダル -->
         <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
             <img
                 :src="imgPreview"
