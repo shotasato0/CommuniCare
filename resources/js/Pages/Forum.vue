@@ -473,9 +473,10 @@ const openModal = (imageSrc) => {
                             <span v-else>＠Unknown</span>
                         </p>
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
-                        <p class="mb-2 whitespace-pre-wrap">
-                            {{ post.message }}
-                        </p>
+                        <p
+                            class="mb-2 whitespace-pre-wrap"
+                            v-html="post.formatted_message"
+                        ></p>
 
                         <!-- 投稿画像の表示 -->
                         <div v-if="post.img">
