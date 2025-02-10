@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import { handleImageChange } from "@/Utils/imageHandler";
+import ImageModal from "./ImageModal.vue";
 
 const props = defineProps({
     show: Boolean,
@@ -12,6 +14,29 @@ const emit = defineEmits(["close"]);
 
 const newPostContent = ref("");
 const newPostTitle = ref("");
+
+const img = ref(null);
+const imgPreview = ref(null);
+const isModalOpen = ref(false);
+const fileInput = ref(null);
+
+const localErrorMessage = ref(null);
+
+const onImageChange = (event) => {
+    handleImageChange(event, img, imgPreview, localErrorMessage);
+};
+
+// ファイル選択ボタンをクリックしたときの処理
+const triggerFileInput = () => {
+    fileInput.value.click();
+};
+
+// 画像を削除する
+const removeImage = () => {
+    img.value = null;
+    imgPreview.value = null;
+    localErrorMessage.value = null;
+};
 
 // キャンセルボタン
 const cancel = () => {
@@ -31,6 +56,10 @@ const submitQuotePost = () => {
     console.log("props.forumId:", props.forumId);
     console.log("newPostTitle.value:", newPostTitle.value);
     console.log("newPostContent.value:", newPostContent.value);
+
+    if (img.value) {
+        formData.append("img", img.value);
+    }
 
     emit("close"); // フォームを閉じる
 };
@@ -52,12 +81,57 @@ const submitQuotePost = () => {
             </div>
 
             <!-- 新しい投稿の入力フォーム -->
-            <textarea
-                v-model="newPostContent"
-                class="w-full border rounded p-2 mb-4"
-                placeholder="投稿文を入力してください"
-                rows="4"
-            ></textarea>
+            <div class="relative">
+                <textarea
+                    v-model="newPostContent"
+                    class="w-full border rounded p-2 mb-4"
+                    placeholder="投稿文を入力してください"
+                    rows="4"
+                ></textarea>
+                <!-- ファイル選択アイコン -->
+                <div
+                    class="absolute right-2 bottom-8 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    style="width: 40px; height: 40px"
+                    @click="triggerFileInput"
+                    title="ファイルを選択"
+                >
+                    <i class="bi bi-card-image text-2xl"></i>
+                </div>
+            </div>
+
+            <!-- 隠しファイル入力 -->
+            <input
+                type="file"
+                accept="image/*"
+                ref="fileInput"
+                @change="onImageChange"
+                style="display: none"
+            />
+            <!-- エラーメッセージ表示 -->
+            <div v-if="localErrorMessage" class="text-red-500 mt-2">
+                {{ localErrorMessage }}
+            </div>
+            <!-- プレビュー表示 -->
+            <div v-if="imgPreview" class="relative mt-2 inline-block">
+                <!-- プレビュー画像 -->
+                <img
+                    :src="imgPreview"
+                    alt="画像プレビュー"
+                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                    @click="isModalOpen = true"
+                />
+                <!-- プレビュー画像削除ボタン -->
+                <div
+                    class="absolute top-0 right-0 bg-white rounded-full p-1 cursor-pointer flex items-center justify-center"
+                    @click="removeImage"
+                    title="画像を削除"
+                    style="width: 24px; height: 24px"
+                >
+                    <i
+                        class="bi bi-x-circle text-black hover:text-gray-500"
+                    ></i>
+                </div>
+            </div>
 
             <!-- 送信ボタン -->
             <div class="flex justify-end space-x-2">
@@ -75,6 +149,15 @@ const submitQuotePost = () => {
                 </button>
             </div>
         </div>
+
+        <!-- コメント画像モーダル -->
+        <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+            <img
+                :src="imgPreview"
+                alt="投稿画像"
+                class="max-w-full max-h-full rounded-lg"
+            />
+        </ImageModal>
     </div>
 </template>
 
