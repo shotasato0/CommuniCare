@@ -113,31 +113,33 @@ const submitPost = () => {
             <!-- 本文 -->
             <div class="flex flex-col mt-2 relative">
                 <p class="font-medium">本文</p>
+                <!-- テキスト入力ボックス -->
                 <textarea
                     v-model="postData.message"
-                    class="w-full p-2 border border-gray-300 rounded-md"
+                    class="w-full p-2 pr-12 border border-gray-300 rounded-md"
                     required
                     placeholder="本文を入力してください"
                     rows="3"
                 ></textarea>
-                <!-- ファイル選択アイコン -->
+
+                <!-- 画像選択アイコン -->
                 <div
-                    class="absolute right-2 bottom-2 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    class="absolute right-3 bottom-3 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                     title="ファイルを選択"
                 >
                     <i class="bi bi-card-image text-2xl"></i>
                 </div>
-                <!-- 隠しファイル入力 -->
-                <input
-                    type="file"
-                    accept="image/*"
-                    ref="fileInput"
-                    @change="onImageChange"
-                    style="display: none"
-                />
             </div>
+            <!-- 隠しファイル入力 -->
+            <input
+                type="file"
+                accept="image/*"
+                ref="fileInput"
+                @change="onImageChange"
+                style="display: none"
+            />
 
             <!-- エラーメッセージ表示 -->
             <div v-if="localErrorMessage" class="text-red-500 mt-2">
