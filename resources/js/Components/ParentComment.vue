@@ -117,7 +117,10 @@ const getCommentCountRecursive = (comments) => {
                 </div>
 
                 <!-- コメント本文 -->
-                <p class="mt-3 whitespace-pre-wrap">{{ comment.message }}</p>
+                <p
+                    class="mt-3 mb-2 whitespace-pre-wrap"
+                    v-html="comment.formatted_message"
+                ></p>
 
                 <!-- コメント画像 -->
                 <div v-if="comment.img" class="mt-3">

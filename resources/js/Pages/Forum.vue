@@ -472,10 +472,15 @@ const openModal = (imageSrc) => {
                             </span>
                             <span v-else>＠Unknown</span>
                         </p>
+
+                        <!-- 投稿タイトルの表示 -->
                         <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
-                        <p class="mb-2 whitespace-pre-wrap">
-                            {{ post.message }}
-                        </p>
+
+                        <!-- 投稿メッセージの表示 -->
+                        <p
+                            class="mb-2 whitespace-pre-wrap"
+                            v-html="post.formatted_message"
+                        ></p>
 
                         <!-- 投稿画像の表示 -->
                         <div v-if="post.img">
@@ -711,4 +716,15 @@ const openModal = (imageSrc) => {
         width: 50% !important;
     }
 }
+
+p.mb-2 a {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+p.mb-2 a:hover {
+    opacity: 0.7;
+}
+
 </style>
