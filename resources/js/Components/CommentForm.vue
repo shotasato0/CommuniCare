@@ -151,15 +151,15 @@ const handleCancel = () => {
                 <!-- コメントメッセージ入力欄 -->
                 <textarea
                     v-model="commentData.message"
-                    class="w-full p-2 border border-gray-300 rounded-md"
+                    class="w-full p-2 pr-12 border border-gray-300 rounded-md"
                     required
                     :placeholder="placeholder"
                     rows="3"
                 ></textarea>
 
-                <!-- ファイル選択アイコン -->
+                <!-- 画像選択アイコン -->
                 <div
-                    class="absolute right-2 bottom-4 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    class="absolute right-3 bottom-5 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                     title="ファイルを選択"

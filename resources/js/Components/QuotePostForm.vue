@@ -116,20 +116,20 @@ const submitQuotePost = () => {
                     引用元の投稿
                 </h3>
                 <p class="text-gray-600">{{ quotedPost.message }}</p>
-                <!-- メッセージを直接表示 -->
             </div>
 
             <!-- 新しい投稿の入力フォーム -->
             <div class="relative">
                 <textarea
                     v-model="newPostContent"
-                    class="w-full border rounded p-2 mb-4"
+                    class="w-full p-2 pr-12 border rounded mb-4"
                     placeholder="投稿文を入力してください"
                     rows="4"
                 ></textarea>
-                <!-- ファイル選択アイコン -->
+
+                <!-- 画像選択アイコン -->
                 <div
-                    class="absolute right-2 bottom-8 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer"
+                    class="absolute right-3 bottom-9 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                     title="ファイルを選択"
@@ -187,16 +187,16 @@ const submitQuotePost = () => {
                     <i class="bi bi-send"></i>
                 </button>
             </div>
-        </div>
 
-        <!-- 引用投稿の画像モーダル -->
-        <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
-            <img
-                :src="imagePreview"
-                alt="投稿画像"
-                class="max-w-full max-h-full rounded-lg"
-            />
-        </ImageModal>
+            <!-- 引用投稿の画像モーダル -->
+            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+                <img
+                    :src="imagePreview"
+                    alt="投稿画像"
+                    class="max-w-full max-h-full rounded-lg"
+                />
+            </ImageModal>
+        </div>
     </div>
 </template>
 
