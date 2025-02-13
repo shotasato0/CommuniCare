@@ -72,7 +72,7 @@ const compositionEnd = () => {
             class="absolute right-3 cursor-pointer text-gray-400 hover:text-gray-600"
             @click="resetSearch"
         >
-            <i class="bi bi-x"></i>
+            <i class="bi bi-x-lg"></i>
         </div>
     </div>
 </template>
