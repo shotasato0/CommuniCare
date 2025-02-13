@@ -6,7 +6,7 @@
 
 CommuniCare は、介護施設の運営を効率化するために、 職員間のスムーズなコミュニケーションと利用者様の情報を一元管理する プラットフォームです。
 
-![clipboard.png](inkdrop://file:R6qRsgSFw)
+![サービスのメインビジュアル](public/images/hero-section.png)
 
 ## サービスの URL
 
