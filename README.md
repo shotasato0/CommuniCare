@@ -1,66 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CommuniCare
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## どのようなサービスなのかを表現するひとこと
 
-## About Laravel
+**職員の効率的なコミュニケーションと情報管理を支援**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+CommuniCareは、介護施設の運営を効率化するために、 職員間のスムーズなコミュニケーションと利用者様の情報を一元管理する プラットフォームです。
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## サービスのURL
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+[https://www.communi-care.jp](https://www.communi-care.jp/)
 
-## Learning Laravel
+## サービスの雰囲気が伝わる画像
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+*(ここにサービスのスクリーンショットやUIイメージを挿入)*
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+***
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## サービスの概要
 
-## Laravel Sponsors
+**職員間のコミュニケーションをもっとスムーズに**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+CommuniCareは、介護施設の職員間のコミュニケーションを活性化し、正確で円滑な情報伝達を可能にすることで、 利用者様の情報や連絡事項を安全かつ効率的に一元管理できるプラットフォームです。
 
-### Premium Partners
+### 主な機能
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **掲示板機能:** 全体連絡や部署間での申し送りなどのやり取りが可能。メイン機能として活躍。
+- **職員ページ機能:** 職員情報（名前、電話番号、メールアドレス）を表示し、部署ごとの一覧表示も可能。管理者は職員の登録・削除が可能。
+- **利用者ページ機能:** 利用者の基本情報、サービス内容、支援状況、備考などを表示・編集。管理者は利用者の登録・削除が可能。
+- **管理ページ:** ログイン中のユーザー情報とログイン状態を表示。管理者は部署管理（新規登録・削除）が可能。
 
-## Contributing
+***
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## サービスを開発した背景
 
-## Code of Conduct
+**職員間の連携を強化する、タイムリーな情報共有**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+介護現場では情報共有の遅れやタスクの漏れが、利用者のケアに直接影響します。この課題を解決するため、 \*\*「誰でも直感的に使える介護専用ツール」\*\*としてCommuniCareを開発しました。
 
-## Security Vulnerabilities
+- **課題:** 口頭での申し送りや手書きノートによる情報共有が主流で、出勤しないと情報が得られない課題が存在。
+- **解決策:** 出勤していなくても情報確認が可能な、全体連絡と部署内連絡の両方に対応したツールを開発。
+- **こだわり:** 過去の重要なルールや情報を引用投稿機能で再共有することで、形骸化したルールの再確認も促進。
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+***
 
-## License
+## 画面や機能の説明
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| 画面           | 説明                          |
+| ------------ | --------------------------- |
+| **ダッシュボード**  | スタッフのタスクや通知を一目で確認           |
+| **掲示板機能**    | 全体・部署単位での情報共有、過去の投稿の引用も可能   |
+| **職員管理ページ**  | 職員情報の確認、管理者による登録・削除操作       |
+| **利用者情報ページ** | 利用者の支援情報を表示・編集、管理者は登録・削除も可能 |
+| **管理者メニュー**  | 部署の新規登録や削除を簡単に管理可能          |
+
+*(スクリーンショットを適宜挿入)*
+
+***
+
+## ディレクトリ構成
+
+```
+├── app
+│   ├── Console
+│   │   └── Commands (バッチ処理やカスタムコマンド)
+│   ├── Http
+│   │   ├── Controllers (ビジネスロジックの管理)
+│   │   ├── Middleware (リクエストの前後処理)
+│   │   └── Requests (バリデーションロジック)
+│   ├── Models (データベースモデル)
+│   └── Providers (サービスプロバイダ)
+├── database
+│   ├── migrations (DB構造の管理)
+│   └── seeders (初期データの投入)
+├── resources
+│   ├── js (フロントエンドのVueコンポーネント)
+│   └── views (Bladeテンプレート)
+├── routes (ルーティングの定義)
+├── tests (ユニット・機能テスト)
+└── docker-compose.yml (コンテナ環境の構成)
+```
+
+***
+
+## 🛠主な使用技術
+
+| カテゴリ    | 技術                   | バージョン |
+| ------- | -------------------- | ----- |
+| フロントエンド | Vue.js, Tailwind CSS | 3.x   |
+| バックエンド  | Node.js, Laravel     | 最新    |
+| データベース  | MySQL                | 8.x   |
+| インフラ    | Docker, NGINX, AWS   | 最新    |
+| その他     | Redis                | -     |
+
+***
+
+## ER図
+
+*(ここにER図を挿入)*
+
+## ☁️ インフラ構成図
+
+*(ここにインフラ構成図を挿入)*
+
+***
+
+## 今後の展望
+
+- **モバイルアプリ対応:** スマートフォン向けの最適化
+- **AIによるタスク自動提案:** 業務効率化をさらに向上
+- **多言語対応:** グローバルな介護現場への展開
+- **分析機能:** ケアの質を定量的に評価するダッシュボード追加
+
+***
+
+## 最後に
+
+CommuniCareは、介護現場で働くすべての人が\*\*「もっと簡単に、もっと安全に」\*\*仕事ができる環境を目指しています。今後も現場の声を大切に、進化を続けていきます！
