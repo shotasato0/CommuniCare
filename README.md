@@ -8,6 +8,8 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 ![サービスのメインビジュアル](public/images/hero-section.png)
 
+---
+
 ## サービスの URL
 
 [https://communi-care.jp](https://communi-care.jp/)
@@ -18,7 +20,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 ## サービスを開発した背景
 
-**職員間の連携を強化する、タイムリーな情報共有**
+### **職員間の連携を強化する、タイムリーな情報共有**
 
 介護現場では、情報共有の遅れや漏れが利用者のケアに直接影響します。この課題を解決するため、 **「誰でも直感的に使える 介護施設向けの情報共有ツール」** として CommuniCare を開発しました。
 
@@ -64,24 +66,23 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 ## ディレクトリ構成
 
 ```
-├── app
-│   ├── Console
-│   │   └── Commands (バッチ処理やカスタムコマンド)
-│   ├── Http
-│   │   ├── Controllers (ビジネスロジックの管理)
-│   │   ├── Middleware (リクエストの前後処理)
-│   │   └── Requests (バリデーションロジック)
-│   ├── Models (データベースモデル)
-│   └── Providers (サービスプロバイダ)
-├── database
-│   ├── migrations (DB構造の管理)
-│   └── seeders (初期データの投入)
-├── resources
-│   ├── js (フロントエンドのVueコンポーネント)
-│   └── views (Bladeテンプレート)
-├── routes (ルーティングの定義)
-├── tests (ユニット・機能テスト)
-└── docker-compose.yml (コンテナ環境の構成)
+├── app/                 # アプリケーション本体
+│   ├── Console/         # Artisanコマンド（バッチ処理）
+│   ├── Http/            # コントローラー・ミドルウェア・リクエスト
+│   ├── Models/          # データベースモデル
+│   ├── Providers/       # サービスプロバイダ（マルチテナンシー管理含む）
+├── bootstrap/           # フレームワークの起動設定
+├── config/              # アプリケーションの環境設定
+├── database/            # データベース関連（マイグレーション・シーダー）
+├── public/              # 公開ディレクトリ（エントリーポイント）
+├── resources/           # フロントエンド（Vue.js, Blade）
+├── routes/              # ルーティング定義
+├── storage/             # ストレージ・ログ・キャッシュ
+├── tests/               # 自動テスト（Unit & Feature）
+├── docker-compose.yml   # 開発環境用Docker設定
+├── composer.json        # PHPパッケージ管理
+├── package.json         # フロントエンド依存関係
+├── vite.config.js       # フロントエンドビルド設定
 ```
 
 ---
