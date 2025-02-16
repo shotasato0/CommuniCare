@@ -61,6 +61,27 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 -   **機密情報の保護:** 介護事業所ごとに独立したデータ管理を実現し、事業所間の情報漏洩を防止。
 -   **専用の管理ページ:** 介護事業所ごとに専用の URL（ドメイン）を発行し、独自の管理ページを作成可能。
 
+### **参考ドキュメント**
+
+-   [Tenancy for Laravel 公式ドキュメント](https://tenancyforlaravel.com/)
+
+### **参考動画（非公式）**
+
+-   [01 What’s Inside the Course（YouTube）](https://www.youtube.com/watch?v=hDaVMqj5D5A&list=PLoT0Ngy3KoLLomJDbNhIrQRT3n0UHVxqQ)  
+    _Yin Yin Kyaw 氏によるマルチテナンシーの概要解説（非公式）_
+
+---
+
+## 主な使用技術
+
+| カテゴリ       | 技術                 | バージョン |
+| -------------- | -------------------- | ---------- |
+| フロントエンド | Vue.js, Tailwind CSS | 3.x        |
+| バックエンド   | Node.js, Laravel     | 最新       |
+| データベース   | MySQL                | 8.x        |
+| インフラ       | Docker, NGINX, AWS   | 最新       |
+| その他         | Redis                | -          |
+
 ---
 
 ## ディレクトリ構成
@@ -84,18 +105,6 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 ├── package.json         # フロントエンド依存関係
 ├── vite.config.js       # フロントエンドビルド設定
 ```
-
----
-
-## 主な使用技術
-
-| カテゴリ       | 技術                 | バージョン |
-| -------------- | -------------------- | ---------- |
-| フロントエンド | Vue.js, Tailwind CSS | 3.x        |
-| バックエンド   | Node.js, Laravel     | 最新       |
-| データベース   | MySQL                | 8.x        |
-| インフラ       | Docker, NGINX, AWS   | 最新       |
-| その他         | Redis                | -          |
 
 ---
 
