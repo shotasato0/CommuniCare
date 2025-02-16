@@ -79,13 +79,15 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 ## 主な使用技術
 
-| カテゴリ       | 技術                 | バージョン |
-| -------------- | -------------------- | ---------- |
-| フロントエンド | Vue.js, Tailwind CSS | 3.x        |
-| バックエンド   | Node.js, Laravel     | 最新       |
-| データベース   | MySQL                | 8.x        |
-| インフラ       | Docker, NGINX, AWS   | 最新       |
-| その他         | Redis                | -          |
+| カテゴリ       | 技術                                 | バージョン |
+| -------------- | ------------------------------------ | ---------- |
+| フロントエンド | Vue.js, Inertia.js, Tailwind CSS     | 3.x        |
+| バックエンド   | Laravel (PHP), Sanctum               | 11.x       |
+| 認証           | Laravel Sanctum                      | -          |
+| データベース   | MySQL                                | 8.x        |
+| キャッシュ     | Redis                                | 最新       |
+| インフラ       | Docker, Xserver (本番環境)           | -          |
+| マルチテナント | Tenancy for Laravel (stancl/tenancy) | 最新       |
 
 ---
 
