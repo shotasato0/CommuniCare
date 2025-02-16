@@ -65,6 +65,11 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 -   [Tenancy for Laravel 公式ドキュメント](https://tenancyforlaravel.com/)
 
+### **参考記事（非公式）**
+
+-   [Tenancy for Laravel 入門](https://zenn.dev/yudai64/articles/12aab89b6bc70e)  
+    _yudai64 氏による、Laravel 11 におけるマルチテナンシーの基本概念と実装手順の解説_
+
 ### **参考動画（非公式）**
 
 -   [01 What’s Inside the Course（YouTube）](https://www.youtube.com/watch?v=hDaVMqj5D5A&list=PLoT0Ngy3KoLLomJDbNhIrQRT3n0UHVxqQ)  
