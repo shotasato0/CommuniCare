@@ -90,8 +90,8 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 | カテゴリ       | 技術                                   | バージョン |
 | -------------- | -------------------------------------- | ---------- |
 | フロントエンド | Vue.js, Inertia.js, Tailwind CSS, Vite | 3.x        |
-| バックエンド   | Laravel (PHP), Sanctum                 | 11.x       |
-| 認証           | Laravel Sanctum, Laravel Breeze        | -          |
+| バックエンド   | Laravel (PHP)                          | 11.x       |
+| 認証           | Laravel Breeze                         | -          |
 | データベース   | MySQL                                  | 8.0.32     |
 | キャッシュ     | Redis                                  | 最新       |
 | インフラ       | Docker 27.5.1, Xserver (本番環境)      | -          |
