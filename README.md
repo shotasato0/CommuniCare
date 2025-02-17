@@ -85,17 +85,28 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 ---
 
-## 主な使用技術
+### **主な使用技術**
 
-| カテゴリ       | 技術                                 | バージョン |
-| -------------- | ------------------------------------ | ---------- |
-| フロントエンド | Vue.js, Inertia.js, Tailwind CSS     | 3.x        |
-| バックエンド   | Laravel (PHP), Sanctum               | 11.x       |
-| 認証           | Laravel Sanctum                      | -          |
-| データベース   | MySQL                                | 8.x        |
-| キャッシュ     | Redis                                | 最新       |
-| インフラ       | Docker, Xserver (本番環境)           | -          |
-| マルチテナント | Tenancy for Laravel (stancl/tenancy) | 最新       |
+| カテゴリ       | 技術                                   | バージョン |
+| -------------- | -------------------------------------- | ---------- |
+| フロントエンド | Vue.js, Inertia.js, Tailwind CSS, Vite | 3.x        |
+| バックエンド   | Laravel (PHP), Sanctum                 | 11.x       |
+| 認証           | Laravel Sanctum, Laravel Breeze        | -          |
+| データベース   | MySQL                                  | 8.0.32     |
+| キャッシュ     | Redis                                  | 最新       |
+| インフラ       | Docker 27.5.1, Xserver (本番環境)      | -          |
+| マルチテナント | Tenancy for Laravel (stancl/tenancy)   | 最新       |
+
+---
+
+### **開発環境のセットアップ**
+
+このプロジェクトをローカル環境で動作させるために、以下のツールが必要です。
+
+-   **PHP 8.3.16**
+-   **Node.js 20.18.2** (Vite のビルドに使用)
+-   **Composer 2.8.5** (Laravel のパッケージ管理)
+-   **Docker 27.5.1** (開発環境を構築するために Laravel Sail を利用)
 
 ---
 
