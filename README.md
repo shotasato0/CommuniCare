@@ -38,6 +38,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
     ![職員ページ機能](public/images/feature_users_page.png)
 -   **利用者ページ機能:** 利用者の基本情報、サービス内容、支援状況、備考などを表示・編集。管理者は利用者の登録・削除が可能。
     ![利用者ページ機能](public/images/feature_residents_page.png)
+    ![利用者詳細ページ機能](public/images/feature_residents_detail.png)
 -   **管理ページ:** ログイン中のユーザー情報とログイン状態を表示。管理者は部署管理（新規登録・削除）が可能。
 
 _(スクリーンショットを適宜挿入)_
