@@ -58,8 +58,13 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
     ![職員詳細モーダル](public/images/feature_users_datail_modal.png)
 
--   **職員ページ機能:** 職員情報（名前、電話番号、メールアドレス）を表示し、部署ごとの一覧表示も可能。管理者は職員の登録・削除が可能。
+-   **職員ページ機能:**
+    職員の一覧を表示し、部署ごとに絞り込んで閲覧が可能。
+    **職員名をクリックすると、その職員の詳細情報をモーダルウィンドウで確認可能**。
+    管理者は職員の登録・削除が可能。
+
     ![職員ページ機能](public/images/feature_users_page.png)
+
 -   **利用者ページ機能:** 利用者の基本情報、サービス内容、支援状況、備考などを表示・編集。管理者は利用者の登録・削除が可能。
     ![利用者ページ機能](public/images/feature_residents_page.png)
     ![利用者詳細ページ機能](public/images/feature_residents_detail.png)
