@@ -1,0 +1,25 @@
+<mxfile host="65bd71144e">
+    <diagram id="Infrastructure" name="インフラ構成図">
+        <mxGraphModel dx="731" dy="408" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="User" value="User&#39;s Browser (HTTPS)" style="shape=mxgraph.ios7.icons.user;strokeColor=#0080F0;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="80" width="60" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Nginx" value="Nginx (Web Server &amp; Laravel)" style="shape=mxgraph.azure.compute.virtual_machine;fillColor=#FFAA00;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="280" y="240" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="MySQL" value="MySQL (Local DB)" style="shape=mxgraph.aws4.rds_mysql_instance;fillColor=#C925D1;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="80" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="HTTPS" value="HTTPS (SSL/TLS)" style="edgeStyle=elbowEdgeStyle;strokeColor=#00AA00;" parent="1" source="User" target="Nginx" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="DB" value="Local Connection" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#232F3E;" parent="1" source="Nginx" target="MySQL" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
