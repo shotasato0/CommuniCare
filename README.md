@@ -183,7 +183,7 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 ## インフラ構成図
 
-_(ここにインフラ構成図を挿入)_
+![インフラ構成図](docs/infrastructure-diagram.png)
 
 ---
 
