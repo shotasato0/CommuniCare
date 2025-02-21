@@ -134,7 +134,6 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 | バックエンド   | Laravel (PHP)                          | 11.x       |
 | 認証           | Laravel Breeze                         | -          |
 | データベース   | MySQL                                  | 8.0.32     |
-| キャッシュ     | Redis                                  | 最新       |
 | インフラ       | Docker 27.5.1, Xserver (本番環境)      | -          |
 | マルチテナント | Tenancy for Laravel (stancl/tenancy)   | 最新       |
 
