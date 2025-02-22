@@ -1,3 +1,14 @@
+<script>
+import { Link } from "@inertiajs/vue3";
+
+export default {
+    name: "Footer",
+    components: {
+        Link,
+    },
+};
+</script>
+
 <template>
     <!-- フッター -->
     <footer class="bg-white border-t">
@@ -5,13 +16,16 @@
             <div class="flex justify-center items-center space-x-6">
                 <!-- コピーライト -->
                 <div class="text-sm text-gray-500">
-                    © 2024 CommuniCare. All rights reserved.
+                    © 2025 CommuniCare. All rights reserved.
                 </div>
                 <!-- プライバシーポリシーリンク -->
                 <div class="text-sm text-gray-500">
-                    <a href="/privacy-policy" class="hover:underline">
+                    <Link
+                        href="/legal/privacy-policy"
+                        class="hover:underline"
+                    >
                         プライバシーポリシー
-                    </a>
+                    </Link>
                 </div>
                 <!-- ソーシャルリンク -->
                 <div class="flex space-x-4">
@@ -56,12 +70,6 @@
         </div>
     </footer>
 </template>
-
-<script>
-export default {
-    name: "Footer",
-};
-</script>
 
 <style scoped>
 footer {
