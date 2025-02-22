@@ -7,6 +7,12 @@
                 <div class="text-sm text-gray-500">
                     © 2024 CommuniCare. All rights reserved.
                 </div>
+                <!-- プライバシーポリシーリンク -->
+                <div class="text-sm text-gray-500">
+                    <a href="/privacy-policy" class="hover:underline">
+                        プライバシーポリシー
+                    </a>
+                </div>
                 <!-- ソーシャルリンク -->
                 <div class="flex space-x-4">
                     <a
