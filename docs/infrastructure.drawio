@@ -1,0 +1,33 @@
+<mxfile host="65bd71144e">
+    <diagram id="Infrastructure" name="インフラ構成図">
+        <mxGraphModel dx="731" dy="408" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1920" background="#FFFFFF" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="User" value="User&#39;s Browser" style="shape=mxgraph.ios7.icons.user;strokeColor=#0080F0;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="80" width="60" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Nginx" value="Nginx (Web Server &amp; Laravel) [本番環境]" style="shape=mxgraph.azure.compute.virtual_machine;fillColor=#FFAA00;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="200" width="150" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="MySQL" value="MySQL (Local DB)" style="shape=mxgraph.aws4.rds_mysql_instance;fillColor=#C925D1;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="80" width="100" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Docker" value="Docker (Nginx + Laravel + MySQL) [開発環境]" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/Docker.svg;" vertex="1" parent="1">
+                    <mxGeometry x="320" y="360" width="50" height="41" as="geometry"/>
+                </mxCell>
+                <mxCell id="HTTPS" value="HTTPS (SSL/TLS)" style="edgeStyle=elbowEdgeStyle;strokeColor=#00AA00;" edge="1" parent="1" source="User" target="Nginx">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="DB" value="Local Connection" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#232F3E;" edge="1" parent="1" source="Nginx" target="MySQL">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="Dev" value="ローカル接続" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#007ACC;dashed=1;" edge="1" parent="1" source="Nginx">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="345" y="360" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
