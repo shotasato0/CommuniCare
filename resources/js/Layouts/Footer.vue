@@ -19,11 +19,8 @@ export default {
                     © 2025 CommuniCare. All rights reserved.
                 </div>
                 <!-- プライバシーポリシーリンク -->
-                <div class="text-sm text-gray-500">
-                    <Link
-                        href="/legal/privacy-policy"
-                        class="hover:underline"
-                    >
+                <div class="text-sm text-gray-500 hover:text-gray-900">
+                    <Link href="/legal/privacy-policy">
                         プライバシーポリシー
                     </Link>
                 </div>
@@ -32,7 +29,7 @@ export default {
                     <a
                         href="https://twitter.com/shoprogramming"
                         rel="noopener noreferrer"
-                        class="text-gray-600 hover:text-gray-900"
+                        class="text-gray-500 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
@@ -51,7 +48,7 @@ export default {
                     <a
                         href="https://github.com/shotasato0"
                         rel="noopener noreferrer"
-                        class="text-gray-600 hover:text-gray-900"
+                        class="text-gray-500 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
