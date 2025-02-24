@@ -117,6 +117,16 @@ export default {
         <p class="mb-4">
             本プライバシーポリシーに関するご質問や懸念がある場合は、以下の連絡先までご連絡ください：
         </p>
-        <p class="mb-4">Xアカウント: @shoprogramming</p>
+        <p class="mb-4">
+            Xアカウント:
+            <a
+                href="https://x.com/shoprogramming"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mb-4 text-gray-500 hover:text-gray-900"
+            >
+                @shoprogramming
+            </a>
+        </p>
     </div>
 </template>
