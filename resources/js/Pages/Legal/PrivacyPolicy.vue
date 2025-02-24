@@ -8,12 +8,16 @@ export default {
     <div class="privacy-policy max-w-3xl mx-auto p-5 leading-relaxed">
         <h1 class="text-3xl font-bold mb-4">プライバシーポリシー</h1>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">1. はじめに</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            1. はじめに
+        </h2>
         <p class="mb-4">
             本プライバシーポリシーでは、「CommuniCare」（以下、「本アプリ」といいます）が、ユーザーおよび介護サービス利用者の個人情報およびその他の情報をどのように収集、使用、管理、保護するかについて説明します。
         </p>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">2. 収集する情報</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            2. 収集する情報
+        </h2>
         <p class="mb-4">
             本アプリが収集する情報には、以下のものが含まれますが、これに限定されません：
         </p>
@@ -36,7 +40,9 @@ export default {
             </li>
         </ul>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">3. 情報の利用目的</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            3. 情報の利用目的
+        </h2>
         <p class="mb-4">収集した情報は、以下の目的で使用されます：</p>
         <ul class="list-disc pl-5 mb-4">
             <li class="mb-2">アプリの機能提供およびサービス運営のため</li>
@@ -47,7 +53,9 @@ export default {
             <li class="mb-2">法令遵守および法的義務の履行のため</li>
         </ul>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">4. 情報の共有と開示</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            4. 情報の共有と開示
+        </h2>
         <p class="mb-4">
             個人情報は、以下の場合を除き、第三者に共有または開示されません：
         </p>
@@ -64,7 +72,9 @@ export default {
             </li>
         </ul>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">5. 情報の保護</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            5. 情報の保護
+        </h2>
         <p class="mb-4">
             本アプリは、収集した情報の安全性を確保するため、以下の対策を講じます：
         </p>
@@ -79,7 +89,7 @@ export default {
             <li class="mb-2">個人情報の取り扱いに関する従業員への教育と指導</li>
         </ul>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
             6. ユーザーおよび介護サービス利用者の権利
         </h2>
         <p class="mb-4">
@@ -94,14 +104,16 @@ export default {
             上記の権利を行使する場合は、下記のお問い合わせ先までご連絡ください
         </p>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
             7. プライバシーポリシーの変更
         </h2>
         <p class="mb-4">
             本プライバシーポリシーは、必要に応じて更新されることがあります。変更があった場合は、アプリ内またはウェブサイト上で通知します。変更後もアプリを利用することで、ユーザーおよび介護サービス利用者は更新後のプライバシーポリシーに同意したものとみなされます。
         </p>
 
-        <h2 class="text-2xl font-semibold mt-6 mb-2">8. お問い合わせ</h2>
+        <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
+            8. お問い合わせ
+        </h2>
         <p class="mb-4">
             本プライバシーポリシーに関するご質問や懸念がある場合は、以下の連絡先までご連絡ください：
         </p>
