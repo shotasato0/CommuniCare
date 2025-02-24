@@ -13,7 +13,9 @@ export default {
     <!-- フッター -->
     <footer class="bg-white border-t">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-center items-center space-x-6">
+            <div
+                class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
+            >
                 <!-- コピーライト -->
                 <div class="text-sm text-gray-500">
                     © 2025 CommuniCare. All rights reserved.
