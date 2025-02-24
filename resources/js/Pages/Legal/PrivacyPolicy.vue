@@ -1,6 +1,11 @@
 <script>
+import Footer from "@/Layouts/Footer.vue";
+
 export default {
     name: "PrivacyPolicy",
+    components: {
+        Footer,
+    },
 };
 </script>
 
@@ -129,4 +134,6 @@ export default {
             </a>
         </p>
     </div>
+
+    <Footer />
 </template>
