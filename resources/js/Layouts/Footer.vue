@@ -1,18 +1,37 @@
+<script>
+import { Link } from "@inertiajs/vue3";
+
+export default {
+    name: "Footer",
+    components: {
+        Link,
+    },
+};
+</script>
+
 <template>
     <!-- フッター -->
     <footer class="bg-white border-t">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-center items-center space-x-6">
+            <div
+                class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
+            >
                 <!-- コピーライト -->
                 <div class="text-sm text-gray-500">
-                    © 2024 CommuniCare. All rights reserved.
+                    © 2025 CommuniCare. All rights reserved.
+                </div>
+                <!-- プライバシーポリシーリンク -->
+                <div class="text-sm text-gray-500 hover:text-gray-900">
+                    <Link href="/legal/privacy-policy">
+                        プライバシーポリシー
+                    </Link>
                 </div>
                 <!-- ソーシャルリンク -->
                 <div class="flex space-x-4">
                     <a
                         href="https://twitter.com/shoprogramming"
                         rel="noopener noreferrer"
-                        class="text-gray-600 hover:text-gray-900"
+                        class="text-gray-500 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
@@ -31,7 +50,7 @@
                     <a
                         href="https://github.com/shotasato0"
                         rel="noopener noreferrer"
-                        class="text-gray-600 hover:text-gray-900"
+                        class="text-gray-500 hover:text-gray-900"
                         target="_blank"
                     >
                         <svg
@@ -50,12 +69,6 @@
         </div>
     </footer>
 </template>
-
-<script>
-export default {
-    name: "Footer",
-};
-</script>
 
 <style scoped>
 footer {
