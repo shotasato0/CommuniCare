@@ -98,15 +98,25 @@ export default {
             6. ユーザーおよび介護サービス利用者の権利
         </h2>
         <p class="mb-4">
-            ユーザーおよび介護サービス利用者は、自己の個人情報に関して以下の権利を有します：
+            ユーザーおよび介護サービス利用者は、以下の権利を有します。
         </p>
         <ul class="list-disc pl-5 mb-4">
-            <li class="mb-2">個人情報の閲覧、訂正、削除の要求</li>
-            <li class="mb-2">個人情報の利用停止および提供停止の要求</li>
-            <li class="mb-2">個人情報の処理に関する異議の申し立て</li>
+            <li class="mb-2">個人情報へのアクセス、訂正、削除の請求</li>
+            <li class="mb-2">
+                個人情報の利用停止および第三者への提供の停止の請求
+            </li>
+            <li class="mb-2">Cookieの無効化（ブラウザの設定で変更可能）</li>
         </ul>
         <p class="mb-4">
-            上記の権利を行使する場合は、下記のお問い合わせ先までご連絡ください
+            これらの権利を行使する場合は、以下のXアカウントまでご連絡ください。
+        </p>
+        <p class="mb-4">
+            <strong>Xアカウント:</strong>
+            <a
+                class="text-gray-500 hover:text-gray-900"
+                href="https://x.com/shoprogramming"
+                >@shoprogramming</a
+            >
         </p>
 
         <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
@@ -120,18 +130,15 @@ export default {
             8. お問い合わせ
         </h2>
         <p class="mb-4">
-            本プライバシーポリシーに関するご質問や懸念がある場合は、以下の連絡先までご連絡ください：
+            本プライバシーポリシーに関するお問い合わせは、以下のXアカウントまでお願いいたします。
         </p>
         <p class="mb-4">
-            Xアカウント:
+            <strong>Xアカウント:</strong>
             <a
+                class="text-gray-500 hover:text-gray-900"
                 href="https://x.com/shoprogramming"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mb-4 text-gray-500 hover:text-gray-900"
+                >@shoprogramming</a
             >
-                @shoprogramming
-            </a>
         </p>
     </div>
 
