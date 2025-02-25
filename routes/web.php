@@ -14,6 +14,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\LegalController;
 
 // テナント識別をスキップするルート
 Route::middleware([])->group(function () {
@@ -74,5 +75,8 @@ Route::middleware([])->group(function () {
         });
     });
 // });
+
+// テナント外のルート
+Route::get('/legal/privacy-policy', [LegalController::class, 'privacyPolicy'])->name('legal.privacyPolicy'); // プライバシーポリシー
 
 require __DIR__.'/auth.php';
