@@ -1,35 +1,30 @@
 <script>
 import Footer from "@/Layouts/Footer.vue";
-import PopstateHandler from "@/Components/PopstateHandler.vue";
 
 export default {
     name: "PrivacyPolicy",
     components: {
         Footer,
-        PopstateHandler,
     },
 };
 </script>
 
 <template>
     <div class="privacy-policy max-w-3xl mx-auto p-5 leading-relaxed">
-        <!-- ひとつ前のページに戻る -->
-        <PopstateHandler />
-
         <h1 class="text-3xl font-bold mb-4">プライバシーポリシー</h1>
 
         <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
             1. はじめに
         </h2>
         <p class="mb-4">
-            本プライバシーポリシーでは、「CommuniCare」（以下、「本アプリ」といいます）が、ユーザーおよび介護サービス利用者の個人情報およびその他の情報をどのように収集、使用、管理、保護するかについて説明します。
+            本プライバシーポリシーでは、「CommuniCare」（以下、「本サービス」といいます）が、ユーザーおよび介護サービス利用者の個人情報およびその他の情報をどのように収集、使用、管理、保護するかについて説明します。
         </p>
 
         <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
             2. 収集する情報
         </h2>
         <p class="mb-4">
-            本アプリが収集する情報には、以下のものが含まれますが、これに限定されません：
+            本サービスが収集する情報には、以下のものが含まれますが、これに限定されません：
         </p>
         <ul class="list-disc pl-5 mb-4">
             <li class="mb-2">
@@ -86,7 +81,7 @@ export default {
             5. 情報の保護
         </h2>
         <p class="mb-4">
-            本アプリは、収集した情報の安全性を確保するため、以下の対策を講じます：
+            本サービスは、収集した情報の安全性を確保するため、以下の対策を講じます：
         </p>
         <ul class="list-disc pl-5 mb-4">
             <li class="mb-2">
