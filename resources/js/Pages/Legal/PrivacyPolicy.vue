@@ -1,16 +1,21 @@
 <script>
 import Footer from "@/Layouts/Footer.vue";
+import PopstateHandler from "@/Components/PopstateHandler.vue";
 
 export default {
     name: "PrivacyPolicy",
     components: {
         Footer,
+        PopstateHandler,
     },
 };
 </script>
 
 <template>
     <div class="privacy-policy max-w-3xl mx-auto p-5 leading-relaxed">
+        <!-- ひとつ前のページに戻る -->
+        <PopstateHandler />
+
         <h1 class="text-3xl font-bold mb-4">プライバシーポリシー</h1>
 
         <h2 class="text-2xl font-semibold mt-6 mb-2 border-b border-gray-300">
