@@ -1,15 +1,18 @@
 <script>
 import Footer from "@/Layouts/Footer.vue";
+import { Head } from "@inertiajs/vue3";
 
 export default {
     name: "PrivacyPolicy",
     components: {
         Footer,
+        Head,
     },
 };
 </script>
 
 <template>
+    <Head :title="'プライバシーポリシー'" />
     <div class="privacy-policy max-w-3xl mx-auto p-5 leading-relaxed">
         <h1 class="text-3xl font-bold mb-4">プライバシーポリシー</h1>
 
