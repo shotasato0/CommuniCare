@@ -78,5 +78,6 @@ Route::middleware([])->group(function () {
 
 // テナント外のルート
 Route::get('/legal/privacy-policy', [LegalController::class, 'privacyPolicy'])->name('legal.privacyPolicy'); // プライバシーポリシー
+Route::get('/legal/terms-of-service', [LegalController::class, 'termsOfService'])->name('legal.termsOfService'); // 利用規約
 
 require __DIR__.'/auth.php';
