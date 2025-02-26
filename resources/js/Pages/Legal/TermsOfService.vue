@@ -1,3 +1,14 @@
+<script>
+import Footer from "@/Layouts/Footer.vue";
+
+export default {
+    name: "TermsOfService",
+    components: {
+        Footer,
+    },
+};
+</script>
+
 <template>
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6 text-left">利用規約</h1>
@@ -97,13 +108,9 @@
             本規約の解釈には日本法を準拠法とし、紛争が生じた場合には本サービスの運営所在地の裁判所を専属的合意管轄とします。
         </p>
     </div>
-</template>
 
-<script>
-export default {
-    name: "TermsOfService",
-};
-</script>
+    <Footer />
+</template>
 
 <style scoped>
 .container {
