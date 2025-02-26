@@ -1,6 +1,6 @@
 <template>
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6 text-center">利用規約</h1>
+        <h1 class="text-3xl font-bold mb-6 text-left">利用規約</h1>
 
         <p class="mb-6">
             本利用規約（以下、「本規約」といいます）は、このウェブサイト上で提供するサービス「CommuniCare」（以下、「本サービス」といいます）の利用条件を定めるものです。
