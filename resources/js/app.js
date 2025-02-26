@@ -46,6 +46,20 @@ createInertiaApp({
 
         app.mount(el);
 
+        // SPAの初期表示時に履歴を置き換える
+        window.history.replaceState(
+            {},
+            "",
+            window.location.pathname + window.location.search
+        );
+
+        // iPhoneスワイプバック対策
+        window.addEventListener("popstate", (event) => {
+            if (event.state === null) {
+                window.history.back();
+            }
+        });
+
         document.addEventListener("inertia:finish", (event) => {
             console.log("Inertia:finish イベントが発火しました");
 
