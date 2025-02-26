@@ -1,15 +1,18 @@
 <script>
 import Footer from "@/Layouts/Footer.vue";
+import { Head } from "@inertiajs/vue3";
 
 export default {
     name: "TermsOfService",
     components: {
         Footer,
+        Head,
     },
 };
 </script>
 
 <template>
+    <Head :title="'利用規約'" />
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold mb-6 text-left">利用規約</h1>
 
