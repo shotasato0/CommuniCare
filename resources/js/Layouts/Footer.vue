@@ -26,6 +26,10 @@ export default {
                         プライバシーポリシー
                     </Link>
                 </div>
+                <!-- 利用規約リンク -->
+                <div class="text-sm text-gray-500 hover:text-gray-900">
+                    <Link href="/legal/terms-of-service"> 利用規約 </Link>
+                </div>
                 <!-- ソーシャルリンク -->
                 <div class="flex space-x-4">
                     <a
