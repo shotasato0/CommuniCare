@@ -16,8 +16,6 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\LegalController;
 
-// テナント識別をスキップするルート
-Route::middleware([])->group(function () {
     Route::get('/', function () {
         return Inertia::render('Welcome', [
             'canRegister' => Route::has('register'),
@@ -25,11 +23,8 @@ Route::middleware([])->group(function () {
             'phpVersion' => PHP_VERSION,
         ]);
     })->name('welcome');
-});
 
 // Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function () {
-    // テナント識別を行うルート
-    Route::middleware([App\Http\Middleware\InitializeTenancyCustom::class])->group(function () {
 
         Route::middleware(['auth'])->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -73,10 +68,8 @@ Route::middleware([])->group(function () {
             // 管理者権限の譲渡
             Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
         });
-    });
 // });
 
-// テナント外のルート
 Route::get('/legal/privacy-policy', [LegalController::class, 'privacyPolicy'])->name('legal.privacyPolicy'); // プライバシーポリシー
 Route::get('/legal/terms-of-service', [LegalController::class, 'termsOfService'])->name('legal.termsOfService'); // 利用規約
 
