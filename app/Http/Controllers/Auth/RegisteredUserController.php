@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('tenant_id', session('tenant_id'));
+                    return $query->where('tenant_id', tenant('id'));
                 })
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
