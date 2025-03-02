@@ -54,8 +54,6 @@ use App\Http\Controllers\LegalController;
             Route::get('/users/{user}/edit-icon', [UserController::class, 'editIcon'])->name('users.editIcon');
             Route::post('/users/{user}/update-icon', [UserController::class, 'updateIcon'])->name('users.updateIcon');
 
-            // Route::get('/units/list-for-sidebar', [UnitController::class, 'listForSidebar'])->name('units.listForSidebar');
-
             // ユニット
             Route::resource('units', UnitController::class);
 
