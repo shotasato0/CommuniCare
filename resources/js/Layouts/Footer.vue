@@ -6,6 +6,17 @@ export default {
     components: {
         Link,
     },
+    computed: {
+        showSocialLinks() {
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            return (
+                hostname === "communi-care.jp" ||
+                (hostname === "localhost" && port === "9000") ||
+                hostname.includes("guestdemo")
+            );
+        },
+    },
 };
 </script>
 
@@ -31,7 +42,7 @@ export default {
                     <Link href="/legal/terms-of-service"> 利用規約 </Link>
                 </div>
                 <!-- ソーシャルリンク -->
-                <div class="flex space-x-4">
+                <div class="flex space-x-4" v-if="showSocialLinks">
                     <a
                         href="https://twitter.com/shoprogramming"
                         rel="noopener noreferrer"
