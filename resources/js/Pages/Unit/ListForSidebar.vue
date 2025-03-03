@@ -2,11 +2,14 @@
 import { router } from "@inertiajs/vue3";
 import SlideUpDown from "vue-slide-up-down";
 import Show from "../Users/Show.vue";
+import { Container, Draggable } from "vue3-smooth-dnd";
 
 export default {
     components: {
         SlideUpDown,
         Show,
+        Container, // コンテナコンポーネント
+        Draggable, // ドラッグ可能なコンポーネント
     },
     props: {
         units: {
@@ -26,7 +29,7 @@ export default {
     },
     computed: {
         selectedUnitId() {
-            return this.activeUnitId;
+            return this.activeUnitId; // 選択された部署IDを取得
         },
     },
     data() {
@@ -77,6 +80,18 @@ export default {
                 },
             });
         },
+
+        // 並び順を保存
+        async updateOrder() {
+            try {
+                await router.post(route("units.sort"), this.units);
+                console.log("並び順が保存されました");
+            } catch (error) {
+                console.error("並び順の保存に失敗しました", error);
+            }
+        },
+
+        // ユーザー（職員）のプロフィールを開く
         openUserProfile(user) {
             this.$emit("user-profile-clicked", user);
         },
@@ -87,21 +102,21 @@ export default {
 <template>
     <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
         <h2 class="text-lg font-bold mb-4">{{ $t("Unit List") }}</h2>
-        <ul>
-            <li
-                v-for="unit in units"
-                :key="unit.id"
-                class="mb-2 p-2 rounded cursor-pointer"
-                :class="{
-                    'text-gray-500 hover:text-black hover:bg-gray-200':
-                        activeUnitId !== unit.id,
-                    'bg-gray-200': activeUnitId === unit.id,
-                }"
-                @click="handleUnitClick(unit)"
-            >
-                <span class="font-bold">{{ unit.name }}</span>
-            </li>
-        </ul>
+        <Container :items="units" @drop="updateOrder">
+            <Draggable v-for="unit in units" :key="unit.id">
+                <li
+                    class="mb-2 p-2 rounded cursor-pointer"
+                    :class="{
+                        'text-gray-500 hover:text-black hover:bg-gray-200':
+                            activeUnitId !== unit.id,
+                        'bg-gray-200': activeUnitId === unit.id,
+                    }"
+                    @click="handleUnitClick(unit)"
+                >
+                    <span class="font-bold">{{ unit.name }}</span>
+                </li>
+            </Draggable>
+        </Container>
     </div>
 </template>
 
