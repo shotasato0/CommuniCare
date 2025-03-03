@@ -24,8 +24,6 @@ use App\Http\Controllers\LegalController;
         ]);
     })->name('welcome');
 
-// Route::domain('{tenant}.' . config('app.tenant_base_domain'))->group(function () {
-
         Route::middleware(['auth'])->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -63,7 +61,6 @@ use App\Http\Controllers\LegalController;
             // 管理者権限の譲渡
             Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
         });
-// });
 
 Route::get('/legal/privacy-policy', [LegalController::class, 'privacyPolicy'])->name('legal.privacyPolicy'); // プライバシーポリシー
 Route::get('/legal/terms-of-service', [LegalController::class, 'termsOfService'])->name('legal.termsOfService'); // 利用規約
