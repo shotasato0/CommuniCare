@@ -98,4 +98,16 @@ class UnitController extends Controller
         Unit::find($id)->delete();
         return redirect()->route("units.create")->with(["success" => "部署の削除が完了しました"]);
     }
+
+    /**
+     * 部署の並び順を保存
+     */
+    public function sort(Request $request)
+    {
+        $units = $request->input('units');
+        foreach ($units as $index => $unit) {
+            Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
+        }
+        return response()->json(['message' => '部署の並び順が保存されました']);
+    }
 }
