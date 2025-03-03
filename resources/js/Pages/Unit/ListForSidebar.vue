@@ -82,18 +82,52 @@ export default {
         },
 
         // 並び順を保存
-        async updateOrder() {
+        async updateOrder(event) {
+            // 並び替えのイベントデータを取得
+            const { removedIndex, addedIndex } = event;
+
+            // エラーチェック
+            if (removedIndex === null || addedIndex === null) {
+                // 並び替えのイベントデータがnullの場合エラーメッセージを出力
+                console.error("Invalid drop event data:", event);
+                return;
+            }
+
+            // フロントエンドで並び替え
+            const movedItem = this.units.splice(removedIndex, 1)[0]; // 並び替えのイベントデータから削除されたアイテムを取得
+            this.units.splice(addedIndex, 0, movedItem); // 並び替えのイベントデータから追加されたアイテムを取得
+
+            // 並び替えのイベントデータを取得
+            const sortedUnits = this.units.map((unit, index) => ({
+                id: unit.id, // 並び替えのイベントデータからアイテムのidを取得
+                sort_order: index, // 並び替えのイベントデータからアイテムの並び順を取得
+            }));
+
             try {
-                await router.post(route("units.sort"), this.units);
+                await router.post(route("units.sort"), { units: sortedUnits });
                 console.log("並び順が保存されました");
             } catch (error) {
                 console.error("並び順の保存に失敗しました", error);
             }
         },
 
+        // 最新の部署データを取得
+        async fetchLatestUnits() {
+            try {
+                return await router.get(route("units.index"), { // 最新の部署データを取得するメソッド。awaitは非同期処理を待つためのキーワード。
+                    preserveState: true,
+                    onSuccess: (page) => {
+                        this.units = page.props.units ?? [];
+                    },
+                });
+            } catch (error) {
+                console.error("最新の部署データの取得に失敗しました", error);
+            }
+        },
+
         // ユーザー（職員）のプロフィールを開く
         openUserProfile(user) {
-            this.$emit("user-profile-clicked", user);
+            this.$emit("user-profile-clicked", user); // ユーザー（職員）のプロフィールを開くメソッド。$emitはVueのコンポーネント間でメッセージを送信するメソッド。
         },
     },
 };
