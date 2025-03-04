@@ -38,12 +38,23 @@ class HandleInertiaRequests extends Middleware
                 ->first();
         }
 
+        $currentAdminId = null;
+
+    if ($request->user()) {
+        $tenantId = $request->user()->tenant_id;
+        $admin = \App\Models\User::role('admin')
+            ->where('tenant_id', $tenantId)
+            ->first();
+        $currentAdminId = $admin ? $admin->id : null;
+    }
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
                 'isAdmin' => $request->user() ? $request->user()->hasRole('admin') : false,
             ],
+            'currentAdminId' => $currentAdminId,
             'tenant' => $tenant,
             'isGuest' => $request->user() && $request->user()->guest_session_id ? true : false,
             'guestSessionId' => $request->user() && $request->user()->guest_session_id ? $request->user()->guest_session_id : null,
