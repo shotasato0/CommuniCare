@@ -27,7 +27,7 @@ class ForumController extends Controller
             return Inertia::render('Forum', [
                 'errorMessage' => 'ユニットに所属していません。管理者に確認してください。',
                 'posts' => [],
-                'units' => Unit::with('forum')->get(),
+                'units' => Unit::orderBy('sort_order')->with('forum')->get(),
                 'users' => User::all(),
                 'selectedForumId' => null,
             ]);
@@ -93,7 +93,7 @@ class ForumController extends Controller
 
         return Inertia::render('Forum', [
             'posts' => $posts,
-            'units' => Unit::with('forum')->get(),
+            'units' => Unit::orderBy('sort_order')->with('forum')->get(),
             'users' => User::all(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
