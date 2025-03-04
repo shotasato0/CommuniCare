@@ -38,10 +38,13 @@ class HandleInertiaRequests extends Middleware
                 ->first();
         }
 
+        \Log::info('isAdmin (Inertia): ' . ($request->user() && $request->user()->hasRole('admin') ? 'true' : 'false'));
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'isAdmin' => $request->user() ? $request->user()->hasRole('admin') : false,
             ],
             'tenant' => $tenant,
             'isGuest' => $request->user() && $request->user()->guest_session_id ? true : false,
