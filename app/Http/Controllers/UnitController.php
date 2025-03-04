@@ -104,10 +104,12 @@ class UnitController extends Controller
      */
     public function sort(Request $request)
     {
-        $units = $request->input('units');
+        $units = $request->input('units') ?? [];
         foreach ($units as $index => $unit) {
             Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
         }
-        return response()->json(['message' => '部署の並び順が保存されました']);
+        return Inertia::render('Forum', [
+            'units' => $units,
+        ]);
     }
 }
