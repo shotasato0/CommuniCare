@@ -108,8 +108,6 @@ class UnitController extends Controller
         foreach ($units as $index => $unit) {
             Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
         }
-        return Inertia::render('Forum', [
-            'units' => $units,
-        ]);
+        return redirect()->route('forum.index');
     }
 }
