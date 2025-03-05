@@ -1,5 +1,5 @@
 <script>
-import { router } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import SlideUpDown from "vue-slide-up-down";
 import Show from "../Users/Show.vue";
 import { Container, Draggable } from "vue3-smooth-dnd";
@@ -37,7 +37,18 @@ export default {
             isFetchingData: false, // データ取得中かどうかを判定するフラグ
         };
     },
+    setup() {
+        // usePage で props を取得
+        const { auth } = usePage().props;
 
+        // auth.isAdmin を console に表示 (デバッグ用)
+        console.log("isAdmin:", auth.isAdmin);
+
+        // auth を返して template で使えるようにする
+        return {
+            auth,
+        };
+    },
     methods: {
         async handleUnitClick(unit) {
             if (this.isFetchingData) {
@@ -58,7 +69,7 @@ export default {
             this.isFetchingData = false;
         },
 
-        // toggleUnitメソッドを復活
+        // toggleUnitメソッド
         toggleUnit(unitId) {
             console.log("Toggling unit:", unitId);
             // 親コンポーネントの状態を変更するためにイベントを発火
@@ -114,7 +125,8 @@ export default {
         // 最新の部署データを取得
         async fetchLatestUnits() {
             try {
-                return await router.get(route("units.index"), { // 最新の部署データを取得するメソッド。awaitは非同期処理を待つためのキーワード。
+                // 最新の部署データを取得するメソッド。awaitは非同期処理を待つためのキーワード。
+                return await router.get(route("units.index"), {
                     preserveState: true,
                     onSuccess: (page) => {
                         this.units = page.props.units ?? [];
