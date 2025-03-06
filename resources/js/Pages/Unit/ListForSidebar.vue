@@ -50,6 +50,11 @@ export default {
         };
     },
     methods: {
+        handleDrop(event) {
+            if (this.auth.isAdmin) {
+                this.updateOrder(event);
+            }
+        },
         async handleUnitClick(unit) {
             if (this.isFetchingData) {
                 console.log("Already fetching data, skipping...");
@@ -148,7 +153,12 @@ export default {
 <template>
     <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
         <h2 class="text-lg font-bold mb-4">{{ $t("Unit List") }}</h2>
-        <Container :items="units" @drop="updateOrder" class="list-none">
+        <Container
+            :items="units"
+            @drop="handleDrop"
+            :behaviour="auth.isAdmin ? 'move' : 'copy'"
+            class="list-none"
+        >
             <Draggable v-for="unit in units" :key="unit.id">
                 <li
                     class="mb-2 p-2 rounded cursor-pointer"
