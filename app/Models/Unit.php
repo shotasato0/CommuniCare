@@ -10,7 +10,7 @@ class Unit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'tenant_id'];
+    protected $fillable = ['name', 'tenant_id', 'sort_order'];
 
     protected static function booted()
     {

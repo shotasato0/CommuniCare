@@ -65,6 +65,9 @@ Route::middleware(['auth'])->group(function () {
 
     // 管理者権限の譲渡
     Route::post('/admin/transfer-admin', [AdminUserController::class, 'transferAdmin'])->name('admin.transferAdmin');
+
+    // 部署の並び順を保存
+    Route::post('/units/sort', [UnitController::class, 'sort'])->name('units.sort');
 });
 
 // 法的情報
