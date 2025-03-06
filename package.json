@@ -6,7 +6,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@inertiajs/vue3": "^1.0.0",
+        "@inertiajs/vue3": "^2.0.4",
         "@tailwindcss/forms": "^0.5.3",
         "@vitejs/plugin-vue": "^5.0.0",
         "autoprefixer": "^10.4.12",
@@ -21,6 +21,8 @@
         "bootstrap-icons": "^1.11.3",
         "dayjs": "^1.11.13",
         "vue-i18n": "^9.14.0",
-        "vue-slide-up-down": "^3.0.0"
+        "vue-slide-up-down": "^3.0.0",
+        "vue3-smooth-dnd": "^0.0.6",
+        "vuedraggable": "^2.24.3"
     }
 }

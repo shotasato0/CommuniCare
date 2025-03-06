@@ -22,7 +22,7 @@ class ProfileController extends Controller
     {
         // 現在のテナントに属する部署のみを取得
         $units = Unit::where('tenant_id', auth()->user()->tenant_id)
-            ->orderBy('name')
+            ->orderBy('sort_order')
             ->get();
 
         return Inertia::render('Profile/Edit', [
