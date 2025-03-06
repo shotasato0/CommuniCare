@@ -50,7 +50,9 @@ export default {
         };
     },
     methods: {
+        // 並び替えのイベントデータを取得
         handleDrop(event) {
+            // 管理者だけ並び替えを可能にする
             if (this.auth.isAdmin) {
                 this.updateOrder(event);
             }
