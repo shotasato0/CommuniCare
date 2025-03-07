@@ -28,6 +28,8 @@ const props = defineProps({
 const isLiked = ref(props.initialIsLiked); // いいねの状態
 const likeCount = ref(props.initialLikeCount); // いいねの数
 const likedUsers = ref([]); // いいねしたユーザーの名前一覧
+const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
+const tooltipDelay = 1000; // ツールチップ表示の遅延時間
 
 // いいねのトグル
 const toggleLike = async () => {
@@ -49,9 +51,12 @@ const toggleLike = async () => {
 // いいねしたユーザーの名前一覧を取得
 const fetchLikedUsers = async () => {
     console.log("fetchLikedUsers が実行されました！"); // デバッグ用
-    try {
-        // いいねしたユーザーの名前一覧を取得
-        const response = await axios.get(
+
+    // マウスオーバーで遅延して表示
+    hoverTimeout.value = setTimeout(async () => {
+        try {
+            // いいねしたユーザーの名前一覧を取得
+            const response = await axios.get(
             // モデル名を小文字に変換
             `/api/${props.likeableType.toLowerCase()}s/${
                 props.likeableId // モデルのID
@@ -60,8 +65,9 @@ const fetchLikedUsers = async () => {
         likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
         console.log("取得したユーザー:", likedUsers.value); // デバッグ用
     } catch (error) {
-        console.error("いいねしたユーザーの取得に失敗しました:", error);
-    }
+            console.error("いいねしたユーザーの取得に失敗しました:", error);
+        }
+    }, tooltipDelay); // ツールチップ表示の遅延時間
 };
 </script>
 
