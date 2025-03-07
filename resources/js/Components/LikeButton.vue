@@ -29,7 +29,7 @@ const isLiked = ref(props.initialIsLiked); // いいねの状態
 const likeCount = ref(props.initialLikeCount); // いいねの数
 const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
-const tooltipDelay = 1000; // ツールチップ表示の遅延時間
+const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
 // ツールチップをクリア
 const clearTooltip = () => {
