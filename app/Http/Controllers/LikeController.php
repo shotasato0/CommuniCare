@@ -14,9 +14,9 @@ class LikeController extends Controller
         $likeableId = $request->input('likeable_id');
         $likeableType = $request->input('likeable_type');
 
-        // ポリモーフィックリレーションのため、対象モデルを動的に設定
-        $likeableModel = 'App\\Models\\' . $likeableType;
-        $likeable = $likeableModel::findOrFail($likeableId);
+        
+        $likeableModel = 'App\\Models\\' . ucfirst($likeableType); // モデル名を取得
+        $likeable = $likeableModel::findOrFail($likeableId); // 指定されたIDのモデルを取得
 
         // 既にいいねしているかを確認
         $existingLike = Like::where('user_id', $user->id)
@@ -36,4 +36,18 @@ class LikeController extends Controller
 
         return response()->json(['isLiked' => $isLiked]);
     }
+
+    // いいねしたユーザーを取得
+    public function getLikedUsers($type, $id)
+    {
+        $likeableModel = 'App\\Models\\' . ucfirst(rtrim($type, 's')); // モデル名を取得
+        $likeable = $likeableModel::findOrFail($id); // 指定されたIDのモデルを取得
+
+        // いいねしたユーザーの名前一覧を取得
+        $likedUsers = $likeable->likes()->with('user')->get()->pluck('user.name');
+
+        return response()->json($likedUsers);
+    }
+
+
 }
