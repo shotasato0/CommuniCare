@@ -7,3 +7,5 @@ use App\Http\Controllers\LikeController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('/{type}/{id}/liked-users', [LikeController::class, 'getLikedUsers']);
