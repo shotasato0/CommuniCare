@@ -31,6 +31,16 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 1000; // ツールチップ表示の遅延時間
 
+// ツールチップをクリア
+const clearTooltip = () => {
+    // マウスオーバー時のタイムアウトが存在する場合
+    if (hoverTimeout.value) {
+        clearTimeout(hoverTimeout.value); // タイムアウトをクリア
+        hoverTimeout.value = null; // タイムアウトをnullに設定
+    }
+    likedUsers.value = []; // いいねしたユーザーの名前一覧を空にする
+};
+
 // いいねのトグル
 const toggleLike = async () => {
     isLiked.value = !isLiked.value; // いいねの状態をトグル
@@ -57,14 +67,14 @@ const fetchLikedUsers = async () => {
         try {
             // いいねしたユーザーの名前一覧を取得
             const response = await axios.get(
-            // モデル名を小文字に変換
-            `/api/${props.likeableType.toLowerCase()}s/${
-                props.likeableId // モデルのID
-            }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
-        );
-        likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
-        console.log("取得したユーザー:", likedUsers.value); // デバッグ用
-    } catch (error) {
+                // モデル名を小文字に変換
+                `/api/${props.likeableType.toLowerCase()}s/${
+                    props.likeableId // モデルのID
+                }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
+            );
+            likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
+            console.log("取得したユーザー:", likedUsers.value); // デバッグ用
+        } catch (error) {
             console.error("いいねしたユーザーの取得に失敗しました:", error);
         }
     }, tooltipDelay); // ツールチップ表示の遅延時間
@@ -72,7 +82,7 @@ const fetchLikedUsers = async () => {
 </script>
 
 <template>
-    <div class="relative" @mouseleave="likedUsers = []">
+    <div class="relative" @mouseout="clearTooltip">
         <button
             @click="toggleLike"
             @mouseover="fetchLikedUsers"
