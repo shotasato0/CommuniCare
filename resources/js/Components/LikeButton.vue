@@ -3,30 +3,31 @@ import axios from "axios";
 import { ref } from "vue";
 
 const props = defineProps({
-    likeableId: {
+    likeableId: { // モデルのID
         type: Number,
         required: true,
     },
-    likeableType: {
+    likeableType: { // モデル名
         type: String,
         required: true, // 'Post'または'Comment'を指定
     },
-    initialLikeCount: {
+    initialLikeCount: { // いいねの数
         type: Number,
         default: 0,
     },
-    initialIsLiked: {
+    initialIsLiked: { // いいねの状態
         type: Boolean,
         default: false,
     },
 });
 
-const isLiked = ref(props.initialIsLiked);
-const likeCount = ref(props.initialLikeCount);
+const isLiked = ref(props.initialIsLiked); // いいねの状態
+const likeCount = ref(props.initialLikeCount); // いいねの数
+const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 
-const toggleLike = async () => {
-    isLiked.value = !isLiked.value;
-    likeCount.value += isLiked.value ? 1 : -1;
+const toggleLike = async () => { // いいねのトグル
+    isLiked.value = !isLiked.value; // いいねの状態をトグル
+    likeCount.value += isLiked.value ? 1 : -1; // いいねの数を更新
 
     try {
         await axios.post("/like/toggle", {
@@ -34,17 +35,55 @@ const toggleLike = async () => {
             likeable_type: props.likeableType, // 'Post' または 'Comment'を送信
         });
     } catch (error) {
-        isLiked.value = !isLiked.value;
-        likeCount.value += isLiked.value ? 1 : -1;
-        console.error("いいねのトグルに失敗しました:", error);
+        isLiked.value = !isLiked.value; // いいねの状態をトグル
+        likeCount.value += isLiked.value ? 1 : -1; // いいねの数を更新
+        console.error("いいねのトグルに失敗しました:", error); // エラーメッセージを出力
+    }
+};
+
+// いいねしたユーザーの名前一覧を取得
+const fetchLikedUsers = async () => { // マウスオーバー時に実行
+    console.log("fetchLikedUsers が実行されました！"); // デバッグ用
+    try {
+        const response = await axios.get( // いいねしたユーザーの名前一覧を取得
+            `/api/${props.likeableType.toLowerCase()}s/${ // モデル名を小文字に変換
+                props.likeableId // モデルのID
+            }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
+        );
+        likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
+        console.log("取得したユーザー:", likedUsers.value); // デバッグ用
+    } catch (error) {
+        console.error("いいねしたユーザーの取得に失敗しました:", error);
     }
 };
 </script>
 
 <template>
-    <button @click="toggleLike" :class="{ 'text-red-500': isLiked }">
-        <i v-if="isLiked" class="bi bi-heart-fill"></i>
-        <i v-else class="bi bi-heart"></i>
-        {{ likeCount }}
-    </button>
+    <div class="relative" @mouseleave="likedUsers = []">
+        <button
+            @click="toggleLike"
+            @mouseover="fetchLikedUsers"
+            :class="{ 'text-red-500': isLiked }"
+        >
+            <i v-if="isLiked" class="bi bi-heart-fill"></i>
+            <i v-else class="bi bi-heart"></i>
+            {{ likeCount }}
+        </button>
+
+        <!-- ツールチップ表示 -->
+        <div
+            v-if="likedUsers.length"
+            class="absolute bg-white border border-gray-300 rounded-md shadow-lg p-2 max-h-40 overflow-y-auto z-50 mt-2 w-48 transition-opacity duration-200"
+        >
+            <ul class="text-sm text-gray-700">
+                <li
+                    v-for="user in likedUsers"
+                    :key="user"
+                    class="py-1 px-2 hover:bg-gray-100 rounded-md"
+                >
+                    {{ user }}
+                </li>
+            </ul>
+        </div>
+    </div>
 </template>
