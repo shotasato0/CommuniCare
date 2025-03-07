@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->unit->forum(); //単一のフォーラムを返す
     }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class); // 多対多のリレーション
+    }
 }
