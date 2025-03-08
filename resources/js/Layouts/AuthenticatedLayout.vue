@@ -13,8 +13,6 @@ const units = page.props.units || []; // Inertiaから`units`を取得
 const users = page.props.users || []; // Inertiaから`users`を取得
 const isGuest = page.props.isGuest || false; // Inertiaから`isGuest`を取得
 
-console.log("isGuest", isGuest);
-
 // CSRFトークンを取得
 const csrfToken = ref(
     document
@@ -29,8 +27,6 @@ const auth = page.props.auth || { user: {} }; // userがnullの場合、デフ�
 const userUnitId = auth.user?.unit_id || null;
 
 // ユーザーの情報を確認
-console.log("Logged in user data:", auth.user);
-console.log("auth.user.unit_id:", userUnitId);
 
 // ダイアログの状態を管理
 const isDialogVisible = ref(false);
