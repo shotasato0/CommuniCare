@@ -59,7 +59,6 @@ const deleteResident = async (resident) => {
         `${resident.name}さんを削除してもよろしいですか？`
     );
     if (!result) {
-        console.log("削除がキャンセルされました");
         return;
     }
 
@@ -96,7 +95,6 @@ const selectedUnitName = computed(() => {
 
 // フラッシュメッセージを取得
 const flash = computed(() => {
-    console.log("Flash props:", usePage().props.flash);
     return usePage().props.flash;
 });
 
