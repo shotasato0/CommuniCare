@@ -88,7 +88,6 @@ watch(selectedForumId, (newForumId) => {
 
 // サイドバーのユーザー選択イベントを受け取る関数
 const onUserSelected = (user) => {
-    console.log("User selected:", user);
     selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
     isUserProfileVisible.value = true; // ユーザープロファイルのポップアップを表示
 };
@@ -138,7 +137,6 @@ const closeUserProfile = () => {
 
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
-    console.log("sidebarVisible.value:", sidebarVisible.value);
 };
 
 // コメントフォーム表示状態を管理するためのオブジェクト
@@ -178,7 +176,6 @@ const onDeleteItem = async (type, id) => {
     // 削除確認ダイアログを表示
     const result = await dialog.showDialog(confirmMessage);
     if (!result) {
-        console.log("削除がキャンセルされました");
         return; // キャンセル時は処理を中断
     }
 
@@ -235,7 +232,6 @@ const handleCommentDeletion = (commentId) => {
         if (deleted) {
             // Vueに変更を通知
             posts.value.data[postIndex].comments = [...comments];
-            console.log(`返信削除成功: ${commentId}`);
         } else {
             console.error(`返信削除に失敗しました: ${commentId}`);
         }
@@ -726,5 +722,4 @@ p.mb-2 a {
 p.mb-2 a:hover {
     opacity: 0.7;
 }
-
 </style>
