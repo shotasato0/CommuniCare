@@ -59,7 +59,6 @@ export const redirectToForum = async (
         // ダイアログを表示
         showDialog({
             message: error.message, // エラーメッセージ
-            onConfirm: () => console.log("Retry or any custom logic"), // ダイアログのOKボタンの処理
         });
     }
 };
