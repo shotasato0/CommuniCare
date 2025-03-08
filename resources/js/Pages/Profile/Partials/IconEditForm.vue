@@ -49,8 +49,6 @@ const submit = () => {
     form.post(route("profile.updateIcon"), {
         forceFormData: true,
         onSuccess: () => {
-            console.log("アイコン更新成功");
-
             // サーバーから新しいアイコンパスが返される場合は、その値を使う
             const updatedIcon = usePage().props.auth.user.icon;
 
@@ -79,8 +77,6 @@ const submit = () => {
             emit("close");
         },
         onError: (errors) => {
-            console.log("プロフィール画像更新エラー", errors);
-
             if (errors.icon) {
                 localErrorMessage.value = errors.icon;
             } else {
