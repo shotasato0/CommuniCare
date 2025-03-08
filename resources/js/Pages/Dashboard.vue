@@ -55,8 +55,6 @@ const navigateToForum = () => {
     );
 };
 
-console.log("User data:", props.auth.user);
-
 // モーダル制御用の状態
 const isUserProfileVisible = ref(false);
 const selectedUser = ref(null);
