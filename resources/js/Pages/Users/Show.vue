@@ -16,11 +16,6 @@ export default {
         const page = usePage();
         const authUser = page.props.auth.user; // ログインユーザー情報を取得
 
-        // デバッグ用のログを追加
-        console.log("User data:", props.user);
-        console.log("Auth user data:", authUser);
-        console.log("Units data:", props.units);
-
         // 部署名を取得
         const unitName =
             Array.isArray(props.units) && props.units.length > 0
