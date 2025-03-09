@@ -30,6 +30,8 @@ const likeCount = ref(props.initialLikeCount); // いいねの数
 const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
+const isLongPress = ref(false); // 長押しの状態
+const longPressTimeout = ref(null); // 長押し判定用のタイマー
 
 // モバイルサイズを判断するための定数
 const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -50,6 +52,7 @@ const clearTooltip = () => {
         hoverTimeout.value = null; // タイムアウトをnullに設定
     }
     likedUsers.value = []; // いいねしたユーザーの名前一覧を空にする
+    isLongPress.value = false; // 長押しの状態をリセット
 };
 
 // いいねのトグル
@@ -87,10 +90,29 @@ const fetchLikedUsers = async () => {
         }
     }, tooltipDelay); // ツールチップ表示の遅延時間
 };
+
+const handleTouchStart = () => {
+    if (isMobile.value) {
+        longPressTimeout.value = setTimeout(() => {
+            isLongPress.value = true; // 長押しフラグを立てる
+            fetchLikedUsers(); // いいねしたユーザーの名前一覧を取得
+        }, 800); // 800ms後に長押しフラグを立てる
+    }
+};
+
+const handleTouchEnd = () => {
+    clearTimeout(longPressTimeout.value); // 長押し判定用のタイマーをクリア
+    isLongPress.value = false; // 長押しの状態をリセット
+};
 </script>
 
 <template>
-    <div class="relative" @mouseout="clearTooltip">
+    <div
+        class="relative"
+        @mouseout="clearTooltip"
+        @touchstart="handleTouchStart"
+        @touchend="handleTouchEnd"
+    >
         <button
             @click="toggleLike"
             @mouseover="!isMobile ? fetchLikedUsers() : null"
