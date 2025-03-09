@@ -31,6 +31,17 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
+// モバイルサイズを判断するための定数
+const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+// 初回のサイズ判定
+const isMobile = ref(mediaQuery.matches);
+
+// ウィンドウの幅が変更された時にモバイルかどうかを再判定
+mediaQuery.addEventListener("change", (event) => {
+    isMobile.value = event.matches;
+});
+
 // ツールチップをクリア
 const clearTooltip = () => {
     // マウスオーバー時のタイムアウトが存在する場合
@@ -82,7 +93,7 @@ const fetchLikedUsers = async () => {
     <div class="relative" @mouseout="clearTooltip">
         <button
             @click="toggleLike"
-            @mouseover="fetchLikedUsers"
+            @mouseover="!isMobile ? fetchLikedUsers() : null"
             :class="{ 'text-red-500': isLiked }"
         >
             <i v-if="isLiked" class="bi bi-heart-fill"></i>
