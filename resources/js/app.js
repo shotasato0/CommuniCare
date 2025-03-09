@@ -61,16 +61,12 @@ createInertiaApp({
         });
 
         document.addEventListener("inertia:finish", (event) => {
-            console.log("Inertia:finish イベントが発火しました");
-
             // HTTPレスポンスのステータスコードを確認
             const statusCode = event.detail?.response?.status;
 
             if (statusCode === 419) {
                 // セッション切れの場合の処理
-                console.log(
-                    "セッション切れが検出されました。リロードを実行します。"
-                );
+
                 alert("セッションが切れています。リロードします。");
                 window.location.reload();
                 // } else {
