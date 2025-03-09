@@ -41,9 +41,6 @@ export default {
         // usePage で props を取得
         const { auth } = usePage().props;
 
-        // auth.isAdmin を console に表示 (デバッグ用)
-        console.log("isAdmin:", auth.isAdmin);
-
         // auth を返して template で使えるようにする
         return {
             auth,
@@ -57,9 +54,9 @@ export default {
                 this.updateOrder(event);
             }
         },
+        // 部署をクリックしたときの処理
         async handleUnitClick(unit) {
             if (this.isFetchingData) {
-                console.log("Already fetching data, skipping...");
                 return;
             }
 
@@ -71,28 +68,23 @@ export default {
             // 親コンポーネントに選択された部署IDを通知
             this.$emit("forum-selected", unit.id);
 
-            console.log("call fetchUnitData");
             await this.fetchUnitData(unit.id);
             this.isFetchingData = false;
         },
 
         // toggleUnitメソッド
         toggleUnit(unitId) {
-            console.log("Toggling unit:", unitId);
             // 親コンポーネントの状態を変更するためにイベントを発火
             this.$emit("forum-selected", unitId);
         },
 
+        // 部署データを取得
         fetchUnitData(unitId) {
-            console.log("Fetching data for unit ID:", unitId);
-
             router.visit(route("forum.index"), {
                 method: "get",
                 only: ["units"],
                 preserveState: true,
-                onSuccess: (page) => {
-                    console.log("Received data:", page.props.units);
-                },
+                onSuccess: (page) => {},
                 onError: (errors) => {
                     console.error("Error fetching unit data:", errors);
                 },
@@ -122,8 +114,7 @@ export default {
             }));
 
             try {
-                await router.post(route("units.sort"), { units: sortedUnits });
-                console.log("並び順が保存されました");
+                await router.post(route("units.sort"), { units: sortedUnits }); // 並び替えのイベントデータを取得
             } catch (error) {
                 console.error("並び順の保存に失敗しました", error);
             }

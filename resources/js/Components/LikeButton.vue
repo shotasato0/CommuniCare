@@ -60,8 +60,6 @@ const toggleLike = async () => {
 
 // いいねしたユーザーの名前一覧を取得
 const fetchLikedUsers = async () => {
-    console.log("fetchLikedUsers が実行されました！"); // デバッグ用
-
     // マウスオーバーで遅延して表示
     hoverTimeout.value = setTimeout(async () => {
         try {
@@ -73,7 +71,6 @@ const fetchLikedUsers = async () => {
                 }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
             );
             likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
-            console.log("取得したユーザー:", likedUsers.value); // デバッグ用
         } catch (error) {
             console.error("いいねしたユーザーの取得に失敗しました:", error);
         }

@@ -27,15 +27,15 @@ const submit = () => {
 
 // 現在の部署一覧を取得
 const { units = [] } = usePage().props;
-console.log("units", units);
 
 const dialog = useDialog();
 
 // 部署削除機能
 const deleteUnit = async (unit) => {
-    const result = await dialog.showDialog(`${unit.name}を削除してもよろしいですか？`);
+    const result = await dialog.showDialog(
+        `${unit.name}を削除してもよろしいですか？`
+    );
     if (!result) {
-        console.log("削除がキャンセルされました");
         return;
     }
 

@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cookie;
 use Stancl\Tenancy\Database\Models\Domain;
-use Illuminate\Support\Facades\Log;
 
 class SetTenantCookie
 {

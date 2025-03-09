@@ -95,8 +95,8 @@ const deleteUser = async (user) => {
         `${user.name}さんを削除してもよろしいですか？`
     );
 
+    // ダイアログがキャンセルされた場合
     if (!result) {
-        console.log("削除がキャンセルされました");
         return;
     }
 
