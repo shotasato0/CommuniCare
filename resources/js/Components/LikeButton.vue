@@ -31,6 +31,17 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
+// デバイスサイズを判断するための定数
+const mediaQuery = window.matchMedia("(max-width: 1024px)");
+
+// 初回のサイズ判定
+const isMobile = ref(mediaQuery.matches);
+
+// ウィンドウの幅が変更された時にモバイルかどうかを再判定
+mediaQuery.addEventListener("change", (event) => {
+    isMobile.value = event.matches;
+});
+
 // ツールチップをクリア
 const clearTooltip = () => {
     // マウスオーバー時のタイムアウトが存在する場合
@@ -60,8 +71,8 @@ const toggleLike = async () => {
 
 // いいねしたユーザーの名前一覧を取得
 const fetchLikedUsers = async () => {
-    // マウスオーバーで遅延して表示
-    hoverTimeout.value = setTimeout(async () => {
+    // デスクトップサイズではマウスオーバーで遅延して表示
+    const fetchData = async () => {
         try {
             // いいねしたユーザーの名前一覧を取得
             const response = await axios.get(
@@ -71,23 +82,40 @@ const fetchLikedUsers = async () => {
                 }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
             );
             likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
+            console.log(likedUsers.value); // いいねしたユーザーの名前一覧をコンソールに出力
         } catch (error) {
             console.error("いいねしたユーザーの取得に失敗しました:", error);
         }
-    }, tooltipDelay); // ツールチップ表示の遅延時間
+    };
+    // モバイルサイズでは遅延なしで表示
+    if (isMobile.value) {
+        await fetchData();
+    } else {
+        hoverTimeout.value = setTimeout(fetchData, tooltipDelay); // ツールチップ表示の遅延時間
+    }
 };
 </script>
 
 <template>
-    <div class="relative" @mouseout="clearTooltip">
+    <div class="relative" @mouseout="clearTooltip" style="touch-action: none">
+        <!-- デスクトップ用のいいねボタン -->
         <button
             @click="toggleLike"
-            @mouseover="fetchLikedUsers"
+            @mouseover="!isMobile ? fetchLikedUsers() : null"
             :class="{ 'text-red-500': isLiked }"
         >
             <i v-if="isLiked" class="bi bi-heart-fill"></i>
             <i v-else class="bi bi-heart"></i>
             {{ likeCount }}
+        </button>
+
+        <!-- モバイル用の「…」ボタン -->
+        <button
+            v-if="isMobile"
+            @click="fetchLikedUsers"
+            class="ml-2 text-gray-500"
+        >
+            ...
         </button>
 
         <!-- ツールチップ表示 -->
