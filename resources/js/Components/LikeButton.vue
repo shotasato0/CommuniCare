@@ -30,8 +30,6 @@ const likeCount = ref(props.initialLikeCount); // いいねの数
 const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
-const isLongPress = ref(false); // 長押しの状態
-const longPressTimeout = ref(null); // 長押し判定用のタイマー
 
 // モバイルサイズを判断するための定数
 const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -52,7 +50,6 @@ const clearTooltip = () => {
         hoverTimeout.value = null; // タイムアウトをnullに設定
     }
     likedUsers.value = []; // いいねしたユーザーの名前一覧を空にする
-    isLongPress.value = false; // 長押しの状態をリセット
 };
 
 // いいねのトグル
