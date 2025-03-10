@@ -72,7 +72,7 @@ const toggleLike = async () => {
 // いいねしたユーザーの名前一覧を取得
 const fetchLikedUsers = async () => {
     // デスクトップサイズではマウスオーバーで遅延して表示
-    if (isMobile.value) {
+    const fetchData = async () => {
         try {
             // いいねしたユーザーの名前一覧を取得
             const response = await axios.get(
@@ -86,21 +86,12 @@ const fetchLikedUsers = async () => {
         } catch (error) {
             console.error("いいねしたユーザーの取得に失敗しました:", error);
         }
+    };
+    // モバイルサイズでは遅延なしで表示
+    if (isMobile.value) {
+        await fetchData();
     } else {
-        // モバイルサイズでは遅延なしで表示
-        hoverTimeout.value = setTimeout(async () => {
-            try {
-                const response = await axios.get(
-                    `/api/${props.likeableType.toLowerCase()}s/${
-                        props.likeableId // モデルのID
-                    }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
-                );
-                likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
-                console.log(likedUsers.value); // いいねしたユーザーの名前一覧をコンソールに出力
-            } catch (error) {
-                console.error("いいねしたユーザーの取得に失敗しました:", error);
-            }
-        }, tooltipDelay); // ツールチップ表示の遅延時間
+        hoverTimeout.value = setTimeout(fetchData, tooltipDelay); // ツールチップ表示の遅延時間
     }
 };
 </script>
