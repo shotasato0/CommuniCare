@@ -31,8 +31,8 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
-// モバイルサイズを判断するための定数
-const mediaQuery = window.matchMedia("(max-width: 768px)");
+// デバイスサイズを判断するための定数
+const mediaQuery = window.matchMedia("(max-width: 1024px)");
 
 // 初回のサイズ判定
 const isMobile = ref(mediaQuery.matches);
