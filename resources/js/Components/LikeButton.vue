@@ -85,12 +85,14 @@ const fetchLikedUsers = async () => {
                 }/liked-users` // いいねしたユーザーの名前一覧を取得するためのエンドポイント
             );
             likedUsers.value = response.data; // 取得したユーザーの名前一覧を格納
+            console.log(likedUsers.value); // いいねしたユーザーの名前一覧をコンソールに出力
         } catch (error) {
             console.error("いいねしたユーザーの取得に失敗しました:", error);
         }
     }, tooltipDelay); // ツールチップ表示の遅延時間
 };
 
+// タッチスタート時の処理
 const handleTouchStart = () => {
     if (isMobile.value) {
         longPressTimeout.value = setTimeout(() => {
@@ -100,9 +102,15 @@ const handleTouchStart = () => {
     }
 };
 
+// タッチエンド時の処理
 const handleTouchEnd = () => {
     clearTimeout(longPressTimeout.value); // 長押し判定用のタイマーをクリア
     isLongPress.value = false; // 長押しの状態をリセット
+};
+
+// タッチムーブ時の処理
+const handleTouchMove = (event) => {
+    event.preventDefault(); // デフォルトの動作を防止
 };
 </script>
 
@@ -111,7 +119,9 @@ const handleTouchEnd = () => {
         class="relative"
         @mouseout="clearTooltip"
         @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
+        style="touch-action: none"
     >
         <button
             @click="toggleLike"
