@@ -91,38 +91,11 @@ const fetchLikedUsers = async () => {
         }
     }, tooltipDelay); // ツールチップ表示の遅延時間
 };
-
-// タッチスタート時の処理
-const handleTouchStart = () => {
-    if (isMobile.value) {
-        longPressTimeout.value = setTimeout(() => {
-            isLongPress.value = true; // 長押しフラグを立てる
-            fetchLikedUsers(); // いいねしたユーザーの名前一覧を取得
-        }, 800); // 800ms後に長押しフラグを立てる
-    }
-};
-
-// タッチエンド時の処理
-const handleTouchEnd = () => {
-    clearTimeout(longPressTimeout.value); // 長押し判定用のタイマーをクリア
-    isLongPress.value = false; // 長押しの状態をリセット
-};
-
-// タッチムーブ時の処理
-const handleTouchMove = (event) => {
-    event.preventDefault(); // デフォルトの動作を防止
-};
 </script>
 
 <template>
-    <div
-        class="relative"
-        @mouseout="clearTooltip"
-        @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
-        @touchend="handleTouchEnd"
-        style="touch-action: none"
-    >
+    <div class="relative" @mouseout="clearTooltip" style="touch-action: none">
+        <!-- デスクトップ用のいいねボタン -->
         <button
             @click="toggleLike"
             @mouseover="!isMobile ? fetchLikedUsers() : null"
@@ -131,6 +104,15 @@ const handleTouchMove = (event) => {
             <i v-if="isLiked" class="bi bi-heart-fill"></i>
             <i v-else class="bi bi-heart"></i>
             {{ likeCount }}
+        </button>
+
+        <!-- モバイル用の「…」ボタン -->
+        <button
+            v-if="isMobile"
+            @click="fetchLikedUsers"
+            class="ml-2 text-gray-500"
+        >
+            ...
         </button>
 
         <!-- ツールチップ表示 -->
