@@ -89,9 +89,9 @@ watch(selectedForumId, (newForumId) => {
 // サイドバーの表示状態を監視し、変更があるたびにボディのスクロールを禁止
 watch(sidebarVisible, (newVisible) => {
     if (newVisible) {
-        document.body.classList.add("no-scroll");
+        document.body.classList.add("no-scroll"); // ボディのスクロールを禁止
     } else {
-        document.body.classList.remove("no-scroll");
+        document.body.classList.remove("no-scroll"); // ボディのスクロールを許可
     }
 });
 
@@ -103,10 +103,10 @@ const onUserSelected = (user) => {
 
 // ユニット選択イベント
 const onForumSelected = async (unitId) => {
-    const unit = units.value.find((u) => u.id === unitId);
-    if (!unit || !unit.forum) {
+    const unit = units.value.find((u) => u.id === unitId); // 選択されたユニットを取得
+    if (!unit || !unit.forum) { // ユニットが見つからないか、掲示板が見つからない場合
         console.error("対応する掲示板が見つかりませんでした");
-        return;
+        return; // 処理を中断
     }
 
     // users が配列であることを確認しつつフィルタリング
@@ -114,16 +114,17 @@ const onForumSelected = async (unitId) => {
         ? users.value.filter((user) => user.unit_id === unitId)
         : [];
 
-    selectedForumId.value = unit.forum.id;
-    selectedUnitName.value = unit.name;
-    selectedUnitUsers.value = filteredUsers;
+    selectedForumId.value = unit.forum.id; // 選択された掲示板のIDをセット
+    selectedUnitName.value = unit.name; // 選択されたユニットの名前をセット
+    selectedUnitUsers.value = filteredUsers; // 選択されたユニットのユーザーリストをセット
 
-    sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
+    sessionStorage.setItem("selectedUnitName", selectedUnitName.value); // 選択されたユニットの名前をセット
     sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
     localStorage.setItem("lastSelectedUnitId", unitId);
 
+    // 掲示板のページをリロード
     router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-        preserveState: false,
+        preserveState: false, // ページの状態を保持しない
     });
 };
 
