@@ -86,6 +86,15 @@ watch(selectedForumId, (newForumId) => {
     fetchPostsByForumId(router, newForumId);
 });
 
+// サイドバーの表示状態を監視し、変更があるたびにボディのスクロールを禁止
+watch(sidebarVisible, (newVisible) => {
+    if (newVisible) {
+        document.body.classList.add("no-scroll");
+    } else {
+        document.body.classList.remove("no-scroll");
+    }
+});
+
 // サイドバーのユーザー選択イベントを受け取る関数
 const onUserSelected = (user) => {
     selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
@@ -634,6 +643,11 @@ const openModal = (imageSrc) => {
 </template>
 
 <style>
+/* サイドバーが表示されている場合、ボディのスクロールを禁止 */
+body.no-scroll {
+    overflow: hidden;
+}
+
 /* モバイルサイズ用のスタイル（切り替え可能） */
 @media (max-width: 767px) {
     .sidebar-mobile {
