@@ -86,6 +86,15 @@ watch(selectedForumId, (newForumId) => {
     fetchPostsByForumId(router, newForumId);
 });
 
+// サイドバーの表示状態を監視し、変更があるたびにボディのスクロールを禁止
+watch(sidebarVisible, (newVisible) => {
+    if (newVisible) {
+        document.body.classList.add("no-scroll"); // ボディのスクロールを禁止
+    } else {
+        document.body.classList.remove("no-scroll"); // ボディのスクロールを許可
+    }
+});
+
 // サイドバーのユーザー選択イベントを受け取る関数
 const onUserSelected = (user) => {
     selectedPost.value = { user }; // `selectedPost`に選択したユーザーをセット
@@ -94,10 +103,11 @@ const onUserSelected = (user) => {
 
 // ユニット選択イベント
 const onForumSelected = async (unitId) => {
-    const unit = units.value.find((u) => u.id === unitId);
+    const unit = units.value.find((u) => u.id === unitId); // 選択されたユニットを取得
+    // ユニットが見つからないか、掲示板が見つからない場合
     if (!unit || !unit.forum) {
         console.error("対応する掲示板が見つかりませんでした");
-        return;
+        return; // 処理を中断
     }
 
     // users が配列であることを確認しつつフィルタリング
@@ -105,17 +115,20 @@ const onForumSelected = async (unitId) => {
         ? users.value.filter((user) => user.unit_id === unitId)
         : [];
 
-    selectedForumId.value = unit.forum.id;
-    selectedUnitName.value = unit.name;
-    selectedUnitUsers.value = filteredUsers;
+    selectedForumId.value = unit.forum.id; // 選択された掲示板のIDをセット
+    selectedUnitName.value = unit.name; // 選択されたユニットの名前をセット
+    selectedUnitUsers.value = filteredUsers; // 選択されたユニットのユーザーリストをセット
 
-    sessionStorage.setItem("selectedUnitName", selectedUnitName.value);
+    sessionStorage.setItem("selectedUnitName", selectedUnitName.value); // 選択されたユニットの名前をセット
     sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
     localStorage.setItem("lastSelectedUnitId", unitId);
 
+    // 掲示板のページをリロード
     router.get(route("forum.index", { forum_id: selectedForumId.value }), {
-        preserveState: false,
+        preserveState: false, // ページの状態を保持しない
     });
+
+    document.body.classList.remove("no-scroll"); // 掲示版切り替え時にもボディのスクロールを許可
 };
 
 const onPageChange = (url) => {
@@ -634,6 +647,11 @@ const openModal = (imageSrc) => {
 </template>
 
 <style>
+/* サイドバーが表示されている場合、ボディのスクロールを禁止 */
+body.no-scroll {
+    overflow: hidden;
+}
+
 /* モバイルサイズ用のスタイル（切り替え可能） */
 @media (max-width: 767px) {
     .sidebar-mobile {
