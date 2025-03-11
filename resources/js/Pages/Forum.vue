@@ -104,7 +104,8 @@ const onUserSelected = (user) => {
 // ユニット選択イベント
 const onForumSelected = async (unitId) => {
     const unit = units.value.find((u) => u.id === unitId); // 選択されたユニットを取得
-    if (!unit || !unit.forum) { // ユニットが見つからないか、掲示板が見つからない場合
+    // ユニットが見つからないか、掲示板が見つからない場合
+    if (!unit || !unit.forum) {
         console.error("対応する掲示板が見つかりませんでした");
         return; // 処理を中断
     }
@@ -126,6 +127,8 @@ const onForumSelected = async (unitId) => {
     router.get(route("forum.index", { forum_id: selectedForumId.value }), {
         preserveState: false, // ページの状態を保持しない
     });
+
+    document.body.classList.remove("no-scroll"); // 掲示版切り替え時にもボディのスクロールを許可
 };
 
 const onPageChange = (url) => {
