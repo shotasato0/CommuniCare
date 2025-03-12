@@ -115,7 +115,7 @@ const submitQuotePost = () => {
                 <h3 class="text-sm font-semibold text-gray-700">
                     引用元の投稿
                 </h3>
-                <p class="text-gray-600">{{ quotedPost.message }}</p>
+                <p class="text-gray-600 whitespace-pre-wrap">{{ quotedPost.message }}</p>
             </div>
 
             <!-- 新しい投稿の入力フォーム -->
