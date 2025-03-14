@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import { handleImageChange } from "@/Utils/imageHandler";
 import ImageModal from "./ImageModal.vue";
@@ -102,6 +102,16 @@ const submitQuotePost = () => {
         },
     });
 };
+
+// 引用投稿元のプレビュー表示時の最大表示文字数
+const maxPreviewLength = 100;
+
+// 引用投稿元のプレビュー表示時の最大表示文字数を超えた場合、省略表示
+const truncatedMessage = computed(() => {
+    return props.quotedPost?.message.length > maxPreviewLength
+        ? props.quotedPost.message.slice(0, maxPreviewLength) + "..."
+        : props.quotedPost.message;
+});
 </script>
 
 <template>
@@ -115,7 +125,9 @@ const submitQuotePost = () => {
                 <h3 class="text-sm font-semibold text-gray-700">
                     引用元の投稿
                 </h3>
-                <p class="text-gray-600">{{ quotedPost.message }}</p>
+                <p class="text-gray-600 whitespace-pre-wrap">
+                    {{ truncatedMessage }}
+                </p>
             </div>
 
             <!-- 新しい投稿の入力フォーム -->
