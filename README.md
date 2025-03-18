@@ -185,7 +185,7 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 | ER 図                                      |
 | ------------------------------------------ |
-| ![ER図](public/images/communicare_ERD.png) |
+| ![ER図](public/images/communicare_ERD2.png) |
 
 ## インフラ構成図
 
