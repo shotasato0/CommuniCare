@@ -18,7 +18,7 @@ class UserController extends Controller
     $tenantId = auth()->user()->tenant_id;  // 現在のユーザーのテナントIDを取得
 
     $users = User::where('tenant_id', $tenantId)->get();  // テナントIDでユーザーを絞り込み
-    $units = Unit::where('tenant_id', $tenantId)->get();  // ユニットも同様にフィルタリング
+    $units = Unit::where('tenant_id', $tenantId)->orderBy('sort_order')->get(); // 並び順を保存
     
     // 管理者ユーザーを取得
     $currentAdmin = User::role('admin')
