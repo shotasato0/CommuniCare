@@ -23,7 +23,7 @@ class ResidentController extends Controller
 
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
-            'units' => Unit::all(),
+            'units' => Unit::where('tenant_id', auth()->user()->tenant_id)->orderBy('sort_order')->get(),
             'selectedUnitId' => $unitId,
             'isAdmin' => auth()->user()->hasRole('admin'),
         ]);
