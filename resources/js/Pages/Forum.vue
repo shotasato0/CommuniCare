@@ -53,11 +53,13 @@ const activeUnitId = ref(null); // 選択中の部署IDを管理
 const isModalOpen = ref(false); // モーダル表示
 const currentImage = ref(null); // 現在の画像を保持
 
+// 引用投稿フォームを表示する関数
 const quotePost = (post) => {
     quotedPost.value = post; // post全体をセットする
     showPostForm.value = true;
 };
 
+// マウント時の処理
 onMounted(() => {
     initSelectedForumId(selectedForumId);
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
@@ -131,6 +133,7 @@ const onForumSelected = async (unitId) => {
     document.body.classList.remove("no-scroll"); // 掲示版切り替え時にもボディのスクロールを許可
 };
 
+// ページネーションの変更
 const onPageChange = (url) => {
     router.get(url, {
         preserveScroll: true,
@@ -139,15 +142,18 @@ const onPageChange = (url) => {
     });
 };
 
+// ユーザーの詳細ページを表示
 const openUserProfile = (post) => {
     selectedPost.value = post;
     isUserProfileVisible.value = true; // ユーザーの詳細ページを表示
 };
 
+// ユーザーの詳細ページを閉じる
 const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
 
+// サイドバーの表示・非表示を切り替える関数
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
 };
@@ -161,6 +167,7 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
         commentFormVisibility.value[postId] = {};
     }
 
+    // コメントフォームの表示・非表示を切り替える関数
     if (!commentFormVisibility.value[postId][parentId]) {
         commentFormVisibility.value[postId][parentId] = {
             isVisible: false,
@@ -177,8 +184,10 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value = { ...commentFormVisibility.value };
 };
 
+// カスタムダイアログを使用
 const dialog = useDialog();
 
+// 投稿の削除を処理する関数
 const onDeleteItem = async (type, id) => {
     const confirmMessage =
         type === "post"
@@ -237,6 +246,7 @@ const handleCommentDeletion = (commentId) => {
         findCommentRecursive(post.comments, commentId)
     );
 
+    // コメントが見つかった場合
     if (postIndex !== -1) {
         const comments = posts.value.data[postIndex].comments;
 
@@ -276,6 +286,7 @@ const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
 
+// ユニット選択イベント
 const handleForumSelected = (unitId) => {
     activeUnitId.value = unitId; // 選択された部署IDを保存
     localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
