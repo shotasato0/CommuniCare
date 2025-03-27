@@ -25,6 +25,7 @@ class ProfileController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // プロフィール編集ページを表示
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
@@ -79,40 +80,53 @@ class ProfileController extends Controller
         // ProfileUpdateRequestのバリデーションは自動的に実行されます
         // 追加のバリデーションは不要です
 
+        // ユーザーのプロフィール情報を更新
         $request->user()->fill($request->validated());
 
+        // メールアドレスが変更された場合、verified_atをnullにする
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
+        // ユーザー情報を保存
         $request->user()->save();
 
+        // プロフィール編集ページにリダイレクト
         return Redirect::route('profile.edit');
     }
 
     /**
      * Delete the user's account.
      */
+    // ユーザーのアカウントを削除
     public function destroy(Request $request): RedirectResponse
     {
+        // パスワードのバリデーション
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
+        // ユーザー情報を取得
         $user = $request->user();
 
         // セッションからドメイン情報を取得し、セッションが存在しない場合はリクエストから取得
         $domain = session('tenant_domain', $request->getHost());
 
+        // ログアウト
         Auth::logout();
 
+        // ユーザーを削除
         $user->delete();
 
+        // セッションを無効化し、新しいトークンを生成
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // ログを記録
         Log::info('セッションが再生成されました');
 
-        return Redirect::to('http://' . $domain . '/'); // 必要に応じて 'http://' を 'https://' に変更
+        // ドメインにリダイレクト
+        return Redirect::to('http://' . $domain . '/');
     }
 
 }
