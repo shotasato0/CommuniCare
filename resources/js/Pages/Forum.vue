@@ -53,30 +53,36 @@ const activeUnitId = ref(null); // 選択中の部署IDを管理
 const isModalOpen = ref(false); // モーダル表示
 const currentImage = ref(null); // 現在の画像を保持
 
+// 引用投稿フォームを表示する関数
 const quotePost = (post) => {
     quotedPost.value = post; // post全体をセットする
     showPostForm.value = true;
 };
 
+// マウント時の処理
 onMounted(() => {
-    initSelectedForumId(selectedForumId);
-    restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
+    initSelectedForumId(selectedForumId); // 選択された掲示板のIDを初期化
+    restoreSelectedUnit(selectedUnitUsers, selectedUnitName); // 選択されたユニットのユーザーリストと名前を復元
 
-    // URLパラメータからactive_unit_idを取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlUnitId = urlParams.get("active_unit_id");
-
-    if (urlUnitId) {
-        // URLパラメータがある場合はそれを優先
-        activeUnitId.value = parseInt(urlUnitId);
-        localStorage.setItem("lastSelectedUnitId", urlUnitId);
+    // ユーザーのunit_idを優先的に使用
+    if (auth.user.unit_id) {
+        activeUnitId.value = auth.user.unit_id; // ユーザーのunit_idをセット
+        localStorage.setItem("lastSelectedUnitId", auth.user.unit_id); // ローカルストレージに保存
     } else {
-        // URLパラメータがない場合は既存のロジックを使用
-        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
-        if (savedUnitId) {
-            activeUnitId.value = parseInt(savedUnitId);
-        } else if (auth.user.unit_id) {
-            activeUnitId.value = auth.user.unit_id;
+        // URLパラメータから取得
+        const urlParams = new URLSearchParams(window.location.search); // URLパラメータを取得
+        const urlUnitId = urlParams.get("active_unit_id"); // URLパラメータからactive_unit_idを取得
+
+        // URLパラメータがある場合はそれを優先
+        if (urlUnitId) {
+            activeUnitId.value = parseInt(urlUnitId); // URLパラメータから取得したunit_idをセット
+            localStorage.setItem("lastSelectedUnitId", urlUnitId); // ローカルストレージに保存
+        } else {
+            // localStorageから取得
+            const savedUnitId = localStorage.getItem("lastSelectedUnitId"); // ローカルストレージから取得
+            if (savedUnitId) {
+                activeUnitId.value = parseInt(savedUnitId); // ローカルストレージから取得したunit_idをセット
+            }
         }
     }
 });
@@ -131,6 +137,7 @@ const onForumSelected = async (unitId) => {
     document.body.classList.remove("no-scroll"); // 掲示版切り替え時にもボディのスクロールを許可
 };
 
+// ページネーションの変更
 const onPageChange = (url) => {
     router.get(url, {
         preserveScroll: true,
@@ -139,15 +146,18 @@ const onPageChange = (url) => {
     });
 };
 
+// ユーザーの詳細ページを表示
 const openUserProfile = (post) => {
     selectedPost.value = post;
     isUserProfileVisible.value = true; // ユーザーの詳細ページを表示
 };
 
+// ユーザーの詳細ページを閉じる
 const closeUserProfile = () => {
     isUserProfileVisible.value = false;
 };
 
+// サイドバーの表示・非表示を切り替える関数
 const toggleSidebar = () => {
     sidebarVisible.value = !sidebarVisible.value;
 };
@@ -161,6 +171,7 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
         commentFormVisibility.value[postId] = {};
     }
 
+    // コメントフォームの表示・非表示を切り替える関数
     if (!commentFormVisibility.value[postId][parentId]) {
         commentFormVisibility.value[postId][parentId] = {
             isVisible: false,
@@ -177,8 +188,10 @@ const toggleCommentForm = (postId, parentId = "post", replyToName = "") => {
     commentFormVisibility.value = { ...commentFormVisibility.value };
 };
 
+// カスタムダイアログを使用
 const dialog = useDialog();
 
+// 投稿の削除を処理する関数
 const onDeleteItem = async (type, id) => {
     const confirmMessage =
         type === "post"
@@ -237,6 +250,7 @@ const handleCommentDeletion = (commentId) => {
         findCommentRecursive(post.comments, commentId)
     );
 
+    // コメントが見つかった場合
     if (postIndex !== -1) {
         const comments = posts.value.data[postIndex].comments;
 
@@ -276,6 +290,7 @@ const isCommentAuthor = (comment) => {
     return auth.user && comment.user && auth.user.id === comment.user.id;
 };
 
+// ユニット選択イベント
 const handleForumSelected = (unitId) => {
     activeUnitId.value = unitId; // 選択された部署IDを保存
     localStorage.setItem("lastSelectedUnitId", unitId); // ローカルストレージに保存
