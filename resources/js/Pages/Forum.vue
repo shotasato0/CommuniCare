@@ -61,28 +61,24 @@ const quotePost = (post) => {
 
 // マウント時の処理
 onMounted(() => {
-    initSelectedForumId(selectedForumId); // 選択された掲示板のIDを初期化
-    restoreSelectedUnit(selectedUnitUsers, selectedUnitName); // 選択されたユニットのユーザーリストと名前を復元
+    initSelectedForumId(selectedForumId);
+    restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 
-    // ユーザーのunit_idを優先的に使用
-    if (auth.user.unit_id) {
-        activeUnitId.value = auth.user.unit_id; // ユーザーのunit_idをセット
-        localStorage.setItem("lastSelectedUnitId", auth.user.unit_id); // ローカルストレージに保存
-    } else {
-        // URLパラメータから取得
-        const urlParams = new URLSearchParams(window.location.search); // URLパラメータを取得
-        const urlUnitId = urlParams.get("active_unit_id"); // URLパラメータからactive_unit_idを取得
+    // URLパラメータからactive_unit_idを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUnitId = urlParams.get("active_unit_id");
 
+    if (urlUnitId) {
         // URLパラメータがある場合はそれを優先
-        if (urlUnitId) {
-            activeUnitId.value = parseInt(urlUnitId); // URLパラメータから取得したunit_idをセット
-            localStorage.setItem("lastSelectedUnitId", urlUnitId); // ローカルストレージに保存
-        } else {
-            // localStorageから取得
-            const savedUnitId = localStorage.getItem("lastSelectedUnitId"); // ローカルストレージから取得
-            if (savedUnitId) {
-                activeUnitId.value = parseInt(savedUnitId); // ローカルストレージから取得したunit_idをセット
-            }
+        activeUnitId.value = parseInt(urlUnitId);
+        localStorage.setItem("lastSelectedUnitId", urlUnitId);
+    } else {
+        // URLパラメータがない場合は既存のロジックを使用
+        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+        if (savedUnitId) {
+            activeUnitId.value = parseInt(savedUnitId);
+        } else if (auth.user.unit_id) {
+            activeUnitId.value = auth.user.unit_id;
         }
     }
 });
