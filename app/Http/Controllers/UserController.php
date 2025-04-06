@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Requests\User\UserIconUpdateRequest;
 use Inertia\Inertia;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
@@ -86,19 +87,12 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'tel' => 'nullable|string|max:20',
-        'email' => 'required|email|max:255',
-        'unit_id' => 'nullable|exists:units,id',
-    ]);
+    public function update(UserUpdateRequest $request, User $user)
+    {
+        $user->update($request->validated());
 
-    $user->update($validatedData);
-
-    return redirect()->route('users.editProfile', $user->id)
-            ->with('success', 'プロフィールが更新されました。');
+        return redirect()->route('users.editProfile', $user->id)
+                ->with('success', 'プロフィールが更新されました。');
     }
 
     public function editIcon(User $user)
@@ -110,39 +104,24 @@ class UserController extends Controller
     ]);
 }
 
-public function updateIcon(Request $request)
+public function updateIcon(UserIconUpdateRequest $request)
 {
-    // バリデーション
-    $request->validate([
-        'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-    ], [
-        'icon.max' => '画像のサイズが大きすぎます。4MB以下にしてください。',
-    ]);
-
     try {
-        // ファイルを取得
-    $file = $request->file('icon');
+        $file = $request->file('icon');
+        $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('icons', $fileName, 'public');
 
-    // 一意のファイル名を生成
-    $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+        if ($request->user()->icon) {
+            Storage::disk('public')->delete($request->user()->icon);
+        }
 
-    // ファイルを保存（共通の 'icons' ディレクトリに保存）
-    $path = $file->storeAs('icons', $fileName, 'public');
-
-    // 既存のアイコンを削除（必要に応じて）
-    if ($request->user()->icon) {
-        Storage::disk('public')->delete($request->user()->icon);
-    }
-
-        // データベースに新しいパスを保存
         $user = $request->user();
         $user->icon = 'icons/' . $fileName;
         $user->save();
-        // アイコン編集が完了したらユーザープロフィールページにリダイレクト
+
         return redirect()->route('users.editProfile', $user->id)
             ->with('success', 'プロフィール画像が更新されました。');
     } catch (\Exception $e) {
-        // エラーが発生した場合はエラーメッセージを表示
         return redirect()->route('users.editProfile', $user->id)
             ->with('error', 'プロフィール画像の更新に失敗しました。');
     }
