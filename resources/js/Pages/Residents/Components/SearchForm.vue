@@ -41,7 +41,7 @@ const resetSearch = () => {
         <div class="w-full sm:w-auto">
             <select
                 v-model="selectedUnit"
-                class="w-full rounded-md border-gray-300 shadow-sm"
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
                 <option value="">全部署</option>
                 <option v-for="unit in units" :key="unit.id" :value="unit.id">
@@ -58,13 +58,13 @@ const resetSearch = () => {
                     v-model="searchQuery"
                     @input="emit('update:searchQuery', searchQuery)"
                     placeholder="利用者名で検索..."
-                    class="w-full rounded-md border-gray-300 shadow-sm pl-10 pr-10 focus:border-blue-500"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm pl-10 pr-10 focus:border-blue-500 dark:focus:border-blue-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                 />
                 <!-- 検索アイコン -->
                 <div
                     class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
                 >
-                    <i class="bi bi-search text-gray-400"></i>
+                    <i class="bi bi-search text-gray-400 dark:text-gray-500"></i>
                 </div>
                 <!-- リセットアイコン -->
                 <div
@@ -72,11 +72,11 @@ const resetSearch = () => {
                     class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                     @click="resetSearch"
                 >
-                    <i class="bi bi-x-lg text-gray-400 hover:text-gray-600"></i>
+                    <i class="bi bi-x-lg text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"></i>
                 </div>
             </div>
             <!-- 検索結果件数表示 -->
-            <div v-if="searchQuery" class="text-sm text-gray-600 absolute mt-1">
+            <div v-if="searchQuery" class="text-sm text-gray-600 dark:text-gray-400 absolute mt-1">
                 検索結果: {{ totalResults }}件
             </div>
         </div>
