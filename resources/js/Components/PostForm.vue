@@ -96,14 +96,14 @@ const submitPost = () => {
 
 <template>
     <!-- 投稿フォーム -->
-    <div class="bg-white rounded-md mt-5 p-3">
+    <div class="bg-white dark:bg-gray-800 rounded-md mt-5 p-3">
         <form @submit.prevent="submitPost" enctype="multipart/form-data">
             <!-- 件名 -->
             <div class="flex mt-2">
-                <p class="font-medium">件名</p>
+                <p class="font-medium text-gray-900 dark:text-gray-100">件名</p>
                 <input
                     v-model="postData.title"
-                    class="border-gray-300 rounded-md px-2 ml-2 flex-auto"
+                    class="border-gray-300 dark:border-gray-600 rounded-md px-2 ml-2 flex-auto bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     type="text"
                     required
                     placeholder="件名を入力してください"
@@ -112,11 +112,11 @@ const submitPost = () => {
 
             <!-- 本文 -->
             <div class="flex flex-col mt-2 relative">
-                <p class="font-medium">本文</p>
+                <p class="font-medium text-gray-900 dark:text-gray-100">本文</p>
                 <!-- テキスト入力ボックス -->
                 <textarea
                     v-model="postData.message"
-                    class="w-full p-2 pr-12 border border-gray-300 rounded-md"
+                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     required
                     placeholder="本文を入力してください"
                     rows="3"
@@ -124,7 +124,7 @@ const submitPost = () => {
 
                 <!-- 画像選択アイコン -->
                 <div
-                    class="absolute right-3 bottom-3 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
+                    class="absolute right-3 bottom-3 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                     title="ファイルを選択"
@@ -142,7 +142,7 @@ const submitPost = () => {
             />
 
             <!-- エラーメッセージ表示 -->
-            <div v-if="localErrorMessage" class="text-red-500 mt-2">
+            <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
                 {{ localErrorMessage }}
             </div>
 
@@ -156,13 +156,13 @@ const submitPost = () => {
                 />
                 <!-- 削除ボタン -->
                 <div
-                    class="absolute top-0 right-0 bg-white rounded-full p-1 cursor-pointer flex items-center justify-center"
+                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
                     @click="removeImage"
                     title="画像を削除"
                     style="width: 24px; height: 24px"
                 >
                     <i
-                        class="bi bi-x-circle text-black hover:text-gray-500"
+                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
                     ></i>
                 </div>
             </div>
@@ -178,7 +178,7 @@ const submitPost = () => {
             <!-- 送信ボタン -->
             <div class="flex justify-end mt-2">
                 <button
-                    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
+                    class="my-2 px-4 py-2 rounded-md bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white cursor-pointer"
                 >
                     <i class="bi bi-send"></i>
                 </button>
