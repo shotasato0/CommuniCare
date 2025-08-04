@@ -103,7 +103,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         isForumPage
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
                                             : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                 >
@@ -114,7 +114,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('users.index')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
                                             : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
@@ -128,7 +128,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('residents.index')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
                                             : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
@@ -145,7 +145,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('dashboard')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
                                             : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
