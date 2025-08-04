@@ -76,6 +76,13 @@ onMounted(() => {
     const savedMode = localStorage.getItem('theme-mode') || 'system'
     console.log('Saved theme mode:', savedMode)
     console.log('Media query matches (system is dark):', mediaQuery.matches)
+    
+    // 追加のデバッグ情報
+    console.log('Window.matchMedia test results:')
+    console.log('(prefers-color-scheme: light):', window.matchMedia('(prefers-color-scheme: light)').matches)
+    console.log('(prefers-color-scheme: dark):', window.matchMedia('(prefers-color-scheme: dark)').matches)
+    console.log('(prefers-color-scheme: no-preference):', window.matchMedia('(prefers-color-scheme: no-preference)').matches)
+    
     selectedMode.value = savedMode
     applyTheme()
 })
