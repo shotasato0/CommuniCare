@@ -151,7 +151,7 @@ const handleCancel = () => {
                 <!-- コメントメッセージ入力欄 -->
                 <textarea
                     v-model="commentData.message"
-                    class="w-full p-2 pr-12 border border-gray-300 rounded-md"
+                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     required
                     :placeholder="placeholder"
                     rows="3"
@@ -159,7 +159,7 @@ const handleCancel = () => {
 
                 <!-- 画像選択アイコン -->
                 <div
-                    class="absolute right-3 bottom-5 bg-gray-300 text-black transition hover:bg-gray-400 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
+                    class="absolute right-3 bottom-5 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
                     @click="triggerFileInput"
                     title="ファイルを選択"
@@ -177,7 +177,7 @@ const handleCancel = () => {
                 style="display: none"
             />
             <!-- エラーメッセージ表示 -->
-            <div v-if="localErrorMessage" class="text-red-500 mt-2">
+            <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
                 {{ localErrorMessage }}
             </div>
             <!-- プレビュー表示 -->
@@ -191,13 +191,13 @@ const handleCancel = () => {
                 />
                 <!-- プレビュー画像削除ボタン -->
                 <div
-                    class="absolute top-0 right-0 bg-white rounded-full p-1 cursor-pointer flex items-center justify-center"
+                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
                     @click="removeImage"
                     title="画像を削除"
                     style="width: 24px; height: 24px"
                 >
                     <i
-                        class="bi bi-x-circle text-black hover:text-gray-500"
+                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
                     ></i>
                 </div>
             </div>
@@ -216,7 +216,7 @@ const handleCancel = () => {
                 <button
                     type="button"
                     @click="handleCancel"
-                    class="my-2 py-2 px-4 rounded-md bg-gray-300 text-gray-700 font-medium transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
+                    class="my-2 py-2 px-4 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium transition hover:bg-gray-500 dark:hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     <i class="bi bi-x-lg"></i>
                 </button>
@@ -224,7 +224,7 @@ const handleCancel = () => {
                 <!-- コメント送信ボタン -->
                 <button
                     type="submit"
-                    class="my-2 px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer"
+                    class="my-2 px-4 py-2 rounded-md bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white cursor-pointer"
                 >
                     <i class="bi bi-send"></i>
                 </button>
