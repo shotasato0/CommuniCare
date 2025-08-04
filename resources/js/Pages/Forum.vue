@@ -529,7 +529,7 @@ const openModal = (imageSrc) => {
                                         post.user ? post.user.name : 'Unknown'
                                     )
                                 "
-                                class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer"
+                                class="px-4 py-2 rounded-md bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white cursor-pointer"
                                 title="返信"
                             >
                                 <i class="bi bi-reply"></i>
@@ -538,7 +538,7 @@ const openModal = (imageSrc) => {
                             <button
                                 type="button"
                                 @click="quotePost(post)"
-                                class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer flex items-center"
+                                class="px-4 py-2 rounded-md bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
                                 <i class="bi bi-chat-quote"></i>
@@ -550,7 +550,7 @@ const openModal = (imageSrc) => {
                                     post.user && post.user.id === auth.user.id
                                 "
                                 @click.prevent="onDeleteItem('post', post.id)"
-                                class="px-4 py-2 ml-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer"
+                                class="px-4 py-2 ml-2 rounded-md bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 transition hover:bg-red-300 dark:hover:bg-red-600 hover:text-white cursor-pointer"
                                 title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
