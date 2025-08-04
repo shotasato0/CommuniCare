@@ -181,6 +181,11 @@ export default {
     transition: width 0.3s ease-in-out; /* アニメーションを追加 */
 }
 
+.dark .sidebar {
+    background-color: #1f2937;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
 /* モバイルサイズでの設定 */
 @media (max-width: 767px) {
     .sidebar {
