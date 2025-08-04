@@ -33,19 +33,26 @@ const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
 const updateCurrentMode = () => {
     if (selectedMode.value === 'system') {
-        currentMode.value = mediaQuery.matches ? 'dark' : 'light'
+        const systemIsDark = mediaQuery.matches
+        currentMode.value = systemIsDark ? 'dark' : 'light'
+        console.log('System theme detected:', systemIsDark ? 'dark' : 'light')
     } else {
         currentMode.value = selectedMode.value
+        console.log('Manual theme set:', selectedMode.value)
     }
 }
 
 const applyTheme = () => {
     updateCurrentMode()
     
+    console.log('Applying theme:', currentMode.value)
+    
     if (currentMode.value === 'dark') {
         document.documentElement.classList.add('dark')
+        console.log('Dark mode applied')
     } else {
         document.documentElement.classList.remove('dark')
+        console.log('Light mode applied')
     }
 }
 
@@ -64,6 +71,8 @@ mediaQuery.addEventListener('change', () => {
 // 初期化
 onMounted(() => {
     const savedMode = localStorage.getItem('theme-mode') || 'system'
+    console.log('Saved theme mode:', savedMode)
+    console.log('Media query matches (system is dark):', mediaQuery.matches)
     selectedMode.value = savedMode
     applyTheme()
 })
