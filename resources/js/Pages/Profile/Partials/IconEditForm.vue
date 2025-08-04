@@ -90,25 +90,25 @@ const submit = () => {
 
 <template>
     <div
-        class="fixed inset-0 flex justify-center items-center z-50 bg-black/50"
+        class="fixed inset-0 flex justify-center items-center z-50 bg-black/50 dark:bg-black/70"
     >
-        <div class="w-80 bg-white p-6 rounded-lg shadow-lg relative">
+        <div class="w-80 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg relative">
             <!-- 成功メッセージ -->
             <div
                 v-if="localSuccessMessage"
-                class="bg-green-100 text-green-700 p-3 mb-6 rounded"
+                class="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 p-3 mb-6 rounded"
             >
                 {{ localSuccessMessage }}
             </div>
             <!-- エラーメッセージ -->
             <div
                 v-if="localErrorMessage"
-                class="bg-red-100 text-red-700 p-3 mb-6 rounded"
+                class="bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 p-3 mb-6 rounded"
             >
                 {{ localErrorMessage }}
             </div>
 
-            <h1 class="text-2xl font-bold mb-6 text-center">
+            <h1 class="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
                 プロフィール画像編集
             </h1>
             <div class="flex justify-center mb-4">
@@ -120,27 +120,27 @@ const submit = () => {
             </div>
             <form @submit.prevent="submit" enctype="multipart/form-data">
                 <div class="mb-4">
-                    <label class="block font-bold mb-2" for="icon"
+                    <label class="block font-bold mb-2 text-gray-900 dark:text-gray-100" for="icon"
                         >画像を選択</label
                     >
                     <input
                         type="file"
                         id="icon"
                         @change="onImageChange"
-                        class="w-full border border-gray-300 p-2 rounded"
+                        class="w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     />
                 </div>
                 <div class="flex justify-between">
                     <button
                         type="submit"
-                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                        class="w-32 px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white text-center"
                     >
                         更新
                     </button>
                     <button
                         type="button"
                         @click="$emit('close')"
-                        class="w-32 px-4 py-2 bg-gray-300 text-gray-700 rounded-md transition hover:bg-gray-500 hover:text-white text-center"
+                        class="w-32 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition hover:bg-gray-500 dark:hover:bg-gray-500 hover:text-white text-center"
                     >
                         キャンセル
                     </button>
