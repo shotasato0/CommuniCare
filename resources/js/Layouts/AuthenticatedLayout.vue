@@ -7,6 +7,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
 import Footer from "@/Layouts/Footer.vue";
 import CustomDialog from "@/Components/CustomDialog.vue";
+import DarkModeToggle from "@/Components/DarkModeToggle.vue";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
