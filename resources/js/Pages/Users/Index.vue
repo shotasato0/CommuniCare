@@ -365,12 +365,12 @@ const totalFilteredUsers = computed(() => {
                                         v-for="user in unitUsers"
                                         :key="user.id"
                                         :class="[
-                                            'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group cursor-pointer',
+                                            'relative block bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm transition-all text-gray-900 dark:text-gray-100 group cursor-pointer',
                                             showDeleteButtons
-                                                ? 'hover:bg-red-50 cursor-pointer'
+                                                ? 'hover:bg-red-50 dark:hover:bg-red-900 cursor-pointer'
                                                 : isAdminMode
-                                                ? 'hover:bg-purple-50 cursor-pointer'
-                                                : 'hover:bg-gray-50 hover:shadow-md',
+                                                ? 'hover:bg-purple-50 dark:hover:bg-purple-900 cursor-pointer'
+                                                : 'hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-md',
                                         ]"
                                         @click="
                                             showDeleteButtons
@@ -400,10 +400,10 @@ const totalFilteredUsers = computed(() => {
                                                         :class="[
                                                             'font-bold text-lg transition-colors',
                                                             showDeleteButtons
-                                                                ? 'text-gray-500 group-hover:text-red-500'
+                                                                ? 'text-gray-500 dark:text-gray-300 group-hover:text-red-500 dark:group-hover:text-red-400'
                                                                 : isAdminMode
-                                                                ? 'text-gray-500 group-hover:text-purple-500'
-                                                                : 'text-gray-500 group-hover:text-black',
+                                                                ? 'text-gray-500 dark:text-gray-300 group-hover:text-purple-500 dark:group-hover:text-purple-400'
+                                                                : 'text-gray-500 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white',
                                                         ]"
                                                     >
                                                         {{ user.name }}
@@ -420,7 +420,7 @@ const totalFilteredUsers = computed(() => {
                                                             class="bi bi-award-fill text-yellow-500 text-xl"
                                                         ></i>
                                                         <span
-                                                            class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full ml-1"
+                                                            class="text-xs bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full ml-1"
                                                         >
                                                             現在の管理者
                                                         </span>
@@ -439,7 +439,7 @@ const totalFilteredUsers = computed(() => {
                             <!-- 表示する職員がいない場合 -->
                             <div
                                 v-if="Object.keys(groupedUsers).length === 0"
-                                class="text-center text-gray-500 mt-4 text-lg font-medium"
+                                class="text-center text-gray-500 dark:text-gray-400 mt-4 text-lg font-medium"
                             >
                                 検索条件に一致する職員が見つかりませんでした。
                             </div>
@@ -452,24 +452,24 @@ const totalFilteredUsers = computed(() => {
         <!-- 確認ダイアログ -->
         <div
             v-if="confirmationDialog"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            class="fixed inset-0 bg-black/50 dark:bg-black/70 flex justify-center items-center z-50"
         >
-            <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-                <h3 class="text-lg font-bold mb-4">管理者権限の移動確認</h3>
-                <p class="mb-4">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+                <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">管理者権限の移動確認</h3>
+                <p class="mb-4 text-gray-700 dark:text-gray-300">
                     {{ targetUser?.name }}さんに管理者権限を渡しますか？
                     この操作を行うと、あなたの管理者権限は失われます。
                 </p>
                 <div class="flex justify-end space-x-4">
                     <button
                         @click="confirmationDialog = false"
-                        class="bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md transition hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
+                        class="bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium py-2 px-4 rounded-md transition hover:bg-gray-500 dark:hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
                     >
                         キャンセル
                     </button>
                     <button
                         @click="executeAdminTransfer"
-                        class="px-4 py-2 rounded-md transition bg-purple-100 text-purple-700 hover:bg-purple-300 hover:text-white"
+                        class="px-4 py-2 rounded-md transition bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-300 dark:hover:bg-purple-600 hover:text-white"
                     >
                         管理者権限を渡す
                     </button>
@@ -480,7 +480,7 @@ const totalFilteredUsers = computed(() => {
         <!-- ユーザー詳細モーダル -->
         <div
             v-if="isUserProfileVisible"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            class="fixed inset-0 bg-black/50 dark:bg-black/70 flex justify-center items-center z-50"
             @click="closeUserProfile"
         >
             <div @click.stop>
