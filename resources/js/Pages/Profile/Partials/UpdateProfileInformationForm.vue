@@ -77,11 +77,11 @@ const handleSuccessMessage = (message) => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ $t("Profile Information") }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                 {{ $t("Update your account's profile information.") }}
             </p>
         </header>
@@ -97,7 +97,7 @@ const handleSuccessMessage = (message) => {
         >
             <div
                 v-if="isSuccess || successMessage"
-                class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
+                class="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-200 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
                 <p class="font-bold text-center">
                     {{ successMessage || $t("Saved.") }}
@@ -131,7 +131,7 @@ const handleSuccessMessage = (message) => {
 
                     <!-- ペンのマーク -->
                     <div
-                        class="absolute bottom-0 right-0 bg-gray-800 text-white p-1 rounded-full"
+                        class="absolute bottom-0 right-0 bg-gray-800 dark:bg-gray-600 text-white p-1 rounded-full"
                         title="プロフィール画像を編集"
                     >
                         <svg
@@ -183,7 +183,7 @@ const handleSuccessMessage = (message) => {
                 <!-- ゲストユーザー向けの説明文 -->
                 <p
                     v-if="user.guest_session_id"
-                    class="mt-2 text-sm text-red-600"
+                    class="mt-2 text-sm text-red-600 dark:text-red-400"
                 >
                     ゲストユーザーではこのIDは使用されません。通常ログインで使用されるIDです。
                 </p>
@@ -216,7 +216,7 @@ const handleSuccessMessage = (message) => {
                 <select
                     v-model="form.unit_id"
                     id="unit_id"
-                    class="w-full border border-gray-300 p-2 rounded"
+                    class="w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                     <!-- プレースホルダー（選択を促す） -->
                     <option value="" disabled selected>
@@ -233,7 +233,7 @@ const handleSuccessMessage = (message) => {
                     </option>
                 </select>
 
-                <p class="text-sm text-gray-600 mt-2">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
                     {{ $t("By setting your unit, you can access the forum.") }}
                 </p>
             </div>
