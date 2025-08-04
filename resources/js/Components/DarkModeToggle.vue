@@ -30,6 +30,9 @@ const currentMode = ref('light')
 
 // システム設定を監視
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+console.log('MediaQuery object:', mediaQuery)
+console.log('MediaQuery.matches:', mediaQuery.matches)
+console.log('MediaQuery.media:', mediaQuery.media)
 
 const updateCurrentMode = () => {
     if (selectedMode.value === 'system') {
