@@ -11,6 +11,7 @@ import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja
 
 import SlideUpDown from "vue-slide-up-down"; // vue-slide-up-downをインポート
 import { useDialog } from "./composables/dialog"; // dialog.jsのインポート
+import { initTheme } from "./Utils/themeUtils"; // テーマ初期化をインポート
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -43,6 +44,9 @@ createInertiaApp({
         app.config.globalProperties.$alert = (message) => {
             return dialog.showDialog(message);
         };
+
+        // テーマ初期化
+        initTheme();
 
         app.mount(el);
 
