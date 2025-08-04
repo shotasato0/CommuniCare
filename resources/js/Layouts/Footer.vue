@@ -22,23 +22,23 @@ export default {
 
 <template>
     <!-- フッター -->
-    <footer class="bg-white border-t">
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div
                 class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6"
             >
                 <!-- コピーライト -->
-                <div class="text-sm text-gray-500">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
                     © 2025 CommuniCare. All rights reserved.
                 </div>
                 <!-- プライバシーポリシーリンク -->
-                <div class="text-sm text-gray-500 hover:text-gray-900">
+                <div class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                     <Link href="/legal/privacy-policy">
                         プライバシーポリシー
                     </Link>
                 </div>
                 <!-- 利用規約リンク -->
-                <div class="text-sm text-gray-500 hover:text-gray-900">
+                <div class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                     <Link href="/legal/terms-of-service"> 利用規約 </Link>
                 </div>
                 <!-- ソーシャルリンク -->
@@ -46,7 +46,7 @@ export default {
                     <a
                         href="https://twitter.com/shoprogramming"
                         rel="noopener noreferrer"
-                        class="text-gray-500 hover:text-gray-900"
+                        class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                         target="_blank"
                     >
                         <svg
@@ -65,7 +65,7 @@ export default {
                     <a
                         href="https://github.com/shotasato0"
                         rel="noopener noreferrer"
-                        class="text-gray-500 hover:text-gray-900"
+                        class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                         target="_blank"
                     >
                         <svg
