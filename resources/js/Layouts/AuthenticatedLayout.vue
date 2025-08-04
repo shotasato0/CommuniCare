@@ -205,7 +205,6 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     <template #content>
                                         <DropdownLink
                                             :href="route('profile.edit')"
-                                            class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                         >
                                             {{ $t("Profile") }}
                                         </DropdownLink>
@@ -226,7 +225,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                             />
                                             <button
                                                 type="submit"
-                                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 transition duration-150 ease-in-out"
                                                 @click="handleLogout"
                                             >
                                                 {{ $t("Log Out") }}
