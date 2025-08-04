@@ -437,7 +437,7 @@ const openModal = (imageSrc) => {
                                                     post.quoted_post
                                                 )
                                             "
-                                            class="hover:bg-blue-100 dark:hover:bg-blue-900 p-1 rounded cursor-pointer text-sm"
+                                            class="hover:bg-blue-100 dark:hover:bg-blue-900 p-1 rounded cursor-pointer text-sm text-gray-800 dark:text-gray-200"
                                         >
                                             ＠{{
                                                 post.quoted_post.user?.name ||
@@ -445,10 +445,10 @@ const openModal = (imageSrc) => {
                                             }}
                                         </span>
                                     </div>
-                                    <p class="text-sm mb-2 font-bold">
+                                    <p class="text-sm mb-2 font-bold text-gray-900 dark:text-gray-100">
                                         {{ post.quoted_post.title }}
                                     </p>
-                                    <p class="text-sm mb-2 whitespace-pre-wrap">
+                                    <p class="text-sm mb-2 whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                                         {{ post.quoted_post.message }}
                                     </p>
                                 </div>
