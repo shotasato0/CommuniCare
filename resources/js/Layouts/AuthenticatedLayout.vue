@@ -76,9 +76,9 @@ const isForumPage = ref(window.location.pathname === "/forum");
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 pb-16">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pb-16">
             <nav
-                class="bg-white border-b border-gray-100 fixed top-0 left-0 w-full z-10"
+                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed top-0 left-0 w-full z-10"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -158,10 +158,15 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </div>
 
                         <div class="hidden lg:flex lg:items-center">
+                            <!-- ダークモード切り替え -->
+                            <div class="mr-4">
+                                <DarkModeToggle />
+                            </div>
+                            
                             <!-- テナント名を表示 -->
                             <div
                                 v-if="page.props.tenant?.business_name"
-                                class="hidden xl:block text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
+                                class="hidden xl:block text-gray-500 dark:text-gray-400 mr-4 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-sm font-medium"
                             >
                                 {{ page.props.tenant.business_name }}
                             </div>
