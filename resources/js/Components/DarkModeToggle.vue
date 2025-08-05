@@ -30,32 +30,23 @@ const currentMode = ref('light')
 
 // システム設定を監視
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-console.log('MediaQuery object:', mediaQuery)
-console.log('MediaQuery.matches:', mediaQuery.matches)
-console.log('MediaQuery.media:', mediaQuery.media)
 
 const updateCurrentMode = () => {
     if (selectedMode.value === 'system') {
         const systemIsDark = mediaQuery.matches
         currentMode.value = systemIsDark ? 'dark' : 'light'
-        console.log('System theme detected:', systemIsDark ? 'dark' : 'light')
     } else {
         currentMode.value = selectedMode.value
-        console.log('Manual theme set:', selectedMode.value)
     }
 }
 
 const applyTheme = () => {
     updateCurrentMode()
     
-    console.log('Applying theme:', currentMode.value)
-    
     if (currentMode.value === 'dark') {
         document.documentElement.classList.add('dark')
-        console.log('Dark mode applied')
     } else {
         document.documentElement.classList.remove('dark')
-        console.log('Light mode applied')
     }
 }
 
@@ -74,15 +65,6 @@ mediaQuery.addEventListener('change', () => {
 // 初期化
 onMounted(() => {
     const savedMode = localStorage.getItem('theme-mode') || 'system'
-    console.log('Saved theme mode:', savedMode)
-    console.log('Media query matches (system is dark):', mediaQuery.matches)
-    
-    // 追加のデバッグ情報
-    console.log('Window.matchMedia test results:')
-    console.log('(prefers-color-scheme: light):', window.matchMedia('(prefers-color-scheme: light)').matches)
-    console.log('(prefers-color-scheme: dark):', window.matchMedia('(prefers-color-scheme: dark)').matches)
-    console.log('(prefers-color-scheme: no-preference):', window.matchMedia('(prefers-color-scheme: no-preference)').matches)
-    
     selectedMode.value = savedMode
     applyTheme()
 })
