@@ -340,6 +340,14 @@ const isForumPage = ref(window.location.pathname === "/forum");
                     </div>
 
                     <div class="pt-2 pb-3 space-y-2">
+                        <!-- ダークモード切り替え（ハンバーガーメニュー内） -->
+                        <div class="px-1 py-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-500 dark:text-gray-300 text-lg font-medium">{{ $t('Theme') }}</span>
+                                <DarkModeToggle />
+                            </div>
+                        </div>
+                        
                         <div
                             @click="() => $inertia.get(route('profile.edit'))"
                             :class="[
