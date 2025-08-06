@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 
 const selectedMode = ref('system')
 const currentMode = ref('light')
@@ -59,6 +59,13 @@ const changeTheme = () => {
     applyTheme()
 }
 
+// メディアクエリ変更のハンドラー関数
+const handleMediaQueryChange = () => {
+    if (selectedMode.value === 'system') {
+        applyTheme()
+    }
+}
+
 // 初期化
 onMounted(() => {
     // ブラウザ環境でのみmediaQueryを初期化
@@ -66,16 +73,19 @@ onMounted(() => {
         mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
         
         // システム設定変更を監視
-        mediaQuery.addEventListener('change', () => {
-            if (selectedMode.value === 'system') {
-                applyTheme()
-            }
-        })
+        mediaQuery.addEventListener('change', handleMediaQueryChange)
     }
     
     const savedMode = (typeof localStorage !== 'undefined' ? localStorage.getItem('theme-mode') : null) || 'system'
     selectedMode.value = savedMode
     applyTheme()
+})
+
+// クリーンアップ
+onUnmounted(() => {
+    if (mediaQuery) {
+        mediaQuery.removeEventListener('change', handleMediaQueryChange)
+    }
 })
 
 // selectedModeの変更を監視
