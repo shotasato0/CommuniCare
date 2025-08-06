@@ -5,24 +5,24 @@ import { Link, Head } from "@inertiajs/vue3";
 <template>
     <Head :title="$t('Dashboard')" />
     <div class="max-w-6xl mx-auto py-10 px-4 sm:px-8 lg:px-16">
-        <h1 class="text-xl font-bold mb-6">
+        <h1 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">
             {{ $t("Admin Dashboard") }}
         </h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- 部署管理 -->
-            <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div class="px-4 py-5 sm:p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
                         {{ $t("Unit Management") }}
                     </h3>
-                    <p class="mt-2 max-w-4xl text-sm text-gray-500">
+                    <p class="mt-2 max-w-4xl text-sm text-gray-500 dark:text-gray-400">
                         {{ $t("Register or delete departments.") }}
                     </p>
                     <div class="mt-4">
                         <Link
                             :href="route('units.create')"
-                            class="text-blue-500 link-hover"
+                            class="text-blue-500 dark:text-blue-400 link-hover"
                             >{{ $t("Unit Management page") }}</Link
                         >
                     </div>
