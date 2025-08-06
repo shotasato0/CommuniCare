@@ -18,7 +18,7 @@
                 <button
                     v-if="showProfileLink"
                     @click="goToProfile"
-                    class="w-40 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 font-medium py-2 px-4 rounded-md transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white focus:outline-none focus:shadow-outline"
+                    class="w-40 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 font-medium py-2 px-4 rounded-md transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     アカウント情報へ
                 </button>
