@@ -96,7 +96,7 @@ const submit = () => {
             <!-- 成功メッセージ -->
             <div
                 v-if="localSuccessMessage"
-                class="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 p-3 mb-6 rounded"
+                class="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 p-3 mb-6 rounded"
             >
                 {{ localSuccessMessage }}
             </div>
