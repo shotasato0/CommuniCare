@@ -3,7 +3,7 @@
         <select
             v-model="selectedMode"
             @change="changeTheme"
-            class="text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            :class="selectClasses"
         >
             <option value="system">{{ $t('System') }}</option>
             <option value="light">{{ $t('Light') }}</option>
@@ -23,13 +23,36 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 
 const selectedMode = ref('system')
 const currentMode = ref('light')
 
 // システム設定を監視（SSR対応）
 let mediaQuery = null
+
+// セレクトボックスのスタイルクラス（可読性向上）
+const selectClasses = computed(() => [
+    // 基本スタイル
+    'text-sm',
+    'rounded-md',
+    'px-2',
+    'py-1',
+    // 背景色
+    'bg-white',
+    'dark:bg-gray-800',
+    // ボーダー
+    'border',
+    'border-gray-300',
+    'dark:border-gray-600',
+    // テキスト色
+    'text-gray-700',
+    'dark:text-gray-300',
+    // フォーカス時のスタイル
+    'focus:outline-none',
+    'focus:ring-2',
+    'focus:ring-blue-500'
+].join(' '))
 
 const updateCurrentMode = () => {
     if (selectedMode.value === 'system') {
