@@ -338,7 +338,7 @@ const openModal = (imageSrc) => {
                 <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
-                        class="text-lg font-bold cursor-pointer text-gray-500 hover:text-black p-2 toggle-button"
+                        class="text-lg font-bold cursor-pointer text-gray-500 dark:text-gray-300 hover:text-black dark:hover:text-white p-2 toggle-button"
                         @click="toggleSidebar"
                     >
                         {{ $t("Unit List") }}
@@ -352,7 +352,7 @@ const openModal = (imageSrc) => {
 
                     <!-- 検索結果 -->
                     <div
-                        class="absolute top-full right-36 text-sm text-gray-600 mt-1 mb-16"
+                        class="absolute top-full right-36 text-sm text-gray-600 dark:text-gray-400 mt-1 mb-16"
                     >
                         <p v-if="search">検索結果: {{ posts.total }}件</p>
                     </div>
@@ -380,7 +380,7 @@ const openModal = (imageSrc) => {
                     v-if="posts.data && posts.data.length > 0"
                     v-for="post in posts.data"
                     :key="post.id"
-                    class="bg-white rounded-md shadow-md mb-6 p-4"
+                    class="bg-white dark:bg-gray-800 rounded-md shadow-md mb-6 p-4"
                 >
                     <div>
                         <!-- 引用投稿がある場合の表示 -->
@@ -388,7 +388,7 @@ const openModal = (imageSrc) => {
                             <!-- 削除済みの場合 -->
                             <template v-if="post.quoted_post_deleted === 1">
                                 <p
-                                    class="text-gray-500 italic mb-2 p-2 border-l-4 border-gray-300 bg-gray-100"
+                                    class="text-gray-500 dark:text-gray-400 italic mb-2 p-2 border-l-4 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700"
                                 >
                                     引用元の投稿は削除されました
                                 </p>
@@ -397,7 +397,7 @@ const openModal = (imageSrc) => {
                             <!-- 削除されていない場合 -->
                             <template v-else-if="post.quoted_post">
                                 <div
-                                    class="quoted-post p-2 border-l-4 border-gray-300 bg-gray-100"
+                                    class="quoted-post p-2 border-l-4 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700"
                                 >
                                     <div class="flex items-center space-x-2">
                                         <img
@@ -437,7 +437,7 @@ const openModal = (imageSrc) => {
                                                     post.quoted_post
                                                 )
                                             "
-                                            class="hover:bg-blue-100 p-1 rounded cursor-pointer text-sm"
+                                            class="hover:bg-blue-100 dark:hover:bg-blue-900 p-1 rounded cursor-pointer text-sm text-gray-800 dark:text-gray-200"
                                         >
                                             ＠{{
                                                 post.quoted_post.user?.name ||
@@ -445,10 +445,10 @@ const openModal = (imageSrc) => {
                                             }}
                                         </span>
                                     </div>
-                                    <p class="text-sm mb-2 font-bold">
+                                    <p class="text-sm mb-2 font-bold text-gray-900 dark:text-gray-100">
                                         {{ post.quoted_post.title }}
                                     </p>
-                                    <p class="text-sm mb-2 whitespace-pre-wrap">
+                                    <p class="text-sm mb-2 whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                                         {{ post.quoted_post.message }}
                                     </p>
                                 </div>
@@ -456,7 +456,7 @@ const openModal = (imageSrc) => {
                         </div>
 
                         <!-- ユーザー情報と投稿内容 -->
-                        <p class="mb-2 text-xs text-gray-500">
+                        <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
                             {{ formatDate(post.created_at) }}
                             <span
                                 v-if="post.user"
@@ -485,7 +485,7 @@ const openModal = (imageSrc) => {
                                 <!-- 投稿者名の表示 -->
                                 <span
                                     @click="openUserProfile(post)"
-                                    class="text-sm font-semibold text-gray-800 hover:bg-blue-100 p-1 rounded cursor-pointer"
+                                    class="text-sm font-semibold text-gray-800 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900 p-1 rounded cursor-pointer"
                                 >
                                     ＠{{ post.user.name }}
                                 </span>
@@ -494,11 +494,11 @@ const openModal = (imageSrc) => {
                         </p>
 
                         <!-- 投稿タイトルの表示 -->
-                        <p class="mb-2 text-xl font-bold">{{ post.title }}</p>
+                        <p class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">{{ post.title }}</p>
 
                         <!-- 投稿メッセージの表示 -->
                         <p
-                            class="mb-2 whitespace-pre-wrap"
+                            class="mb-2 whitespace-pre-wrap text-gray-900 dark:text-gray-100"
                             v-html="post.formatted_message"
                         ></p>
 
@@ -529,7 +529,7 @@ const openModal = (imageSrc) => {
                                         post.user ? post.user.name : 'Unknown'
                                     )
                                 "
-                                class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer"
+                                class="px-4 py-2 rounded-md bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white cursor-pointer"
                                 title="返信"
                             >
                                 <i class="bi bi-reply"></i>
@@ -538,7 +538,7 @@ const openModal = (imageSrc) => {
                             <button
                                 type="button"
                                 @click="quotePost(post)"
-                                class="px-4 py-2 rounded-md bg-blue-100 text-blue-700 transition hover:bg-blue-300 hover:text-white cursor-pointer flex items-center"
+                                class="px-4 py-2 rounded-md bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white cursor-pointer flex items-center"
                                 title="引用投稿"
                             >
                                 <i class="bi bi-chat-quote"></i>
@@ -550,7 +550,7 @@ const openModal = (imageSrc) => {
                                     post.user && post.user.id === auth.user.id
                                 "
                                 @click.prevent="onDeleteItem('post', post.id)"
-                                class="px-4 py-2 ml-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer"
+                                class="px-4 py-2 ml-2 rounded-md bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 transition hover:bg-red-300 dark:hover:bg-red-600 hover:text-white cursor-pointer"
                                 title="投稿の削除"
                             >
                                 <i class="bi bi-trash"></i>
@@ -576,7 +576,7 @@ const openModal = (imageSrc) => {
                         />
                     </div>
 
-                    <h3 class="font-bold mt-8 mb-2">
+                    <h3 class="font-bold mt-8 mb-2 text-gray-900 dark:text-gray-100">
                         {{ getCurrentCommentCount(post) }}件の返信
                     </h3>
 
@@ -597,7 +597,7 @@ const openModal = (imageSrc) => {
                 <!-- 投稿がない場合のメッセージ -->
                 <div
                     v-else
-                    class="text-center text-gray-500 text-lg font-semibold mt-6"
+                    class="text-center text-gray-500 dark:text-gray-400 text-lg font-semibold mt-6"
                 >
                     投稿がありません。
                 </div>
@@ -632,7 +632,7 @@ const openModal = (imageSrc) => {
             <!-- 選択された投稿のユーザーの詳細ページを表示 -->
             <div
                 v-if="isUserProfileVisible"
-                class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+                class="fixed inset-0 bg-black/50 dark:bg-black/70 flex justify-center items-center z-50"
                 @click="closeUserProfile"
             >
                 <!-- show.vue のコンポーネントにクリックイベントをストップさせる -->

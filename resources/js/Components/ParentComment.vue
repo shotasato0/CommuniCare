@@ -77,11 +77,11 @@ const getCommentCountRecursive = (comments) => {
         <div
             v-for="comment in comments"
             :key="comment.id"
-            class="mb-6 bg-white rounded-md shadow-md p-4"
+            class="mb-6 bg-white dark:bg-gray-800 rounded-md shadow-md p-4"
         >
             <div>
                 <!-- 日付 -->
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                     {{ formatDate(comment.created_at) }}
                 </p>
 
@@ -109,16 +109,16 @@ const getCommentCountRecursive = (comments) => {
                     <span
                         v-if="comment.user"
                         @click="openUserProfile(comment)"
-                        class="hover:bg-blue-100 p-1 rounded cursor-pointer font-semibold text-sm"
+                        class="hover:bg-blue-100 dark:hover:bg-blue-900 p-1 rounded cursor-pointer font-semibold text-sm text-gray-800 dark:text-gray-200"
                     >
                         ＠{{ comment.user.name }}
                     </span>
-                    <span v-else class="italic text-sm">＠Unknown</span>
+                    <span v-else class="italic text-sm text-gray-600 dark:text-gray-400">＠Unknown</span>
                 </div>
 
                 <!-- コメント本文 -->
                 <p
-                    class="mt-3 mb-2 whitespace-pre-wrap"
+                    class="mt-3 mb-2 whitespace-pre-wrap text-gray-900 dark:text-gray-100"
                     v-html="comment.formatted_message"
                 ></p>
 
@@ -139,7 +139,7 @@ const getCommentCountRecursive = (comments) => {
                 >
                     <button
                         @click="toggleCollapse(comment.id)"
-                        class="text-blue-500 text-lg flex items-center link-hover"
+                        class="text-blue-500 dark:text-blue-400 text-lg flex items-center link-hover"
                     >
                         <i
                             :class="
@@ -169,7 +169,7 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-4 py-2 rounded-md bg-green-100 text-green-700 transition hover:bg-green-300 hover:text-white cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white cursor-pointer flex items-center"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
@@ -178,7 +178,7 @@ const getCommentCountRecursive = (comments) => {
                     <button
                         v-if="isCommentAuthor(comment)"
                         @click="onDeleteItem('comment', comment.id)"
-                        class="px-4 py-2 rounded-md bg-red-100 text-red-700 transition hover:bg-red-300 hover:text-white cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 transition hover:bg-red-300 dark:hover:bg-red-600 hover:text-white cursor-pointer flex items-center"
                         title="返信の削除"
                     >
                         <i class="bi bi-trash"></i>
@@ -206,7 +206,7 @@ const getCommentCountRecursive = (comments) => {
                         (!(comment.id in collapsedComments) ||
                             collapsedComments[comment.id])
                     "
-                    class="mt-4 ml-4 border-l-2 border-gray-300 pl-2"
+                    class="mt-4 ml-4 border-l-2 border-gray-300 dark:border-gray-600 pl-2"
                 >
                     <ChildComment
                         :child-comments="comment.children"

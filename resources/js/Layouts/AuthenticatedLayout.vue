@@ -7,6 +7,7 @@ import DropdownLink from "@/Components/DropdownLink.vue";
 import { redirectToForum } from "@/Utils/redirectToForum";
 import Footer from "@/Layouts/Footer.vue";
 import CustomDialog from "@/Components/CustomDialog.vue";
+import DarkModeToggle from "@/Components/DarkModeToggle.vue";
 
 const page = usePage();
 const units = page.props.units || []; // Inertiaから`units`を取得
@@ -75,9 +76,9 @@ const isForumPage = ref(window.location.pathname === "/forum");
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 pb-16">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pb-16">
             <nav
-                class="bg-white border-b border-gray-100 fixed top-0 left-0 w-full z-10"
+                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 fixed top-0 left-0 w-full z-10"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,8 +103,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         isForumPage
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
+                                            : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                 >
                                     {{ $t("Forum") }}
@@ -113,8 +114,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('users.index')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
+                                            : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
                                         () => $inertia.get(route('users.index'))
@@ -127,8 +128,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('residents.index')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
+                                            : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
                                         () =>
@@ -144,8 +145,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('dashboard')
-                                            ? 'text-blue-500 border-blue-500 focus:outline-none focus:border-blue-700'
-                                            : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300',
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
+                                            : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
                                     ]"
                                     @click="
                                         () => $inertia.get(route('dashboard'))
@@ -157,10 +158,15 @@ const isForumPage = ref(window.location.pathname === "/forum");
                         </div>
 
                         <div class="hidden lg:flex lg:items-center">
+                            <!-- ダークモード切り替え -->
+                            <div class="mr-4">
+                                <DarkModeToggle />
+                            </div>
+                            
                             <!-- テナント名を表示 -->
                             <div
                                 v-if="page.props.tenant?.business_name"
-                                class="hidden xl:block text-gray-500 mr-4 px-3 py-1 bg-gray-100 rounded-md text-sm font-medium"
+                                class="hidden xl:block text-gray-500 dark:text-gray-400 mr-4 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-md text-sm font-medium"
                             >
                                 {{ page.props.tenant.business_name }}
                             </div>
@@ -172,7 +178,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-300 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-100 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 <!-- user.nameがnullでないことを確認 -->
                                                 <span v-if="auth.user">
@@ -199,7 +205,6 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     <template #content>
                                         <DropdownLink
                                             :href="route('profile.edit')"
-                                            class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                                         >
                                             {{ $t("Profile") }}
                                         </DropdownLink>
@@ -220,7 +225,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                             />
                                             <button
                                                 type="submit"
-                                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                                                class="block w-full text-left px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 transition duration-150 ease-in-out"
                                                 @click="handleLogout"
                                             >
                                                 {{ $t("Log Out") }}
@@ -238,7 +243,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                     showingNavigationDropdown =
                                         !showingNavigationDropdown
                                 "
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out"
+                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 focus:text-gray-500 dark:focus:text-gray-100 transition duration-150 ease-in-out"
                             >
                                 <svg
                                     class="h-6 w-6"
@@ -288,8 +293,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 isForumPage
-                                    ? 'bg-indigo-100 text-blue-500 border-l-4 border-blue-500 focus:outline-none'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Forum") }}
@@ -300,8 +305,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('users.index')
-                                    ? 'bg-indigo-100 text-blue-500 border-l-4 border-blue-500 focus:outline-none'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Staff") }}
@@ -314,8 +319,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('residents.index')
-                                    ? 'bg-indigo-100 text-blue-500 border-l-4 border-blue-500 focus:outline-none'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Residents") }}
@@ -326,8 +331,8 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('dashboard')
-                                    ? 'bg-indigo-100 text-blue-500 border-l-4 border-blue-500 focus:outline-none'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Dashboard") }}
@@ -335,13 +340,21 @@ const isForumPage = ref(window.location.pathname === "/forum");
                     </div>
 
                     <div class="pt-2 pb-3 space-y-2">
+                        <!-- ダークモード切り替え（ハンバーガーメニュー内） -->
+                        <div class="px-1 py-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-500 dark:text-gray-300 text-lg font-medium">{{ $t('Theme') }}</span>
+                                <DarkModeToggle />
+                            </div>
+                        </div>
+                        
                         <div
                             @click="() => $inertia.get(route('profile.edit'))"
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
                                 route().current('profile.edit')
-                                    ? 'bg-indigo-100 text-blue-500 border-l-4 border-blue-500 focus:outline-none'
-                                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Profile") }}
@@ -350,7 +363,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             @click="handleLogout"
                             :class="[
                                 'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
-                                'text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:text-gray-700 focus:bg-gray-100',
+                                'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
                             ]"
                         >
                             {{ $t("Log Out") }}
@@ -360,7 +373,7 @@ const isForumPage = ref(window.location.pathname === "/forum");
             </nav>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow mt-16" v-if="$slots.header">
+            <header class="bg-white dark:bg-gray-800 shadow mt-16" v-if="$slots.header">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

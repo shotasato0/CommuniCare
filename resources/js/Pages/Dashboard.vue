@@ -76,7 +76,7 @@ const closeUserProfile = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t("Dashboard") }}
             </h2>
         </template>
@@ -84,8 +84,8 @@ const closeUserProfile = () => {
         <!-- ダッシュボードのコンテンツ全体に左右余白を追加 -->
         <div class="pb-12 px-4 sm:px-8 lg:px-16">
             <div class="max-w-6xl mx-auto">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
                         <div
                             class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
                         >
@@ -109,7 +109,7 @@ const closeUserProfile = () => {
                             <!-- 右側：ユーザーアイコンと名前 -->
                             <div
                                 @click="openUserProfile(props.auth.user)"
-                                class="flex items-center space-x-4 group hover:bg-gray-50 rounded-lg p-2 cursor-pointer"
+                                class="flex items-center space-x-4 group hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 cursor-pointer"
                             >
                                 <img
                                     :src="
@@ -122,7 +122,7 @@ const closeUserProfile = () => {
                                 />
                                 <div class="flex items-center">
                                     <span
-                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                        class="font-bold text-lg text-gray-500 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors"
                                     >
                                         {{ props.auth.user.name }}
                                     </span>
@@ -139,11 +139,11 @@ const closeUserProfile = () => {
             <div
                 v-if="flashMessage && showFlashMessage"
                 :class="{
-                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
+                    'bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4':
                         flashType === 'success',
-                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
+                    'bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4':
                         flashType === 'error',
-                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
+                    'bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500 text-blue-700 dark:text-blue-300 p-4':
                         flashType === 'info',
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg text-center"
@@ -160,7 +160,7 @@ const closeUserProfile = () => {
         <!-- モーダルコンポーネント -->
         <div
             v-if="isUserProfileVisible"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            class="fixed inset-0 bg-black/50 dark:bg-black/70 flex justify-center items-center z-50"
             @click="closeUserProfile"
         >
             <div @click.stop>

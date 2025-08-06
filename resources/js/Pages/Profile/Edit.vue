@@ -43,14 +43,14 @@ watch(successMessage, (newVal) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t("Profile") }}
             </h2>
         </template>
 
         <!-- ゲスト向け説明文 -->
         <div v-if="isGuest" class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-4 sm:p-8 bg-yellow-100 text-yellow-800 rounded-lg">
+            <div class="p-4 sm:p-8 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded-lg">
                 現在、ゲストユーザーとしてログインしています。一部の機能（パスワード変更、アカウント削除など）は利用できません。
                 通常のアカウントでログインすることで、これらの機能をご利用いただけます。
             </div>
@@ -59,7 +59,7 @@ watch(successMessage, (newVal) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <!-- プロフィール情報 -->
-                <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <UpdateProfileInformationForm
                         class="max-w-xl"
                         :user="user"
@@ -72,7 +72,7 @@ watch(successMessage, (newVal) => {
                 <!-- パスワード変更 -->
                 <div
                     v-if="!isGuest"
-                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg"
+                    class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
                 >
                     <UpdatePasswordForm class="max-w-xl" />
                 </div>
@@ -80,7 +80,7 @@ watch(successMessage, (newVal) => {
                 <!-- ユーザー削除フォーム -->
                 <div
                     v-if="!isGuest"
-                    class="p-4 sm:p-8 bg-white shadow sm:rounded-lg"
+                    class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"
                 >
                     <DeleteUserForm class="max-w-xl" />
                 </div>
@@ -90,7 +90,7 @@ watch(successMessage, (newVal) => {
         <!-- アイコン編集オーバーレイ -->
         <div
             v-if="isIconEditVisible"
-            class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+            class="fixed inset-0 bg-black/50 dark:bg-black/70 flex justify-center items-center z-50"
         >
             <IconEditForm
                 :user="user"

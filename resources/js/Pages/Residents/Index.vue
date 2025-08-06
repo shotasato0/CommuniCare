@@ -213,7 +213,7 @@ const isAdmin = computed(() => page.props.isAdmin);
 
         <Head :title="$t('Residents')" />
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t("Residents") }}
             </h2>
         </template>
@@ -230,11 +230,11 @@ const isAdmin = computed(() => page.props.isAdmin);
             <div
                 v-if="localFlashMessage && showFlashMessage"
                 :class="{
-                    'bg-green-100 border-l-4 border-green-500 text-green-700 p-4':
+                    'bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-200 p-4':
                         flashType === 'success',
-                    'bg-red-100 border-l-4 border-red-500 text-red-700 p-4':
+                    'bg-red-100 dark:bg-red-800 border-l-4 border-red-500 dark:border-red-400 text-red-700 dark:text-red-200 p-4':
                         flashType === 'error',
-                    'bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4':
+                    'bg-blue-100 dark:bg-blue-800 border-l-4 border-blue-500 dark:border-blue-400 text-blue-700 dark:text-blue-200 p-4':
                         flashType === 'info',
                 }"
                 class="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-full max-w-md mx-auto sm:rounded-lg shadow-lg z-50"
@@ -245,8 +245,8 @@ const isAdmin = computed(() => page.props.isAdmin);
 
         <div class="pb-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                         <!-- コントロール部分のコンテナ -->
                         <div class="mb-6">
                             <!-- ボタンと検索フォームの横並び部分 -->
@@ -261,7 +261,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                     <!-- 新規登録ボタン -->
                                     <Link
                                         :href="route('residents.create')"
-                                        class="w-32 px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                                        class="w-32 px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white text-center"
                                     >
                                         新規登録
                                     </Link>
@@ -272,7 +272,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                             showDeleteButtons =
                                                 !showDeleteButtons
                                         "
-                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 text-red-700 hover:bg-red-300 hover:text-white text-center"
+                                        class="w-32 px-4 py-2 rounded-md transition delete-mode-button bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-300 hover:bg-red-300 dark:hover:bg-red-600 hover:text-white text-center"
                                         :class="
                                             showDeleteButtons
                                                 ? 'bg-red-300 !text-white'
@@ -297,9 +297,9 @@ const isAdmin = computed(() => page.props.isAdmin);
                             <!-- 削除モード説明（管理者かつ削除モードの時のみ表示） -->
                             <div
                                 v-if="isAdmin && showDeleteButtons"
-                                class="mt-4 p-4 bg-red-100 rounded-lg"
+                                class="mt-4 p-4 bg-red-100 dark:bg-red-900 rounded-lg"
                             >
-                                <p class="text-red-700">
+                                <p class="text-red-700 dark:text-red-300">
                                     削除したい利用者をクリックすると削除できます。
                                     この操作は取り消しできませんのでご注意ください。
                                 </p>
@@ -307,7 +307,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                         </div>
 
                         <!-- 利用者一覧 -->
-                        <div class="bg-white shadow rounded-lg p-4 mt-12">
+                        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mt-12">
                             <!-- 利用者が存在する場合 -->
                             <div
                                 v-if="
@@ -324,11 +324,11 @@ const isAdmin = computed(() => page.props.isAdmin);
                                 >
                                     <!-- 部署見出し（件数も表示）-->
                                     <h3
-                                        class="text-xl font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-4"
+                                        class="text-xl font-bold text-gray-800 dark:text-gray-200 border-b-2 border-gray-200 dark:border-gray-600 pb-2 mb-4"
                                     >
                                         {{ unitName }}
                                         <span
-                                            class="text-sm font-normal text-gray-600 ml-2"
+                                            class="text-sm font-normal text-gray-600 dark:text-gray-400 ml-2"
                                         >
                                             ({{ residents.length }}名)
                                         </span>
@@ -346,7 +346,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                             <div
                                                 v-if="showDeleteButtons"
                                                 :class="[
-                                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-red-50 cursor-pointer',
+                                                    'relative block bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm transition-all text-gray-900 dark:text-gray-100 group hover:bg-red-50 dark:hover:bg-red-900 cursor-pointer',
                                                 ]"
                                                 @click="
                                                     deleteResident(resident)
@@ -356,7 +356,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                                                     class="flex justify-between items-start"
                                                 >
                                                     <span
-                                                        class="font-bold text-lg text-gray-500 group-hover:text-red-500 transition-colors"
+                                                        class="font-bold text-lg text-gray-500 dark:text-gray-300 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors"
                                                     >
                                                         {{ resident.name }}
                                                     </span>
@@ -376,14 +376,14 @@ const isAdmin = computed(() => page.props.isAdmin);
                                                     )
                                                 "
                                                 :class="[
-                                                    'relative block bg-white border rounded-lg p-4 shadow-sm transition-all text-gray-900 group hover:bg-gray-50 hover:shadow-md',
+                                                    'relative block bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 shadow-sm transition-all text-gray-900 dark:text-gray-100 group hover:bg-gray-50 dark:hover:bg-gray-600 hover:shadow-md',
                                                 ]"
                                             >
                                                 <div
                                                     class="flex justify-between items-start"
                                                 >
                                                     <span
-                                                        class="font-bold text-lg text-gray-500 group-hover:text-black transition-colors"
+                                                        class="font-bold text-lg text-gray-500 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors"
                                                     >
                                                         {{ resident.name }}
                                                     </span>
@@ -395,7 +395,7 @@ const isAdmin = computed(() => page.props.isAdmin);
                             </div>
 
                             <!-- 検索結果が存在しない場合 -->
-                            <div v-else class="p-8 text-center text-gray-500">
+                            <div v-else class="p-8 text-center text-gray-500 dark:text-gray-400">
                                 <i class="bi bi-people text-4xl mb-2 block"></i>
                                 <p class="text-lg font-medium">
                                     {{

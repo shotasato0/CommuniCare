@@ -31,9 +31,9 @@ const currentUnitUsers = computed(() => {
 
 <template>
     <div
-        class="right-sidebar desktop-only bg-gray-100 w-56 h-screen p-4 shadow-lg"
+        class="right-sidebar desktop-only bg-gray-100 dark:bg-gray-800 w-56 h-screen p-4 shadow-lg"
     >
-        <h2 class="text-lg font-bold mb-4">
+        <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">
             {{ unitName + "職員" || "部署メンバー" }}
         </h2>
         <ul
@@ -43,7 +43,7 @@ const currentUnitUsers = computed(() => {
             <li
                 v-for="user in currentUnitUsers"
                 :key="user.id + user.icon"
-                class="mb-2 p-2 rounded hover:bg-gray-200 cursor-pointer flex items-center space-x-4 font-bold"
+                class="mb-2 p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer flex items-center space-x-4 font-bold text-gray-900 dark:text-gray-100"
                 @click="$emit('user-selected', user)"
             >
                 <img
@@ -65,7 +65,7 @@ const currentUnitUsers = computed(() => {
                 <span>{{ user.name }}</span>
             </li>
         </ul>
-        <p v-else>メンバーが見つかりません。</p>
+        <p v-else class="text-gray-500 dark:text-gray-400">メンバーが見つかりません。</p>
     </div>
 </template>
 
@@ -77,6 +77,10 @@ const currentUnitUsers = computed(() => {
     right: 0;
     top: 0;
     background-color: #f7fafc;
+}
+
+.dark .right-sidebar {
+    background-color: #1f2937;
 }
 
 /* デスクトップ画面にのみ表示 */
