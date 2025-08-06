@@ -102,7 +102,8 @@ const fetchLikedUsers = async () => {
         <button
             @click="toggleLike"
             @mouseover="!isMobile ? fetchLikedUsers() : null"
-            :class="{ 'text-red-500': isLiked }"
+            :class="{ 'text-red-500 dark:text-red-400': isLiked, 'text-gray-600 dark:text-gray-300': !isLiked }"
+            class="transition-colors duration-200 hover:text-red-500 dark:hover:text-red-400"
         >
             <i v-if="isLiked" class="bi bi-heart-fill"></i>
             <i v-else class="bi bi-heart"></i>
@@ -113,7 +114,7 @@ const fetchLikedUsers = async () => {
         <button
             v-if="isMobile"
             @click="fetchLikedUsers"
-            class="ml-2 text-gray-500"
+            class="ml-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
         >
             ...
         </button>
@@ -121,10 +122,10 @@ const fetchLikedUsers = async () => {
         <!-- ツールチップ表示 -->
         <div
             v-if="likedUsers.length"
-            class="absolute bg-white border border-gray-300 rounded-md shadow-lg p-2 max-h-40 overflow-y-auto z-50 mt-2 w-48 transition-opacity duration-200"
+            class="absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-2 max-h-40 overflow-y-auto z-50 mt-2 w-48 transition-opacity duration-200"
         >
-            <ul class="text-sm text-gray-700">
-                <li class="py-1 px-2 hover:bg-gray-100 rounded-md">
+            <ul class="text-sm text-gray-700 dark:text-gray-300">
+                <li class="py-1 px-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors duration-200">
                     {{ likedUsers.join(", ") }} がいいねしました！
                 </li>
             </ul>
