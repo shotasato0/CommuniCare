@@ -169,7 +169,7 @@ const getCommentCountRecursive = (comments) => {
                                 comment.user?.name || 'Unknown'
                             )
                         "
-                        class="px-4 py-2 rounded-md bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white cursor-pointer flex items-center"
+                        class="px-4 py-2 rounded-md bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-100 transition hover:bg-green-300 dark:hover:bg-green-600 hover:text-white cursor-pointer flex items-center"
                         title="返信"
                     >
                         <i class="bi bi-reply"></i>
