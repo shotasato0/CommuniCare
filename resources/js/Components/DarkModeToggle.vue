@@ -28,12 +28,12 @@ import { ref, onMounted, watch } from 'vue'
 const selectedMode = ref('system')
 const currentMode = ref('light')
 
-// システム設定を監視
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+// システム設定を監視（SSR対応）
+let mediaQuery = null
 
 const updateCurrentMode = () => {
     if (selectedMode.value === 'system') {
-        const systemIsDark = mediaQuery.matches
+        const systemIsDark = mediaQuery ? mediaQuery.matches : false
         currentMode.value = systemIsDark ? 'dark' : 'light'
     } else {
         currentMode.value = selectedMode.value
