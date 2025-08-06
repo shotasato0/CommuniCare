@@ -31,16 +31,20 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
-// デバイスサイズを判断するための定数
-const mediaQuery = window.matchMedia("(max-width: 1024px)");
+// デバイスサイズを判断するための定数（SSR対応）
+let mediaQuery = null;
+const isMobile = ref(false); // 初期値はfalse（デスクトップ前提）
 
-// 初回のサイズ判定
-const isMobile = ref(mediaQuery.matches);
+// ブラウザ環境でのみ初期化
+if (typeof window !== 'undefined' && window.matchMedia) {
+    mediaQuery = window.matchMedia("(max-width: 1024px)");
+    isMobile.value = mediaQuery.matches;
 
-// ウィンドウの幅が変更された時にモバイルかどうかを再判定
-mediaQuery.addEventListener("change", (event) => {
-    isMobile.value = event.matches;
-});
+    // ウィンドウの幅が変更された時にモバイルかどうかを再判定
+    mediaQuery.addEventListener("change", (event) => {
+        isMobile.value = event.matches;
+    });
+}
 
 // ツールチップをクリア
 const clearTooltip = () => {
