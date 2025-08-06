@@ -1,5 +1,8 @@
 export const initTheme = () => {
-    const savedMode = localStorage.getItem('theme-mode') || 'system'
+    // SSR環境チェック
+    if (typeof window === 'undefined') return
+    
+    const savedMode = (typeof localStorage !== 'undefined' ? localStorage.getItem('theme-mode') : null) || 'system'
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     
     const applyTheme = (mode = savedMode) => {
@@ -11,10 +14,12 @@ export const initTheme = () => {
             isDark = mode === 'dark'
         }
         
-        if (isDark) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
+        if (typeof document !== 'undefined') {
+            if (isDark) {
+                document.documentElement.classList.add('dark')
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
         }
     }
     
@@ -23,7 +28,7 @@ export const initTheme = () => {
     
     // システム設定変更を監視
     mediaQuery.addEventListener('change', () => {
-        const currentMode = localStorage.getItem('theme-mode') || 'system'
+        const currentMode = (typeof localStorage !== 'undefined' ? localStorage.getItem('theme-mode') : null) || 'system'
         if (currentMode === 'system') {
             applyTheme('system')
         }
