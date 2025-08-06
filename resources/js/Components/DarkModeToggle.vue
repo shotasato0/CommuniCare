@@ -43,28 +43,37 @@ const updateCurrentMode = () => {
 const applyTheme = () => {
     updateCurrentMode()
     
-    if (currentMode.value === 'dark') {
-        document.documentElement.classList.add('dark')
-    } else {
-        document.documentElement.classList.remove('dark')
+    if (typeof document !== 'undefined') {
+        if (currentMode.value === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     }
 }
 
 const changeTheme = () => {
-    localStorage.setItem('theme-mode', selectedMode.value)
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('theme-mode', selectedMode.value)
+    }
     applyTheme()
 }
 
-// システム設定変更を監視
-mediaQuery.addEventListener('change', () => {
-    if (selectedMode.value === 'system') {
-        applyTheme()
-    }
-})
-
 // 初期化
 onMounted(() => {
-    const savedMode = localStorage.getItem('theme-mode') || 'system'
+    // ブラウザ環境でのみmediaQueryを初期化
+    if (typeof window !== 'undefined') {
+        mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        
+        // システム設定変更を監視
+        mediaQuery.addEventListener('change', () => {
+            if (selectedMode.value === 'system') {
+                applyTheme()
+            }
+        })
+    }
+    
+    const savedMode = (typeof localStorage !== 'undefined' ? localStorage.getItem('theme-mode') : null) || 'system'
     selectedMode.value = savedMode
     applyTheme()
 })
