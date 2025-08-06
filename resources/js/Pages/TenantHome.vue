@@ -57,7 +57,7 @@ try {
     </transition>
 
     <div
-        class="min-h-screen bg-gradient-to-b from-blue-50 to-white flex flex-col justify-center items-center text-center px-4"
+        class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 flex flex-col justify-center items-center text-center px-4"
     >
         <!-- メインコンテンツ -->
         <div
@@ -86,14 +86,14 @@ try {
 
                 <!-- タイトル -->
                 <h2
-                    class="text-blue-900 text-xl sm:text-2xl font-semibold mb-4 sm:mb-6"
+                    class="text-blue-900 dark:text-blue-300 text-xl sm:text-2xl font-semibold mb-4 sm:mb-6"
                 >
                     職員の効率的なコミュニケーションと情報管理を支援
                 </h2>
 
                 <!-- 説明文 -->
                 <p
-                    class="text-gray-700 text-base sm:text-lg max-w-sm sm:max-w-lg mb-6 leading-relaxed"
+                    class="text-gray-700 dark:text-gray-300 text-base sm:text-lg max-w-sm sm:max-w-lg mb-6 leading-relaxed"
                 >
                     CommuniCareは、介護施設の運営を効率化するために、
                     職員間のスムーズなコミュニケーションと利用者様の情報を一元管理する
@@ -103,7 +103,7 @@ try {
                 <!-- テナント名 -->
                 <div
                     v-if="tenant?.business_name"
-                    class="text-blue-900 text-lg sm:text-xl font-medium bg-blue-50 px-6 py-2 rounded-lg shadow-sm border border-blue-100 mb-6"
+                    class="text-blue-900 dark:text-blue-300 text-lg sm:text-xl font-medium bg-blue-50 dark:bg-gray-700 px-6 py-2 rounded-lg shadow-sm border border-blue-100 dark:border-gray-600 mb-6"
                 >
                     {{ tenant.business_name }}
                 </div>
@@ -116,14 +116,14 @@ try {
                     <Link
                         v-if="isGuestHome"
                         :href="route('guest.user.login')"
-                        class="bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
+                        class="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         ゲストユーザーとしてログイン
                     </Link>
                     <Link
                         v-else
                         :href="route('login')"
-                        class="bg-gray-200 text-gray-700 hover:bg-gray-400 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
+                        class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         ログイン
                     </Link>
@@ -132,7 +132,7 @@ try {
                     <Link
                         v-if="!adminExists"
                         :href="route('register-admin.form')"
-                        class="bg-blue-100 text-blue-700 hover:bg-blue-300 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
+                        class="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white text-base sm:text-lg py-3 px-6 sm:py-4 sm:px-8 rounded-lg shadow-lg"
                     >
                         管理者登録
                     </Link>

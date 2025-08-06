@@ -42,7 +42,7 @@ const submit = () => {
         <!-- ゲストデモテナントでかつ admin パラメータがない場合はフォーム非表示 -->
         <div
             v-if="isGuestUrl && !isAdminMode"
-            class="p-6 bg-yellow-100 text-yellow-800 rounded"
+            class="p-6 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded"
         >
             セッションが切れました。アプリケーションロゴをクリックして、新たなゲストユーザーとしてログインし直してください。
         </div>
@@ -79,13 +79,13 @@ const submit = () => {
             <div class="block mt-4">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600">{{
+                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{
                         $t("Remember me")
                     }}</span>
                 </label>
             </div>
 
-            <div class="mt-6 text-sm text-gray-600">
+            <div class="mt-6 text-sm text-gray-600 dark:text-gray-400">
                 ユーザーID、並びにパスワードを忘れた場合は、管理者にお問い合わせください。
             </div>
 

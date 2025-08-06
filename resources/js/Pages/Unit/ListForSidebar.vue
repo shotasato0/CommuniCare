@@ -144,8 +144,8 @@ export default {
 </script>
 
 <template>
-    <div class="sidebar bg-gray-100 w-56 h-screen p-4 shadow-lg">
-        <h2 class="text-lg font-bold mb-4">{{ $t("Unit List") }}</h2>
+    <div class="sidebar bg-gray-100 dark:bg-gray-800 w-56 h-screen p-4 shadow-lg">
+        <h2 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">{{ $t("Unit List") }}</h2>
         <Container
             :items="units"
             @drop="handleDrop"
@@ -156,13 +156,13 @@ export default {
                 <li
                     class="mb-2 p-2 rounded cursor-pointer"
                     :class="{
-                        'text-gray-500 hover:text-black hover:bg-gray-200':
+                        'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700':
                             activeUnitId !== unit.id,
-                        'bg-gray-200': activeUnitId === unit.id,
+                        'bg-gray-200 dark:bg-gray-700': activeUnitId === unit.id,
                     }"
                     @click="handleUnitClick(unit)"
                 >
-                    <span class="font-bold">{{ unit.name }}</span>
+                    <span class="font-bold text-gray-900 dark:text-gray-100">{{ unit.name }}</span>
                 </li>
             </Draggable>
         </Container>
@@ -179,6 +179,11 @@ export default {
     background-color: #f7fafc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: width 0.3s ease-in-out; /* アニメーションを追加 */
+}
+
+.dark .sidebar {
+    background-color: #1f2937;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 /* モバイルサイズでの設定 */

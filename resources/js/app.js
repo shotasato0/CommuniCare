@@ -11,6 +11,7 @@ import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja
 
 import SlideUpDown from "vue-slide-up-down"; // vue-slide-up-downをインポート
 import { useDialog } from "./composables/dialog"; // dialog.jsのインポート
+import { initTheme } from "./Utils/themeUtils"; // テーマ初期化をインポート
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
@@ -44,7 +45,13 @@ createInertiaApp({
             return dialog.showDialog(message);
         };
 
+        // テーマ初期化はマウント後に実行して初期表示パフォーマンスを改善
         app.mount(el);
+        
+        // アプリマウント後の非同期テーマ初期化
+        setTimeout(() => {
+            initTheme();
+        }, 0);
 
         // SPAの初期表示時に履歴を置き換える
         window.history.replaceState(
