@@ -93,6 +93,8 @@ class UserController extends Controller
         $userRole = Role::findByName('user');
 
         // トランザクションを使って安全に権限を移動
+        // 注: syncRoles()の使用が推奨されるが、現在の環境では認識されないため、
+        // 直接DBクエリを使用してSpatie Permissionの内部テーブルを操作
         DB::transaction(function () use ($currentAdmin, $newAdmin, $adminRole, $userRole) {
             // 現在の管理者から管理者権限を削除
             DB::table('model_has_roles')
