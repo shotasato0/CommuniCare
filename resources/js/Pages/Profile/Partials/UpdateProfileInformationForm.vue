@@ -97,7 +97,7 @@ const handleSuccessMessage = (message) => {
         >
             <div
                 v-if="isSuccess || successMessage"
-                class="bg-green-100 dark:bg-green-800 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-200 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
+                class="bg-green-100 dark:bg-green-900 border-l-4 border-green-500 dark:border-green-400 text-green-700 dark:text-green-100 p-4 m-2 rounded fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-auto sm:rounded-lg shadow-lg"
             >
                 <p class="font-bold text-center">
                     {{ successMessage || $t("Saved.") }}
