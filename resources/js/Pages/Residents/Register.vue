@@ -31,7 +31,7 @@ const submit = () => {
             <!-- 利用者登録フォーム -->
             <form
                 @submit.prevent="submit"
-                class="bg-white p-6 rounded-lg shadow"
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
             >
                 <div class="mb-4">
                     <label
