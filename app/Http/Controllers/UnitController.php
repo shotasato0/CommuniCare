@@ -8,6 +8,7 @@ use App\Models\Forum;
 use Inertia\Inertia;
 use App\Http\Requests\Unit\UnitStoreRequest;
 use App\Http\Requests\Unit\UnitSortRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UnitController extends Controller
 {
@@ -28,9 +29,9 @@ class UnitController extends Controller
     public function create()
     {
         $units = Unit::select('id', 'name')
-            ->where('tenant_id', auth()->user()->tenant_id)
+            ->where('tenant_id', Auth::user()->tenant_id)
             ->get();
-        $forums = Forum::where('tenant_id', auth()->user()->tenant_id)->get();
+        $forums = Forum::where('tenant_id', Auth::user()->tenant_id)->get();
         
         return Inertia::render("Unit/Register", [
             'units' => $units,
@@ -45,7 +46,7 @@ class UnitController extends Controller
     {
         $unit = Unit::create([
             'name' => $request->name,
-            'tenant_id' => auth()->user()->tenant_id,
+            'tenant_id' => Auth::user()->tenant_id,
         ]);
 
         $forum = Forum::create([
@@ -54,7 +55,7 @@ class UnitController extends Controller
             'description' => $request->description ?? '',
             'visibility' => $request->visibility ?? 'public',
             'status' => 'active',
-            'tenant_id' => auth()->user()->tenant_id,
+            'tenant_id' => Auth::user()->tenant_id,
         ]);
         return redirect()->route("dashboard")->with(["success" => "部署登録が完了しました。"]);
     }
