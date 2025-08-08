@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
 import { ref } from "vue";
+import { useDeviceDetection } from '../composables/useDeviceDetection';
 
 const props = defineProps({
     likeableId: {
@@ -31,22 +32,8 @@ const likedUsers = ref([]); // いいねしたユーザーの名前一覧
 const hoverTimeout = ref(null); // マウスオーバー時のタイムアウト
 const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
-// デバイスサイズを判断するための定数（SSR対応）
-let mediaQuery = null;
-// 初期値は false（デスクトップ前提）。SSR（サーバーサイド）時にウィンドウオブジェクトが存在しないため、常にデスクトップとして扱われます。
-// そのため、SSR環境ではモバイルデバイスでもデスクトップ用の表示・挙動となる可能性があります。クライアント側で再判定されるまで正しいデバイス判定はできません。
-const isMobile = ref(false);
-
-// ブラウザ環境でのみ初期化
-if (typeof window !== 'undefined' && window.matchMedia) {
-    mediaQuery = window.matchMedia("(max-width: 1024px)");
-    isMobile.value = mediaQuery.matches;
-
-    // ウィンドウの幅が変更された時にモバイルかどうかを再判定
-    mediaQuery.addEventListener("change", (event) => {
-        isMobile.value = event.matches;
-    });
-}
+// デバイス判定（SSR対応）
+const { isMobile } = useDeviceDetection();
 
 // ツールチップをクリア
 const clearTooltip = () => {
