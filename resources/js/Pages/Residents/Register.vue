@@ -1,6 +1,7 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
 import { useForm } from "@inertiajs/vue3";
+import { computed } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 defineProps({
@@ -11,6 +12,14 @@ const form = useForm({
     name: "",
     unit_id: "",
 });
+
+const inputClasses = computed(() => [
+    "mt-1 block w-full rounded-md shadow-sm",
+    "border-gray-300 dark:border-gray-600",
+    "bg-white dark:bg-gray-700",
+    "text-gray-900 dark:text-gray-100",
+    "focus:border-blue-500 dark:focus:border-blue-400"
+].join(" "));
 
 const submit = () => {
     form.post(route("residents.store"));
@@ -44,7 +53,7 @@ const submit = () => {
                         type="text"
                         id="name"
                         v-model="form.name"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-blue-400"
+                        :class="inputClasses"
                         placeholder="利用者名を入力してください"
                     />
                     <div
@@ -65,7 +74,7 @@ const submit = () => {
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-blue-400"
+                        :class="inputClasses"
                         placeholder="所属部署を選択してください"
                     >
                         <option value="" disabled selected>
