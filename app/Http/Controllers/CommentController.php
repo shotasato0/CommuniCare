@@ -8,17 +8,13 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Unit;
+use App\Http\Requests\Comment\CommentStoreRequest;
 
 class CommentController extends Controller
 {
-    public function store(Request $request)
+    public function store(CommentStoreRequest $request)
     {
-        $validated = $request->validate([
-            'post_id' => 'required|exists:posts,id',
-            'parent_id' => 'nullable|exists:comments,id',
-            'message' => 'required|string|max:1000',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-        ]);
+        $validated = $request->validated();
 
         // 画像がアップロードされた場合は保存
         $imgPath = null;
