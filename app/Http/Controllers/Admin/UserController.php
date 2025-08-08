@@ -7,7 +7,6 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Stancl\Tenancy\Facades\Tenancy;
-use Inertia\Inertia;
 use App\Http\Requests\Admin\AdminRegisterRequest;
 use App\Http\Requests\Admin\AdminTransferRequest;
 
@@ -86,7 +85,7 @@ class UserController extends Controller
         $validated = $request->validated();
 
         $newAdmin = User::find($validated['new_admin_id']);
-        $currentAdmin = auth()->user();
+        $currentAdmin = Auth::user();
 
         // 現在の管理者の権限を削除
         $currentAdmin->removeRole('admin');
