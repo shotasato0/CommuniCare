@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
 
 /**
  * 管理者登録リクエスト
@@ -12,12 +11,13 @@ class AdminRegisterRequest extends FormRequest
 {
     /**
      * 認可
+     * テナントコンテキストが存在する場合のみ許可
      *
      * @return bool
      */
     public function authorize()
     {
-        return true;
+        return tenant('id') !== null;
     }
 
     /**
@@ -28,12 +28,6 @@ class AdminRegisterRequest extends FormRequest
     public function rules()
     {
         $tenantId = tenant('id');
-        
-        if (is_null($tenantId)) {
-            throw ValidationException::withMessages([
-                'tenant' => 'テナントコンテキストが初期化されていません。'
-            ]);
-        }
         
         return [
             'name' => 'required|string|max:255',
