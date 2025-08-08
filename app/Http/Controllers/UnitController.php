@@ -57,7 +57,7 @@ class UnitController extends Controller
             'status' => 'active',
             'tenant_id' => Auth::user()->tenant_id,
         ]);
-        return redirect()->route("dashboard")->with(["success" => "部署登録が完了しました。"]);
+        return redirect()->route("units.create")->with(["success" => "部署登録が完了しました。"]);
     }
 
     /**
