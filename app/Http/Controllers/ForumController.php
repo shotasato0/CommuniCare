@@ -68,7 +68,7 @@ class ForumController extends Controller
         $paginator = $query->latest()->paginate(5);
         $paginator->appends(['forum_id' => $forumId, 'search' => $search]);  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
 
-        // データを変換
+        // データを変換（Laravel 11ではthrough()メソッドが未対応のため、array_mapとLengthAwarePaginatorを使用）
         $formattedItems = $paginator->items();
         $transformedItems = array_map(function ($post) use ($user) {
             return [
