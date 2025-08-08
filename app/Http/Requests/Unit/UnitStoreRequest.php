@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Unit;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 /**
  * 部署登録リクエスト
@@ -27,6 +28,12 @@ class UnitStoreRequest extends FormRequest
     public function rules()
     {
         $tenantId = optional($this->user())->tenant_id;
+        
+        if (is_null($tenantId)) {
+            throw ValidationException::withMessages([
+                'tenant' => 'テナントコンテキストが初期化されていません。'
+            ]);
+        }
         
         return [
             'name' => 'required|string|max:255|unique:units,name,NULL,id,tenant_id,' . $tenantId,
