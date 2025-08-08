@@ -41,17 +41,8 @@ class UnitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UnitStoreRequest $request)
     {
-        $request->validate([
-            "name" => "required|string|max:255|unique:units,name,NULL,id,tenant_id," . auth()->user()->tenant_id,
-        ], [
-            "name.required" => "部署名は必須です。",
-            "name.string" => "部署名は文字列で入力してください。",
-            "name.max" => "部署名は255文字以内で入力してください。",
-            "name.unique" => "この部署名は既に登録されています。",
-        ]);
-
         $unit = Unit::create([
             'name' => $request->name,
             'tenant_id' => auth()->user()->tenant_id,
