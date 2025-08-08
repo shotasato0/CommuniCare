@@ -65,7 +65,7 @@ const submit = () => {
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-blue-400"
                         placeholder="所属部署を選択してください"
                     >
                         <option value="" disabled selected>
