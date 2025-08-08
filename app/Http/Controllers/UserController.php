@@ -8,6 +8,8 @@ use App\Http\Requests\User\UserIconUpdateRequest;
 use Inertia\Inertia;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -16,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
 {
-    $tenantId = auth()->user()->tenant_id;  // 現在のユーザーのテナントIDを取得
+    $tenantId = Auth::user()->tenant_id;  // 現在のユーザーのテナントIDを取得
 
     $users = User::where('tenant_id', $tenantId)->get();  // テナントIDでユーザーを絞り込み
     $units = Unit::where('tenant_id', $tenantId)->orderBy('sort_order')->get(); // 並び順を保存
