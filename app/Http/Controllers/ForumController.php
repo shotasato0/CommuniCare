@@ -65,9 +65,12 @@ class ForumController extends Controller
         }
 
         // 検索結果の投稿をページネーションで取得し、必要なデータを整形
-        $posts = $query->latest()->paginate(5)
-            ->appends(['forum_id' => $forumId, 'search' => $search])  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
-            ->through(function ($post) use ($user) {
+        $paginator = $query->latest()->paginate(5);
+        $paginator->appends(['forum_id' => $forumId, 'search' => $search]);  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
+
+        // データを変換
+        $formattedItems = $paginator->items();
+        $transformedItems = array_map(function ($post) use ($user) {
             return [
                 'id' => $post->id,
                 'title' => $post->title,
@@ -90,17 +93,30 @@ class ForumController extends Controller
                 // コメントデータをフォーマット
                 'comments' => $post->comments->map(fn($comment) => $this->formatComment($comment, $user)),
             ];
-        });
+        }, $formattedItems);
+
+        // 新しいページネーションオブジェクトを作成
+        $transformedPosts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformedItems,
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
+        $transformedPosts->appends(['forum_id' => $forumId, 'search' => $search]);
 
         return Inertia::render('Forum', [
-            'posts' => $posts,
+            'posts' => $transformedPosts,
             'units' => Unit::orderBy('sort_order')->with('forum')->get(),
             'users' => User::all(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
             // デバッグ用ログ
-            'debugPosts' => $posts->toArray(),
+            'debugPosts' => $transformedItems,
         ]);
     }
 
