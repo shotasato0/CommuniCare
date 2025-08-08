@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use App\Models\Post;
-use App\Models\Unit;
 use App\Http\Requests\Post\PostStoreRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -22,7 +22,7 @@ class PostController extends Controller
 
         // 投稿を作成
         $post = Post::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'title' => $validated['title'],
             'message' => $validated['message'],
             'forum_id' => $validated['forum_id'],
@@ -37,7 +37,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         // トランザクションを利用して整合性を確保
-        \DB::transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             // 削除対象の投稿を取得
             $post = Post::findOrFail($id);
 
