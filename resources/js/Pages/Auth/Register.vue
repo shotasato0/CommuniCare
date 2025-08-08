@@ -56,7 +56,7 @@ const submit = () => {
         <div class="max-w-md mx-auto mt-16 px-4 sm:px-6 lg:px-8">
             <form
                 @submit.prevent="submit"
-                class="bg-white p-6 rounded-lg shadow space-y-6"
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-6"
             >
                 <input type="hidden" name="_token" :value="csrfToken" />
 
