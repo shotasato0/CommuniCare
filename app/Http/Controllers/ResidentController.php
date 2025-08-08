@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Http\Requests\Resident\ResidentStoreRequest;
+use App\Http\Requests\Resident\ResidentUpdateRequest;
 
 class ResidentController extends Controller
 {
