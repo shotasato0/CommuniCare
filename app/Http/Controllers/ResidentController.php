@@ -80,19 +80,9 @@ class ResidentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Resident $resident)
+    public function update(ResidentUpdateRequest $request, Resident $resident)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'unit_id' => 'required|exists:units,id',
-            'meal_support' => 'nullable|string',
-            'toilet_support' => 'nullable|string',
-            'bathing_support' => 'nullable|string',
-            'mobility_support' => 'nullable|string',
-            'memo' => 'nullable|string',
-        ]);
-
-        $resident->update($validated);
+        $resident->update($request->validated());
 
         return to_route('residents.show', $resident->id)
             ->with('success', '利用者情報を更新しました。');
