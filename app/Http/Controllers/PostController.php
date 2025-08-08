@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Http\Requests\Post\PostStoreRequest;
 
