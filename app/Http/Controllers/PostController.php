@@ -6,20 +6,14 @@ use Inertia\Inertia;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\Unit;
+use App\Http\Requests\Post\PostStoreRequest;
 
 class PostController extends Controller
 {
 
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        // バリデーション
-        $validated = $request->validate([
-            'title' => $request->input('quoted_post_id') ? 'nullable|string|max:255' : 'required|string|max:255',
-            'message' => 'required|string',
-            'forum_id' => 'required|exists:forums,id',
-            'quoted_post_id' => 'nullable|exists:posts,id',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-        ]);
+        $validated = $request->validated();
 
         // 画像パスを取得
         $imgPath = null;
