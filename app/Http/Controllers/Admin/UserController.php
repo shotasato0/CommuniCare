@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Facades\Tenancy;
 use App\Http\Requests\Admin\AdminRegisterRequest;
 use App\Http\Requests\Admin\AdminTransferRequest;
@@ -87,13 +88,48 @@ class UserController extends Controller
         $newAdmin = User::find($validated['new_admin_id']);
         $currentAdmin = Auth::user();
 
-        // 現在の管理者の権限を削除
-        $currentAdmin->removeRole('admin');
-        // 新しい管理者の権限を割り当て
-        $currentAdmin->assignRole('user');
+        // 管理者ロールと一般ユーザーロールを取得
+        $adminRole = Role::findByName('admin');
+        $userRole = Role::findByName('user');
 
-        // 新しい管理者の権限を割り当て
-        $newAdmin->assignRole('admin');
+        // トランザクションを使って安全に権限を移動
+        DB::transaction(function () use ($currentAdmin, $newAdmin, $adminRole, $userRole) {
+            // 現在の管理者から管理者権限を削除
+            DB::table('model_has_roles')
+                ->where('model_type', 'App\\Models\\User')
+                ->where('model_id', $currentAdmin->id)
+                ->where('role_id', $adminRole->id)
+                ->delete();
+
+            // 現在の管理者にユーザー権限を付与（既にない場合）
+            $existsUserRole = DB::table('model_has_roles')
+                ->where('model_type', 'App\\Models\\User')
+                ->where('model_id', $currentAdmin->id)
+                ->where('role_id', $userRole->id)
+                ->exists();
+
+            if (!$existsUserRole) {
+                DB::table('model_has_roles')->insert([
+                    'role_id' => $userRole->id,
+                    'model_type' => 'App\\Models\\User',
+                    'model_id' => $currentAdmin->id,
+                ]);
+            }
+
+            // 新しい管理者からユーザー権限を削除
+            DB::table('model_has_roles')
+                ->where('model_type', 'App\\Models\\User')
+                ->where('model_id', $newAdmin->id)
+                ->where('role_id', $userRole->id)
+                ->delete();
+
+            // 新しい管理者に管理者権限を付与
+            DB::table('model_has_roles')->insert([
+                'role_id' => $adminRole->id,
+                'model_type' => 'App\\Models\\User',
+                'model_id' => $newAdmin->id,
+            ]);
+        });
 
         return redirect()->route('dashboard')->with('success', '管理者権限を移動しました。');
     }
