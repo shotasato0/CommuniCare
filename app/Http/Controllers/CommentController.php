@@ -25,7 +25,7 @@ class CommentController extends Controller
 
         // モデルを使用してコメントを作成
         $comment = Comment::create([
-            'tenant_id' => auth()->user()->tenant_id,
+            'tenant_id' => Auth::user()->tenant_id,
             'user_id' => Auth::id(),
             'post_id' => $validated['post_id'],
             'parent_id' => $validated['parent_id'] ?? null,
