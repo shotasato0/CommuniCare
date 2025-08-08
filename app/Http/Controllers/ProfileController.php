@@ -38,7 +38,7 @@ class ProfileController extends Controller
 {
     // バリデーション
     $request->validate([
-        'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+        'icon' => 'required|image:allow_svg|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
     ], [
         'icon.max' => '画像のサイズが大きすぎます。4MB以下にしてください。',
     ]);
