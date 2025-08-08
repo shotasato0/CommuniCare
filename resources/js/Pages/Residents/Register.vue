@@ -44,7 +44,7 @@ const submit = () => {
                         type="text"
                         id="name"
                         v-model="form.name"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md shadow-sm focus:border-blue-500 dark:focus:border-blue-400"
                         placeholder="利用者名を入力してください"
                     />
                     <div
