@@ -4,7 +4,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
     units: {
@@ -17,6 +17,17 @@ const props = defineProps({
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
+
+// セレクトボックスのクラス定義（フォーカスカラーをblueに統一）
+const selectClasses = computed(() => [
+    "mt-1 block w-full rounded-md shadow-sm",
+    "border-gray-300 dark:border-gray-600",
+    "bg-white dark:bg-gray-700",
+    "text-gray-900 dark:text-gray-100",
+    "focus:border-blue-500 dark:focus:border-blue-400",
+    "focus:ring focus:ring-blue-200 dark:focus:ring-blue-400",
+    "focus:ring-opacity-50"
+].join(" "));
 
 // フォームの初期データを定義
 const form = useForm({
@@ -46,7 +57,7 @@ const submit = () => {
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t("User registration") }}
             </h2>
         </template>
@@ -56,7 +67,7 @@ const submit = () => {
         <div class="max-w-md mx-auto mt-16 px-4 sm:px-6 lg:px-8">
             <form
                 @submit.prevent="submit"
-                class="bg-white p-6 rounded-lg shadow space-y-6"
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-6"
             >
                 <input type="hidden" name="_token" :value="csrfToken" />
 
@@ -126,7 +137,7 @@ const submit = () => {
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        :class="selectClasses"
                         required
                     >
                         <option value="" disabled>
@@ -146,7 +157,7 @@ const submit = () => {
                 <div class="flex items-center justify-end">
                     <button
                         type="submit"
-                        class="w-full sm:w-auto px-4 py-2 bg-blue-100 text-blue-700 rounded-md transition hover:bg-blue-300 hover:text-white text-center"
+                        class="w-full sm:w-auto px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white text-center"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                     >

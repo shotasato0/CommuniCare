@@ -1,6 +1,7 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
 import { useForm } from "@inertiajs/vue3";
+import { computed } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 defineProps({
@@ -12,6 +13,14 @@ const form = useForm({
     unit_id: "",
 });
 
+const inputClasses = computed(() => [
+    "mt-1 block w-full rounded-md shadow-sm",
+    "border-gray-300 dark:border-gray-600",
+    "bg-white dark:bg-gray-700",
+    "text-gray-900 dark:text-gray-100",
+    "focus:border-blue-500 dark:focus:border-blue-400"
+].join(" "));
+
 const submit = () => {
     form.post(route("residents.store"));
 };
@@ -20,7 +29,7 @@ const submit = () => {
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t("Resident Registration") }}
             </h2>
         </template>
@@ -31,12 +40,12 @@ const submit = () => {
             <!-- 利用者登録フォーム -->
             <form
                 @submit.prevent="submit"
-                class="bg-white p-6 rounded-lg shadow"
+                class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow"
             >
                 <div class="mb-4">
                     <label
                         for="name"
-                        class="block text-sm font-medium text-gray-700"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         {{ $t("Resident Name") }}
                     </label>
@@ -44,12 +53,12 @@ const submit = () => {
                         type="text"
                         id="name"
                         v-model="form.name"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
+                        :class="inputClasses"
                         placeholder="利用者名を入力してください"
                     />
                     <div
                         v-if="form.errors.name"
-                        class="text-red-600 text-sm mt-1"
+                        class="text-red-600 dark:text-red-400 text-sm mt-1"
                     >
                         {{ form.errors.name }}
                     </div>
@@ -58,14 +67,14 @@ const submit = () => {
                 <div class="mb-4">
                     <label
                         for="unit_id"
-                        class="block text-sm font-medium text-gray-700"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300"
                     >
                         {{ $t("Unit") }}
                     </label>
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500"
+                        :class="inputClasses"
                         placeholder="所属部署を選択してください"
                     >
                         <option value="" disabled selected>
@@ -81,7 +90,7 @@ const submit = () => {
                     </select>
                     <div
                         v-if="form.errors.unit_id"
-                        class="text-red-600 text-sm mt-1"
+                        class="text-red-600 dark:text-red-400 text-sm mt-1"
                     >
                         {{ form.errors.unit_id }}
                     </div>
@@ -89,7 +98,7 @@ const submit = () => {
 
                 <button
                     type="submit"
-                    class="bg-blue-100 text-blue-700 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 hover:text-white focus:outline-none focus:shadow-outline"
+                    class="bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 font-medium py-2 px-4 rounded-md transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white focus:outline-none focus:shadow-outline"
                 >
                     {{ $t("Register Resident") }}
                 </button>
