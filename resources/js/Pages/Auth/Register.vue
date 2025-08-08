@@ -4,7 +4,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const props = defineProps({
     units: {
@@ -17,6 +17,17 @@ const props = defineProps({
 const csrfToken = ref(
     document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 );
+
+// セレクトボックスのクラス定義（フォーカスカラーをblueに統一）
+const selectClasses = computed(() => [
+    "mt-1 block w-full rounded-md shadow-sm",
+    "border-gray-300 dark:border-gray-600",
+    "bg-white dark:bg-gray-700",
+    "text-gray-900 dark:text-gray-100",
+    "focus:border-blue-500 dark:focus:border-blue-400",
+    "focus:ring focus:ring-blue-200 dark:focus:ring-blue-400",
+    "focus:ring-opacity-50"
+].join(" "));
 
 // フォームの初期データを定義
 const form = useForm({
@@ -126,7 +137,7 @@ const submit = () => {
                     <select
                         id="unit_id"
                         v-model="form.unit_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring focus:ring-indigo-200 dark:focus:ring-indigo-400 focus:ring-opacity-50"
+                        :class="selectClasses"
                         required
                     >
                         <option value="" disabled>
