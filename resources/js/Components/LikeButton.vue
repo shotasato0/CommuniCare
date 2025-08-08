@@ -33,7 +33,9 @@ const tooltipDelay = 500; // ツールチップ表示の遅延時間
 
 // デバイスサイズを判断するための定数（SSR対応）
 let mediaQuery = null;
-const isMobile = ref(false); // 初期値はfalse（デスクトップ前提）
+// 初期値は false（デスクトップ前提）。SSR（サーバーサイド）時にウィンドウオブジェクトが存在しないため、常にデスクトップとして扱われます。
+// そのため、SSR環境ではモバイルデバイスでもデスクトップ用の表示・挙動となる可能性があります。クライアント側で再判定されるまで正しいデバイス判定はできません。
+const isMobile = ref(false);
 
 // ブラウザ環境でのみ初期化
 if (typeof window !== 'undefined' && window.matchMedia) {
