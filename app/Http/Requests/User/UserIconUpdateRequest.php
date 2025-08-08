@@ -27,7 +27,7 @@ class UserIconUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'icon' => 'required|image:allow_svg|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ];
     }
 
