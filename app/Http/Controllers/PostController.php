@@ -55,7 +55,7 @@ class PostController extends Controller
             $post->forceDelete();
         });
 
-        return app(ForumController::class)->index(request());
+        return redirect()->route('forum.index');
     }
 
 
