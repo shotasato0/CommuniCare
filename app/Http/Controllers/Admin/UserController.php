@@ -82,11 +82,9 @@ class UserController extends Controller
     }
 
     // 管理者権限を移動
-    public function transferAdmin(Request $request)
+    public function transferAdmin(AdminTransferRequest $request)
     {
-        $validated = $request->validate([
-            'new_admin_id' => 'required|exists:users,id',
-        ]);
+        $validated = $request->validated();
 
         $newAdmin = User::find($validated['new_admin_id']);
         $currentAdmin = auth()->user();
