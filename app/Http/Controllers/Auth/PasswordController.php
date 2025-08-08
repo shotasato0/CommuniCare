@@ -24,6 +24,8 @@ class PasswordController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        session()->regenerate(); //セッションIDを再生成
+
         return back();
     }
 }
