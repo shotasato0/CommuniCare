@@ -44,14 +44,9 @@ class ResidentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ResidentStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'unit_id' => 'required|exists:units,id',
-        ]);
-
-        $data = array_merge($validated, [
+        $data = array_merge($request->validated(), [
             'tenant_id' => auth()->user()->tenant_id
         ]);
 
