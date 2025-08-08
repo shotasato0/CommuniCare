@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Forum;
+use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $forumId = $request->input('forum_id');
 
         // forum_idがURLパラメータにない場合は、ユーザーのunitに基づいて取得
