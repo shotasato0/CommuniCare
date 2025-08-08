@@ -27,12 +27,25 @@ class PostStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => $this->input('quoted_post_id') ? 'nullable|string|max:255' : 'required|string|max:255',
+            'title' => $this->getTitleValidationRule(),
             'message' => 'required|string',
             'forum_id' => 'required|exists:forums,id',
             'quoted_post_id' => 'nullable|exists:posts,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
         ];
+    }
+
+    /**
+     * タイトルの検証ルールを取得
+     * 引用投稿がある場合はタイトルを任意とし、ない場合は必須とする
+     *
+     * @return string
+     */
+    private function getTitleValidationRule()
+    {
+        return $this->has('quoted_post_id') && $this->filled('quoted_post_id')
+            ? 'nullable|string|max:255'
+            : 'required|string|max:255';
     }
 
     /**
