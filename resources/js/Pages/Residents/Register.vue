@@ -81,7 +81,7 @@ const submit = () => {
                     </select>
                     <div
                         v-if="form.errors.unit_id"
-                        class="text-red-600 text-sm mt-1"
+                        class="text-red-600 dark:text-red-400 text-sm mt-1"
                     >
                         {{ form.errors.unit_id }}
                     </div>
