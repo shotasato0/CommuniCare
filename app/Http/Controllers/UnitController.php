@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\Forum;
 use Inertia\Inertia;
+use App\Http\Requests\Unit\UnitStoreRequest;
+use App\Http\Requests\Unit\UnitSortRequest;
 
 class UnitController extends Controller
 {
