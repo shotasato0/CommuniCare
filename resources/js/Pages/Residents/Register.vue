@@ -49,7 +49,7 @@ const submit = () => {
                     />
                     <div
                         v-if="form.errors.name"
-                        class="text-red-600 text-sm mt-1"
+                        class="text-red-600 dark:text-red-400 text-sm mt-1"
                     >
                         {{ form.errors.name }}
                     </div>
