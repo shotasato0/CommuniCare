@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileUpdateRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class ProfileUpdateRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('users')->where(function ($query) {
-                    return $query->where('tenant_id', auth()->user()->tenant_id);
+                    return $query->where('tenant_id', Auth::user()->tenant_id);
                 })->ignore($this->user()->id)
             ],
             'tel' => ['nullable', 'string', 'max:255'],
