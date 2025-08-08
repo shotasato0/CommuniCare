@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use Inertia\Inertia;
 use App\Models\User;
+use App\Http\Requests\Resident\ResidentStoreRequest;
+use App\Http\Requests\Resident\ResidentUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ResidentController extends Controller
 {
@@ -23,9 +26,9 @@ class ResidentController extends Controller
 
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
-            'units' => Unit::where('tenant_id', auth()->user()->tenant_id)->orderBy('sort_order')->get(),
+            'units' => Unit::where('tenant_id', Auth::user()->tenant_id)->orderBy('sort_order')->get(),
             'selectedUnitId' => $unitId,
-            'isAdmin' => auth()->user()->hasRole('admin'),
+            'isAdmin' => Auth::user()->hasRole('admin'),
         ]);
     }
 
@@ -42,15 +45,10 @@ class ResidentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ResidentStoreRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'unit_id' => 'required|exists:units,id',
-        ]);
-
-        $data = array_merge($validated, [
-            'tenant_id' => auth()->user()->tenant_id
+        $data = array_merge($request->validated(), [
+            'tenant_id' => Auth::user()->tenant_id
         ]);
 
         Resident::create($data);
@@ -83,19 +81,9 @@ class ResidentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Resident $resident)
+    public function update(ResidentUpdateRequest $request, Resident $resident)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'unit_id' => 'required|exists:units,id',
-            'meal_support' => 'nullable|string',
-            'toilet_support' => 'nullable|string',
-            'bathing_support' => 'nullable|string',
-            'mobility_support' => 'nullable|string',
-            'memo' => 'nullable|string',
-        ]);
-
-        $resident->update($validated);
+        $resident->update($request->validated());
 
         return to_route('residents.show', $resident->id)
             ->with('success', '利用者情報を更新しました。');

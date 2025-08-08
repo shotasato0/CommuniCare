@@ -8,12 +8,13 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Forum;
+use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $forumId = $request->input('forum_id');
 
         // forum_idがURLパラメータにない場合は、ユーザーのunitに基づいて取得
@@ -64,9 +65,12 @@ class ForumController extends Controller
         }
 
         // 検索結果の投稿をページネーションで取得し、必要なデータを整形
-        $posts = $query->latest()->paginate(5)
-            ->appends(['forum_id' => $forumId, 'search' => $search])  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
-            ->through(function ($post) use ($user) {
+        $paginator = $query->latest()->paginate(5);
+        $paginator->appends(['forum_id' => $forumId, 'search' => $search]);  // ページネーションのクエリパラメータとしてforum_idとsearchをURLに追加
+
+        // データを変換（Laravel 11ではthrough()メソッドが未対応のため、array_mapとLengthAwarePaginatorを使用）
+        $formattedItems = $paginator->items();
+        $transformedItems = array_map(function ($post) use ($user) {
             return [
                 'id' => $post->id,
                 'title' => $post->title,
@@ -89,17 +93,30 @@ class ForumController extends Controller
                 // コメントデータをフォーマット
                 'comments' => $post->comments->map(fn($comment) => $this->formatComment($comment, $user)),
             ];
-        });
+        }, $formattedItems);
+
+        // 新しいページネーションオブジェクトを作成
+        $transformedPosts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformedItems,
+            $paginator->total(),
+            $paginator->perPage(),
+            $paginator->currentPage(),
+            [
+                'path' => request()->url(),
+                'pageName' => 'page',
+            ]
+        );
+        $transformedPosts->appends(['forum_id' => $forumId, 'search' => $search]);
 
         return Inertia::render('Forum', [
-            'posts' => $posts,
+            'posts' => $transformedPosts,
             'units' => Unit::orderBy('sort_order')->with('forum')->get(),
             'users' => User::all(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
             // デバッグ用ログ
-            'debugPosts' => $posts->toArray(),
+            'debugPosts' => $transformedItems,
         ]);
     }
 

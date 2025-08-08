@@ -2,24 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use App\Models\Post;
-use Illuminate\Http\Request;
-use App\Models\Unit;
+use App\Http\Requests\Post\PostStoreRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
 
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
-        // バリデーション
-        $validated = $request->validate([
-            'title' => $request->input('quoted_post_id') ? 'nullable|string|max:255' : 'required|string|max:255',
-            'message' => 'required|string',
-            'forum_id' => 'required|exists:forums,id',
-            'quoted_post_id' => 'nullable|exists:posts,id',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
-        ]);
+        $validated = $request->validated();
 
         // 画像パスを取得
         $imgPath = null;
@@ -29,7 +22,7 @@ class PostController extends Controller
 
         // 投稿を作成
         $post = Post::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'title' => $validated['title'],
             'message' => $validated['message'],
             'forum_id' => $validated['forum_id'],
@@ -44,7 +37,7 @@ class PostController extends Controller
     public function destroy($id)
     {
         // トランザクションを利用して整合性を確保
-        \DB::transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             // 削除対象の投稿を取得
             $post = Post::findOrFail($id);
 
@@ -62,7 +55,7 @@ class PostController extends Controller
             $post->forceDelete();
         });
 
-        return app(ForumController::class)->index(request());
+        return redirect()->route('forum.index');
     }
 
 

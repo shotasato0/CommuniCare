@@ -21,7 +21,7 @@ class ProfileController extends Controller
     public function edit(Request $request): Response
     {
         // 現在のテナントに属する部署のみを取得
-        $units = Unit::where('tenant_id', auth()->user()->tenant_id)
+        $units = Unit::where('tenant_id', Auth::user()->tenant_id)
             ->orderBy('sort_order')
             ->get();
 

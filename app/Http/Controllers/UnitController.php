@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\Forum;
 use Inertia\Inertia;
+use App\Http\Requests\Unit\UnitStoreRequest;
+use App\Http\Requests\Unit\UnitSortRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UnitController extends Controller
 {
@@ -26,9 +29,9 @@ class UnitController extends Controller
     public function create()
     {
         $units = Unit::select('id', 'name')
-            ->where('tenant_id', auth()->user()->tenant_id)
+            ->where('tenant_id', Auth::user()->tenant_id)
             ->get();
-        $forums = Forum::where('tenant_id', auth()->user()->tenant_id)->get();
+        $forums = Forum::where('tenant_id', Auth::user()->tenant_id)->get();
         
         return Inertia::render("Unit/Register", [
             'units' => $units,
@@ -39,20 +42,11 @@ class UnitController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UnitStoreRequest $request)
     {
-        $request->validate([
-            "name" => "required|string|max:255|unique:units,name,NULL,id,tenant_id," . auth()->user()->tenant_id,
-        ], [
-            "name.required" => "部署名は必須です。",
-            "name.string" => "部署名は文字列で入力してください。",
-            "name.max" => "部署名は255文字以内で入力してください。",
-            "name.unique" => "この部署名は既に登録されています。",
-        ]);
-
         $unit = Unit::create([
             'name' => $request->name,
-            'tenant_id' => auth()->user()->tenant_id,
+            'tenant_id' => Auth::user()->tenant_id,
         ]);
 
         $forum = Forum::create([
@@ -61,7 +55,7 @@ class UnitController extends Controller
             'description' => $request->description ?? '',
             'visibility' => $request->visibility ?? 'public',
             'status' => 'active',
-            'tenant_id' => auth()->user()->tenant_id,
+            'tenant_id' => Auth::user()->tenant_id,
         ]);
         return redirect()->route("dashboard")->with(["success" => "部署登録が完了しました。"]);
     }
@@ -102,9 +96,9 @@ class UnitController extends Controller
     /**
      * 部署の並び順を保存
      */
-    public function sort(Request $request)
+    public function sort(UnitSortRequest $request)
     {
-        $units = $request->input('units') ?? [];
+        $units = $request->validated()['units'];
         foreach ($units as $index => $unit) {
             Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
         }
