@@ -95,9 +95,9 @@ class UnitController extends Controller
     /**
      * 部署の並び順を保存
      */
-    public function sort(Request $request)
+    public function sort(UnitSortRequest $request)
     {
-        $units = $request->input('units') ?? [];
+        $units = $request->validated()['units'];
         foreach ($units as $index => $unit) {
             Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
         }
