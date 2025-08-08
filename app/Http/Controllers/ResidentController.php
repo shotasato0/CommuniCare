@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use App\Models\User;
 use App\Http\Requests\Resident\ResidentStoreRequest;
 use App\Http\Requests\Resident\ResidentUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ResidentController extends Controller
 {
@@ -25,9 +26,9 @@ class ResidentController extends Controller
 
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
-            'units' => Unit::where('tenant_id', auth()->user()->tenant_id)->orderBy('sort_order')->get(),
+            'units' => Unit::where('tenant_id', Auth::user()->tenant_id)->orderBy('sort_order')->get(),
             'selectedUnitId' => $unitId,
-            'isAdmin' => auth()->user()->hasRole('admin'),
+            'isAdmin' => Auth::user()->hasRole('admin'),
         ]);
     }
 
@@ -47,7 +48,7 @@ class ResidentController extends Controller
     public function store(ResidentStoreRequest $request)
     {
         $data = array_merge($request->validated(), [
-            'tenant_id' => auth()->user()->tenant_id
+            'tenant_id' => Auth::user()->tenant_id
         ]);
 
         Resident::create($data);
