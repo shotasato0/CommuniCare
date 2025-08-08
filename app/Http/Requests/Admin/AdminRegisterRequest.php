@@ -26,9 +26,11 @@ class AdminRegisterRequest extends FormRequest
      */
     public function rules()
     {
+        $tenantId = tenant('id') ?? optional($this->user())->tenant_id;
+        
         return [
             'name' => 'required|string|max:255',
-            'username_id' => 'required|string|max:255|unique:users,username_id,NULL,id,tenant_id,' . tenant('id'),
+            'username_id' => 'required|string|max:255|unique:users,username_id,NULL,id,tenant_id,' . $tenantId,
             'password' => 'required|string|min:8|confirmed',
         ];
     }

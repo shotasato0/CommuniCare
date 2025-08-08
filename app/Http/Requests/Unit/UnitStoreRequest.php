@@ -26,8 +26,10 @@ class UnitStoreRequest extends FormRequest
      */
     public function rules()
     {
+        $tenantId = optional($this->user())->tenant_id;
+        
         return [
-            'name' => 'required|string|max:255|unique:units,name,NULL,id,tenant_id,' . auth()->user()->tenant_id,
+            'name' => 'required|string|max:255|unique:units,name,NULL,id,tenant_id,' . $tenantId,
             'description' => 'nullable|string',
             'visibility' => 'nullable|string|in:public,private',
         ];
