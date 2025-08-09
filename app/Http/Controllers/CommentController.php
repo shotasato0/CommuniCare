@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use App\Models\Unit;
 use App\Http\Requests\Comment\CommentStoreRequest;
 
 class CommentController extends Controller
@@ -34,16 +32,8 @@ class CommentController extends Controller
             'img' => $imgPath
         ]);
 
-        // コメントに関連するユーザー情報をロード
-        $comment->load('user');
-
-        // ユニット情報の取得
-        $units = Unit::all();
-
-        // inertiaレスポンスを返して掲示板ページを表示
-        return Inertia::render('Forum', [
-            'units' => $units,
-        ]);
+        return redirect()->route('forum.index')
+            ->with('success', 'コメントを投稿しました。');
     }
 
     public function destroy($id)
