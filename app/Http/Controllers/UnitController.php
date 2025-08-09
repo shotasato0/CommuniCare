@@ -28,8 +28,10 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $units = Unit::select('id', 'name')
+        $units = Unit::select('id', 'name', 'sort_order', 'created_at')
             ->where('tenant_id', Auth::user()->tenant_id)
+            ->orderBy('sort_order')
+            ->orderBy('created_at', 'desc')
             ->get();
         $forums = Forum::where('tenant_id', Auth::user()->tenant_id)->get();
         
@@ -44,12 +46,17 @@ class UnitController extends Controller
      */
     public function store(UnitStoreRequest $request)
     {
+        // 最新の並び順を取得
+        $maxSortOrder = Unit::where('tenant_id', Auth::user()->tenant_id)
+            ->max('sort_order') ?? -1;
+
         $unit = Unit::create([
             'name' => $request->name,
             'tenant_id' => Auth::user()->tenant_id,
+            'sort_order' => $maxSortOrder + 1,
         ]);
 
-        $forum = Forum::create([
+        Forum::create([
             'name' => $request->name,
             'unit_id' => $unit->id,
             'description' => $request->description ?? '',
@@ -57,6 +64,7 @@ class UnitController extends Controller
             'status' => 'active',
             'tenant_id' => Auth::user()->tenant_id,
         ]);
+        
         return redirect()->route("units.create")->with(["success" => "部署登録が完了しました。"]);
     }
 
@@ -89,7 +97,11 @@ class UnitController extends Controller
      */
     public function destroy(string $id)
     {
-        Unit::find($id)->delete();
+        $unit = Unit::find($id);
+        if ($unit) {
+            $unit->delete();
+        }
+        
         return redirect()->route("units.create")->with(["success" => "部署の削除が完了しました"]);
     }
 

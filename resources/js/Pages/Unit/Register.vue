@@ -6,12 +6,15 @@ import { ref, watchEffect } from "vue";
 import CustomDialog from "@/Components/CustomDialog.vue";
 import { useDialog } from "@/composables/dialog";
 
-const { props } = usePage();
-const flashMessage = ref(props.flash.success || null);
+const page = usePage();
+const flashMessage = ref(page.props.flash.success || null);
 
-defineProps({
+const props = defineProps({
     units: Array,
 });
+
+// リアクティブな部署一覧を作成
+const units = ref([...props.units]);
 
 const form = useForm({
     name: "",
@@ -19,14 +22,14 @@ const form = useForm({
 
 const submit = () => {
     form.post(route("units.store"), {
-        onSuccess: () => {
+        onSuccess: (page) => {
+            form.reset(); // フォームをリセット
+            // 新しく作成された部署をリストに追加
+            units.value = [...page.props.units];
             flashMessage.value = "部署が正常に登録されました。";
         },
     });
 };
-
-// 現在の部署一覧を取得
-const { units = [] } = usePage().props;
 
 const dialog = useDialog();
 
@@ -40,12 +43,9 @@ const deleteUnit = async (unit) => {
     }
 
     form.delete(route("units.destroy", unit.id), {
-        onSuccess: () => {
-            // 成功した場合にローカルステートから部署を削除
-            const index = units.findIndex((unit) => unit.id === unit.id);
-            if (index !== -1) {
-                units.splice(index, 1);
-            }
+        onSuccess: (page) => {
+            // 削除後の部署リストを更新
+            units.value = [...page.props.units];
             flashMessage.value = "部署が削除されました。";
         },
     });
