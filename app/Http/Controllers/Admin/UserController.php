@@ -133,6 +133,6 @@ class UserController extends Controller
             ]);
         });
 
-        return redirect()->route('dashboard')->with('success', '管理者権限を移動しました。');
+        return redirect()->route('users.index')->with('success', '管理者権限を移動しました。');
     }
 }
