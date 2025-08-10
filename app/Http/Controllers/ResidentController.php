@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Http\Requests\Resident\ResidentStoreRequest;
 use App\Http\Requests\Resident\ResidentUpdateRequest;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class ResidentController extends Controller
 {
@@ -29,7 +28,7 @@ class ResidentController extends Controller
         $user = Auth::user();
         
         // 管理者ロールをチェック（Spatie Permissionを使用）
-        $isAdmin = $user->roles()->where('name', 'admin')->exists();
+        $isAdmin = $user->hasRole('admin');
         
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
