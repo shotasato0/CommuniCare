@@ -2,61 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Http\Requests\Post\PostStoreRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
+    private PostService $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
 
     public function store(PostStoreRequest $request)
     {
-        $validated = $request->validated();
-
-        // 画像パスを取得
-        $imgPath = null;
-        if ($request->hasFile('image')) {
-            $imgPath = $request->file('image')->store('images', 'public');
+        try {
+            $this->postService->createPost($request);
+            
+            return redirect()->route('forum.index')
+                ->with('success', '投稿を作成しました。');
+        } catch (\Exception $e) {
+            return redirect()->route('forum.index')
+                ->with('error', '投稿の作成に失敗しました。');
         }
-
-        // 投稿を作成
-        $post = Post::create([
-            'user_id' => Auth::id(),
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'forum_id' => $validated['forum_id'],
-            'quoted_post_id' => $validated['quoted_post_id'] ?? null,
-            'img' => $imgPath
-        ]);
-
-        // 掲示板ページにリダイレクト
-        return redirect()->route('forum.index');
     }
 
     public function destroy($id)
     {
-        // トランザクションを利用して整合性を確保
-        DB::transaction(function () use ($id) {
-            // 削除対象の投稿を取得
-            $post = Post::findOrFail($id);
-
-            // 削除対象の投稿を引用している投稿を取得
-            $affectedPosts = Post::where('quoted_post_id', $post->id)->get();
-
-            // 引用投稿のフラグを更新
-            Post::where('quoted_post_id', $post->id)
-                ->update(['quoted_post_deleted' => true]);
-
-            // 更新後の投稿を取得
-            $updatedPosts = Post::where('quoted_post_id', $post->id)->get();
-
-            // 削除対象の投稿を削除
-            $post->forceDelete();
-        });
-
-        return redirect()->route('forum.index');
+        try {
+            $this->postService->deletePost($id);
+            
+            return redirect()->route('forum.index')
+                ->with('success', '投稿を削除しました。');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            return redirect()->route('forum.index')
+                ->with('error', 'この投稿を削除する権限がありません。');
+        } catch (\Exception $e) {
+            return redirect()->route('forum.index')
+                ->with('error', '投稿の削除に失敗しました。');
+        }
     }
-
-
 }
