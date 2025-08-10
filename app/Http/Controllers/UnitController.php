@@ -56,6 +56,7 @@ class UnitController extends Controller
             'sort_order' => $maxSortOrder + 1,
         ]);
 
+        // 部署に対応するフォーラムを作成（戻り値は不要）
         Forum::create([
             'name' => $request->name,
             'unit_id' => $unit->id,
