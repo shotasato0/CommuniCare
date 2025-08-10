@@ -60,7 +60,7 @@ class UserController extends Controller
 
     // ログイン
     Auth::login($user);
-    return redirect()->route('dashboard')->with('success', '管理者の登録が完了しました。');
+    return redirect()->route('users.index')->with('success', '管理者の登録が完了しました。');
 }
 
     // テナントの管理者を移動するためのフォームを表示
@@ -133,6 +133,6 @@ class UserController extends Controller
             ]);
         });
 
-        return redirect()->route('dashboard')->with('success', '管理者権限を移動しました。');
+        return redirect()->route('users.index')->with('success', '管理者権限を移動しました。');
     }
 }

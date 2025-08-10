@@ -24,11 +24,17 @@ class ResidentController extends Controller
             return $query->where('unit_id', $unitId);
         })->with('unit')->get();
 
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        // 管理者ロールをチェック（Spatie Permissionを使用）
+        $isAdmin = $user->hasRole('admin');
+        
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
-            'units' => Unit::where('tenant_id', Auth::user()->tenant_id)->orderBy('sort_order')->get(),
+            'units' => Unit::where('tenant_id', $user->tenant_id)->orderBy('sort_order')->get(),
             'selectedUnitId' => $unitId,
-            'isAdmin' => Auth::user()->hasRole('admin'),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -85,7 +91,7 @@ class ResidentController extends Controller
     {
         $resident->update($request->validated());
 
-        return to_route('residents.show', $resident->id)
+        return to_route('residents.index')
             ->with('success', '利用者情報を更新しました。');
     }
 
