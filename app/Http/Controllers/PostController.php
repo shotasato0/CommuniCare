@@ -24,7 +24,7 @@ class PostController extends Controller
             return redirect()->route('forum.index')
                 ->with('success', '投稿を作成しました。');
         } catch (\Exception $e) {
-            Log::error('投稿の作成に失敗しました: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('投稿の作成に失敗しました', ['exception' => $e, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', '投稿の作成に失敗しました。');
         }
@@ -38,11 +38,11 @@ class PostController extends Controller
             return redirect()->route('forum.index')
                 ->with('success', '投稿を削除しました。');
         } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            Log::warning('投稿削除の権限エラー: ' . $e->getMessage(), ['user_id' => Auth::id(), 'post_id' => $id]);
+            Log::warning('投稿削除の権限エラー', ['exception' => $e, 'user_id' => Auth::id(), 'post_id' => $id, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', 'この投稿を削除する権限がありません。');
         } catch (\Exception $e) {
-            Log::error('投稿の削除に失敗しました: ' . $e->getMessage(), ['exception' => $e, 'post_id' => $id]);
+            Log::error('投稿の削除に失敗しました', ['exception' => $e, 'post_id' => $id, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', '投稿の削除に失敗しました。');
         }
