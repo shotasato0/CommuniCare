@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -69,7 +70,7 @@ class GuestLoginController extends Controller
     if ($guestUser) {
         $guestUser->delete();
     } else {
-        \Log::warning("該当するゲストユーザーが見つかりません: セッションID: {$sessionId}");
+        Log::warning("該当するゲストユーザーが見つかりません: セッションID: {$sessionId}");
     }
 
     // セッション無効化とトークン再生成を最後に実行
