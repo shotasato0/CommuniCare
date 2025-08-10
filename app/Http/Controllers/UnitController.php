@@ -98,7 +98,7 @@ class UnitController extends Controller
      */
     public function destroy(string $id)
     {
-        $unit = Unit::find($id);
+        $unit = Unit::where('id', $id)->where('tenant_id', Auth::user()->tenant_id)->first();
         if ($unit) {
             $unit->delete();
         }
