@@ -14,7 +14,7 @@ const props = defineProps({
 });
 
 // リアクティブな部署一覧を作成
-const units = ref([...props.units]);
+const units = ref(props.units ? [...props.units] : []);
 
 const form = useForm({
     name: "",
