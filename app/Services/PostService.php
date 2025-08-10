@@ -112,8 +112,18 @@ class PostService
     {
         $currentUser = Auth::user();
         
-        return $post->user_id === $currentUser->id || 
-               $currentUser->hasRole('admin');
+        // ユーザーが認証されていない場合は削除不可
+        if (!$currentUser) {
+            return false;
+        }
+        
+        // 投稿の所有者は削除可能
+        if ($post->user_id === $currentUser->id) {
+            return true;
+        }
+        
+        // hasRoleメソッドが存在し、管理者権限を持つ場合は削除可能
+        return method_exists($currentUser, 'hasRole') && $currentUser->hasRole('admin');
     }
 
     /**
