@@ -49,8 +49,8 @@ class GuestLoginController extends Controller
     // ゲストユーザーのセッションIDを更新
     $guestUser->update(['guest_session_id' => $newSessionId]);
 
-    // フォーラムページに遷移
-    return redirect()->route('forum.index')->with('success', 'ゲストとしてログインしました');
+    // ダッシュボードページに遷移
+    return redirect()->route('dashboard')->with('success', 'ゲストとしてログインしました');
 }
 
 
