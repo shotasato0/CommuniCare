@@ -54,7 +54,13 @@ class PostService
     {
         $currentUser = Auth::user();
         
-        if ($post->user_id !== $currentUser->id && $post->tenant_id !== $currentUser->tenant_id) {
+        // まずテナント境界をチェック（必須条件）
+        if ($post->tenant_id !== $currentUser->tenant_id) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('この投稿を削除する権限がありません。');
+        }
+        
+        // 同じテナント内で投稿の所有者または管理者権限をチェック
+        if ($post->user_id !== $currentUser->id && !$currentUser->hasRole('admin')) {
             throw new \Illuminate\Auth\Access\AuthorizationException('この投稿を削除する権限がありません。');
         }
     }
