@@ -43,14 +43,16 @@ class UserController extends Controller
     // 新しいユーザーを作成
     $user = User::create([
         'name' => $validated['name'],
+        'email' => $validated['email'],
         'username_id' => $validated['username_id'],
         'password' => bcrypt($validated['password']),
         'tenant_id' => $tenantId,
+        'email_verified_at' => now(),
     ]);
 
-    // ロール割り当て
-    $adminRole = Role::findByName('admin');
-    $userRole = Role::findByName('user');
+    // ロールが存在しない場合は作成
+    $adminRole = Role::firstOrCreate(['name' => 'admin']);
+    $userRole = Role::firstOrCreate(['name' => 'user']);
 
     if (!$adminExists) {
         $user->assignRole($adminRole); // 管理者ロールを付与
@@ -88,9 +90,9 @@ class UserController extends Controller
         $newAdmin = User::find($validated['new_admin_id']);
         $currentAdmin = Auth::user();
 
-        // 管理者ロールと一般ユーザーロールを取得
-        $adminRole = Role::findByName('admin');
-        $userRole = Role::findByName('user');
+        // 管理者ロールと一般ユーザーロールを取得（存在しない場合は作成）
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
 
         // トランザクションを使って安全に権限を移動
         // 注: syncRoles()の使用が推奨されるが、現在の環境では認識されないため、

@@ -32,7 +32,7 @@ const submit = () => {
 };
 
 const guestLogin = () => {
-    form.get(route("guest.login"));
+    window.location.href = route("guest.login");
 };
 </script>
 
