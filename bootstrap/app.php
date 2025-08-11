@@ -35,18 +35,28 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (TenantViolationException $e) {
             Log::critical('テナント境界違反が発生しました', $e->getLogContext());
             
-            return response()->json([
-                'error' => $e->getUserMessage(),
-                'code' => 'TENANT_VIOLATION'
-            ], 403);
+            if (request()->expectsJson() || request()->wantsJson()) {
+                return response()->json([
+                    'error' => $e->getUserMessage(),
+                    'code' => 'TENANT_VIOLATION'
+                ], 403);
+            } else {
+                // HTMLレスポンス: リダイレクトでエラーメッセージを表示
+                return redirect()->back()->with('error', $e->getUserMessage());
+            }
         });
 
         $exceptions->render(function (PostOwnershipException $e) {
             Log::warning('投稿所有権違反が発生しました', $e->getLogContext());
             
-            return response()->json([
-                'error' => $e->getUserMessage(),
-                'code' => 'POST_OWNERSHIP_VIOLATION'
-            ], 403);
+            if (request()->expectsJson() || request()->wantsJson()) {
+                return response()->json([
+                    'error' => $e->getUserMessage(),
+                    'code' => 'POST_OWNERSHIP_VIOLATION'
+                ], 403);
+            } else {
+                // HTMLレスポンス: リダイレクトでエラーメッセージを表示
+                return redirect()->back()->with('error', $e->getUserMessage());
+            }
         });
     })->create();
