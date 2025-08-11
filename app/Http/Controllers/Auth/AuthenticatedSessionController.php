@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
         // 環境に応じてドメインからテナントIDを抽出
         $tenantDomainId = match(config('app.env')) {
-            'local' => str_replace('.localhost', '', $domain),
+            'local' => $domain === 'localhost' ? 'localhost' : str_replace('.localhost', '', $domain),
             'production' => str_replace('.communi-care.jp', '', $domain),
             default => $domain
         };
