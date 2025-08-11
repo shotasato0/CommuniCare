@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Post\PostStoreRequest;
@@ -54,6 +55,7 @@ class PostService
      */
     private function validatePostOwnership(Post $post): void
     {
+        /** @var User $currentUser */
         $currentUser = Auth::user();
         
         // まずテナント境界をチェック（必須条件）
@@ -124,6 +126,7 @@ class PostService
      */
     public function canDeletePost(Post $post): bool
     {
+        /** @var User|null $currentUser */
         $currentUser = Auth::user();
         
         // ユーザーが認証されていない場合は削除不可
