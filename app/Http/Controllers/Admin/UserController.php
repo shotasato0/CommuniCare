@@ -41,14 +41,20 @@ class UserController extends Controller
         ->exists();
 
     // 新しいユーザーを作成
-    $user = User::create([
+    $userData = [
         'name' => $validated['name'],
-        'email' => $validated['email'],
         'username_id' => $validated['username_id'],
         'password' => bcrypt($validated['password']),
         'tenant_id' => $tenantId,
-        'email_verified_at' => now(),
-    ]);
+    ];
+
+    // emailが入力されている場合のみ追加
+    if (!empty($validated['email'])) {
+        $userData['email'] = $validated['email'];
+        $userData['email_verified_at'] = now();
+    }
+
+    $user = User::create($userData);
 
     // ロールが存在しない場合は作成
     $adminRole = Role::firstOrCreate(['name' => 'admin']);
