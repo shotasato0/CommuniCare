@@ -67,7 +67,7 @@ class PostService
         }
         
         // 同じテナント内で投稿の所有者または管理者権限をチェック
-        $isAdmin = method_exists($currentUser, 'hasRole') && $currentUser->hasRole('admin');
+        $isAdmin = $currentUser->hasRole('admin');
         if ($post->user_id !== $currentUser->id && !$isAdmin) {
             throw new PostOwnershipException(
                 userId: $currentUser->id,
@@ -136,8 +136,8 @@ class PostService
             return true;
         }
         
-        // hasRoleメソッドが存在し、管理者権限を持つ場合は削除可能
-        return method_exists($currentUser, 'hasRole') && $currentUser->hasRole('admin');
+        // 管理者権限を持つ場合は削除可能
+        return $currentUser->hasRole('admin');
     }
 
     /**
