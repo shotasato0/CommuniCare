@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Post\PostStoreRequest;
 use App\Services\PostService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
+use App\Exceptions\Custom\TenantViolationException;
+use App\Exceptions\Custom\PostOwnershipException;
 
 class PostController extends Controller
 {
@@ -37,10 +38,14 @@ class PostController extends Controller
             
             return redirect()->route('forum.index')
                 ->with('success', '投稿を削除しました。');
-        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
-            Log::warning('投稿削除の権限エラー', ['exception' => $e, 'user_id' => Auth::id(), 'post_id' => $id, 'message' => $e->getMessage()]);
+        } catch (TenantViolationException $e) {
+            Log::critical('テナント境界違反による投稿削除試行', $e->getLogContext());
             return redirect()->route('forum.index')
-                ->with('error', 'この投稿を削除する権限がありません。');
+                ->with('error', $e->getUserMessage());
+        } catch (PostOwnershipException $e) {
+            Log::warning('投稿所有権違反による削除試行', $e->getLogContext());
+            return redirect()->route('forum.index')
+                ->with('error', $e->getUserMessage());
         } catch (\Exception $e) {
             Log::error('投稿の削除に失敗しました', ['exception' => $e, 'post_id' => $id, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')

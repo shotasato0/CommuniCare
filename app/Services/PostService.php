@@ -3,9 +3,12 @@
 namespace App\Services;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Post\PostStoreRequest;
+use App\Exceptions\Custom\TenantViolationException;
+use App\Exceptions\Custom\PostOwnershipException;
 
 class PostService
 {
@@ -52,16 +55,29 @@ class PostService
      */
     private function validatePostOwnership(Post $post): void
     {
+        /** @var User $currentUser */
         $currentUser = Auth::user();
         
         // まずテナント境界をチェック（必須条件）
         if ($post->tenant_id !== $currentUser->tenant_id) {
-            throw new \Illuminate\Auth\Access\AuthorizationException('この投稿を削除する権限がありません。');
+            throw new TenantViolationException(
+                currentTenantId: $currentUser->tenant_id,
+                resourceTenantId: $post->tenant_id,
+                resourceType: 'post',
+                resourceId: $post->id
+            );
         }
         
         // 同じテナント内で投稿の所有者または管理者権限をチェック
-        if ($post->user_id !== $currentUser->id && !$currentUser->hasRole('admin')) {
-            throw new \Illuminate\Auth\Access\AuthorizationException('この投稿を削除する権限がありません。');
+        $isAdmin = $currentUser->hasRole('admin');
+        if ($post->user_id !== $currentUser->id && !$isAdmin) {
+            throw new PostOwnershipException(
+                userId: $currentUser->id,
+                postId: $post->id,
+                postOwnerId: $post->user_id,
+                operation: 'delete',
+                isAdmin: $isAdmin
+            );
         }
     }
 
@@ -110,6 +126,7 @@ class PostService
      */
     public function canDeletePost(Post $post): bool
     {
+        /** @var User|null $currentUser */
         $currentUser = Auth::user();
         
         // ユーザーが認証されていない場合は削除不可
@@ -122,8 +139,8 @@ class PostService
             return true;
         }
         
-        // hasRoleメソッドが存在し、管理者権限を持つ場合は削除可能
-        return method_exists($currentUser, 'hasRole') && $currentUser->hasRole('admin');
+        // 管理者権限を持つ場合は削除可能
+        return $currentUser->hasRole('admin');
     }
 
     /**
