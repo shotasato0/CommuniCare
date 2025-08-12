@@ -7,7 +7,6 @@ use App\Services\PostService;
 use App\Services\ForumService;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
-use Illuminate\Support\Facades\Auth;
 use Mockery;
 
 /**
@@ -22,13 +21,11 @@ use Mockery;
 class SecurityFunctionTest extends TestCase
 {
     private PostService $postService;
-    private ForumService $forumService;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->postService = new PostService();
-        $this->forumService = new ForumService();
     }
 
     /**
@@ -260,6 +257,162 @@ class SecurityFunctionTest extends TestCase
         );
 
         $this->assertEquals($customMessage, $ownershipException->getMessage());
+    }
+
+    /**
+     * セキュリティ攻撃パターンの検出テスト
+     */
+    public function test_security_attack_pattern_detection()
+    {
+        // テナント境界を越えたアクセス試行
+        $crossTenantException = new TenantViolationException(
+            currentTenantId: 'attacker-tenant',
+            resourceTenantId: 'victim-tenant',
+            resourceType: 'confidential-post',
+            resourceId: 999
+        );
+        
+        $logContext = $crossTenantException->getLogContext();
+        $this->assertEquals('attacker-tenant', $logContext['current_tenant_id']);
+        $this->assertEquals('victim-tenant', $logContext['resource_tenant_id']);
+        $this->assertTrue($logContext['security_incident']);
+        
+        // 権限昇格試行の検出
+        $privilegeEscalationException = new PostOwnershipException(
+            userId: 999, // 攻撃者ID
+            postId: 123,
+            postOwnerId: 1, // 正当な所有者
+            operation: 'admin_delete',
+            isAdmin: false // 管理者権限なし
+        );
+        
+        $escalationContext = $privilegeEscalationException->getLogContext();
+        $this->assertEquals(999, $escalationContext['user_id']);
+        $this->assertEquals(1, $escalationContext['post_owner_id']);
+        $this->assertEquals('admin_delete', $escalationContext['operation']);
+        $this->assertFalse($escalationContext['is_admin']);
+    }
+
+    /**
+     * 大量アクセス試行の検出テスト
+     */
+    public function test_bulk_access_attempt_detection()
+    {
+        $exceptions = [];
+        
+        // 同一ユーザーによる大量のテナント境界違反試行をシミュレート
+        for ($i = 1; $i <= 5; $i++) {
+            $exceptions[] = new TenantViolationException(
+                currentTenantId: 'attacker-tenant',
+                resourceTenantId: "target-tenant-{$i}",
+                resourceType: 'post',
+                resourceId: $i * 100
+            );
+        }
+        
+        // 攻撃パターンの一貫性を確認
+        $this->assertCount(5, $exceptions);
+        
+        foreach ($exceptions as $exception) {
+            $context = $exception->getLogContext();
+            $this->assertEquals('attacker-tenant', $context['current_tenant_id']);
+            $this->assertStringContainsString('target-tenant-', $context['resource_tenant_id']);
+            $this->assertTrue($context['security_incident']);
+        }
+    }
+
+    /**
+     * セキュリティログのフォーマット検証
+     */
+    public function test_security_log_format_validation()
+    {
+        $tenantException = new TenantViolationException(
+            currentTenantId: 'audit-tenant-1',
+            resourceTenantId: 'audit-tenant-2',
+            resourceType: 'sensitive-data',
+            resourceId: 12345
+        );
+        
+        $logContext = $tenantException->getLogContext();
+        
+        // ログコンテキストの必須フィールド確認
+        $requiredFields = [
+            'current_tenant_id',
+            'resource_tenant_id',
+            'resource_type',
+            'resource_id',
+            'security_incident'
+        ];
+        
+        foreach ($requiredFields as $field) {
+            $this->assertArrayHasKey($field, $logContext, "ログコンテキストに{$field}が含まれていません");
+        }
+        
+        // セキュリティインシデントフラグの確認
+        $this->assertTrue($logContext['security_incident']);
+    }
+
+    /**
+     * マルチレイヤーセキュリティ検証
+     */
+    public function test_multi_layer_security_validation()
+    {
+        // レイヤー1: テナント境界チェック
+        $layer1Exception = new TenantViolationException(
+            currentTenantId: 'user-tenant',
+            resourceTenantId: 'admin-tenant',
+            resourceType: 'system-config',
+            resourceId: 1
+        );
+        
+        // レイヤー2: 所有権チェック
+        $layer2Exception = new PostOwnershipException(
+            userId: 100,
+            postId: 200,
+            postOwnerId: 300,
+            operation: 'sensitive_operation'
+        );
+        
+        // 各レイヤーの例外が適切に機能することを確認
+        $this->assertInstanceOf(TenantViolationException::class, $layer1Exception);
+        $this->assertInstanceOf(PostOwnershipException::class, $layer2Exception);
+        
+        // セキュリティレベルの検証
+        $layer1Context = $layer1Exception->getLogContext();
+        $layer2Context = $layer2Exception->getLogContext();
+        
+        $this->assertTrue($layer1Context['security_incident']);
+        $this->assertEquals('sensitive_operation', $layer2Context['operation']);
+    }
+
+    /**
+     * エッジケース：異常なパラメータでのセキュリティ例外テスト
+     */
+    public function test_security_exceptions_with_edge_case_parameters()
+    {
+        // 空文字列テナントID
+        $emptyTenantException = new TenantViolationException(
+            currentTenantId: '',
+            resourceTenantId: 'valid-tenant',
+            resourceType: 'post',
+            resourceId: 123
+        );
+        
+        $this->assertEquals('', $emptyTenantException->currentTenantId);
+        $this->assertTrue($emptyTenantException->getLogContext()['security_incident']);
+        
+        // 負のリソースID
+        $negativeIdException = new PostOwnershipException(
+            userId: -1,
+            postId: -999,
+            postOwnerId: 1,
+            operation: 'delete'
+        );
+        
+        $context = $negativeIdException->getLogContext();
+        $this->assertEquals(-1, $context['user_id']);
+        $this->assertEquals(-999, $context['post_id']);
+        $this->assertTrue($context['authorization_failed']);
     }
 
     protected function tearDown(): void
