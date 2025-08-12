@@ -92,11 +92,6 @@ const quotePost = (post) => {
 onMounted(() => {
     initSelectedForumId(selectedForumId);
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
-
-    // デバッグ用ログ
-    console.log('Debug - userUnitId from props:', userUnitId);
-    console.log('Debug - auth.user.unit_id:', auth.user.unit_id);
-    console.log('Debug - initial activeUnitId:', activeUnitId.value);
     
     // localStorageの更新
     if (activeUnitId.value) {
