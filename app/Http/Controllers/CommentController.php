@@ -32,7 +32,15 @@ class CommentController extends Controller
             'img' => $imgPath
         ]);
 
-        return redirect()->route('forum.index')
+        $user = Auth::user();
+        $redirectParams = ['forum_id' => $post->forum_id];
+        
+        // ユーザーが部署に所属している場合、active_unit_idも追加
+        if ($user->unit_id) {
+            $redirectParams['active_unit_id'] = $user->unit_id;
+        }
+        
+        return redirect()->route('forum.index', $redirectParams)
             ->with('success', 'コメントを投稿しました。');
     }
 
