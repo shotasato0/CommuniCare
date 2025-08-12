@@ -172,6 +172,7 @@ class ForumService
             'units' => Unit::orderBy('sort_order')->with('forum')->get(),
             'users' => User::all(),
             'selectedForumId' => null,
+            'userUnitId' => Auth::user()->unit_id, // ユーザーの部署IDを追加
         ];
     }
 
@@ -189,6 +190,7 @@ class ForumService
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
+            'userUnitId' => Auth::user()->unit_id, // ユーザーの部署IDを追加
         ];
     }
 }
