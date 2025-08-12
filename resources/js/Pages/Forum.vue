@@ -50,14 +50,24 @@ const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
-// activeUnitIdを初期化（ユーザーの部署IDを最優先）
+// activeUnitIdを初期化（表示中の掲示板に対応する部署IDを最優先）
 const getInitialActiveUnitId = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlUnitId = urlParams.get("active_unit_id");
     
-    // URLパラメータがある場合は最優先
+    // URLパラメータがある場合は最優先（表示中の掲示板に対応する部署）
     if (urlUnitId) {
         return parseInt(urlUnitId);
+    }
+    
+    // 表示中のフォーラムIDから対応する部署を特定
+    if (forumIdFromProps && initialUnits.length > 0) {
+        const correspondingUnit = initialUnits.find(unit => 
+            unit.forum && unit.forum.id === forumIdFromProps
+        );
+        if (correspondingUnit) {
+            return correspondingUnit.id;
+        }
     }
     
     // ユーザーの現在の部署IDを優先（propsまたはauth）
@@ -141,8 +151,11 @@ const onForumSelected = async (unitId) => {
     sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
     localStorage.setItem("lastSelectedUnitId", unitId);
 
-    // 掲示板のページをリロード
-    router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+    // 掲示板のページをリロード（active_unit_idパラメータを追加）
+    router.get(route("forum.index", { 
+        forum_id: selectedForumId.value,
+        active_unit_id: unitId 
+    }), {
         preserveState: false, // ページの状態を保持しない
     });
 
