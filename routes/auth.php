@@ -12,9 +12,9 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 // use App\Http\Controllers\Auth\TenantRegisterController;
 // use App\Http\Controllers\Auth\TenantLoginController;
 use App\Http\Controllers\Auth\GuestTenantController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\GuestLoginController;
+use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('register', [RegisteredUserController::class, 'store'])->name('register.post');

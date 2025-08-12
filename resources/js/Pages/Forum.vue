@@ -33,6 +33,7 @@ const {
     users: initialUsers = [], // ユーザーのデータ
     selectedForumId: forumIdFromProps = null, // 選択された掲示板のID
     search: initialSearch = "", // 検索結果の表示状態
+    userUnitId = null, // ユーザーの部署ID
 } = usePage().props;
 
 // propsからページのデータを取得
@@ -49,7 +50,45 @@ const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
-const activeUnitId = ref(null); // 選択中の部署IDを管理
+// activeUnitIdを初期化（表示中の掲示板に対応する部署IDを最優先）
+const getInitialActiveUnitId = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUnitId = urlParams.get("active_unit_id");
+    
+    // URLパラメータがある場合は最優先（表示中の掲示板に対応する部署）
+    if (urlUnitId) {
+        return parseInt(urlUnitId);
+    }
+    
+    // 表示中のフォーラムIDから対応する部署を特定
+    if (forumIdFromProps && initialUnits.length > 0) {
+        const correspondingUnit = initialUnits.find(unit => 
+            unit.forum && unit.forum.id === forumIdFromProps
+        );
+        if (correspondingUnit) {
+            return correspondingUnit.id;
+        }
+    }
+    
+    // ユーザーの現在の部署IDを優先（propsまたはauth）
+    if (userUnitId) {
+        return userUnitId;
+    }
+    
+    if (auth.user.unit_id) {
+        return auth.user.unit_id;
+    }
+    
+    // 最後にlocalStorageを参照（フォールバック）
+    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+    if (savedUnitId) {
+        return parseInt(savedUnitId);
+    }
+    
+    return null;
+};
+
+const activeUnitId = ref(getInitialActiveUnitId()); // 選択中の部署IDを管理
 const isModalOpen = ref(false); // モーダル表示
 const currentImage = ref(null); // 現在の画像を保持
 
@@ -63,23 +102,10 @@ const quotePost = (post) => {
 onMounted(() => {
     initSelectedForumId(selectedForumId);
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
-
-    // URLパラメータからactive_unit_idを取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlUnitId = urlParams.get("active_unit_id");
-
-    if (urlUnitId) {
-        // URLパラメータがある場合はそれを優先
-        activeUnitId.value = parseInt(urlUnitId);
-        localStorage.setItem("lastSelectedUnitId", urlUnitId);
-    } else {
-        // URLパラメータがない場合は既存のロジックを使用
-        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
-        if (savedUnitId) {
-            activeUnitId.value = parseInt(savedUnitId);
-        } else if (auth.user.unit_id) {
-            activeUnitId.value = auth.user.unit_id;
-        }
+    
+    // localStorageの更新
+    if (activeUnitId.value) {
+        localStorage.setItem("lastSelectedUnitId", activeUnitId.value.toString());
     }
 });
 
@@ -125,8 +151,11 @@ const onForumSelected = async (unitId) => {
     sessionStorage.setItem("selectedUnitUsers", JSON.stringify(filteredUsers));
     localStorage.setItem("lastSelectedUnitId", unitId);
 
-    // 掲示板のページをリロード
-    router.get(route("forum.index", { forum_id: selectedForumId.value }), {
+    // 掲示板のページをリロード（active_unit_idパラメータを追加）
+    router.get(route("forum.index", { 
+        forum_id: selectedForumId.value,
+        active_unit_id: unitId 
+    }), {
         preserveState: false, // ページの状態を保持しない
     });
 

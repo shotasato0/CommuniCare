@@ -92,10 +92,8 @@ class ProfileController extends Controller
         // ユーザー情報を保存
         $request->user()->save();
 
-        session()->regenerate();
-
         // プロフィール編集ページにリダイレクト
-        return Redirect::route('profile.edit');
+        return Redirect::route('profile.edit')->with('success', 'プロフィールが更新されました。');
     }
 
     /**

@@ -157,8 +157,8 @@ export default {
                     class="mb-2 p-2 rounded cursor-pointer"
                     :class="{
                         'text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700':
-                            activeUnitId !== unit.id,
-                        'bg-gray-200 dark:bg-gray-700': activeUnitId === unit.id,
+                            selectedUnitId !== unit.id,
+                        'bg-gray-200 dark:bg-gray-700': selectedUnitId === unit.id,
                     }"
                     @click="handleUnitClick(unit)"
                 >
