@@ -29,17 +29,8 @@ export default {
     },
     computed: {
         selectedUnitId() {
-            console.log('Debug - ListForSidebar selectedUnitId:', this.activeUnitId);
             return this.activeUnitId; // 選択された部署IDを取得
         },
-    },
-    watch: {
-        activeUnitId: {
-            handler(newVal, oldVal) {
-                console.log('Debug - ListForSidebar activeUnitId changed:', oldVal, '->', newVal);
-            },
-            immediate: true
-        }
     },
     data() {
         return {
