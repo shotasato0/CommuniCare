@@ -47,7 +47,7 @@ class PostController extends Controller
     {
         try {
             // 削除前に投稿情報を取得（リダイレクト用）
-            $post = \App\Models\Post::findOrFail($id);
+            $post = $this->postService->getPostById($id);
             $forumId = $post->forum_id;
             
             $this->postService->deletePost($id);

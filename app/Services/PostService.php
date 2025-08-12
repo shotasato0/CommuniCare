@@ -156,4 +156,12 @@ class PostService
             'likes.user'
         ])->find($postId);
     }
+
+    /**
+     * IDによる投稿取得（リダイレクト用の基本情報）
+     */
+    public function getPostById(int $postId): Post
+    {
+        return Post::findOrFail($postId);
+    }
 }
