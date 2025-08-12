@@ -33,6 +33,7 @@ const {
     users: initialUsers = [], // ユーザーのデータ
     selectedForumId: forumIdFromProps = null, // 選択された掲示板のID
     search: initialSearch = "", // 検索結果の表示状態
+    userUnitId = null, // ユーザーの部署ID
 } = usePage().props;
 
 // propsからページのデータを取得
@@ -49,7 +50,35 @@ const selectedUnitName = ref(""); // 選択されたユニットの名前
 const search = ref(initialSearch); // 検索結果の表示状態
 const quotedPost = ref(null); // 引用投稿
 const showPostForm = ref(false); // 引用投稿フォームの表示制御
-const activeUnitId = ref(null); // 選択中の部署IDを管理
+// activeUnitIdを初期化（ユーザーの部署IDを最優先）
+const getInitialActiveUnitId = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlUnitId = urlParams.get("active_unit_id");
+    
+    // URLパラメータがある場合は最優先
+    if (urlUnitId) {
+        return parseInt(urlUnitId);
+    }
+    
+    // ユーザーの現在の部署IDを優先（propsまたはauth）
+    if (userUnitId) {
+        return userUnitId;
+    }
+    
+    if (auth.user.unit_id) {
+        return auth.user.unit_id;
+    }
+    
+    // 最後にlocalStorageを参照（フォールバック）
+    const savedUnitId = localStorage.getItem("lastSelectedUnitId");
+    if (savedUnitId) {
+        return parseInt(savedUnitId);
+    }
+    
+    return null;
+};
+
+const activeUnitId = ref(getInitialActiveUnitId()); // 選択中の部署IDを管理
 const isModalOpen = ref(false); // モーダル表示
 const currentImage = ref(null); // 現在の画像を保持
 
@@ -64,22 +93,14 @@ onMounted(() => {
     initSelectedForumId(selectedForumId);
     restoreSelectedUnit(selectedUnitUsers, selectedUnitName);
 
-    // URLパラメータからactive_unit_idを取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlUnitId = urlParams.get("active_unit_id");
-
-    if (urlUnitId) {
-        // URLパラメータがある場合はそれを優先
-        activeUnitId.value = parseInt(urlUnitId);
-        localStorage.setItem("lastSelectedUnitId", urlUnitId);
-    } else {
-        // URLパラメータがない場合は既存のロジックを使用
-        const savedUnitId = localStorage.getItem("lastSelectedUnitId");
-        if (savedUnitId) {
-            activeUnitId.value = parseInt(savedUnitId);
-        } else if (auth.user.unit_id) {
-            activeUnitId.value = auth.user.unit_id;
-        }
+    // デバッグ用ログ
+    console.log('Debug - userUnitId from props:', userUnitId);
+    console.log('Debug - auth.user.unit_id:', auth.user.unit_id);
+    console.log('Debug - initial activeUnitId:', activeUnitId.value);
+    
+    // localStorageの更新
+    if (activeUnitId.value) {
+        localStorage.setItem("lastSelectedUnitId", activeUnitId.value.toString());
     }
 });
 
