@@ -352,7 +352,9 @@ refs #110 更新SQLの対象カラムに削除フラグが含まれていなか�
   "permissions": {
     "deny": [
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push origin :*:*)"
     ]
   }
 }
