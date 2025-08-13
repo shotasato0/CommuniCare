@@ -151,8 +151,12 @@ class PostServiceTest extends TestCase
         $reflection = new \ReflectionMethod($this->postService, 'getPostsByForum');
         $parameters = $reflection->getParameters();
         
-        // フォーラムIDパラメータの型チェック
-        $this->assertFalse($parameters[0]->hasType() && $parameters[0]->getType()->getName() === 'string');
+        // フォーラムIDパラメータが文字列型でないことをわかりやすく確認
+        if ($parameters[0]->hasType()) {
+            $this->assertNotEquals('string', $parameters[0]->getType()->getName(), 'フォーラムIDパラメータは文字列型であってはなりません');
+        } else {
+            $this->assertTrue(true, 'フォーラムIDパラメータには型ヒントがありませんが、これは許容されます');
+        }
         
         // 検索パラメータがnullableであることを確認
         $this->assertTrue($parameters[1]->allowsNull());
