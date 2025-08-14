@@ -17,6 +17,14 @@ use Illuminate\Support\Facades\DB;
 class ServicePerformanceTest extends TestCase
 {
     protected $connection = 'mysql';
+    
+    public function createApplication()
+    {
+        $app = parent::createApplication();
+        
+        // 通常のテストデータベースを使用（.env.testingの設定）
+        return $app;
+    }
 
     protected $tenant1User;
     protected $tenant2User;
@@ -29,16 +37,60 @@ class ServicePerformanceTest extends TestCase
     {
         parent::setUp();
         
+        // 通常のテストデータベースを使用
+        
+        // テーブルが存在しない場合のみマイグレーション実行
+        $this->ensureTablesExist();
+        
         // テストテーブルのクリーンアップ（sessionsテーブル以外）
         $this->cleanupTestData();
         
-        $this->tenant1User = User::factory()->create(['tenant_id' => 1]);
-        $this->tenant2User = User::factory()->create(['tenant_id' => 2]);
+        // テナントレコードを作成
+        DB::table('tenants')->insert([
+            'id' => '1',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        DB::table('tenants')->insert([
+            'id' => '2', 
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+        
+        $this->tenant1User = User::factory()->create(['tenant_id' => '1']);
+        $this->tenant2User = User::factory()->create(['tenant_id' => '2']);
         
         $this->residentService = new ResidentService();
         $this->unitService = new UnitService();
         $this->postService = new PostService();
         $this->forumService = new ForumService();
+    }
+    
+    protected function ensureTablesExist(): void
+    {
+        // 必要なテーブルが存在するかチェック
+        $requiredTables = ['users', 'units', 'forums', 'residents'];
+        $missingTables = [];
+        
+        foreach ($requiredTables as $table) {
+            if (!DB::getSchemaBuilder()->hasTable($table)) {
+                $missingTables[] = $table;
+            }
+        }
+        
+        // テーブルが不足している場合、マイグレーション実行
+        if (!empty($missingTables)) {
+            $this->runSpecificMigrations();
+        }
+    }
+    
+    protected function runSpecificMigrations(): void
+    {
+        // テストデータベースは既にマイグレーション済みのため何もしない
+        // 必要な場合のみマイグレーションを実行
+        if (!DB::getSchemaBuilder()->hasTable('users')) {
+            $this->artisan('migrate', ['--force' => true]);
+        }
     }
     
     protected function tearDown(): void
@@ -49,15 +101,23 @@ class ServicePerformanceTest extends TestCase
     
     protected function cleanupTestData(): void
     {
+        // 外部キー制約を無効にしてからクリーンアップ
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        
         // テナント関連データのクリーンアップ（セッションテーブル以外）
         $tables = [
             'likes', 'comments', 'posts', 'forums', 'residents', 'units', 'users',
-            'model_has_permissions', 'model_has_roles', 'role_has_permissions'
+            'model_has_permissions', 'model_has_roles', 'role_has_permissions', 'tenants'
         ];
         
         foreach ($tables as $table) {
-            DB::table($table)->truncate();
+            if (DB::getSchemaBuilder()->hasTable($table)) {
+                DB::table($table)->truncate();
+            }
         }
+        
+        // 外部キー制約を再有効化
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     /**
@@ -66,34 +126,38 @@ class ServicePerformanceTest extends TestCase
     protected function createLargeDataset(): void
     {
         // テナント1に大量データ作成
-        $units = Unit::factory(20)->create(['tenant_id' => 1]);
+        $units = Unit::factory(20)->sequence(
+            fn ($sequence) => ['name' => "ユニット{$sequence->index}_T1", 'tenant_id' => '1']
+        )->create();
         
         foreach ($units as $unit) {
             // フォーラム作成
             Forum::factory()->create([
                 'unit_id' => $unit->id,
-                'tenant_id' => 1
+                'tenant_id' => '1'
             ]);
             
             // 利用者を100人作成
             Resident::factory(100)->create([
                 'unit_id' => $unit->id,
-                'tenant_id' => 1
+                'tenant_id' => '1'
             ]);
         }
         
         // テナント2に中程度データ作成
-        $tenant2Units = Unit::factory(10)->create(['tenant_id' => 2]);
+        $tenant2Units = Unit::factory(10)->sequence(
+            fn ($sequence) => ['name' => "ユニット{$sequence->index}_T2", 'tenant_id' => '2']
+        )->create();
         
         foreach ($tenant2Units as $unit) {
             Forum::factory()->create([
                 'unit_id' => $unit->id,
-                'tenant_id' => 2
+                'tenant_id' => '2'
             ]);
             
             Resident::factory(50)->create([
                 'unit_id' => $unit->id,
-                'tenant_id' => 2
+                'tenant_id' => '2'
             ]);
         }
     }
