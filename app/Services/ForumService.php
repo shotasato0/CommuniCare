@@ -9,9 +9,12 @@ use App\Models\Forum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 
 class ForumService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * フォーラムのデータを取得し、整形して返す
      */
