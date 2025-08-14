@@ -10,6 +10,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class DatabaseIndexOptimizationTest extends TestCase
 {
     use RefreshDatabase;
+    
+    protected $connection = 'mysql';
 
     public function test_required_indexes_exist()
     {
