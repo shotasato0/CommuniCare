@@ -21,6 +21,17 @@ class ServicePerformanceTest extends TestCase
     use RefreshDatabase;
     
     protected $connection = 'mysql';
+    
+    protected function refreshTestDatabase()
+    {
+        if (!$this->usingInMemoryDatabase()) {
+            $this->artisan('migrate:fresh', [
+                '--drop-views' => true,
+                '--drop-types' => true,
+                '--force' => true,
+            ]);
+        }
+    }
 
     protected $tenant1User;
     protected $tenant2User;
