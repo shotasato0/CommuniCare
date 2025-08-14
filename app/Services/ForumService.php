@@ -223,20 +223,30 @@ class ForumService
     }
 
     /**
-     * 成功レスポンスを構築
+     * 成功レスポンスを構築（テナント境界チェック強化）
      */
     private function buildSuccessResponse(LengthAwarePaginator $posts, int $forumId, ?string $search): array
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
         $posts->appends(['forum_id' => $forumId, 'search' => $search]);
 
         return [
             'posts' => $posts,
-            'units' => Unit::orderBy('sort_order')->with('forum')->get(),
-            'users' => User::all(),
+            'units' => Unit::where('tenant_id', $currentUser->tenant_id)
+                         ->orderBy('sort_order')
+                         ->with(['forum' => function($query) use ($currentUser) {
+                             $query->where('tenant_id', $currentUser->tenant_id);
+                         }])
+                         ->get(),
+            'users' => User::where('tenant_id', $currentUser->tenant_id)
+                         ->select('id', 'name', 'tenant_id')
+                         ->get(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
-            'userUnitId' => Auth::user()->unit_id, // ユーザーの部署IDを追加
+            'userUnitId' => $currentUser->unit_id,
         ];
     }
 }
