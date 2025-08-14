@@ -109,7 +109,7 @@ trait TenantBoundaryCheckTrait
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        Log::critical("テナントセキュリティ違反検出", [
+        $logContext = [
             'violation_type' => $violationType,
             'user_id' => $currentUser->id,
             'user_tenant_id' => $currentUser->tenant_id,
@@ -120,8 +120,13 @@ trait TenantBoundaryCheckTrait
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'timestamp' => now()->toISOString(),
-            'stack_trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5)
-        ]);
+        ];
+        
+        if (!app()->environment('production')) {
+            $logContext['stack_trace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
+        }
+        
+        Log::critical("テナントセキュリティ違反検出", $logContext);
     }
 
     /**
