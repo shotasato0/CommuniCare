@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Post\PostStoreRequest;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 
 class PostService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * 投稿を作成する
      */
