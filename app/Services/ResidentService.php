@@ -10,10 +10,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Resident\ResidentStoreRequest;
 use App\Http\Requests\Resident\ResidentUpdateRequest;
 use App\Exceptions\Custom\TenantViolationException;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 use Illuminate\Support\Collection;
 
 class ResidentService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * テナントに属する利用者一覧を取得
      */
@@ -84,38 +87,9 @@ class ResidentService
      */
     public function getResident(int $residentId): Resident
     {
-        /** @var User $currentUser */
-        $currentUser = Auth::user();
+        $resident = $this->findResourceWithTenantCheck(Resident::class, $residentId);
         
-        $resident = Resident::with('unit')->find($residentId);
-        
-        if (!$resident) {
-            throw new TenantViolationException(
-                "指定された利用者が見つかりません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'requested_resident_id' => $residentId,
-                    'action' => 'resident_access'
-                ]
-            );
-        }
-
-        // テナント境界チェック
-        if ($resident->tenant_id !== $currentUser->tenant_id) {
-            throw new TenantViolationException(
-                "他のテナントの利用者情報にアクセスしようとしました。",
-                [
-                    'user_id' => $currentUser->id,
-                    'user_tenant_id' => $currentUser->tenant_id,
-                    'resident_tenant_id' => $resident->tenant_id,
-                    'resident_id' => $residentId,
-                    'action' => 'resident_access'
-                ]
-            );
-        }
-
-        return $resident;
+        return $resident->load('unit');
     }
 
     /**
@@ -159,21 +133,7 @@ class ResidentService
      */
     private function validateUnitAccess(int $unitId, User $currentUser): void
     {
-        $unit = Unit::where('id', $unitId)
-            ->where('tenant_id', $currentUser->tenant_id)
-            ->first();
-            
-        if (!$unit) {
-            throw new TenantViolationException(
-                "指定された部署へのアクセスが許可されていません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'requested_unit_id' => $unitId,
-                    'action' => 'unit_access_validation'
-                ]
-            );
-        }
+        $this->findResourceWithTenantCheck(Unit::class, $unitId);
     }
 
     /**
@@ -181,8 +141,6 @@ class ResidentService
      */
     public function isAdmin(): bool
     {
-        /** @var User $user */
-        $user = Auth::user();
-        return $user->hasRole('admin');
+        return $this->isCurrentUserAdmin();
     }
 }
