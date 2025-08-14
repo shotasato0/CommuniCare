@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Resident;
 use Illuminate\Http\Request;
-use App\Models\Unit;
 use Inertia\Inertia;
-use App\Models\User;
 use App\Http\Requests\Resident\ResidentStoreRequest;
 use App\Http\Requests\Resident\ResidentUpdateRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Services\ResidentService;
 
 class ResidentController extends Controller
 {
+    protected $residentService;
+
+    public function __construct(ResidentService $residentService)
+    {
+        $this->residentService = $residentService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -20,19 +24,13 @@ class ResidentController extends Controller
     {
         $unitId = $request->input('unit_id');
 
-        $residents = Resident::when($unitId, function ($query) use ($unitId) {
-            return $query->where('unit_id', $unitId);
-        })->with('unit')->get();
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-        
-        // 管理者ロールをチェック（Spatie Permissionを使用）
-        $isAdmin = $user->hasRole('admin');
+        $residents = $this->residentService->getResidents($unitId);
+        $units = $this->residentService->getUnitsForTenant();
+        $isAdmin = $this->residentService->isAdmin();
         
         return Inertia::render('Residents/Index', [
             'residents' => $residents,
-            'units' => Unit::where('tenant_id', $user->tenant_id)->orderBy('sort_order')->get(),
+            'units' => $units,
             'selectedUnitId' => $unitId,
             'isAdmin' => $isAdmin,
         ]);
@@ -43,8 +41,10 @@ class ResidentController extends Controller
      */
     public function create()
     {
+        $units = $this->residentService->getUnitsForTenant();
+        
         return Inertia::render('Residents/Register', [
-            'units' => Unit::all(),
+            'units' => $units,
         ]);
     }
 
@@ -53,11 +53,7 @@ class ResidentController extends Controller
      */
     public function store(ResidentStoreRequest $request)
     {
-        $data = array_merge($request->validated(), [
-            'tenant_id' => Auth::user()->tenant_id
-        ]);
-
-        Resident::create($data);
+        $this->residentService->createResident($request);
 
         return to_route('residents.index')
             ->with('success', '利用者を登録しました。');
@@ -66,30 +62,35 @@ class ResidentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Resident $resident)
+    public function show(int $id)
     {
+        $resident = $this->residentService->getResident($id);
+        
         return Inertia::render('Residents/Show', [
-            'resident' => $resident->load('unit'),
+            'resident' => $resident,
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Resident $resident)
+    public function edit(int $id)
     {
+        $resident = $this->residentService->getResident($id);
+        $units = $this->residentService->getUnitsForTenant();
+        
         return Inertia::render('Residents/Edit', [
             'resident' => $resident,
-            'units' => Unit::all(),
+            'units' => $units,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(ResidentUpdateRequest $request, Resident $resident)
+    public function update(ResidentUpdateRequest $request, int $id)
     {
-        $resident->update($request->validated());
+        $this->residentService->updateResident($request, $id);
 
         return to_route('residents.index')
             ->with('success', '利用者情報を更新しました。');
@@ -98,9 +99,10 @@ class ResidentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Resident $resident)
+    public function destroy(int $id)
     {
-        $resident->delete();
+        $this->residentService->deleteResident($id);
+        
         return to_route('residents.index')
             ->with('success', '利用者を削除しました。');
     }
