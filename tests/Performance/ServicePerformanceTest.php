@@ -14,25 +14,11 @@ use App\Services\PostService;
 use App\Services\ForumService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 class ServicePerformanceTest extends TestCase
 {
-    use RefreshDatabase;
-    
     protected $connection = 'mysql';
-    
-    protected function refreshTestDatabase()
-    {
-        if (!$this->usingInMemoryDatabase()) {
-            $this->artisan('migrate:fresh', [
-                '--drop-views' => true,
-                '--drop-types' => true,
-                '--force' => true,
-            ]);
-        }
-    }
 
+    
     protected $tenant1User;
     protected $tenant2User;
     protected $residentService;
