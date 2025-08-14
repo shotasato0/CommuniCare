@@ -116,7 +116,7 @@ class UnitService
 
         DB::transaction(function () use ($unit) {
             // 関連するフォーラムも削除
-            $unit->forum()?->delete();
+            $unit->forum?->delete();
             
             // 部署を削除
             $unit->delete();
