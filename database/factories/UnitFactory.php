@@ -17,7 +17,9 @@ class UnitFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->company . '部',
+            'tenant_id' => 1,
+            'sort_order' => $this->faker->numberBetween(0, 100),
         ];
     }
 }
