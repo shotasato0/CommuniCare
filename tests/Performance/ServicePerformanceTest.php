@@ -18,7 +18,6 @@ class ServicePerformanceTest extends TestCase
 {
     protected $connection = 'mysql';
 
-    
     protected $tenant1User;
     protected $tenant2User;
     protected $residentService;
@@ -30,6 +29,9 @@ class ServicePerformanceTest extends TestCase
     {
         parent::setUp();
         
+        // テストテーブルのクリーンアップ（sessionsテーブル以外）
+        $this->cleanupTestData();
+        
         $this->tenant1User = User::factory()->create(['tenant_id' => 1]);
         $this->tenant2User = User::factory()->create(['tenant_id' => 2]);
         
@@ -37,6 +39,25 @@ class ServicePerformanceTest extends TestCase
         $this->unitService = new UnitService();
         $this->postService = new PostService();
         $this->forumService = new ForumService();
+    }
+    
+    protected function tearDown(): void
+    {
+        $this->cleanupTestData();
+        parent::tearDown();
+    }
+    
+    protected function cleanupTestData(): void
+    {
+        // テナント関連データのクリーンアップ（セッションテーブル以外）
+        $tables = [
+            'likes', 'comments', 'posts', 'forums', 'residents', 'units', 'users',
+            'model_has_permissions', 'model_has_roles', 'role_has_permissions'
+        ];
+        
+        foreach ($tables as $table) {
+            DB::table($table)->truncate();
+        }
     }
 
     /**
