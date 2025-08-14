@@ -181,17 +181,69 @@ class PostService
     }
 
     /**
-     * 投稿の詳細情報を取得
+     * 投稿の詳細情報を取得（テナント境界チェック強化・N+1対策）
      */
     public function getPostDetails(int $postId): ?Post
     {
-        return Post::with([
-            'user', 
-            'quotedPost.user', 
-            'comments.user', 
-            'comments.children.user',
-            'likes.user'
-        ])->find($postId);
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
+        $post = Post::where('id', $postId)
+            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック
+            ->with([
+                'user' => function($query) use ($currentUser) {
+                    $query->select('id', 'name', 'email', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                },
+                'quotedPost' => function($query) use ($currentUser) {
+                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                },
+                'comments' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at', 'updated_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with([
+                              'user' => function($query) use ($currentUser) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id);
+                              },
+                              'children' => function($query) use ($currentUser) {
+                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->with(['user' => function($query) use ($currentUser) {
+                                            $query->select('id', 'name', 'tenant_id')
+                                                  ->where('tenant_id', $currentUser->tenant_id);
+                                        }])
+                                        ->latest();
+                              }
+                          ])
+                          ->whereNull('parent_id') // トップレベルコメントのみ
+                          ->latest();
+                },
+                'likes' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                }
+            ])
+            ->first();
+
+        // テナント境界チェック後にログ記録
+        if ($post) {
+            $this->auditAction('post_view', [
+                'post_id' => $postId,
+                'post_title' => $post->title
+            ]);
+        }
+
+        return $post;
     }
 
     /**
