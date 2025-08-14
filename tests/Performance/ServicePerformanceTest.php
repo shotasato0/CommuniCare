@@ -19,6 +19,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class ServicePerformanceTest extends TestCase
 {
     use RefreshDatabase;
+    
+    protected $connection = 'mysql';
 
     protected $tenant1User;
     protected $tenant2User;
