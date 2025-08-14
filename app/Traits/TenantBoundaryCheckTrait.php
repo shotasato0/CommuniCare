@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Models\User;
 use App\Exceptions\Custom\TenantViolationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 
 trait TenantBoundaryCheckTrait
@@ -18,7 +19,7 @@ trait TenantBoundaryCheckTrait
         $currentUser = Auth::user();
         $tenantId = $expectedTenantId ?? $currentUser->tenant_id;
         
-        if (!property_exists($resource, 'tenant_id') || $resource->tenant_id !== $tenantId) {
+        if (!isset($resource->tenant_id) || $resource->tenant_id !== $tenantId) {
             $this->logSecurityViolation(
                 "テナント境界違反",
                 $resource,
@@ -108,7 +109,7 @@ trait TenantBoundaryCheckTrait
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        \Log::critical("テナントセキュリティ違反検出", [
+        Log::critical("テナントセキュリティ違反検出", [
             'violation_type' => $violationType,
             'user_id' => $currentUser->id,
             'user_tenant_id' => $currentUser->tenant_id,
