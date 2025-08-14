@@ -17,7 +17,12 @@ class ForumFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => $this->faker->company . 'フォーラム',
+            'unit_id' => 1,
+            'tenant_id' => 1,
+            'description' => $this->faker->optional()->text(100),
+            'visibility' => $this->faker->randomElement(['public', 'private']),
+            'status' => 'active',
         ];
     }
 }
