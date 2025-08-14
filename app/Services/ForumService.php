@@ -69,29 +69,62 @@ class ForumService
     }
 
     /**
-     * 投稿クエリを構築
+     * 投稿クエリを構築（テナント境界チェック強化・N+1対策）
      */
     private function buildPostQuery(int $forumId, $user)
     {
-        return Post::with([
-            'user',
-            'quotedPost' => function($query) {
-                $query->select('id', 'user_id', 'message', 'title');
-            },
-            'quotedPost.user',
-            'comments' => function ($query) use ($user) {
-                $query->whereNull('parent_id')
-                    ->with(['children.user', 'user'])
-                    ->withCount('likes')
-                    ->with(['likes' => function ($query) use ($user) {
-                        $query->where('user_id', $user->id);
-                    }]);
+        return Post::where('forum_id', $forumId)
+            ->where('tenant_id', $user->tenant_id) // テナント境界チェック
+            ->with([
+                'user' => function($query) use ($user) {
+                    $query->select('id', 'name', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id);
+                },
+                'quotedPost' => function($query) use ($user) {
+                    $query->select('id', 'user_id', 'message', 'title', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->with(['user' => function($query) use ($user) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $user->tenant_id);
+                          }]);
+                },
+                'comments' => function ($query) use ($user) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->whereNull('parent_id')
+                          ->with([
+                              'user' => function($query) use ($user) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id);
+                              },
+                              'children' => function($query) use ($user) {
+                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->with(['user' => function($query) use ($user) {
+                                            $query->select('id', 'name', 'tenant_id')
+                                                  ->where('tenant_id', $user->tenant_id);
+                                        }]);
+                              },
+                              'likes' => function ($query) use ($user) {
+                                  $query->select('id', 'comment_id', 'user_id', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->where('user_id', $user->id);
+                              }
+                          ])
+                          ->withCount(['likes' => function($query) use ($user) {
+                              $query->where('tenant_id', $user->tenant_id);
+                          }]);
+                },
+                'likes' => function ($query) use ($user) {
+                    $query->select('id', 'post_id', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->where('user_id', $user->id);
+                }
+            ])
+            ->withCount(['likes' => function($query) use ($user) {
+                $query->where('tenant_id', $user->tenant_id);
             }])
-            ->withCount('likes')
-            ->with(['likes' => function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }])
-            ->where('forum_id', $forumId);
+            ->select('id', 'user_id', 'forum_id', 'title', 'message', 'quoted_post_id', 'tenant_id', 'img', 'like_count', 'quoted_post_deleted', 'created_at', 'updated_at');
     }
 
     /**
