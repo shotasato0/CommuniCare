@@ -3,21 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Unit;
-use App\Models\Forum;
 use Inertia\Inertia;
 use App\Http\Requests\Unit\UnitStoreRequest;
 use App\Http\Requests\Unit\UnitSortRequest;
-use Illuminate\Support\Facades\Auth;
+use App\Services\UnitService;
 
 class UnitController extends Controller
 {
+    protected $unitService;
+
+    public function __construct(UnitService $unitService)
+    {
+        $this->unitService = $unitService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function listForSidebar()
     {
-        $units = Unit::with('forum')->get();
+        $units = $this->unitService->getUnitsWithForum();
+        
         return Inertia::render('Forum', [
             'units' => $units,
         ]);
@@ -28,12 +34,8 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $units = Unit::select('id', 'name', 'sort_order', 'created_at')
-            ->where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('sort_order')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        $forums = Forum::where('tenant_id', Auth::user()->tenant_id)->get();
+        $units = $this->unitService->getUnitsForManagement();
+        $forums = $this->unitService->getForumsForTenant();
         
         return Inertia::render("Unit/Register", [
             'units' => $units,
@@ -46,25 +48,7 @@ class UnitController extends Controller
      */
     public function store(UnitStoreRequest $request)
     {
-        // 最新の並び順を取得
-        $maxSortOrder = Unit::where('tenant_id', Auth::user()->tenant_id)
-            ->max('sort_order') ?? -1;
-
-        $unit = Unit::create([
-            'name' => $request->name,
-            'tenant_id' => Auth::user()->tenant_id,
-            'sort_order' => $maxSortOrder + 1,
-        ]);
-
-        // 部署に対応するフォーラムを作成（戻り値は不要）
-        Forum::create([
-            'name' => $request->name,
-            'unit_id' => $unit->id,
-            'description' => $request->description ?? '',
-            'visibility' => $request->visibility ?? 'public',
-            'status' => 'active',
-            'tenant_id' => Auth::user()->tenant_id,
-        ]);
+        $this->unitService->createUnit($request);
         
         return redirect()->route("units.create")->with(["success" => "部署登録が完了しました。"]);
     }
@@ -96,12 +80,9 @@ class UnitController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        $unit = Unit::where('id', $id)->where('tenant_id', Auth::user()->tenant_id)->first();
-        if ($unit) {
-            $unit->delete();
-        }
+        $this->unitService->deleteUnit($id);
         
         return redirect()->route("units.create")->with(["success" => "部署の削除が完了しました"]);
     }
@@ -111,10 +92,8 @@ class UnitController extends Controller
      */
     public function sort(UnitSortRequest $request)
     {
-        $units = $request->validated()['units'];
-        foreach ($units as $index => $unit) {
-            Unit::where('id', $unit['id'])->update(['sort_order' => $index]);
-        }
+        $this->unitService->updateSortOrder($request);
+        
         return redirect()->route('forum.index');
     }
 }
