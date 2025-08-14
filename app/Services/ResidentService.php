@@ -25,28 +25,37 @@ class ResidentService
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        return Resident::where('tenant_id', $currentUser->tenant_id)
-            ->when($unitId, function ($query) use ($unitId, $currentUser) {
-                // unit_idが指定されている場合、そのunitが現在のテナントに属するかチェック
-                $unit = Unit::where('id', $unitId)
-                    ->where('tenant_id', $currentUser->tenant_id)
-                    ->first();
-                    
-                if (!$unit) {
-                    throw new TenantViolationException(
-                        "指定された部署へのアクセスが許可されていません。",
-                        [
-                            'user_id' => $currentUser->id,
-                            'tenant_id' => $currentUser->tenant_id,
-                            'requested_unit_id' => $unitId,
-                            'action' => 'resident_filter_by_unit'
-                        ]
-                    );
-                }
+        $query = Resident::where('tenant_id', $currentUser->tenant_id);
+        
+        // unit_idが指定されている場合の最適化されたチェック
+        if ($unitId) {
+            // N+1問題回避: unit存在チェックを効率化
+            $unitExists = Unit::where('id', $unitId)
+                ->where('tenant_id', $currentUser->tenant_id)
+                ->exists();
                 
-                return $query->where('unit_id', $unitId);
-            })
-            ->with('unit')
+            if (!$unitExists) {
+                throw new TenantViolationException(
+                    "指定された部署へのアクセスが許可されていません。",
+                    [
+                        'user_id' => $currentUser->id,
+                        'tenant_id' => $currentUser->tenant_id,
+                        'requested_unit_id' => $unitId,
+                        'action' => 'resident_filter_by_unit'
+                    ]
+                );
+            }
+            
+            $query->where('unit_id', $unitId);
+        }
+        
+        return $query
+            ->with(['unit' => function($query) use ($currentUser) {
+                $query->select('id', 'name', 'sort_order', 'tenant_id')
+                      ->where('tenant_id', $currentUser->tenant_id);
+            }])
+            ->select('id', 'name', 'unit_id', 'tenant_id', 'meal_support', 'toilet_support', 'bathing_support', 'mobility_support', 'memo', 'created_at', 'updated_at')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 
