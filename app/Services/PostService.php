@@ -110,9 +110,43 @@ class PostService
      */
     public function getPostsByForum(int $forumId, ?string $search = null, int $perPage = 5)
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
         $query = Post::where('forum_id', $forumId)
-            ->with(['user', 'quotedPost', 'comments', 'likes'])
-            ->withCount('likes');
+            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック追加
+            ->with([
+                'user' => function($query) use ($currentUser) {
+                    $query->select('id', 'name', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                },
+                'quotedPost' => function($query) use ($currentUser) {
+                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                },
+                'comments' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }])
+                          ->latest()
+                          ->limit(10); // コメント数制限
+                },
+                'likes' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                }
+            ])
+            ->withCount(['likes' => function($query) use ($currentUser) {
+                $query->where('tenant_id', $currentUser->tenant_id);
+            }])
+            ->select('id', 'user_id', 'forum_id', 'title', 'message', 'quoted_post_id', 'tenant_id', 'like_count', 'created_at', 'updated_at');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
