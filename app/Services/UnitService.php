@@ -10,10 +10,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Unit\UnitStoreRequest;
 use App\Http\Requests\Unit\UnitSortRequest;
 use App\Exceptions\Custom\TenantViolationException;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 use Illuminate\Support\Collection;
 
 class UnitService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * テナントに属する部署一覧を取得（フォーラム情報付き）
      */
@@ -158,37 +161,6 @@ class UnitService
      */
     public function getUnit(int $unitId): Unit
     {
-        /** @var User $currentUser */
-        $currentUser = Auth::user();
-        
-        $unit = Unit::find($unitId);
-        
-        if (!$unit) {
-            throw new TenantViolationException(
-                "指定された部署が見つかりません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'requested_unit_id' => $unitId,
-                    'action' => 'unit_access'
-                ]
-            );
-        }
-
-        // テナント境界チェック
-        if ($unit->tenant_id !== $currentUser->tenant_id) {
-            throw new TenantViolationException(
-                "他のテナントの部署情報にアクセスしようとしました。",
-                [
-                    'user_id' => $currentUser->id,
-                    'user_tenant_id' => $currentUser->tenant_id,
-                    'unit_tenant_id' => $unit->tenant_id,
-                    'unit_id' => $unitId,
-                    'action' => 'unit_access'
-                ]
-            );
-        }
-
-        return $unit;
+        return $this->findResourceWithTenantCheck(Unit::class, $unitId);
     }
 }
