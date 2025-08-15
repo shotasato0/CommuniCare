@@ -106,7 +106,7 @@ class ForumService
                                         }]);
                               },
                               'likes' => function ($query) use ($user) {
-                                  $query->select('id', 'comment_id', 'user_id', 'tenant_id')
+                                  $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
                                         ->where('tenant_id', $user->tenant_id)
                                         ->where('user_id', $user->id);
                               }
@@ -116,7 +116,7 @@ class ForumService
                           }]);
                 },
                 'likes' => function ($query) use ($user) {
-                    $query->select('id', 'post_id', 'user_id', 'tenant_id')
+                    $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
                           ->where('tenant_id', $user->tenant_id)
                           ->where('user_id', $user->id);
                 }
