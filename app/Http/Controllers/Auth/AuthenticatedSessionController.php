@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Tenant;
+use Stancl\Tenancy\Database\Models\Domain;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -36,18 +37,20 @@ class AuthenticatedSessionController extends Controller
         // ドメインからテナントを特定
         $domain = $request->getHost();
 
-        // 環境に応じてドメインからテナントIDを抽出
-        $tenantDomainId = match(config('app.env')) {
-            'local' => $domain === 'localhost' ? 'localhost' : str_replace('.localhost', '', $domain),
-            'production' => str_replace('.communi-care.jp', '', $domain),
-            default => $domain
-        };
+        // domainsテーブルから該当ドメインを検索
+        $domainRecord = Domain::where('domain', $domain)->first();
 
-        $tenant = Tenant::where('tenant_domain_id', $tenantDomainId)->first();
+        if (!$domainRecord) {
+            return back()->withErrors([
+                'username_id' => '無効なドメインです。',
+            ]);
+        }
+
+        $tenant = Tenant::find($domainRecord->tenant_id);
 
         if (!$tenant) {
             return back()->withErrors([
-                'username_id' => '無効なドメインです。',
+                'username_id' => 'テナントが見つかりません。',
             ]);
         }
 
