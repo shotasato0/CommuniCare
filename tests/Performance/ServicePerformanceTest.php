@@ -105,9 +105,10 @@ class ServicePerformanceTest extends TestCase
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         
         // テナント関連データのクリーンアップ（セッションテーブル以外）
+        // 注意: tenants、権限関連テーブルはセントラルDBの重要データのため除外
         $tables = [
-            'likes', 'comments', 'posts', 'forums', 'residents', 'units', 'users',
-            'model_has_permissions', 'model_has_roles', 'role_has_permissions', 'tenants'
+            'likes', 'comments', 'posts', 'forums', 'residents', 'units', 'users'
+            // セントラルDB保護: tenants, model_has_permissions, model_has_roles, role_has_permissions
         ];
         
         foreach ($tables as $table) {
