@@ -5,13 +5,17 @@ namespace Tests\Performance;
 use Tests\TestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 class DatabaseIndexOptimizationTest extends TestCase
 {
-    use RefreshDatabase;
-    
-    protected $connection = 'mysql';
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // 🚨 重要：テスト環境での安全なマイグレーション実行
+        if (config('app.env') === 'testing' && config('database.default') === 'sqlite') {
+            $this->artisan('migrate:fresh');
+        }
+    }
 
     public function test_required_indexes_exist()
     {
