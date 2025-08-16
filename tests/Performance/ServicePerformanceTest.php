@@ -101,8 +101,10 @@ class ServicePerformanceTest extends TestCase
     
     protected function cleanupTestData(): void
     {
-        // 外部キー制約を無効にしてからクリーンアップ
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // 外部キー制約を無効にしてからクリーンアップ（MySQLのみ）
+        if (config('database.default') === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
         
         // テナント関連データのクリーンアップ（セッションテーブル以外）
         // 注意: tenants、権限関連テーブルはセントラルDBの重要データのため除外
@@ -111,14 +113,21 @@ class ServicePerformanceTest extends TestCase
             // セントラルDB保護: tenants, model_has_permissions, model_has_roles, role_has_permissions
         ];
         
-        foreach ($tables as $table) {
-            if (DB::getSchemaBuilder()->hasTable($table)) {
-                DB::table($table)->truncate();
+        // 🚨 安全確認：SQLiteメモリDBでのみ実行
+        if (config('database.default') === 'sqlite' && config('database.connections.sqlite.database') === ':memory:') {
+            foreach ($tables as $table) {
+                if (DB::getSchemaBuilder()->hasTable($table)) {
+                    DB::table($table)->delete(); // truncate() の代わりに delete() を使用
+                }
             }
+        } else {
+            throw new \Exception('🚨 セキュリティ違反: テストデータクリーンアップはSQLiteメモリDBでのみ実行可能です');
         }
         
-        // 外部キー制約を再有効化
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // 外部キー制約を再有効化（MySQLのみ）
+        if (config('database.default') === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        }
     }
 
     /**
