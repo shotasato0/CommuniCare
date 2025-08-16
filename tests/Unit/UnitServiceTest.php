@@ -10,12 +10,10 @@ use App\Models\User;
 use App\Http\Requests\Unit\UnitStoreRequest;
 use App\Http\Requests\Unit\UnitSortRequest;
 use App\Exceptions\Custom\TenantViolationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 class UnitServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $unitService;
     protected $tenant1User;
