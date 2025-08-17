@@ -540,28 +540,6 @@ git commit -m "[fix] テナント境界チェックの不具合修正"
 - 画像の最適化とリサイズ
 - Viteによる効率的なビルド
 
-## デバッグ・トラブルシューティング
-
-### 1. ログ確認
-```bash
-# Laravelログ
-sail logs
-tail -f storage/logs/laravel.log
-
-# データベースクエリログ
-# config/database.phpでlog_queries有効化
-```
-
-### 2. よくある問題
-- **テナント境界エラー**: `TenantViolationException`
-- **権限エラー**: `PostOwnershipException`
-- **CSRF エラー**: フォームのCSRFトークン確認
-
-### 3. デバッグツール
-- Laravel Debugbar (開発環境のみ)
-- `dd()`, `dump()` for debugging
-- Vue.js DevTools
-
 ## 今後の開発方針
 
 ### 現在注力中
