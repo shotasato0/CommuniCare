@@ -26,7 +26,13 @@ class UnitService
         $currentUser = Auth::user();
         
         return Unit::where('tenant_id', $currentUser->tenant_id)
-            ->with('forum')
+            ->with(['forum' => function($query) use ($currentUser) {
+                $query->select('id', 'name', 'unit_id', 'tenant_id', 'description', 'visibility', 'status')
+                      ->where('tenant_id', $currentUser->tenant_id);
+            }])
+            ->select('id', 'name', 'sort_order', 'tenant_id', 'created_at', 'updated_at')
+            ->orderBy('sort_order')
+            ->orderBy('created_at', 'desc')
             ->get();
     }
 

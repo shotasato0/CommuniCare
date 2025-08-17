@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Post\PostStoreRequest;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 
 class PostService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * 投稿を作成する
      */
@@ -107,9 +110,43 @@ class PostService
      */
     public function getPostsByForum(int $forumId, ?string $search = null, int $perPage = 5)
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
         $query = Post::where('forum_id', $forumId)
-            ->with(['user', 'quotedPost', 'comments', 'likes'])
-            ->withCount('likes');
+            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック追加
+            ->with([
+                'user' => function($query) use ($currentUser) {
+                    $query->select('id', 'name', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                },
+                'quotedPost' => function($query) use ($currentUser) {
+                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                },
+                'comments' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }])
+                          ->latest()
+                          ->limit(10); // コメント数制限
+                },
+                'likes' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                }
+            ])
+            ->withCount(['likes' => function($query) use ($currentUser) {
+                $query->where('tenant_id', $currentUser->tenant_id);
+            }])
+            ->select('id', 'user_id', 'forum_id', 'title', 'message', 'quoted_post_id', 'tenant_id', 'like_count', 'created_at', 'updated_at');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -144,17 +181,69 @@ class PostService
     }
 
     /**
-     * 投稿の詳細情報を取得
+     * 投稿の詳細情報を取得（テナント境界チェック強化・N+1対策）
      */
     public function getPostDetails(int $postId): ?Post
     {
-        return Post::with([
-            'user', 
-            'quotedPost.user', 
-            'comments.user', 
-            'comments.children.user',
-            'likes.user'
-        ])->find($postId);
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
+        $post = Post::where('id', $postId)
+            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック
+            ->with([
+                'user' => function($query) use ($currentUser) {
+                    $query->select('id', 'name', 'email', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id);
+                },
+                'quotedPost' => function($query) use ($currentUser) {
+                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                },
+                'comments' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at', 'updated_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with([
+                              'user' => function($query) use ($currentUser) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id);
+                              },
+                              'children' => function($query) use ($currentUser) {
+                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->with(['user' => function($query) use ($currentUser) {
+                                            $query->select('id', 'name', 'tenant_id')
+                                                  ->where('tenant_id', $currentUser->tenant_id);
+                                        }])
+                                        ->latest();
+                              }
+                          ])
+                          ->whereNull('parent_id') // トップレベルコメントのみ
+                          ->latest();
+                },
+                'likes' => function($query) use ($currentUser) {
+                    $query->select('id', 'post_id', 'user_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->with(['user' => function($query) use ($currentUser) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $currentUser->tenant_id);
+                          }]);
+                }
+            ])
+            ->first();
+
+        // テナント境界チェック後にログ記録
+        if ($post) {
+            $this->auditAction('post_view', [
+                'post_id' => $postId,
+                'post_title' => $post->title
+            ]);
+        }
+
+        return $post;
     }
 
     /**

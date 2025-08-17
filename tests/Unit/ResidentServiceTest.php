@@ -10,12 +10,10 @@ use App\Models\User;
 use App\Http\Requests\Resident\ResidentStoreRequest;
 use App\Http\Requests\Resident\ResidentUpdateRequest;
 use App\Exceptions\Custom\TenantViolationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 class ResidentServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     protected $residentService;
     protected $tenant1User;

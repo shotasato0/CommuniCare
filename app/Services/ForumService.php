@@ -9,9 +9,12 @@ use App\Models\Forum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Traits\SecurityValidationTrait;
+use App\Traits\TenantBoundaryCheckTrait;
 
 class ForumService
 {
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
     /**
      * フォーラムのデータを取得し、整形して返す
      */
@@ -66,29 +69,62 @@ class ForumService
     }
 
     /**
-     * 投稿クエリを構築
+     * 投稿クエリを構築（テナント境界チェック強化・N+1対策）
      */
     private function buildPostQuery(int $forumId, $user)
     {
-        return Post::with([
-            'user',
-            'quotedPost' => function($query) {
-                $query->select('id', 'user_id', 'message', 'title');
-            },
-            'quotedPost.user',
-            'comments' => function ($query) use ($user) {
-                $query->whereNull('parent_id')
-                    ->with(['children.user', 'user'])
-                    ->withCount('likes')
-                    ->with(['likes' => function ($query) use ($user) {
-                        $query->where('user_id', $user->id);
-                    }]);
+        return Post::where('forum_id', $forumId)
+            ->where('tenant_id', $user->tenant_id) // テナント境界チェック
+            ->with([
+                'user' => function($query) use ($user) {
+                    $query->select('id', 'name', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id);
+                },
+                'quotedPost' => function($query) use ($user) {
+                    $query->select('id', 'user_id', 'message', 'title', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->with(['user' => function($query) use ($user) {
+                              $query->select('id', 'name', 'tenant_id')
+                                    ->where('tenant_id', $user->tenant_id);
+                          }]);
+                },
+                'comments' => function ($query) use ($user) {
+                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->whereNull('parent_id')
+                          ->with([
+                              'user' => function($query) use ($user) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id);
+                              },
+                              'children' => function($query) use ($user) {
+                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->with(['user' => function($query) use ($user) {
+                                            $query->select('id', 'name', 'tenant_id')
+                                                  ->where('tenant_id', $user->tenant_id);
+                                        }]);
+                              },
+                              'likes' => function ($query) use ($user) {
+                                  $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->where('user_id', $user->id);
+                              }
+                          ])
+                          ->withCount(['likes' => function($query) use ($user) {
+                              $query->where('tenant_id', $user->tenant_id);
+                          }]);
+                },
+                'likes' => function ($query) use ($user) {
+                    $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->where('user_id', $user->id);
+                }
+            ])
+            ->withCount(['likes' => function($query) use ($user) {
+                $query->where('tenant_id', $user->tenant_id);
             }])
-            ->withCount('likes')
-            ->with(['likes' => function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            }])
-            ->where('forum_id', $forumId);
+            ->select('id', 'user_id', 'forum_id', 'title', 'message', 'quoted_post_id', 'tenant_id', 'img', 'like_count', 'quoted_post_deleted', 'created_at', 'updated_at');
     }
 
     /**
@@ -162,35 +198,55 @@ class ForumService
     }
 
     /**
-     * エラーレスポンスを構築
+     * エラーレスポンスを構築（テナント境界チェック強化）
      */
     private function buildErrorResponse(): array
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
         return [
             'errorMessage' => 'ユニットに所属していません。管理者に確認してください。',
             'posts' => [],
-            'units' => Unit::orderBy('sort_order')->with('forum')->get(),
-            'users' => User::all(),
+            'units' => Unit::where('tenant_id', $currentUser->tenant_id)
+                         ->orderBy('sort_order')
+                         ->with(['forum' => function($query) use ($currentUser) {
+                             $query->where('tenant_id', $currentUser->tenant_id);
+                         }])
+                         ->get(),
+            'users' => User::where('tenant_id', $currentUser->tenant_id)
+                         ->select('id', 'name', 'tenant_id')
+                         ->get(),
             'selectedForumId' => null,
-            'userUnitId' => Auth::user()->unit_id, // ユーザーの部署IDを追加
+            'userUnitId' => $currentUser->unit_id,
         ];
     }
 
     /**
-     * 成功レスポンスを構築
+     * 成功レスポンスを構築（テナント境界チェック強化）
      */
     private function buildSuccessResponse(LengthAwarePaginator $posts, int $forumId, ?string $search): array
     {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
         $posts->appends(['forum_id' => $forumId, 'search' => $search]);
 
         return [
             'posts' => $posts,
-            'units' => Unit::orderBy('sort_order')->with('forum')->get(),
-            'users' => User::all(),
+            'units' => Unit::where('tenant_id', $currentUser->tenant_id)
+                         ->orderBy('sort_order')
+                         ->with(['forum' => function($query) use ($currentUser) {
+                             $query->where('tenant_id', $currentUser->tenant_id);
+                         }])
+                         ->get(),
+            'users' => User::where('tenant_id', $currentUser->tenant_id)
+                         ->select('id', 'name', 'tenant_id')
+                         ->get(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
             'search' => $search,
-            'userUnitId' => Auth::user()->unit_id, // ユーザーの部署IDを追加
+            'userUnitId' => $currentUser->unit_id,
         ];
     }
 }
