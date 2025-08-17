@@ -235,6 +235,7 @@ class SafeServiceTest extends TestCase
 // ✅ 正しいマルチテナント対応
 class PostService 
 {
+    // NOTE: SecurityValidationTrait, TenantBoundaryCheckTraitは概念的な例です。実際のコードベースでは適切に実装・定義してください。
     use SecurityValidationTrait, TenantBoundaryCheckTrait;
     
     public function getPosts(): Collection 
