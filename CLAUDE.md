@@ -464,19 +464,6 @@ public function canDeletePost(Post $post): bool {
 
 ## Gitワークフロー
 
-### コミットメッセージ規則
-```bash
-# 日本語コミットメッセージを使用
-[add] 新機能追加
-[fix] バグ修正
-[update] 既存機能の改善
-[remove] 不要コード削除
-
-# 例
-git commit -m "[add] PostServiceに画像アップロード機能追加"
-git commit -m "[fix] テナント境界チェックの不具合修正"
-```
-
 ### 推奨ワークフロー
 1. 機能ごとにブランチ作成 (`feature/function-name`)
 2. 小さな変更で頻繁に自動コミット・プッシュ実行
