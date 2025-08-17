@@ -229,19 +229,6 @@ class SafeServiceTest extends TestCase
 
 ## 📈 継続的な安全性確保
 
-### 🔍 定期セキュリティチェック（週次）
-
-```bash
-# セキュリティテスト実行
-APP_ENV=testing sail test tests/Unit/SecurityFunctionTest.php
-
-# 危険操作ブロック確認  
-APP_ENV=testing sail test tests/Security/
-
-# 環境分離確認
-php artisan env && APP_ENV=testing php artisan env
-```
-
 ### 👥 チーム開発での共有事項
 
 **必須共有内容:**
