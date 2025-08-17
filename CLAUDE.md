@@ -541,14 +541,6 @@ git commit -m "[fix] テナント境界チェックの不具合修正"
 - **セキュリティテストの強化**: 攻撃パターン検出テスト
 - **マルチテナント分離の完全性**: データリークの防止
 
-## 関連ドキュメント
-
-- [README.md](./README.md) - プロジェクト全体概要
-- [Tenancy for Laravel 公式ドキュメント](https://tenancyforlaravel.com/)
-- [Laravel 12.x 公式ドキュメント](https://laravel.com/docs/12.x)
-- [Vue.js 3.x 公式ドキュメント](https://vuejs.org/)
-- [Inertia.js 公式ドキュメント](https://inertiajs.com/)
-
 ---
 
 ## Git ワークフローとコミット規則
