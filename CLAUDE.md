@@ -303,15 +303,6 @@ class BadService
 
 ## 💡 安全性向上のベストプラクティス
 
-### 🔧 開発ツール設定
-
-```bash
-# .bashrc / .zshrc に追加推奨
-alias migrate-fresh='echo "🚨 DANGEROUS: migrate:fresh is prohibited in CommuniCareV2"'
-alias migrate-reset='echo "🚨 DANGEROUS: migrate:reset is prohibited in CommuniCareV2"' 
-alias db-wipe='echo "🚨 DANGEROUS: db:wipe is prohibited in CommuniCareV2"'
-```
-
 ### 📝 コードレビュー必須項目
 
 - [ ] RefreshDatabaseトレイト使用なし
