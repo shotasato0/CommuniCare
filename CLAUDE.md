@@ -95,6 +95,9 @@ APP_ENV=testing php artisan tinker --execute="echo 'DB: ' . config('database.def
 APP_ENV=testing sail test tests/Security/DangerousOperationTest.php
 # 全テストが成功することを確認
 
+# Note: tests/Security/DangerousOperationTest.phpが存在しない場合は作成してください。
+# このテストは危険な操作（破壊的なDBコマンド等）がテスト環境で実行できないことを検証します。
+
 # セーフティネット動作確認
 APP_ENV=testing sail test tests/Unit/PostServiceTest.php
 # セキュリティ機構が正常動作することを確認
