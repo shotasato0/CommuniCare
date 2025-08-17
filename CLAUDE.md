@@ -443,12 +443,6 @@ sail test tests/Unit/PostServiceTest.php
 sail test tests/Unit/SecurityFunctionTest.php
 ```
 
-### 3. 重要なテストファイル
-- `tests/Unit/PostServiceTest.php` - 投稿サービステスト
-- `tests/Unit/ForumServiceTest.php` - フォーラムサービステスト
-- `tests/Unit/SecurityFunctionTest.php` - セキュリティ機能テスト
-- `tests/Unit/TenantViolationExceptionTest.php` - テナント例外テスト
-
 ## セキュリティの考慮事項
 
 ### 1. マルチテナント分離
