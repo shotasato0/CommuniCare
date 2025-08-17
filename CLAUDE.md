@@ -523,15 +523,11 @@ public function canDeletePost(Post $post): bool {
 
 ### 開発フロー
 1. 変更内容の実装
-2. Claude Codeが適切なコミットメッセージでcommit・push実行
-3. ブランチ作業完了時、Claude CodeがPR文章作成してプルリクエスト作成
-4. 必要に応じてレビュー対応・追加commit実行
+2. ブランチ作業完了時、Claude CodeがPR文章作成してプルリクエスト作成
+3. 必要に応じてレビュー対応・追加commit実行
 
 ### Git操作の自動化設定
 Claude Codeが以下のGit操作を自動実行します：
-- `git add` - 変更ファイルのステージング
-- `git commit` - 適切なメッセージでのコミット作成
-- `git push` - リモートリポジトリへのプッシュ
 - `gh pr create` - プルリクエストの作成
 
 ---
