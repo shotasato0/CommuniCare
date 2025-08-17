@@ -10,6 +10,287 @@ Claude Codeは、**featureブランチや保護されていないブランチ**�
 
 **main, master, developなどの保護ブランチに対しては、必ず明示的な許可または確認を得てから自動操作を実行してください。**
 
+---
+
+# 🚨 CommuniCareV2 テスト環境安全性ルール
+
+## ⚠️ 【最重要】介護施設データ保護の絶対原則
+
+**CommuniCareV2は複数の介護施設の機密データを扱うマルチテナントシステムです。**  
+**1つのミスが全介護施設の利用者情報・職員データ・介護記録に影響する可能性があります。**
+
+### 📊 システム重要度レベル
+- **データの機密性**: 最高（個人情報保護法対象）
+- **システム影響範囲**: 全介護施設（マルチテナント）
+- **データベース方式**: シングルDB + tenant_idによる論理分離
+- **1つの操作の影響**: 全テナント・全利用者・全職員データ
+
+---
+
+## 🚨 絶対禁止操作（違反は重大事故に直結）
+
+### ❌ 完全禁止コマンド
+以下のコマンドは**いかなる状況でも実行禁止**です：
+
+```bash
+# 🚫 全テーブル削除・再作成（全介護施設データ消失）
+php artisan migrate:fresh
+
+# 🚫 全マイグレーション巻き戻し（データベース構造破壊）
+php artisan migrate:reset
+
+# 🚫 全テーブル削除（全データ消失）
+php artisan db:wipe
+
+# 🚫 マイグレーション巻き戻し（データ整合性破壊）
+php artisan migrate:rollback
+```
+
+### ❌ 危険なテストトレイト
+```php
+// 🚫 RefreshDatabase使用禁止（開発DB破壊リスク）
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+class MyTest extends TestCase 
+{
+    use RefreshDatabase; // ← 絶対禁止
+}
+```
+
+### ❌ 危険なデータベース操作
+```php
+// 🚫 無条件truncate（全テナントデータ削除）
+DB::table('users')->truncate();
+DB::table('posts')->truncate();
+DB::table('residents')->truncate();
+
+// 🚫 DROP文実行
+DB::statement('DROP TABLE users');
+```
+
+---
+
+## 🛡️ 必須セキュリティチェック
+
+### ✅ 開発作業開始前の確認（毎回実行）
+
+```bash
+# 1. 現在の環境確認
+php artisan env
+# 期待値: "The application environment is [local]"
+
+# 2. データベース接続先確認  
+php artisan tinker --execute="echo 'DB: ' . config('database.default') . PHP_EOL; echo 'Database: ' . config('database.connections.mysql.database') . PHP_EOL;"
+# 期待値: DB: mysql, Database: laravel
+
+# 3. テスト環境でのデータベース確認
+APP_ENV=testing php artisan tinker --execute="echo 'DB: ' . config('database.default') . PHP_EOL; echo 'Database: ' . config('database.connections.sqlite.database') . PHP_EOL;"
+# 期待値: DB: sqlite, Database: :memory:
+```
+
+### ✅ テスト実行前の安全確認
+
+```bash
+# テスト環境の安全性確認
+APP_ENV=testing sail test tests/Security/DangerousOperationTest.php
+# 全テストが成功することを確認
+
+# Note: tests/Security/DangerousOperationTest.phpが存在しない場合は作成してください。
+# このテストは危険な操作（破壊的なDBコマンド等）がテスト環境で実行できないことを検証します。
+
+# セーフティネット動作確認
+APP_ENV=testing sail test tests/Unit/PostServiceTest.php
+# セキュリティ機構が正常動作することを確認
+```
+
+---
+
+## 📚 過去の重大事故事例
+
+### 🚨 【事故報告】2024年8月 パフォーマンステスト事故
+
+**発生状況:**
+- パフォーマンステスト実行中に`RefreshDatabase`トレイトが動作
+- `migrate:fresh`が開発環境（`laravel`データベース）で実行される
+- 全テナント・ドメイン・ユーザーデータが完全削除
+
+**影響範囲:**
+- 🏥 全介護施設のテナントデータ消失
+- 👥 全職員アカウント削除
+- 🏠 全利用者情報消失  
+- 🔐 権限システム完全破壊
+- 📋 フォーラム・投稿データ全削除
+
+**復旧作業（8時間）:**
+1. テナント・ドメインの手動再作成
+2. マイグレーション状態の修正
+3. 権限システム（Role・Permission）の再構築
+4. テストデータの再投入
+
+**根本原因:**
+- `RefreshDatabase`トレイトの無制限使用
+- 環境分離の不備（testing/local混在）
+- 危険操作に対するセーフティネット不在
+
+**実装された再発防止策:**
+- `TestCase.php`に3段階セキュリティチェック機構実装
+- 危険コマンドの実行時例外発生
+- `.env.testing`でのSQLite強制使用
+- 危険トレイトの完全無効化
+
+---
+
+## 🤖 AI駆動開発での注意事項
+
+### Claude Code 使用時の必須確認
+
+```markdown
+# Claude Codeへの指示例
+「CommuniCareV2のマルチテナント設計を考慮し、以下の制約を厳守してください：
+- RefreshDatabaseトレイト使用禁止
+- migrate:fresh等の危険コマンド使用禁止  
+- 全テナントへの影響を常に考慮
+- テスト実行時はAPP_ENV=testingを必須とする」
+```
+
+### GitHub Copilot 提案の検証
+
+```php
+// ❌ Copilotが提案する危険なパターン
+use RefreshDatabase; // ← 採用禁止
+
+// ✅ 安全なCommuniCareV2パターン  
+use Tests\TestCase; // ← セキュリティ機構内蔵
+
+class MyTest extends TestCase 
+{
+    // TestCase.phpのセーフティネットが自動適用
+}
+```
+
+---
+
+## ✅ 推奨される安全な開発フロー
+
+### 🔄 新機能開発時の手順
+
+1. **環境確認** - 現在の作業環境を確認
+2. **ブランチ作成** - feature/機能名でブランチ作成
+3. **セキュリティ設計** - マルチテナント要件の考慮
+4. **段階的実装** - 小さな単位での開発とテスト
+5. **安全テスト** - TestCase.phpベースのテスト作成
+6. **統合確認** - セキュリティ機構との整合確認
+
+### 🧪 テスト作成時のテンプレート
+
+```php
+<?php
+
+namespace Tests\Unit;
+
+use Tests\TestCase; // ← 必須：セキュリティ機構内蔵
+
+class SafeServiceTest extends TestCase
+{
+    // RefreshDatabaseは使用しない
+    // TestCase.phpのセーフティネットが自動適用
+    
+    protected function setUp(): void
+    {
+        parent::setUp(); // ← 必須：3段階セキュリティチェック実行
+        
+        // 安全なテストデータ作成
+        $this->createSafeTestData();
+    }
+    
+    protected function createSafeTestData(): void
+    {
+        // ファクトリを使用した安全なデータ生成
+        // truncate()は使用しない
+    }
+    
+    public function test_tenant_boundary_security()
+    {
+        // テナント境界チェックのテスト
+        // CommuniCareV2のマルチテナント要件を必ず検証
+    }
+}
+```
+
+### 🚨 緊急時の対応方法
+
+**データ消失事故発生時:**
+
+1. **即座停止** - 全開発作業を停止
+2. **影響範囲確認** - どのテナント・データが影響を受けたか
+3. **バックアップ復旧** - 最新バックアップからの復旧実行
+4. **原因調査** - 事故原因の徹底調査
+5. **再発防止** - セキュリティ機構の強化
+6. **報告書作成** - 事故報告書の作成と共有
+
+---
+
+## 🎯 CommuniCareV2固有の重要事項
+
+### 🏢 マルチテナント環境の特殊性
+
+```php
+// ✅ 正しいマルチテナント対応
+class PostService 
+{
+    // NOTE: SecurityValidationTrait, TenantBoundaryCheckTraitは概念的な例です。実際のコードベースでは適切に実装・定義してください。
+    use SecurityValidationTrait, TenantBoundaryCheckTrait;
+    
+    public function getPosts(): Collection 
+    {
+        return Post::where('tenant_id', Auth::user()->tenant_id)
+                  ->get(); // ← tenant_id必須
+    }
+}
+
+// ❌ 危険なマルチテナント違反
+class BadService 
+{
+    public function getAllPosts(): Collection 
+    {
+        return Post::all(); // ← 全テナントデータ取得（重大違反）
+    }
+}
+```
+
+### 📊 介護データの機密性要件
+
+**個人情報保護法対象データ:**
+- 利用者個人情報（名前、住所、病歴等）
+- 職員個人情報（連絡先、勤務情報等）
+- 介護記録・医療情報
+- 家族連絡先・緊急連絡先
+
+**データアクセス原則:**
+- 最小権限の原則（必要最小限のデータのみアクセス）
+- テナント境界の絶対遵守（他施設データ非アクセス）
+- ログ記録の徹底（全データアクセスを記録）
+- 暗号化の実装（機密データの保護）
+
+---
+
+## 💡 安全性向上のベストプラクティス
+
+### 📝 コードレビュー必須項目
+
+- [ ] RefreshDatabaseトレイト使用なし
+- [ ] 危険なマイグレーションコマンド不使用
+- [ ] テナント境界チェック実装
+- [ ] セキュリティ例外ハンドリング
+- [ ] マルチテナント要件遵守
+
+---
+
+**⚠️ 重要な宣言：CommuniCareV2では、いかなる開発効率よりもデータの安全性を優先します。**  
+**介護施設で働く職員の皆様と、ケアを受ける利用者様の大切な情報を守ることが、私たちの最優先事項です。**
+
+---
+
 ## プロジェクト概要
 
 **CommuniCareV2**は、介護施設向けのマルチテナント対応コミュニケーションプラットフォームです。Laravel 12.xベースで構築され、Vue.js 3.x + Inertia.jsによるモダンなSPA体験を提供します。
@@ -162,12 +443,6 @@ sail test tests/Unit/PostServiceTest.php
 sail test tests/Unit/SecurityFunctionTest.php
 ```
 
-### 3. 重要なテストファイル
-- `tests/Unit/PostServiceTest.php` - 投稿サービステスト
-- `tests/Unit/ForumServiceTest.php` - フォーラムサービステスト
-- `tests/Unit/SecurityFunctionTest.php` - セキュリティ機能テスト
-- `tests/Unit/TenantViolationExceptionTest.php` - テナント例外テスト
-
 ## セキュリティの考慮事項
 
 ### 1. マルチテナント分離
@@ -190,29 +465,6 @@ public function canDeletePost(Post $post): bool {
 ### 3. CSRF保護
 - すべてのフォーム送信でCSRFトークン必須
 - Inertia.jsが自動的にCSRF処理
-
-## Gitワークフロー
-
-### コミットメッセージ規則
-```bash
-# 日本語コミットメッセージを使用
-[add] 新機能追加
-[fix] バグ修正
-[update] 既存機能の改善
-[remove] 不要コード削除
-
-# 例
-git commit -m "[add] PostServiceに画像アップロード機能追加"
-git commit -m "[fix] テナント境界チェックの不具合修正"
-```
-
-### 推奨ワークフロー
-1. 機能ごとにブランチ作成 (`feature/function-name`)
-2. 小さな変更で頻繁に自動コミット・プッシュ実行
-3. テスト追加・実行
-4. 自動プルリクエスト作成
-
-## 重要なファイル
 
 ### 設定ファイル
 - `config/tenancy.php` - マルチテナント設定
@@ -258,108 +510,6 @@ git commit -m "[fix] テナント境界チェックの不具合修正"
 - コンポーネントの適切な分割
 - 画像の最適化とリサイズ
 - Viteによる効率的なビルド
-
-## デバッグ・トラブルシューティング
-
-### 1. ログ確認
-```bash
-# Laravelログ
-sail logs
-tail -f storage/logs/laravel.log
-
-# データベースクエリログ
-# config/database.phpでlog_queries有効化
-```
-
-### 2. よくある問題
-- **テナント境界エラー**: `TenantViolationException`
-- **権限エラー**: `PostOwnershipException`
-- **CSRF エラー**: フォームのCSRFトークン確認
-
-### 3. デバッグツール
-- Laravel Debugbar (開発環境のみ)
-- `dd()`, `dump()` for debugging
-- Vue.js DevTools
-
-## 今後の開発方針
-
-### 現在注力中
-- **Service層テストの充実**: 現在`feature/service-layer-tests`ブランチで実装中
-- **セキュリティテストの強化**: 攻撃パターン検出テスト
-- **マルチテナント分離の完全性**: データリークの防止
-
-### 将来的な機能
-- AI統合（コミュニケーション解析、要約機能）
-- 通知システム（メール、プッシュ通知）
-- ファイル添付機能の拡張
-- 画像複数添付・リサイズ機能
-
-## 関連ドキュメント
-
-- [README.md](./README.md) - プロジェクト全体概要
-- [Tenancy for Laravel 公式ドキュメント](https://tenancyforlaravel.com/)
-- [Laravel 12.x 公式ドキュメント](https://laravel.com/docs/12.x)
-- [Vue.js 3.x 公式ドキュメント](https://vuejs.org/)
-- [Inertia.js 公式ドキュメント](https://inertiajs.com/)
-
----
-
-## Git ワークフローとコミット規則
-
-### 自動コミット・プッシュについて
-Claude Codeが変更を完了した際は、**可能な限りテスト・Lint・静的解析などのバリデーションを実行し、重大なエラーがないことを確認した上で**、適切なコミットメッセージで自動的にcommit・pushを実行してください。
-
-**注意**: テスト環境が不完全な場合や緊急性が高い場合は、適切な判断でcommit・pushを実行できます。
-
-### コミットメッセージ作成・実行
-変更内容を分析して、以下のフォーマットでコミットメッセージを作成し、自動的にcommit・pushを実行してください：
-
-#### フォーマット
-```
-[コミット種別]要約
-
-理由の詳細説明
-```
-
-#### コミット種別
-- **fix**: バグ修正
-- **add**: 新規（ファイル）機能追加  
-- **update**: 機能修正（バグではない）
-- **remove**: 削除（ファイル）
-
-#### 例
-```
-[fix] 削除フラグが更新されない不具合の修正
-
-refs #110 更新SQLの対象カラムに削除フラグが含まれていなかったため追加しました。
-```
-
-### プルリクエスト作成・実行
-ブランチ作業完了時は、以下のテンプレートに沿ってPR文章を作成し、**基本的な品質チェック（構文エラーの確認、明らかなバグの有無）を実施した上で**、自動的にプルリクエストを作成してください：
-
-#### PRテンプレート
-- **タイトル**: [ブランチ名に基づく適切なタイトル]
-- **目的**: 
-- **達成条件**: 
-- **実装の概要**: 
-- **対処したバグ**: 
-- **必要なかった実装**: 採用を検討したが結果的に削除した内容
-- **レビューしてほしいところ**: 
-- **不安に思っていること**: 
-- **保留していること**: 
-
-### 開発フロー
-1. 変更内容の実装
-2. Claude Codeが適切なコミットメッセージでcommit・push実行
-3. ブランチ作業完了時、Claude CodeがPR文章作成してプルリクエスト作成
-4. 必要に応じてレビュー対応・追加commit実行
-
-### Git操作の自動化設定
-Claude Codeが以下のGit操作を自動実行します：
-- `git add` - 変更ファイルのステージング
-- `git commit` - 適切なメッセージでのコミット作成
-- `git push` - リモートリポジトリへのプッシュ
-- `gh pr create` - プルリクエストの作成
 
 ---
 
