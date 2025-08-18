@@ -8,11 +8,9 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Tenant;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AttachmentModelTest extends TestCase
 {
-    use RefreshDatabase;
 
     private Tenant $tenant;
     private User $user;
@@ -23,27 +21,43 @@ class AttachmentModelTest extends TestCase
     {
         parent::setUp();
         
+        // 安全なデータベース初期化
+        $this->initializeSafeTestData();
+    }
+
+    private function initializeSafeTestData(): void
+    {
         // テナント作成
-        $this->tenant = Tenant::factory()->create();
-        tenancy()->initialize($this->tenant);
+        $this->tenant = new Tenant();
+        $this->tenant->id = 'test-tenant-' . time();
+        $this->tenant->save();
         
         // ユーザー作成
-        $this->user = User::factory()->create([
-            'tenant_id' => $this->tenant->id
-        ]);
+        $this->user = new User();
+        $this->user->id = 1;
+        $this->user->tenant_id = $this->tenant->id;
+        $this->user->name = 'Test User';
+        $this->user->email = 'test@example.com';
+        $this->user->password = 'password';
+        $this->user->save();
         
         // 投稿作成
-        $this->post = Post::factory()->create([
-            'user_id' => $this->user->id,
-            'tenant_id' => $this->tenant->id
-        ]);
+        $this->post = new Post();
+        $this->post->id = 1;
+        $this->post->user_id = $this->user->id;
+        $this->post->tenant_id = $this->tenant->id;
+        $this->post->title = 'Test Post';
+        $this->post->message = 'Test message';
+        $this->post->save();
         
         // コメント作成
-        $this->comment = Comment::factory()->create([
-            'user_id' => $this->user->id,
-            'post_id' => $this->post->id,
-            'tenant_id' => $this->tenant->id
-        ]);
+        $this->comment = new Comment();
+        $this->comment->id = 1;
+        $this->comment->user_id = $this->user->id;
+        $this->comment->post_id = $this->post->id;
+        $this->comment->tenant_id = $this->tenant->id;
+        $this->comment->message = 'Test comment';
+        $this->comment->save();
     }
 
     public function test_attachment_belongs_to_tenant()
