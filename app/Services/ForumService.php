@@ -181,7 +181,7 @@ class ForumService
     }
 
     /**
-     * 引用投稿をフォーマット
+     * 引用投稿をフォーマット（Attachmentシステム対応）
      */
     private function formatQuotedPost($quotedPost): ?array
     {
@@ -194,6 +194,8 @@ class ForumService
             'message' => $quotedPost->trashed() ? null : $quotedPost->message,
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
+            'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
+            'attachments' => $quotedPost->trashed() ? [] : ($quotedPost->attachments ?? []), // 新Attachmentシステム
             'user' => $quotedPost->trashed() ? null : $quotedPost->user,
         ];
     }
