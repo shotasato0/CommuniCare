@@ -33,12 +33,14 @@ class AttachmentModelUnitTest extends TestCase
     {
         $attachment = new Attachment();
         
-        $expectedCasts = [
-            'file_size' => 'integer',
-            'is_safe' => 'boolean',
-        ];
+        $casts = $attachment->getCasts();
         
-        $this->assertEquals($expectedCasts, $attachment->getCasts());
+        // 明示的に設定したキャストを確認
+        $this->assertEquals('integer', $casts['file_size']);
+        $this->assertEquals('boolean', $casts['is_safe']);
+        
+        // Laravel自動キャストのidも含まれることを確認
+        $this->assertArrayHasKey('id', $casts);
     }
 
     public function test_is_image_method_logic()
