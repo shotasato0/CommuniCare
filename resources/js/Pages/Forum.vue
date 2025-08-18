@@ -554,14 +554,28 @@ const openModal = (imageSrc) => {
                             v-html="post.formatted_message"
                         ></p>
 
-                        <!-- 投稿画像の表示 -->
-                        <div v-if="post.img">
-                            <img
-                                :src="`/storage/${post.img}`"
-                                alt="投稿画像"
-                                class="w-48 h-48 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-300"
-                                @click="openModal(`/storage/${post.img}`)"
-                            />
+                        <!-- 投稿画像の表示（新・旧システム両対応） -->
+                        <div v-if="post.img || (post.attachments && post.attachments.length > 0)">
+                            <!-- 新Attachmentシステムの画像 -->
+                            <template v-if="post.attachments && post.attachments.length > 0">
+                                <div v-for="attachment in post.attachments.filter(a => a.file_type === 'image')" :key="attachment.id" class="mb-2">
+                                    <img
+                                        :src="`/storage/${attachment.file_path}`"
+                                        :alt="attachment.original_name"
+                                        class="w-48 h-48 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                                        @click="openModal(`/storage/${attachment.file_path}`)"
+                                    />
+                                </div>
+                            </template>
+                            <!-- 旧システムの画像（後方互換性） -->
+                            <template v-else-if="post.img">
+                                <img
+                                    :src="`/storage/${post.img}`"
+                                    alt="投稿画像"
+                                    class="w-48 h-48 object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                                    @click="openModal(`/storage/${post.img}`)"
+                                />
+                            </template>
                         </div>
 
                         <!-- ボタンを投稿の下、右端に配置 -->
