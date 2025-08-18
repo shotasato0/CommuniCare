@@ -138,6 +138,11 @@ class ForumService
                     $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
                           ->where('tenant_id', $user->tenant_id)
                           ->where('user_id', $user->id);
+                },
+                'attachments' => function($query) use ($user) {
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->where('file_type', 'image');
                 }
             ])
             ->withCount(['likes' => function($query) use ($user) {
