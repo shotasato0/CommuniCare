@@ -480,6 +480,29 @@ const openModal = (imageSrc) => {
                                     <p class="text-sm mb-2 whitespace-pre-wrap text-gray-700 dark:text-gray-300">
                                         {{ post.quoted_post.message }}
                                     </p>
+                                    <!-- 引用投稿の画像（新・旧システム両対応） -->
+                                    <div v-if="post.quoted_post.img || (post.quoted_post.attachments && post.quoted_post.attachments.length > 0)" class="mt-2">
+                                        <!-- 新Attachmentシステムの画像 -->
+                                        <template v-if="post.quoted_post.attachments && post.quoted_post.attachments.length > 0">
+                                            <div v-for="attachment in post.quoted_post.attachments.filter(a => a.file_type === 'image')" :key="attachment.id" class="mb-2">
+                                                <img
+                                                    :src="`/storage/${attachment.file_path}`"
+                                                    :alt="attachment.original_name"
+                                                    class="w-24 h-24 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                                                    @click="openModal(`/storage/${attachment.file_path}`)"
+                                                />
+                                            </div>
+                                        </template>
+                                        <!-- 旧システムの画像（後方互換性） -->
+                                        <template v-else-if="post.quoted_post.img">
+                                            <img
+                                                :src="`/storage/${post.quoted_post.img}`"
+                                                alt="引用投稿画像"
+                                                class="w-24 h-24 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                                                @click="openModal(`/storage/${post.quoted_post.img}`)"
+                                            />
+                                        </template>
+                                    </div>
                                 </div>
                             </template>
                         </div>
