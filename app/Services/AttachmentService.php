@@ -47,6 +47,14 @@ class AttachmentService
     private const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
     /**
+     * サポートされるファイルタイプを取得（マイグレーション用）
+     */
+    public static function getSupportedFileTypes(): array
+    {
+        return array_keys(self::SUPPORTED_TYPES);
+    }
+
+    /**
      * 複数ファイルを安全にアップロード
      */
     public function uploadFiles(array $files, string $attachableType, int $attachableId): array
