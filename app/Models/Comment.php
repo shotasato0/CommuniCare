@@ -43,6 +43,12 @@ class Comment extends Model
         return $this->belongsTo(Forum::class);
     }
 
+    // Attachmentとの多態関係
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     public function getFormattedMessageAttribute()
     {
         return preg_replace(
