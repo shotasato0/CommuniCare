@@ -344,8 +344,139 @@ class MigrateToAttachmentSystem extends Command
 
     private function migrateCommentsTable(int $batchSize, bool $isDryRun): void
     {
-        $this->info("💬 comments.img → attachments 移行準備中...");
-        // 次のステップで実装
+        $this->info("💬 comments.img → attachments 移行開始...");
+        
+        // 画像付きコメント数を取得
+        $totalComments = Comment::whereNotNull('img')
+                               ->where('img', '!=', '')
+                               ->count();
+        
+        if ($totalComments === 0) {
+            $this->info("   📋 移行対象のコメント画像が見つかりません");
+            return;
+        }
+        
+        $this->migrationStats['comments']['total'] = $totalComments;
+        $this->info("   📊 移行対象: {$totalComments}件のコメント画像");
+        
+        $progressBar = $this->createProgressBar($totalComments, 'comments.img');
+        $progressBar->start();
+        
+        // バッチ処理でコメントを処理
+        Comment::whereNotNull('img')
+               ->where('img', '!=', '')
+               ->chunk($batchSize, function ($comments) use ($isDryRun, $progressBar) {
+                   foreach ($comments as $comment) {
+                       try {
+                           if ($isDryRun) {
+                               // Dry Run: 処理をシミュレート
+                               $this->migrationStats['comments']['migrated']++;
+                           } else {
+                               // 実際の移行実行
+                               if ($this->migrateCommentImage($comment)) {
+                                   $this->migrationStats['comments']['migrated']++;
+                               } else {
+                                   $this->migrationStats['comments']['skipped']++;
+                               }
+                           }
+                           
+                           $progressBar->advance();
+                           
+                       } catch (Exception $e) {
+                           $this->migrationStats['comments']['errors']++;
+                           $this->logError("Comment image migration failed for comment {$comment->id}", $e);
+                           $progressBar->advance();
+                       }
+                   }
+               });
+        
+        $progressBar->finish();
+        $this->newLine(2);
+        
+        $migrated = $this->migrationStats['comments']['migrated'];
+        $errors = $this->migrationStats['comments']['errors'];
+        
+        if ($isDryRun) {
+            $this->info("   ✅ DRY RUN: {$migrated}件のコメント画像が移行対象です");
+        } else {
+            $this->info("   ✅ {$migrated}件のコメント画像を移行完了");
+            if ($errors > 0) {
+                $this->warn("   ⚠️  {$errors}件でエラーが発生しました");
+            }
+        }
+    }
+
+    /**
+     * 個別コメント画像の移行処理
+     */
+    private function migrateCommentImage(Comment $comment): bool
+    {
+        try {
+            // 既存のAttachmentをチェック（重複回避）
+            if ($comment->attachments()->where('file_type', 'image')->exists()) {
+                return false; // すでに移行済み
+            }
+            
+            // コメント画像ファイルの存在確認
+            $imgPath = $comment->img;
+            
+            if (!$imgPath || !Storage::disk('public')->exists($imgPath)) {
+                return false; // ファイルが存在しない
+            }
+            
+            // ファイル情報取得
+            $fullPath = storage_path('app/public/' . $imgPath);
+            $originalName = basename($imgPath);
+            $fileSize = filesize($fullPath);
+            $mimeType = mime_content_type($fullPath);
+            
+            // ファイル拡張子とタイプ判定
+            $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+                return false; // サポートされていない画像形式
+            }
+            
+            // 安全なファイル名生成
+            $safeFileName = $this->generateSafeFileName($originalName, $extension);
+            $newPath = 'attachments/images/' . $safeFileName;
+            
+            // ファイルハッシュ生成
+            $fileHash = hash_file('sha256', $fullPath);
+            
+            // トランザクション内で処理
+            DB::transaction(function () use ($comment, $originalName, $safeFileName, $newPath, $fileSize, $mimeType, $fileHash, $imgPath) {
+                // 新しい場所にファイルコピー
+                Storage::disk('public')->copy($imgPath, $newPath);
+                
+                // Attachmentレコード作成
+                Attachment::create([
+                    'attachable_type' => 'App\Models\Comment',
+                    'attachable_id' => $comment->id,
+                    'original_name' => $originalName,
+                    'file_name' => $safeFileName,
+                    'file_path' => $newPath,
+                    'file_size' => $fileSize,
+                    'mime_type' => $mimeType,
+                    'file_type' => 'image',
+                    'tenant_id' => $comment->tenant_id,
+                    'uploaded_by' => $comment->user_id,
+                    'hash' => $fileHash,
+                    'is_safe' => true
+                ]);
+            });
+            
+            $this->logInfo("Comment image migrated successfully", [
+                'comment_id' => $comment->id,
+                'original_path' => $imgPath,
+                'new_path' => $newPath
+            ]);
+            
+            return true;
+            
+        } catch (Exception $e) {
+            $this->logError("Failed to migrate comment image for comment {$comment->id}", $e);
+            throw $e;
+        }
     }
 
     private function migrateUsersTable(int $batchSize, bool $isDryRun): void
