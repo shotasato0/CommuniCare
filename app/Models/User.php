@@ -71,4 +71,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Like::class); // 多対多のリレーション
     }
+
+    /**
+     * Get all attachments for the user (アイコン画像等)
+     */
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /**
+     * Get the user's icon attachment
+     */
+    public function iconAttachment()
+    {
+        return $this->attachments()->where('file_type', 'image')->latest()->first();
+    }
 }
