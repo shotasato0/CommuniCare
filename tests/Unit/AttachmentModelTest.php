@@ -62,12 +62,20 @@ class AttachmentModelTest extends TestCase
 
     public function test_attachment_belongs_to_tenant()
     {
-        $attachment = Attachment::factory()->create([
-            'attachable_type' => 'App\Models\Post',
-            'attachable_id' => $this->post->id,
-            'tenant_id' => $this->tenant->id,
-            'uploaded_by' => $this->user->id
-        ]);
+        $attachment = new Attachment();
+        $attachment->attachable_type = 'App\Models\Post';
+        $attachment->attachable_id = $this->post->id;
+        $attachment->original_name = 'test.jpg';
+        $attachment->file_name = 'safe_test.jpg';
+        $attachment->file_path = 'attachments/images/safe_test.jpg';
+        $attachment->file_size = 1024;
+        $attachment->mime_type = 'image/jpeg';
+        $attachment->file_type = 'image';
+        $attachment->tenant_id = $this->tenant->id;
+        $attachment->uploaded_by = $this->user->id;
+        $attachment->hash = 'test_hash';
+        $attachment->is_safe = true;
+        $attachment->save();
         
         $this->assertEquals($this->tenant->id, $attachment->tenant_id);
     }
