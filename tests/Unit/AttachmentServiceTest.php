@@ -26,25 +26,39 @@ class AttachmentServiceTest extends TestCase
     {
         parent::setUp();
         
-        $this->attachmentService = new AttachmentService();
+        // 安全なデータベース初期化
+        $this->initializeSafeTestData();
         
+        $this->attachmentService = new AttachmentService();
+        Storage::fake('public');
+    }
+
+    private function initializeSafeTestData(): void
+    {
         // テナント作成
-        $this->tenant = Tenant::factory()->create();
-        tenancy()->initialize($this->tenant);
+        $this->tenant = new Tenant();
+        $this->tenant->id = 'test-tenant-' . time();
+        $this->tenant->save();
         
         // ユーザー作成
-        $this->user = User::factory()->create([
-            'tenant_id' => $this->tenant->id
-        ]);
+        $this->user = new User();
+        $this->user->id = 1;
+        $this->user->tenant_id = $this->tenant->id;
+        $this->user->name = 'Test User';
+        $this->user->email = 'test@example.com';
+        $this->user->password = 'password';
+        $this->user->save();
         
         // 投稿作成
-        $this->post = Post::factory()->create([
-            'user_id' => $this->user->id,
-            'tenant_id' => $this->tenant->id
-        ]);
+        $this->post = new Post();
+        $this->post->id = 1;
+        $this->post->user_id = $this->user->id;
+        $this->post->tenant_id = $this->tenant->id;
+        $this->post->title = 'Test Post';
+        $this->post->message = 'Test message';
+        $this->post->save();
         
         Auth::login($this->user);
-        Storage::fake('public');
     }
 
     public function test_upload_single_image_file_successfully()
