@@ -9,14 +9,13 @@ use App\Models\Post;
 use App\Models\User;
 use App\Models\Tenant;
 use App\Exceptions\Custom\TenantViolationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AttachmentServiceTest extends TestCase
 {
-    use RefreshDatabase;
 
     private AttachmentService $attachmentService;
     private User $user;
