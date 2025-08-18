@@ -39,6 +39,12 @@ class Post extends Model
         return $this->belongsTo(Post::class, 'quoted_post_id')->withTrashed();
     }
 
+    // Attachmentとの多態関係
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
+    }
+
     public function getFormattedMessageAttribute()
     {
         return preg_replace (
