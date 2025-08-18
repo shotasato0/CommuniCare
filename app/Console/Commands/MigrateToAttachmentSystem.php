@@ -218,7 +218,151 @@ class MigrateToAttachmentSystem extends Command
 
     private function migrateUsersTable(int $batchSize, bool $isDryRun): void
     {
-        $this->info("👤 users.icon → attachments 移行準備中...");
-        // 次のステップで実装
+        $this->info("👤 users.icon → attachments 移行開始...");
+        
+        // アイコン付きユーザー数を取得
+        $totalUsers = User::whereNotNull('icon')
+                         ->where('icon', '!=', '')
+                         ->count();
+        
+        if ($totalUsers === 0) {
+            $this->info("   📋 移行対象のユーザーアイコンが見つかりません");
+            return;
+        }
+        
+        $this->migrationStats['users']['total'] = $totalUsers;
+        $this->info("   📊 移行対象: {$totalUsers}件のユーザーアイコン");
+        
+        $progressBar = $this->createProgressBar($totalUsers, 'users.icon');
+        $progressBar->start();
+        
+        // バッチ処理でユーザーを処理
+        User::whereNotNull('icon')
+            ->where('icon', '!=', '')
+            ->chunk($batchSize, function ($users) use ($isDryRun, $progressBar) {
+                foreach ($users as $user) {
+                    try {
+                        if ($isDryRun) {
+                            // Dry Run: 処理をシミュレート
+                            $this->migrationStats['users']['migrated']++;
+                        } else {
+                            // 実際の移行実行
+                            if ($this->migrateUserIcon($user)) {
+                                $this->migrationStats['users']['migrated']++;
+                            } else {
+                                $this->migrationStats['users']['skipped']++;
+                            }
+                        }
+                        
+                        $progressBar->advance();
+                        
+                    } catch (Exception $e) {
+                        $this->migrationStats['users']['errors']++;
+                        $this->logError("User icon migration failed for user {$user->id}", $e);
+                        $progressBar->advance();
+                    }
+                }
+            });
+        
+        $progressBar->finish();
+        $this->newLine(2);
+        
+        $migrated = $this->migrationStats['users']['migrated'];
+        $errors = $this->migrationStats['users']['errors'];
+        
+        if ($isDryRun) {
+            $this->info("   ✅ DRY RUN: {$migrated}件のユーザーアイコンが移行対象です");
+        } else {
+            $this->info("   ✅ {$migrated}件のユーザーアイコンを移行完了");
+            if ($errors > 0) {
+                $this->warn("   ⚠️  {$errors}件でエラーが発生しました");
+            }
+        }
+    }
+
+    /**
+     * 個別ユーザーアイコンの移行処理
+     */
+    private function migrateUserIcon(User $user): bool
+    {
+        try {
+            // 既存のAttachmentをチェック（重複回避）
+            if ($user->attachments()->where('file_type', 'image')->exists()) {
+                return false; // すでに移行済み
+            }
+            
+            // アイコンファイルの存在確認
+            $iconPath = $user->icon;
+            
+            if (!$iconPath || !Storage::disk('public')->exists($iconPath)) {
+                return false; // ファイルが存在しない
+            }
+            
+            // ファイル情報取得
+            $fullPath = storage_path('app/public/' . $iconPath);
+            $originalName = basename($iconPath);
+            $fileSize = filesize($fullPath);
+            $mimeType = mime_content_type($fullPath);
+            
+            // ファイル拡張子とタイプ判定
+            $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+                return false; // サポートされていない画像形式
+            }
+            
+            // 安全なファイル名生成
+            $safeFileName = $this->generateSafeFileName($originalName, $extension);
+            $newPath = 'attachments/images/' . $safeFileName;
+            
+            // ファイルハッシュ生成
+            $fileHash = hash_file('sha256', $fullPath);
+            
+            // トランザクション内で処理
+            DB::transaction(function () use ($user, $originalName, $safeFileName, $newPath, $fileSize, $mimeType, $fileHash, $iconPath) {
+                // 新しい場所にファイルコピー
+                Storage::disk('public')->copy($iconPath, $newPath);
+                
+                // Attachmentレコード作成
+                Attachment::create([
+                    'attachable_type' => 'App\Models\User',
+                    'attachable_id' => $user->id,
+                    'original_name' => $originalName,
+                    'file_name' => $safeFileName,
+                    'file_path' => $newPath,
+                    'file_size' => $fileSize,
+                    'mime_type' => $mimeType,
+                    'file_type' => 'image',
+                    'tenant_id' => $user->tenant_id,
+                    'uploaded_by' => $user->id,
+                    'hash' => $fileHash,
+                    'is_safe' => true
+                ]);
+            });
+            
+            $this->logInfo("User icon migrated successfully", [
+                'user_id' => $user->id,
+                'original_path' => $iconPath,
+                'new_path' => $newPath
+            ]);
+            
+            return true;
+            
+        } catch (Exception $e) {
+            $this->logError("Failed to migrate user icon for user {$user->id}", $e);
+            throw $e;
+        }
+    }
+
+    /**
+     * 安全なファイル名生成
+     */
+    private function generateSafeFileName(string $originalName, string $extension): string
+    {
+        $name = pathinfo($originalName, PATHINFO_FILENAME);
+        $safeName = Str::slug($name) ?: 'file';
+        $timestamp = now()->format('Ymd_His');
+        $random = Str::random(8);
+        
+        return "{$safeName}_{$timestamp}_{$random}.{$extension}";
     }
 }
