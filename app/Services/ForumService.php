@@ -162,7 +162,8 @@ class ForumService
                 'title' => $post->title,
                 'message' => $post->message,
                 'formatted_message' => $post->formatted_message,
-                'img' => $post->img,
+                'img' => $post->img, // 後方互換性
+                'attachments' => $post->attachments ?? [], // 新Attachmentシステム
                 'created_at' => $post->created_at,
                 'user' => $post->user,
                 'like_count' => $post->likes_count,
