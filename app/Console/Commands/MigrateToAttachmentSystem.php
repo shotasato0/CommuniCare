@@ -179,15 +179,22 @@ class MigrateToAttachmentSystem extends Command
     /**
      * ログ記録（Error）
      */
-    private function logError(string $message, Exception $exception = null): void
+    private function logError(string $message, Exception|array|null $context = null): void
     {
         $logMessage = $this->logPrefix . ' ' . $message;
-        $context = $exception ? [
-            'exception' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
-        ] : [];
         
-        Log::error($logMessage, $context);
+        if ($context instanceof Exception) {
+            $contextArray = [
+                'exception' => $context->getMessage(),
+                'trace' => $context->getTraceAsString()
+            ];
+        } elseif (is_array($context)) {
+            $contextArray = $context;
+        } else {
+            $contextArray = [];
+        }
+        
+        Log::error($logMessage, $contextArray);
     }
 
     /**
@@ -435,7 +442,18 @@ class MigrateToAttachmentSystem extends Command
             $fullPath = storage_path('app/public/' . $imgPath);
             $originalName = basename($imgPath);
             $fileSize = filesize($fullPath);
+            if ($fileSize === false) {
+                $this->logError("Failed to get filesize for comment image", [
+                    'comment_id' => $comment->id,
+                    'file_path' => $fullPath,
+                ]);
+                return false;
+            }
             $mimeType = mime_content_type($fullPath);
+            if ($mimeType === false) {
+                // MIMEタイプが取得できない場合は移行しない
+                return false;
+            }
             
             // ファイル拡張子とタイプ判定
             $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
@@ -572,7 +590,18 @@ class MigrateToAttachmentSystem extends Command
             $fullPath = storage_path('app/public/' . $iconPath);
             $originalName = basename($iconPath);
             $fileSize = filesize($fullPath);
+            if ($fileSize === false) {
+                $this->logError("Failed to get filesize for user icon", [
+                    'user_id' => $user->id,
+                    'file_path' => $fullPath,
+                ]);
+                return false;
+            }
             $mimeType = mime_content_type($fullPath);
+            if ($mimeType === false) {
+                // MIMEタイプが取得できない場合は移行しない
+                return false;
+            }
             
             // ファイル拡張子とタイプ判定
             $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
