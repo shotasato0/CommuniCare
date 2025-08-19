@@ -81,15 +81,22 @@ class ForumService
                           ->where('tenant_id', $user->tenant_id);
                 },
                 'quotedPost' => function($query) use ($user) {
-                    $query->select('id', 'user_id', 'message', 'title', 'tenant_id')
+                    $query->select('id', 'user_id', 'message', 'title', 'tenant_id', 'img')
                           ->where('tenant_id', $user->tenant_id)
-                          ->with(['user' => function($query) use ($user) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $user->tenant_id);
-                          }]);
+                          ->with([
+                              'user' => function($query) use ($user) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id);
+                              },
+                              'attachments' => function($query) use ($user) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->where('file_type', 'image');
+                              }
+                          ]);
                 },
                 'comments' => function ($query) use ($user) {
-                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'img', 'created_at')
                           ->where('tenant_id', $user->tenant_id)
                           ->whereNull('parent_id')
                           ->with([
@@ -97,13 +104,25 @@ class ForumService
                                   $query->select('id', 'name', 'tenant_id')
                                         ->where('tenant_id', $user->tenant_id);
                               },
-                              'children' => function($query) use ($user) {
-                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
+                              'attachments' => function($query) use ($user) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
                                         ->where('tenant_id', $user->tenant_id)
-                                        ->with(['user' => function($query) use ($user) {
-                                            $query->select('id', 'name', 'tenant_id')
-                                                  ->where('tenant_id', $user->tenant_id);
-                                        }]);
+                                        ->where('file_type', 'image');
+                              },
+                              'children' => function($query) use ($user) {
+                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'img', 'created_at')
+                                        ->where('tenant_id', $user->tenant_id)
+                                        ->with([
+                                            'user' => function($query) use ($user) {
+                                                $query->select('id', 'name', 'tenant_id')
+                                                      ->where('tenant_id', $user->tenant_id);
+                                            },
+                                            'attachments' => function($query) use ($user) {
+                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                                      ->where('tenant_id', $user->tenant_id)
+                                                      ->where('file_type', 'image');
+                                            }
+                                        ]);
                               },
                               'likes' => function ($query) use ($user) {
                                   $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
@@ -119,6 +138,11 @@ class ForumService
                     $query->select('id', 'likeable_id', 'likeable_type', 'user_id', 'tenant_id')
                           ->where('tenant_id', $user->tenant_id)
                           ->where('user_id', $user->id);
+                },
+                'attachments' => function($query) use ($user) {
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                          ->where('tenant_id', $user->tenant_id)
+                          ->where('file_type', 'image');
                 }
             ])
             ->withCount(['likes' => function($query) use ($user) {
@@ -138,7 +162,8 @@ class ForumService
                 'title' => $post->title,
                 'message' => $post->message,
                 'formatted_message' => $post->formatted_message,
-                'img' => $post->img,
+                'img' => $post->img, // 後方互換性
+                'attachments' => $post->attachments ?? [], // 新Attachmentシステム
                 'created_at' => $post->created_at,
                 'user' => $post->user,
                 'like_count' => $post->likes_count,
@@ -162,7 +187,7 @@ class ForumService
     }
 
     /**
-     * 引用投稿をフォーマット
+     * 引用投稿をフォーマット（Attachmentシステム対応）
      */
     private function formatQuotedPost($quotedPost): ?array
     {
@@ -175,12 +200,14 @@ class ForumService
             'message' => $quotedPost->trashed() ? null : $quotedPost->message,
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
+            'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
+            'attachments' => $quotedPost->trashed() ? [] : ($quotedPost->attachments ?? []), // 新Attachmentシステム
             'user' => $quotedPost->trashed() ? null : $quotedPost->user,
         ];
     }
 
     /**
-     * コメントデータをフォーマット
+     * コメントデータをフォーマット（Attachmentシステム対応）
      */
     private function formatComment($comment, $user): array
     {
@@ -188,7 +215,8 @@ class ForumService
             'id' => $comment->id,
             'message' => $comment->message,
             'formatted_message' => $comment->formatted_message,
-            'img' => $comment->img,
+            'img' => $comment->img, // 後方互換性のため保持
+            'attachments' => $comment->attachments ?? [], // 新Attachmentシステム
             'created_at' => $comment->created_at,
             'user' => $comment->user,
             'like_count' => $comment->likes_count,
