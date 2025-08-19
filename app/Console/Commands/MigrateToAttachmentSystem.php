@@ -11,7 +11,6 @@ use App\Models\Attachment;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
-use App\Services\AttachmentService;
 use Exception;
 
 class MigrateToAttachmentSystem extends Command
