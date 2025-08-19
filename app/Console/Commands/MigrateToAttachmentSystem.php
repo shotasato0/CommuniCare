@@ -287,7 +287,18 @@ class MigrateToAttachmentSystem extends Command
             $fullPath = storage_path('app/public/' . $imgPath);
             $originalName = basename($imgPath);
             $fileSize = filesize($fullPath);
+            if ($fileSize === false) {
+                $this->logError("Failed to get filesize for post image", [
+                    'post_id' => $post->id,
+                    'file_path' => $fullPath,
+                ]);
+                return false;
+            }
             $mimeType = mime_content_type($fullPath);
+            if ($mimeType === false) {
+                // MIMEタイプが取得できない場合は移行しない
+                return false;
+            }
             
             // ファイル拡張子とタイプ判定
             $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
