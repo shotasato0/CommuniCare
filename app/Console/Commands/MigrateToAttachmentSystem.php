@@ -21,11 +21,7 @@ class MigrateToAttachmentSystem extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:to-attachment 
-                          {--table= : 特定テーブルのみ移行 (posts, comments, users)}
-                          {--batch-size=100 : バッチ処理のサイズ}
-                          {--dry-run : 実際の移行は行わず、確認のみ実行}
-                          {--force : 本番環境でも強制実行}';
+    protected $signature = 'migrate:to-attachment {--table= : 特定テーブルのみ移行 (posts, comments, users)} {--batch-size=100 : バッチ処理のサイズ} {--dry-run : 実際の移行は行わず、確認のみ実行} {--force : 本番環境でも強制実行}';
 
     /**
      * The console command description.
