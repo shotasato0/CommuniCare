@@ -122,14 +122,28 @@ const getCommentCountRecursive = (comments) => {
                     v-html="comment.formatted_message"
                 ></p>
 
-                <!-- コメント画像 -->
-                <div v-if="comment.img" class="mt-3">
-                    <img
-                        :src="`/storage/${comment.img}`"
-                        alt="添付画像"
-                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                        @click="openModal(`/storage/${comment.img}`)"
-                    />
+                <!-- コメント画像（新・旧システム両対応） -->
+                <div v-if="comment.img || (comment.attachments && comment.attachments.length > 0)" class="mt-3">
+                    <!-- 新Attachmentシステムの画像 -->
+                    <template v-if="comment.attachments && comment.attachments.length > 0">
+                        <div v-for="attachment in comment.attachments.filter(a => a.file_type === 'image')" :key="attachment.id" class="mb-2">
+                            <img
+                                :src="`/storage/${attachment.file_path}`"
+                                :alt="attachment.original_name"
+                                class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                                @click="openModal(`/storage/${attachment.file_path}`)"
+                            />
+                        </div>
+                    </template>
+                    <!-- 旧システムの画像（後方互換性） -->
+                    <template v-else-if="comment.img">
+                        <img
+                            :src="`/storage/${comment.img}`"
+                            alt="添付画像"
+                            class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                            @click="openModal(`/storage/${comment.img}`)"
+                        />
+                    </template>
                 </div>
 
                 <!-- 子コメント -->
