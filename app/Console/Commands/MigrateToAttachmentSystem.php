@@ -30,7 +30,6 @@ class MigrateToAttachmentSystem extends Command
      */
     protected $description = '既存のimg/iconフィールドから新Attachmentシステムへデータ移行（3テーブル対応: posts.img, comments.img, users.icon）';
 
-    private AttachmentService $attachmentService;
     private array $migrationStats = [];
     private string $logPrefix;
 
@@ -39,7 +38,6 @@ class MigrateToAttachmentSystem extends Command
      */
     public function handle()
     {
-        $this->attachmentService = new AttachmentService();
         $this->logPrefix = '[AttachmentMigration]';
         
         $this->info("🚀 Attachmentシステム移行開始");
