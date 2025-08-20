@@ -70,9 +70,17 @@ class PostStoreRequest extends FormRequest
             'forum_id.required' => 'フォーラムの指定は必須です。',
             'forum_id.exists' => '指定されたフォーラムは存在しません。',
             'quoted_post_id.exists' => '引用対象の投稿が存在しません。',
+            
+            // 旧システム
             'img.image' => 'ファイルは画像である必要があります。',
             'img.mimes' => 'jpeg、png、jpg、gif形式のファイルのみアップロード可能です。',
             'img.max' => 'ファイルサイズは10MB以下にしてください。',
+            
+            // 新Attachmentシステム
+            'attachment_ids.array' => '添付ファイルIDは配列形式である必要があります。',
+            'attachment_ids.max' => '添付ファイルは最大10個まで選択できます。',
+            'attachment_ids.*.integer' => '添付ファイルIDは整数である必要があります。',
+            'attachment_ids.*.exists' => '指定された添付ファイルが存在しません。',
         ];
     }
 }
