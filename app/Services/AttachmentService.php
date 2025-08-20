@@ -302,6 +302,7 @@ class AttachmentService
             'document' => 'attachments/documents',
             'excel' => 'attachments/excel',
             'text' => 'attachments/text',
+            'audio' => 'attachments/audio',
             default => 'attachments/misc'
         };
     }
