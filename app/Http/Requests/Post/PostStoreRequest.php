@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Attachment;
 
 /**
  * 投稿作成リクエスト
@@ -82,5 +83,54 @@ class PostStoreRequest extends FormRequest
             'attachment_ids.*.integer' => '添付ファイルIDは整数である必要があります。',
             'attachment_ids.*.exists' => '指定された添付ファイルが存在しません。',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // 新Attachmentシステム：テナント境界チェック
+            if ($this->has('attachment_ids') && is_array($this->input('attachment_ids'))) {
+                $this->validateAttachmentTenantBoundary($validator);
+            }
+        });
+    }
+
+    /**
+     * 添付ファイルのテナント境界チェック
+     */
+    private function validateAttachmentTenantBoundary($validator): void
+    {
+        $attachmentIds = $this->input('attachment_ids', []);
+        $currentUser = $this->user();
+
+        if (!$currentUser || empty($attachmentIds)) {
+            return;
+        }
+
+        try {
+            $attachments = Attachment::whereIn('id', $attachmentIds)->get();
+
+            foreach ($attachments as $attachment) {
+                if ($attachment->tenant_id !== $currentUser->tenant_id) {
+                    $validator->errors()->add(
+                        'attachment_ids',
+                        "添付ファイル「{$attachment->original_name}」へのアクセス権限がありません。"
+                    );
+                }
+
+                // アップロード者チェック（任意）
+                if ($attachment->uploaded_by !== $currentUser->id && !$currentUser->hasRole('admin')) {
+                    $validator->errors()->add(
+                        'attachment_ids',
+                        "添付ファイル「{$attachment->original_name}」の使用権限がありません。"
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            $validator->errors()->add('attachment_ids', '添付ファイルの検証中にエラーが発生しました。');
+        }
     }
 }
