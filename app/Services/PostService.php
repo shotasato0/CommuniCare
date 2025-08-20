@@ -266,4 +266,37 @@ class PostService
     {
         return Post::findOrFail($postId);
     }
+
+    /**
+     * 添付ファイルを投稿に関連付ける
+     */
+    private function attachFilesToPost(Post $post, array $attachmentIds): void
+    {
+        /** @var User $currentUser */
+        $currentUser = Auth::user();
+        
+        // 添付ファイルのバリデーション
+        $attachments = Attachment::whereIn('id', $attachmentIds)
+            ->where('tenant_id', $currentUser->tenant_id)
+            ->get();
+
+        if ($attachments->count() !== count($attachmentIds)) {
+            throw new \InvalidArgumentException('指定された添付ファイルの一部が見つからないか、アクセス権限がありません。');
+        }
+
+        // 各添付ファイルの関連付けを更新
+        foreach ($attachments as $attachment) {
+            $attachment->update([
+                'attachable_type' => Post::class,
+                'attachable_id' => $post->id,
+            ]);
+        }
+
+        // セキュリティログ記録
+        $this->auditAction('attachments_linked_to_post', [
+            'post_id' => $post->id,
+            'attachment_ids' => $attachmentIds,
+            'attachments_count' => count($attachmentIds)
+        ]);
+    }
 }
