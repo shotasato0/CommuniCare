@@ -15,6 +15,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\AttachmentController;
 
 // トップページ
 Route::get('/', function () {
