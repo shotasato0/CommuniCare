@@ -69,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
 
     // 部署の並び順を保存
     Route::post('/units/sort', [UnitController::class, 'sort'])->name('units.sort');
+
+    // 添付ファイルダウンロード（認証必須）
+    Route::get('/attachments/{id}/download', [AttachmentController::class, 'download'])->name('attachments.download');
 });
 
 // 法的情報
