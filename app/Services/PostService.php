@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Attachment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Post\PostStoreRequest;
@@ -20,18 +21,30 @@ class PostService
      */
     public function createPost(PostStoreRequest $request): Post
     {
-        $validated = $request->validated();
-        $imgPath = $this->handleImageUpload($request);
+        return DB::transaction(function () use ($request) {
+            $validated = $request->validated();
+            
+            // 旧システム：画像アップロード処理
+            $imgPath = $this->handleImageUpload($request);
 
-        return Post::create([
-            'user_id' => Auth::id(),
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'forum_id' => $validated['forum_id'],
-            'quoted_post_id' => $validated['quoted_post_id'] ?? null,
-            'img' => $imgPath,
-            'tenant_id' => Auth::user()->tenant_id,
-        ]);
+            // 投稿作成
+            $post = Post::create([
+                'user_id' => Auth::id(),
+                'title' => $validated['title'],
+                'message' => $validated['message'],
+                'forum_id' => $validated['forum_id'],
+                'quoted_post_id' => $validated['quoted_post_id'] ?? null,
+                'img' => $imgPath,
+                'tenant_id' => Auth::user()->tenant_id,
+            ]);
+
+            // 新Attachmentシステム：添付ファイルの関連付け更新
+            if (!empty($validated['attachment_ids'])) {
+                $this->attachFilesToPost($post, $validated['attachment_ids']);
+            }
+
+            return $post;
+        });
     }
 
     /**
