@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Attachment;
 
 /**
  * コメント作成リクエスト
@@ -30,7 +31,13 @@ class CommentStoreRequest extends FormRequest
             'post_id' => 'required|exists:posts,id',
             'parent_id' => 'nullable|exists:comments,id',
             'message' => 'required|string|max:1000',
+            
+            // 旧システム（後方互換性）
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            
+            // 新Attachmentシステム（コメントは3ファイルまで）
+            'attachment_ids' => 'nullable|array|max:3',
+            'attachment_ids.*' => 'integer|exists:attachments,id',
         ];
     }
 
