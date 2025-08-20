@@ -31,7 +31,13 @@ class PostStoreRequest extends FormRequest
             'message' => 'required|string',
             'forum_id' => 'required|exists:forums,id',
             'quoted_post_id' => 'nullable|exists:posts,id',
+            
+            // 旧システム（後方互換性）
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            
+            // 新Attachmentシステム
+            'attachment_ids' => 'nullable|array|max:10',
+            'attachment_ids.*' => 'integer|exists:attachments,id',
         ];
     }
 
