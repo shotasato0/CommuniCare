@@ -1,77 +1,88 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
-import { handleImageChange } from "@/Utils/imageHandler";
+import AttachmentUploader from "./AttachmentUploader.vue";
+import AttachmentList from "./AttachmentList.vue";
 
-// コメントフォームのプロパティを定義
 const props = defineProps({
     postId: {
-        // 投稿ID
         type: Number,
         required: true,
     },
     parentId: {
-        // 親コメントID
         type: Number,
         default: null,
     },
     selectedForumId: {
-        // 選択中の掲示版ID
         type: Number,
         required: true,
     },
     replyToName: {
-        // 返信先のユーザー名
         type: String,
         default: "",
     },
     title: {
-        // フォームのタイトル
         type: String,
         default: "返信",
     },
 });
 
-const emit = defineEmits(["cancel"]); // キャンセルイベントを発行するためのemit
-const placeholder = ref(`@${props.replyToName} さんへの返信を入力`); // プレースホルダー
+const emit = defineEmits(["cancel"]);
 
-// コメントデータを管理するref
 const commentData = ref({
-    // コメントデータ
-    post_id: props.postId, // 投稿ID
-    parent_id: props.parentId, // 親コメントID
-    message: "", // コメントメッセージ
-    replyToName: props.replyToName, // 返信先のユーザー名
+    post_id: props.postId,
+    parent_id: props.parentId,
+    message: "",
+    replyToName: props.replyToName,
 });
 
-// 画像関連のrefを追加
-const image = ref(null); // 画像ファイル
-const imagePreview = ref(null); // 画像プレビュー
-const fileInput = ref(null); // ファイル選択ボタン
-const isModalOpen = ref(false); // モーダル表示
-const localErrorMessage = ref(null); // エラーメッセージ
+// 新Attachmentシステム
+const attachments = ref([])
+const showAttachmentUploader = ref(false)
 
-// コンポーネントのマウント時に初期値を設定
-onMounted(() => {
-    // コメントに対する返信の場合のみメンションを追加
-    if (props.replyToName && props.parentId) {
-        commentData.value.message = `@${props.replyToName} `;
+// 旧システム互換性
+const image = ref(null);
+const imagePreview = ref(null);
+const fileInput = ref(null);
+const isModalOpen = ref(false);
+const localErrorMessage = ref(null);
+
+// システム選択（開発中のみ、本番では新システム固定）
+const useNewAttachmentSystem = ref(true)
+
+const placeholder = ref(`@${props.replyToName} さんへの返信を入力`);
+
+// 旧システム：画像ファイルのチェック
+const onImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+        localErrorMessage.value = "ファイルサイズが10MBを超えています。";
+        return;
     }
-});
 
-// 画像ファイルのチェック
-const onImageChange = (event) => {
-    handleImageChange(event, image, imagePreview, localErrorMessage);
+    if (!file.type.startsWith('image/')) {
+        localErrorMessage.value = "画像ファイルを選択してください。";
+        return;
+    }
+
+    image.value = file;
+    localErrorMessage.value = null;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
 };
 
-// ファイル選択ボタンをクリックしたときの処理
 const triggerFileInput = () => {
     fileInput.value.click();
 };
 
-// 画像を削除する処理
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
@@ -80,155 +91,287 @@ const removeImage = () => {
     }
 };
 
-// コメントの送信処理に画像データを追加
+// 新システム：添付ファイル処理
+const handleAttachmentSuccess = (newAttachments) => {
+    console.log('コメント添付ファイルアップロード成功:', newAttachments)
+}
+
+const handleAttachmentDelete = async (attachmentId) => {
+    try {
+        const response = await fetch(`/api/attachments/${attachmentId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        })
+
+        const data = await response.json()
+        
+        if (data.success) {
+            attachments.value = attachments.value.filter(a => a.id !== attachmentId)
+        } else {
+            console.error('削除失敗:', data.message)
+        }
+    } catch (error) {
+        console.error('削除エラー:', error)
+    }
+}
+
+// 送信可能かの判定
+const canSubmit = computed(() => {
+    return commentData.value.message.trim().length > 0
+})
+
+// コメント送信
 const submitComment = () => {
-    commentData.value._token = getCsrfToken(); // CSRFトークンを追加
-    commentData.value.post_id = props.postId; // 投稿IDを追加
+    if (!canSubmit.value) {
+        return;
+    }
 
-    // フォームデータを作成
     const formData = new FormData();
-    formData.append("message", commentData.value.message); // コメントメッセージを追加
-    formData.append("post_id", commentData.value.post_id); // 投稿IDを追加
-    formData.append("_token", commentData.value._token); // CSRFトークンを追加
+    formData.append("post_id", commentData.value.post_id);
+    formData.append("message", commentData.value.message);
+    formData.append("_token", getCsrfToken());
 
-    // 親コメントIDが存在する場合はフォームデータに追加
-    if (props.parentId) {
-        formData.append("parent_id", props.parentId); // 親コメントIDを追加
+    if (commentData.value.parent_id) {
+        formData.append("parent_id", commentData.value.parent_id);
     }
 
-    // 画像データが存在する場合はフォームデータに追加
-    if (image.value) {
-        // 画像データが存在する場合
-        formData.append("image", image.value); // 画像データをフォームデータに追加
+    // 旧システム：画像データを追加
+    if (!useNewAttachmentSystem.value && image.value) {
+        formData.append("image", image.value);
     }
 
-    // コメントの投稿処理を実行
-    router.post(route("comment.store", { post: props.postId }), formData, {
-        preserveScroll: true, // スクロール位置を維持
+    // 新システム：添付ファイルIDを追加
+    if (useNewAttachmentSystem.value && attachments.value.length > 0) {
+        attachments.value.forEach((attachment, index) => {
+            formData.append(`attachment_ids[${index}]`, attachment.id);
+        });
+    }
+
+    router.post(route("comment.store"), formData, {
         onSuccess: () => {
-            // 投稿成功時の処理
-            commentData.value = {
-                post_id: props.postId, // 投稿IDをリセット
-                parent_id: props.parentId, // 親コメントIDをリセット
-                message: "", // コメントメッセージをリセット
-            };
-            image.value = null; // 画像ファイルをリセット
-            imagePreview.value = null; // 画像プレビューをリセット
-            router.visit(
-                route("forum.index", { forum_id: props.selectedForumId }), // 掲示板にリダイレクト
+            // フォームリセット
+            commentData.value.message = "";
+            image.value = null;
+            imagePreview.value = null;
+            attachments.value = [];
+            showAttachmentUploader.value = false;
+
+            // 掲示板をリロード
+            router.get(
+                route("forum.index", { forum_id: props.selectedForumId }),
                 {
-                    preserveScroll: true, // スクロール位置を維持
-                    replace: true, // ページを置換
+                    preserveState: true,
+                    preserveScroll: true,
                 }
             );
+
+            // フォームを閉じる
+            emit("cancel");
         },
         onError: (errors) => {
-            // 投稿失敗時の処理
-            console.error("コメントの投稿に失敗しました:", errors); // エラーメッセージをコンソールに出力
+            console.error("コメント送信に失敗しました:", errors);
         },
     });
 };
 
-// キャンセルハンドラーを追加
-const handleCancel = () => {
-    // フォームをリセット
-    commentData.value = {
-        post_id: props.postId, // 投稿IDをリセット
-        parent_id: props.parentId, // 親コメントIDをリセット
-        message: "", // コメントメッセージをリセット
-        replyToName: props.replyToName, // 返信先のユーザー名をリセット
-    };
-    // 親コンポーネントにキャンセルイベントを発行
-    emit("cancel"); // キャンセルイベントを発行
+// キャンセル
+const cancelComment = () => {
+    commentData.value.message = "";
+    image.value = null;
+    imagePreview.value = null;
+    attachments.value = [];
+    showAttachmentUploader.value = false;
+    emit("cancel");
 };
+
+// アップローダー表示切り替え
+const toggleAttachmentUploader = () => {
+    showAttachmentUploader.value = !showAttachmentUploader.value;
+}
 </script>
 
 <template>
-    <div class="mt-4">
-        <!-- コメントフォーム -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-md p-4 border border-gray-200 dark:border-gray-600">
+        <!-- フォームタイトル -->
+        <h4 class="text-md font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            {{ title }}
+        </h4>
+
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
-            <div class="relative">
-                <!-- コメントメッセージ入力欄 -->
+            <!-- メッセージ入力 -->
+            <div class="mb-4">
                 <textarea
                     v-model="commentData.message"
-                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                    required
+                    class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
                     :placeholder="placeholder"
                     rows="3"
+                    required
                 ></textarea>
+            </div>
 
-                <!-- 画像選択アイコン -->
-                <div
-                    class="absolute right-3 bottom-5 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
-                    style="width: 40px; height: 40px"
-                    @click="triggerFileInput"
-                    title="ファイルを選択"
-                >
-                    <i class="bi bi-card-image text-2xl"></i>
+            <!-- 添付ファイル制御 -->
+            <div class="mb-4">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block font-medium text-gray-900 dark:text-gray-100 text-sm">
+                        添付ファイル
+                    </label>
+                    
+                    <!-- システム切り替え（開発時のみ） -->
+                    <div class="flex items-center space-x-4">
+                        <div class="text-xs text-gray-600 dark:text-gray-400">
+                            <label class="inline-flex items-center">
+                                <input
+                                    v-model="useNewAttachmentSystem"
+                                    :value="true"
+                                    type="radio"
+                                    :name="`comment-attachment-system-${postId}-${parentId}`"
+                                    class="form-radio text-blue-500 w-3 h-3"
+                                />
+                                <span class="ml-1">新</span>
+                            </label>
+                            <label class="inline-flex items-center ml-3">
+                                <input
+                                    v-model="useNewAttachmentSystem"
+                                    :value="false"
+                                    type="radio"
+                                    :name="`comment-attachment-system-${postId}-${parentId}`"
+                                    class="form-radio text-blue-500 w-3 h-3"
+                                />
+                                <span class="ml-1">旧</span>
+                            </label>
+                        </div>
+
+                        <button
+                            v-if="useNewAttachmentSystem"
+                            type="button"
+                            @click="toggleAttachmentUploader"
+                            class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors"
+                        >
+                            <i class="bi bi-paperclip mr-1"></i>
+                            {{ showAttachmentUploader ? '閉じる' : '追加' }}
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 新Attachmentシステム -->
+                <div v-if="useNewAttachmentSystem" class="space-y-3">
+                    <!-- アップローダー -->
+                    <AttachmentUploader
+                        v-if="showAttachmentUploader || attachments.length === 0"
+                        v-model="attachments"
+                        attachable-type="App\Models\Comment"
+                        :attachable-id="null"
+                        @upload-success="handleAttachmentSuccess"
+                        :max-files="3"
+                        size="small"
+                    />
+                    
+                    <!-- 添付ファイル一覧 -->
+                    <AttachmentList
+                        v-if="attachments.length > 0"
+                        :attachments="attachments"
+                        :can-delete="true"
+                        layout="list"
+                        size="small"
+                        @delete-attachment="handleAttachmentDelete"
+                    />
+                </div>
+
+                <!-- 旧システム -->
+                <div v-else class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <button
+                            type="button"
+                            @click="triggerFileInput"
+                            class="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors flex items-center space-x-2"
+                        >
+                            <i class="bi bi-card-image"></i>
+                            <span>画像</span>
+                        </button>
+
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            JPG, PNG, GIF（最大10MB）
+                        </div>
+                    </div>
+
+                    <!-- 隠しファイル入力 -->
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref="fileInput"
+                        @change="onImageChange"
+                        class="hidden"
+                    />
+
+                    <!-- エラーメッセージ -->
+                    <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 text-sm">
+                        {{ localErrorMessage }}
+                    </div>
+
+                    <!-- プレビュー表示 -->
+                    <div v-if="imagePreview" class="relative inline-block">
+                        <img
+                            :src="imagePreview"
+                            alt="画像プレビュー"
+                            class="w-24 h-24 object-cover rounded cursor-pointer hover:opacity-80 transition"
+                            @click="isModalOpen = true"
+                        />
+                        <button
+                            type="button"
+                            @click="removeImage"
+                            class="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors"
+                            title="削除"
+                        >
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- 隠しファイル入力 -->
-            <input
-                type="file"
-                accept="image/*"
-                ref="fileInput"
-                @change="onImageChange"
-                style="display: none"
-            />
-            <!-- エラーメッセージ表示 -->
-            <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
-                {{ localErrorMessage }}
-            </div>
-            <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="relative mt-2 inline-block">
-                <!-- プレビュー画像 -->
-                <img
-                    :src="imagePreview"
-                    alt="画像プレビュー"
-                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                    @click="isModalOpen = true"
-                />
-                <!-- プレビュー画像削除ボタン -->
-                <div
-                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
-                    @click="removeImage"
-                    title="画像を削除"
-                    style="width: 24px; height: 24px"
-                >
-                    <i
-                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
-                    ></i>
-                </div>
-            </div>
-
-            <!-- コメント画像モーダル -->
-            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
-                <img
-                    :src="imagePreview"
-                    class="max-w-full max-h-full rounded-lg"
-                />
-            </ImageModal>
-
-            <!-- コメントフォームボタン群 -->
-            <div class="flex justify-end space-x-2 mt-2">
-                <!-- キャンセルボタン -->
+            <!-- ボタン -->
+            <div class="flex justify-end space-x-2">
                 <button
                     type="button"
-                    @click="handleCancel"
-                    class="my-2 py-2 px-4 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium transition hover:bg-gray-500 dark:hover:bg-gray-500 hover:text-white focus:outline-none focus:shadow-outline"
+                    @click="cancelComment"
+                    class="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
                 >
-                    <i class="bi bi-x-lg"></i>
+                    キャンセル
                 </button>
-
-                <!-- コメント送信ボタン -->
+                
                 <button
                     type="submit"
-                    class="my-2 px-4 py-2 rounded-md bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 transition hover:bg-blue-300 dark:hover:bg-blue-600 hover:text-white cursor-pointer"
+                    :disabled="!canSubmit"
+                    class="px-4 py-2 text-sm bg-green-500 hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-md transition-colors flex items-center space-x-1"
                 >
-                    <i class="bi bi-send"></i>
+                    <i class="bi bi-reply"></i>
+                    <span>返信</span>
                 </button>
             </div>
         </form>
+
+        <!-- 画像モーダル（旧システム用） -->
+        <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+            <img
+                :src="imagePreview"
+                alt="画像プレビュー"
+                class="max-w-full max-h-full rounded-lg"
+            />
+        </ImageModal>
     </div>
 </template>
+
+<style scoped>
+/* コンパクトなフォームスタイル */
+textarea:focus {
+    transition: all 0.2s ease-in-out;
+}
+
+/* 小さなラジオボタン */
+input[type="radio"] {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+</style>
