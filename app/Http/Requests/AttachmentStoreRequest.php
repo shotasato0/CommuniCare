@@ -12,7 +12,7 @@ class AttachmentStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check(); // ログイン済みユーザーのみ許可
+        return $this->user() !== null; // ログイン済みユーザーのみ許可
     }
 
     /**
@@ -123,7 +123,7 @@ class AttachmentStoreRequest extends FormRequest
     {
         $type = $this->input('attachable_type');
         $id = $this->input('attachable_id');
-        $currentUser = auth()->user();
+        $currentUser = $this->user();
 
         try {
             switch ($type) {
