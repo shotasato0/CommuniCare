@@ -89,9 +89,8 @@ class ForumService
                                         ->where('tenant_id', $user->tenant_id);
                               },
                               'attachments' => function($query) use ($user) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
-                                        ->where('tenant_id', $user->tenant_id)
-                                        ->where('file_type', 'image');
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'file_size', 'mime_type', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id);
                               }
                           ]);
                 },
@@ -105,9 +104,8 @@ class ForumService
                                         ->where('tenant_id', $user->tenant_id);
                               },
                               'attachments' => function($query) use ($user) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
-                                        ->where('tenant_id', $user->tenant_id)
-                                        ->where('file_type', 'image');
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'file_size', 'mime_type', 'tenant_id')
+                                        ->where('tenant_id', $user->tenant_id);
                               },
                               'children' => function($query) use ($user) {
                                   $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'img', 'created_at')
