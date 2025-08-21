@@ -263,10 +263,9 @@ const toggleAttachmentUploader = () => {
                         v-if="showAttachmentUploader || attachments.length === 0"
                         v-model="attachments"
                         attachable-type="App\Models\Comment"
-                        :attachable-id="null"
+                        attachable-id="temp"
                         @upload-success="handleAttachmentSuccess"
                         :max-files="3"
-                        size="small"
                     />
                     
                     <!-- 添付ファイル一覧 -->
