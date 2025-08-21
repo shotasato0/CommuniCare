@@ -112,6 +112,7 @@ const uploadFiles = async () => {
         const data = await response.json()
 
         if (data.success) {
+            console.log('Upload successful, attachments:', data.attachments);
             emit('upload-success', data.attachments)
             emit('update:modelValue', [...props.modelValue, ...data.attachments])
             
