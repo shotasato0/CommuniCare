@@ -200,7 +200,7 @@ const handleDrop = (e) => {
     <div class="attachment-uploader">
         <!-- ファイル選択エリア -->
         <div 
-            class="upload-area border-2 border-dashed rounded-lg p-6 text-center transition-colors"
+            class="upload-area border-2 border-dashed rounded-lg p-4 sm:p-6 text-center transition-colors"
             :class="{
                 'border-blue-300 bg-blue-50 dark:border-blue-600 dark:bg-blue-900/20': dragOver,
                 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500': !dragOver,
@@ -221,14 +221,14 @@ const handleDrop = (e) => {
             />
             
             <div v-if="!disabled">
-                <i class="bi bi-cloud-upload text-4xl text-gray-400 dark:text-gray-500 mb-2"></i>
-                <p class="text-gray-600 dark:text-gray-300 mb-2">
+                <i class="bi bi-cloud-upload text-3xl sm:text-4xl text-gray-400 dark:text-gray-500 mb-2"></i>
+                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-2">
                     ファイルをドラッグ&ドロップするか、クリックして選択
                 </p>
                 <button
                     type="button"
                     @click="fileInput?.click()"
-                    class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    class="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                 >
                     ファイルを選択
                 </button>
