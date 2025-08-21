@@ -269,8 +269,8 @@ const handleDrop = (e) => {
                 >
                     <div class="flex items-center space-x-3">
                         <i :class="getFileIcon(file.name)" class="text-xl text-gray-600 dark:text-gray-300"></i>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate max-w-48">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                 {{ file.name }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
