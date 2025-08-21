@@ -127,6 +127,12 @@ class AttachmentService
             throw new \RuntimeException('ファイルの保存に失敗しました');
         }
         
+        // ファイル保存後の確認
+        $fullPath = storage_path('app/public/' . $filePath);
+        if (!file_exists($fullPath)) {
+            throw new \RuntimeException('ファイルの保存確認に失敗しました: ' . $originalName);
+        }
+        
         // Attachmentレコード作成（一時アップロード対応）
         $attachment = Attachment::create([
             'attachable_type' => $attachableId === 'temp' ? null : $attachableType,
