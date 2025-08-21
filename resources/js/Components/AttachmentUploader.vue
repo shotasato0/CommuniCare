@@ -79,9 +79,12 @@ const handleFileSelect = (event) => {
 
 // ファイルアップロード処理
 const uploadFiles = async () => {
-    if (selectedFiles.value.length === 0 || !props.attachableId) {
+    if (selectedFiles.value.length === 0) {
         return
     }
+
+    // attachable_idがnullの場合は、一時的にダミーIDを使用
+    const attachableId = props.attachableId || 'temp'
 
     uploading.value = true
     errors.value = []
@@ -96,7 +99,7 @@ const uploadFiles = async () => {
         
         // 関連モデル情報を追加
         formData.append('attachable_type', props.attachableType)
-        formData.append('attachable_id', props.attachableId)
+        formData.append('attachable_id', attachableId)
 
         const response = await fetch('/api/attachments', {
             method: 'POST',
