@@ -114,8 +114,8 @@ class AttachmentStoreRequest extends FormRequest
                 }
             }
 
-            // 関連モデル存在チェック（マルチテナント考慮）
-            if ($this->filled('attachable_type') && $this->filled('attachable_id')) {
+            // 関連モデル存在チェック（一時アップロード時はスキップ）
+            if ($this->filled('attachable_type') && $this->filled('attachable_id') && $this->input('attachable_id') !== 'temp') {
                 $this->validateAttachableModel($validator);
             }
         });
