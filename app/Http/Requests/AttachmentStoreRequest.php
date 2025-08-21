@@ -46,7 +46,12 @@ class AttachmentStoreRequest extends FormRequest
                 'string',
                 'in:App\Models\Post,App\Models\Comment,App\Models\User'
             ],
-            'attachable_id' => ['required', 'integer', 'min:1'],
+            'attachable_id' => ['required', function ($attribute, $value, $fail) {
+                // 一時アップロードの場合は'temp'を許可、それ以外は整数
+                if ($value !== 'temp' && (!is_numeric($value) || intval($value) < 1)) {
+                    $fail('関連モデルIDは正の整数または"temp"である必要があります。');
+                }
+            }],
         ];
     }
 
