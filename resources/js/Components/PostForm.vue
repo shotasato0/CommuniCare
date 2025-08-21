@@ -267,7 +267,7 @@ const toggleAttachmentUploader = () => {
                         v-if="showAttachmentUploader || attachments.length === 0"
                         v-model="attachments"
                         attachable-type="App\Models\Post"
-                        :attachable-id="null"
+                        attachable-id="temp"
                         @upload-success="handleAttachmentSuccess"
                         :disabled="!postData.forum_id"
                     />
