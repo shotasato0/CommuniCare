@@ -127,10 +127,10 @@ class AttachmentService
             throw new \RuntimeException('ファイルの保存に失敗しました');
         }
         
-        // Attachmentレコード作成
+        // Attachmentレコード作成（一時アップロード対応）
         $attachment = Attachment::create([
-            'attachable_type' => $attachableType,
-            'attachable_id' => $attachableId,
+            'attachable_type' => $attachableId === 'temp' ? null : $attachableType,
+            'attachable_id' => $attachableId === 'temp' ? null : (int)$attachableId,
             'original_name' => $originalName,
             'file_name' => $fileName,
             'file_path' => $filePath,
