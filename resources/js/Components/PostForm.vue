@@ -139,9 +139,13 @@ const submitPost = () => {
 
     // 新システム：添付ファイルIDを追加
     if (useNewAttachmentSystem.value && attachments.value.length > 0) {
+        console.log('Adding attachments to post:', attachments.value);
         attachments.value.forEach((attachment, index) => {
             formData.append(`attachment_ids[${index}]`, attachment.id);
+            console.log(`Added attachment_ids[${index}]:`, attachment.id);
         });
+    } else {
+        console.log('No attachments to add. useNewAttachmentSystem:', useNewAttachmentSystem.value, 'attachments.length:', attachments.value.length);
     }
 
     // 投稿送信
