@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Attachment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Post\PostStoreRequest;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
@@ -275,10 +276,22 @@ class PostService
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
+        Log::info('Attaching files to post', [
+            'post_id' => $post->id,
+            'attachment_ids' => $attachmentIds,
+            'tenant_id' => $currentUser->tenant_id
+        ]);
+        
         // 添付ファイルのバリデーション
         $attachments = Attachment::whereIn('id', $attachmentIds)
             ->where('tenant_id', $currentUser->tenant_id)
             ->get();
+
+        Log::info('Found attachments for linking', [
+            'expected_count' => count($attachmentIds),
+            'found_count' => $attachments->count(),
+            'found_attachments' => $attachments->pluck('id')->toArray()
+        ]);
 
         if ($attachments->count() !== count($attachmentIds)) {
             throw new \InvalidArgumentException('指定された添付ファイルの一部が見つからないか、アクセス権限がありません。');
@@ -289,6 +302,11 @@ class PostService
             $attachment->update([
                 'attachable_type' => Post::class,
                 'attachable_id' => $post->id,
+            ]);
+            Log::info('Updated attachment', [
+                'attachment_id' => $attachment->id,
+                'attachable_type' => Post::class,
+                'attachable_id' => $post->id
             ]);
         }
 
