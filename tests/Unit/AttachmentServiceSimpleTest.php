@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 use App\Services\AttachmentService;
 use App\Models\Attachment;
 use App\Models\Post;
@@ -12,7 +12,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
-class AttachmentServiceSimpleTest extends TestCase
+class AttachmentServiceSimpleTest extends DatabaseTestCase
 {
     private AttachmentService $attachmentService;
     private User $user;
