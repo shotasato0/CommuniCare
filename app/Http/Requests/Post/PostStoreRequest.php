@@ -69,6 +69,10 @@ class PostStoreRequest extends FormRequest
             'img.image' => 'ファイルは画像である必要があります。',
             'img.mimes' => 'jpeg、png、jpg、gif形式のファイルのみアップロード可能です。',
             'img.max' => 'ファイルサイズは10MB以下にしてください。',
+            // 統一ファイル添付システム用メッセージ
+            'files.*.file' => 'ファイルが正しく選択されていません。',
+            'files.*.mimes' => 'サポートされていないファイル形式です。画像・PDF・文書ファイルのみアップロード可能です。',
+            'files.*.max' => 'ファイルサイズは10MB以下にしてください。',
         ];
     }
 }
