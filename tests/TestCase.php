@@ -90,8 +90,9 @@ abstract class TestCase extends BaseTestCase
     /**
      * 🔒 危険な操作の無効化
      * RefreshDatabase等の危険なトレイト使用を検出
+     * Laravel 12互換性対応: void戻り値型を明示
      */
-    public function refreshDatabase(): void
+    protected function refreshDatabase(): void
     {
         throw new Exception('🚨 セキュリティ違反: RefreshDatabase の使用は禁止されています。代わりに安全なデータ生成メソッドを使用してください。');
     }
