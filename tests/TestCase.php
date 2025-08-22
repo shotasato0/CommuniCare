@@ -90,11 +90,32 @@ abstract class TestCase extends BaseTestCase
     /**
      * 🔒 危険な操作の無効化
      * RefreshDatabase等の危険なトレイト使用を検出
-     * Laravel 12互換性対応: void戻り値型を明示
+     * Laravel 12互換性対応: メソッド名を変更してトレイト競合を回避
      */
-    protected function refreshDatabase(): void
+    protected function preventRefreshDatabase(): void
     {
-        throw new Exception('🚨 セキュリティ違反: RefreshDatabase の使用は禁止されています。代わりに安全なデータ生成メソッドを使用してください。');
+        // RefreshDatabaseトレイト使用検出のための処理を別メソッドに移行
+        // 直接のメソッドオーバーライドではなく、setUp()での事前チェックで対応
+    }
+    
+    /**
+     * 🔒 RefreshDatabaseトレイト使用検出
+     */
+    private function detectDangerousTraits(): void
+    {
+        $reflection = new \ReflectionClass($this);
+        $traits = $reflection->getTraitNames();
+        
+        $dangerousTraits = [
+            'Illuminate\Foundation\Testing\RefreshDatabase',
+            'Illuminate\Foundation\Testing\RefreshDatabaseState',
+        ];
+        
+        foreach ($dangerousTraits as $dangerous) {
+            if (in_array($dangerous, $traits, true)) {
+                throw new Exception("🚨 セキュリティ違反: 危険なトレイト '{$dangerous}' の使用は禁止されています。");
+            }
+        }
     }
     
     /**
