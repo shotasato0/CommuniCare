@@ -10,10 +10,8 @@ use App\Models\User;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Collection;
 
-class AttachmentPolymorphicRelationshipTest extends TestCase
+class AttachmentPolymorphicRelationshipTest extends DatabaseTestCase
 {
-    use RefreshDatabase;
-
     private Tenant $tenant;
     private User $user;
     private Post $post;
