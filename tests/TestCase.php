@@ -14,6 +14,9 @@ abstract class TestCase extends BaseTestCase
         // 防ぐリスク: 介護記録、利用者情報、職員データ等の機密情報の消失やシステム障害を防止します。
         $this->validateTestingEnvironment();
         
+        // 🚨 危険なトレイト使用検出（Laravel 12対応）
+        $this->detectDangerousTraits();
+        
         parent::setUp();
         
         // 🚨 第2段階：データベース接続チェック
