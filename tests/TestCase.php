@@ -142,4 +142,22 @@ abstract class TestCase extends BaseTestCase
         
         return parent::artisan($command, $parameters);
     }
+    
+    /**
+     * 🔒 安全なテスト用マイグレーション実行
+     * SQLiteメモリDB環境でのみマイグレーションを許可
+     */
+    protected function runSafeMigrations(): void
+    {
+        // 安全性チェック（再確認）
+        if (env('DB_CONNECTION') !== 'sqlite' || env('DB_DATABASE') !== ':memory:') {
+            throw new Exception('🚨 セキュリティ違反: マイグレーションはSQLiteメモリDBでのみ実行可能です。');
+        }
+        
+        // テスト用マイグレーション実行
+        $this->artisan('migrate', [
+            '--database' => 'sqlite',
+            '--path' => 'database/migrations',
+        ]);
+    }
 }
