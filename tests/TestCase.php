@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 abstract class TestCase extends BaseTestCase
@@ -154,10 +155,24 @@ abstract class TestCase extends BaseTestCase
             throw new Exception('🚨 セキュリティ違反: マイグレーションはSQLiteメモリDBでのみ実行可能です。');
         }
         
+        // SQLite互換性のために、MySQLの生SQL実行をスキップ
+        $this->mockMySQLSpecificOperations();
+        
         // テスト用マイグレーション実行
         $this->artisan('migrate', [
             '--database' => 'sqlite',
             '--path' => 'database/migrations',
         ]);
+    }
+    
+    /**
+     * MySQL固有のSQL操作をテスト環境でモック
+     */
+    private function mockMySQLSpecificOperations(): void
+    {
+        // DBファサードをモックして、SQLite非対応のクエリを無害化
+        DB::shouldReceive('statement')
+            ->with(\Mockery::pattern('/ALTER TABLE.*ADD INDEX.*message_index/'))
+            ->andReturn(true);
     }
 }
