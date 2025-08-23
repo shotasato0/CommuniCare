@@ -10,7 +10,7 @@
         v-for="attachment in attachments"
         :key="attachment.id"
         :class="[
-          'attachment-item',
+          'attachment-item group',
           { 'attachment-image': attachment.file_type === 'image' }
         ]"
       >
@@ -197,7 +197,7 @@ export default {
 }
 
 .attachment-item {
-  @apply relative group;
+  @apply relative;
 }
 
 .attachment-image .attachment-image-preview {
@@ -243,12 +243,20 @@ export default {
 }
 
 .download-icon {
-  @apply text-gray-400 group-hover:text-blue-600 transition-colors duration-150;
+  @apply text-gray-400 transition-colors duration-150;
+}
+
+.attachment-item:hover .download-icon {
+  @apply text-blue-600;
 }
 
 .delete-attachment-button {
-  @apply absolute -top-2 -right-2 text-red-500 hover:text-red-700 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-150;
+  @apply absolute -top-2 -right-2 text-red-500 hover:text-red-700 bg-white rounded-full shadow-md opacity-0 transition-all duration-150;
   z-index: 10;
+}
+
+.attachment-item:hover .delete-attachment-button {
+  @apply opacity-100;
 }
 
 .delete-attachment-button:hover {
