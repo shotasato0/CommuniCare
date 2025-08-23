@@ -184,25 +184,15 @@ const handleCancel = () => {
     <div class="mt-4">
         <!-- コメントフォーム -->
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
-            <div class="relative">
+            <div>
                 <!-- コメントメッセージ入力欄 -->
                 <textarea
                     v-model="commentData.message"
-                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     required
                     :placeholder="placeholder"
                     rows="3"
                 ></textarea>
-
-                <!-- 画像選択アイコン -->
-                <div
-                    class="absolute right-3 bottom-5 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
-                    style="width: 40px; height: 40px"
-                    @click="triggerFileInput"
-                    title="ファイルを選択"
-                >
-                    <i class="bi bi-card-image text-2xl"></i>
-                </div>
             </div>
 
             <!-- 隠しファイル入力 -->
