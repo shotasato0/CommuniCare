@@ -126,7 +126,8 @@ class PostService
         if ($request->hasFile('files')) {
             $this->attachmentService->uploadFiles(
                 $request->file('files'),
-                $post
+                'App\\Models\\Post',
+                $post->id
             );
         }
     }
@@ -139,7 +140,7 @@ class PostService
         // テナント境界チェック
         $this->validateTenantAccess($post);
         
-        return $this->attachmentService->uploadFiles($files, $post);
+        return $this->attachmentService->uploadFiles($files, 'App\\Models\\Post', $post->id);
     }
     
     /**
