@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import CommentForm from "./CommentForm.vue"; // CommentFormをインポート
 import ImageModal from "./ImageModal.vue";
+import AttachmentList from "./AttachmentList.vue";
 
 const props = defineProps({
     childComments: Array, // 子コメントリスト
@@ -70,28 +71,22 @@ const openModal = (imagePath) => {
                 <p class="mt-2 mb-2 whitespace-pre-wrap text-gray-900 dark:text-gray-100"
                 v-html="comment.formatted_message"></p>
 
-                <!-- コメント画像（新・旧システム両対応） -->
-                <div v-if="comment.img || (comment.attachments && comment.attachments.length > 0)" class="mt-3">
-                    <!-- 新Attachmentシステムの画像 -->
-                    <template v-if="comment.attachments && comment.attachments.length > 0">
-                        <div v-for="attachment in comment.attachments.filter(a => a.file_type === 'image')" :key="attachment.id" class="mb-2">
-                            <img
-                                :src="`/storage/${attachment.file_path}`"
-                                :alt="attachment.original_name"
-                                class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                                @click="openModal(`/storage/${attachment.file_path}`)"
-                            />
-                        </div>
-                    </template>
-                    <!-- 旧システムの画像（後方互換性） -->
-                    <template v-else-if="comment.img">
-                        <img
-                            :src="`/storage/${comment.img}`"
-                            alt="添付画像"
-                            class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                            @click="openModal(`/storage/${comment.img}`)"
-                        />
-                    </template>
+                <!-- コメントの添付ファイル（統一システム） -->
+                <div v-if="comment.attachments && comment.attachments.length > 0" class="mt-3">
+                    <AttachmentList 
+                        :attachments="comment.attachments"
+                        :show-title="false"
+                        :can-delete="false"
+                    />
+                </div>
+                <!-- 旧システムの画像（後方互換性） -->
+                <div v-else-if="comment.img" class="mt-3">
+                    <img
+                        :src="`/storage/${comment.img}`"
+                        alt="添付画像"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="openModal(`/storage/${comment.img}`)"
+                    />
                 </div>
 
                 <div class="flex justify-end space-x-2 mt-2">
