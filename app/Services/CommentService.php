@@ -96,7 +96,8 @@ class CommentService
         if ($request->hasFile('files')) {
             $this->attachmentService->uploadFiles(
                 $request->file('files'),
-                $comment
+                'App\\Models\\Comment',
+                $comment->id
             );
         }
     }
@@ -109,7 +110,7 @@ class CommentService
         // テナント境界チェック
         $this->validateTenantAccess($comment);
         
-        return $this->attachmentService->uploadFiles($files, $comment);
+        return $this->attachmentService->uploadFiles($files, 'App\\Models\\Comment', $comment->id);
     }
     
     /**
