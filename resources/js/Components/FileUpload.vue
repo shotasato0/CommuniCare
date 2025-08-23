@@ -1,0 +1,350 @@
+<template>
+  <div class="file-upload-container">
+    <!-- ドラッグ&ドロップエリア -->
+    <div
+      @drop="handleDrop"
+      @dragover.prevent
+      @dragenter.prevent
+      :class="[
+        'drag-drop-area',
+        { 'drag-over': isDragging, 'has-error': hasError }
+      ]"
+      @dragenter="isDragging = true"
+      @dragleave="isDragging = false"
+    >
+      <div class="drag-drop-content">
+        <i class="bi bi-paperclip drag-drop-icon"></i>
+        <p class="drag-drop-text">
+          ファイルをドラッグ&ドロップ または
+          <button 
+            type="button" 
+            @click="$refs.fileInput.click()"
+            class="file-select-button"
+          >
+            ファイルを選択
+          </button>
+        </p>
+        <p class="file-types-hint">
+          対応形式: 画像, PDF, Word, Excel, テキスト (最大10MB)
+        </p>
+      </div>
+    </div>
+
+    <!-- 隠しファイル入力 -->
+    <input
+      ref="fileInput"
+      type="file"
+      multiple
+      :accept="acceptedTypes"
+      @change="handleFileSelect"
+      class="hidden-file-input"
+    >
+
+    <!-- エラー表示 -->
+    <div v-if="hasError" class="error-message">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ errorMessage }}
+    </div>
+
+    <!-- アップロード済みファイル一覧 -->
+    <div v-if="files.length > 0" class="uploaded-files">
+      <h4 class="uploaded-files-title">
+        <i class="bi bi-files"></i>
+        添付ファイル ({{ files.length }})
+      </h4>
+      
+      <div class="file-list">
+        <div
+          v-for="(file, index) in files"
+          :key="`file-${index}`"
+          class="file-item"
+        >
+          <!-- ファイルアイコン -->
+          <div class="file-icon">
+            <i :class="getFileIcon(file)"></i>
+          </div>
+          
+          <!-- ファイル情報 -->
+          <div class="file-info">
+            <span class="file-name">{{ file.name }}</span>
+            <span class="file-size">{{ formatFileSize(file.size) }}</span>
+          </div>
+          
+          <!-- プレビュー（画像の場合） -->
+          <div v-if="isImage(file)" class="file-preview">
+            <img :src="getPreviewUrl(file)" :alt="file.name" />
+          </div>
+          
+          <!-- 削除ボタン -->
+          <button
+            type="button"
+            @click="removeFile(index)"
+            class="remove-file-button"
+            :title="`${file.name}を削除`"
+          >
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'FileUpload',
+  emits: ['files-changed', 'error'],
+  
+  data() {
+    return {
+      files: [],
+      isDragging: false,
+      hasError: false,
+      errorMessage: '',
+      acceptedTypes: '.jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv',
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      supportedMimeTypes: [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'text/plain', 'text/csv'
+      ]
+    }
+  },
+
+  methods: {
+    handleDrop(e) {
+      e.preventDefault()
+      this.isDragging = false
+      
+      const droppedFiles = Array.from(e.dataTransfer.files)
+      this.processFiles(droppedFiles)
+    },
+
+    handleFileSelect(e) {
+      const selectedFiles = Array.from(e.target.files)
+      this.processFiles(selectedFiles)
+    },
+
+    processFiles(newFiles) {
+      this.clearError()
+      
+      const validFiles = []
+      
+      for (const file of newFiles) {
+        if (this.validateFile(file)) {
+          validFiles.push(file)
+        }
+      }
+      
+      if (validFiles.length > 0) {
+        this.files = [...this.files, ...validFiles]
+        this.$emit('files-changed', this.files)
+      }
+    },
+
+    validateFile(file) {
+      // ファイルサイズチェック
+      if (file.size > this.maxFileSize) {
+        this.showError(`${file.name} はファイルサイズが大きすぎます（最大10MB）`)
+        return false
+      }
+      
+      // MIMEタイプチェック
+      if (!this.supportedMimeTypes.includes(file.type)) {
+        this.showError(`${file.name} はサポートされていないファイル形式です`)
+        return false
+      }
+      
+      // 重複チェック
+      if (this.files.some(existingFile => 
+        existingFile.name === file.name && 
+        existingFile.size === file.size
+      )) {
+        this.showError(`${file.name} は既に追加されています`)
+        return false
+      }
+      
+      return true
+    },
+
+    removeFile(index) {
+      this.files.splice(index, 1)
+      this.$emit('files-changed', this.files)
+    },
+
+    getFileIcon(file) {
+      const type = file.type.toLowerCase()
+      
+      if (type.startsWith('image/')) return 'bi bi-file-earmark-image-fill text-blue-600'
+      if (type === 'application/pdf') return 'bi bi-file-earmark-pdf-fill text-red-600'
+      if (type.includes('word') || type.includes('document')) return 'bi bi-file-earmark-word-fill text-blue-800'
+      if (type.includes('sheet') || type.includes('excel')) return 'bi bi-file-earmark-excel-fill text-green-600'
+      if (type.startsWith('text/')) return 'bi bi-file-earmark-text-fill text-gray-600'
+      
+      return 'bi bi-file-earmark-fill text-gray-500'
+    },
+
+    isImage(file) {
+      return file.type.startsWith('image/')
+    },
+
+    getPreviewUrl(file) {
+      if (this.isImage(file)) {
+        return URL.createObjectURL(file)
+      }
+      return null
+    },
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes'
+      const k = 1024
+      const sizes = ['Bytes', 'KB', 'MB', 'GB']
+      const i = Math.floor(Math.log(bytes) / Math.log(k))
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+    },
+
+    showError(message) {
+      this.hasError = true
+      this.errorMessage = message
+      this.$emit('error', message)
+      
+      // 3秒後にエラーを自動的に消す
+      setTimeout(() => {
+        this.clearError()
+      }, 3000)
+    },
+
+    clearError() {
+      this.hasError = false
+      this.errorMessage = ''
+    },
+
+    // 外部からのリセット用
+    reset() {
+      this.files = []
+      this.clearError()
+      this.$refs.fileInput.value = ''
+    },
+    
+    // 外部からファイル取得用
+    getFiles() {
+      return this.files
+    }
+  },
+
+  beforeUnmount() {
+    // プレビュー用のオブジェクトURLをクリーンアップ
+    this.files.forEach(file => {
+      if (this.isImage(file)) {
+        URL.revokeObjectURL(this.getPreviewUrl(file))
+      }
+    })
+  }
+}
+</script>
+
+<style scoped>
+.file-upload-container {
+  @apply space-y-4;
+}
+
+.drag-drop-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-200;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-drop-area:hover {
+  @apply border-blue-400 bg-blue-50;
+}
+
+.drag-drop-area.drag-over {
+  @apply border-blue-500 bg-blue-100;
+}
+
+.drag-drop-area.has-error {
+  @apply border-red-400 bg-red-50;
+}
+
+.drag-drop-content {
+  @apply space-y-2;
+}
+
+.drag-drop-icon {
+  @apply text-4xl text-gray-400 mb-2;
+}
+
+.drag-drop-text {
+  @apply text-gray-600 font-medium;
+}
+
+.file-select-button {
+  @apply text-blue-600 underline hover:text-blue-800 font-medium;
+}
+
+.file-types-hint {
+  @apply text-sm text-gray-500;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.error-message {
+  @apply flex items-center space-x-2 p-3 bg-red-100 border border-red-300 rounded-md text-red-800;
+}
+
+.uploaded-files {
+  @apply border border-gray-200 rounded-lg p-4 bg-gray-50;
+}
+
+.uploaded-files-title {
+  @apply flex items-center space-x-2 text-lg font-semibold text-gray-700 mb-3;
+}
+
+.file-list {
+  @apply space-y-3;
+}
+
+.file-item {
+  @apply flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-md;
+}
+
+.file-icon {
+  @apply text-2xl;
+}
+
+.file-info {
+  @apply flex-1 min-w-0;
+}
+
+.file-name {
+  @apply block text-sm font-medium text-gray-900 truncate;
+}
+
+.file-size {
+  @apply block text-xs text-gray-500;
+}
+
+.file-preview {
+  @apply w-12 h-12 overflow-hidden rounded-md border border-gray-200;
+}
+
+.file-preview img {
+  @apply w-full h-full object-cover;
+}
+
+.remove-file-button {
+  @apply text-red-500 hover:text-red-700 transition-colors duration-150;
+}
+
+.remove-file-button:hover {
+  @apply transform scale-110;
+}
+</style>
