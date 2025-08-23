@@ -53,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
     // 返信
     Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
     Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    Route::post('/forum/comment/{comment}/attachments', [CommentController::class, 'addAttachments'])->name('forum.comment.attachments.add');
+    Route::delete('/forum/comment/{comment}/attachments/{attachmentId}', [CommentController::class, 'removeAttachment'])->name('forum.comment.attachments.remove');
 
     // 添付ファイル
     Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
