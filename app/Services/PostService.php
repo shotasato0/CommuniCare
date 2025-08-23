@@ -109,15 +109,69 @@ class PostService
     }
 
     /**
-     * 画像アップロードを処理
+     * 統一ファイル添付システムでファイルを処理
      */
-    private function handleImageUpload(PostStoreRequest $request): ?string
+    private function handleFileAttachments(PostStoreRequest $request, Post $post): void
     {
-        if (!$request->hasFile('image')) {
-            return null;
+        // レガシー画像フィールドの処理（後方互換性）
+        if ($request->hasFile('image')) {
+            $this->attachmentService->uploadSingleFile(
+                $request->file('image'),
+                $post,
+                'image'
+            );
         }
-
-        return $request->file('image')->store('images', 'public');
+        
+        // 新しい統一ファイル添付システム
+        if ($request->hasFile('files')) {
+            $this->attachmentService->uploadFiles(
+                $request->file('files'),
+                $post
+            );
+        }
+    }
+    
+    /**
+     * 既存の投稿にファイルを追加
+     */
+    public function addAttachmentsToPost(Post $post, array $files): array
+    {
+        // テナント境界チェック
+        $this->validateTenantAccess($post);
+        
+        return $this->attachmentService->uploadFiles($files, $post);
+    }
+    
+    /**
+     * 投稿からファイルを削除
+     */
+    public function removeAttachmentFromPost(Post $post, int $attachmentId): void
+    {
+        // テナント境界チェック
+        $this->validateTenantAccess($post);
+        
+        $attachment = $post->attachments()->findOrFail($attachmentId);
+        $this->attachmentService->deleteAttachment($attachment);
+    }
+    
+    /**
+     * テナントアクセス検証
+     */
+    private function validateTenantAccess(Post $post): void
+    {
+        $currentTenantId = Auth::user()->tenant_id;
+        
+        if ($post->tenant_id !== $currentTenantId) {
+            throw new TenantViolationException(
+                'テナント境界違反: 他のテナントの投稿にアクセスしようとしました。',
+                [
+                    'user_tenant_id' => $currentTenantId,
+                    'post_tenant_id' => $post->tenant_id,
+                    'post_id' => $post->id,
+                    'user_id' => Auth::id()
+                ]
+            );
+        }
     }
 
     /**
