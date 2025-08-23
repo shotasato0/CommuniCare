@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     // 投稿
     Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
     Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
+    Route::post('/forum/post/{post}/attachments', [PostController::class, 'addAttachments'])->name('forum.post.attachments.add');
+    Route::delete('/forum/post/{post}/attachments/{attachmentId}', [PostController::class, 'removeAttachment'])->name('forum.post.attachments.remove');
     Route::post('/like/toggle', [LikeController::class, 'toggleLike'])->name('like.toggle');
 
     // 返信
