@@ -117,8 +117,8 @@ class PostService
         if ($request->hasFile('image')) {
             $this->attachmentService->uploadSingleFile(
                 $request->file('image'),
-                $post,
-                'image'
+                'App\\Models\\Post',
+                $post->id
             );
         }
         
