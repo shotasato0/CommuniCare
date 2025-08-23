@@ -195,47 +195,61 @@ const handleCancel = () => {
                 ></textarea>
             </div>
 
-            <!-- 隠しファイル入力 -->
-            <input
-                type="file"
-                accept="image/*"
-                ref="fileInput"
-                @change="onImageChange"
-                style="display: none"
-            />
+            <!-- 統一ファイル添付システム -->
+            <div class="mt-3">
+                <FileUpload 
+                    ref="fileUploadRef"
+                    @files-changed="handleFilesChanged"
+                    @error="handleFileUploadError"
+                />
+            </div>
+
             <!-- エラーメッセージ表示 -->
             <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
                 {{ localErrorMessage }}
             </div>
-            <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="relative mt-2 inline-block">
-                <!-- プレビュー画像 -->
-                <img
-                    :src="imagePreview"
-                    alt="画像プレビュー"
-                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                    @click="isModalOpen = true"
-                />
-                <!-- プレビュー画像削除ボタン -->
-                <div
-                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
-                    @click="removeImage"
-                    title="画像を削除"
-                    style="width: 24px; height: 24px"
-                >
-                    <i
-                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
-                    ></i>
-                </div>
-            </div>
 
-            <!-- コメント画像モーダル -->
-            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
-                <img
-                    :src="imagePreview"
-                    class="max-w-full max-h-full rounded-lg"
+            <!-- レガシー画像アップロード（後方互換性・非表示） -->
+            <div v-if="!useUnifiedUpload" class="legacy-upload" style="display: none;">
+                <!-- 隠しファイル入力 -->
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref="fileInput"
+                    @change="onImageChange"
+                    style="display: none"
                 />
-            </ImageModal>
+                
+                <!-- プレビュー表示 -->
+                <div v-if="imagePreview" class="relative mt-2 inline-block">
+                    <!-- プレビュー画像 -->
+                    <img
+                        :src="imagePreview"
+                        alt="画像プレビュー"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="isModalOpen = true"
+                    />
+                    <!-- プレビュー画像削除ボタン -->
+                    <div
+                        class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
+                        @click="removeImage"
+                        title="画像を削除"
+                        style="width: 24px; height: 24px"
+                    >
+                        <i
+                            class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
+                        ></i>
+                    </div>
+                </div>
+
+                <!-- コメント画像モーダル -->
+                <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+                    <img
+                        :src="imagePreview"
+                        class="max-w-full max-h-full rounded-lg"
+                    />
+                </ImageModal>
+            </div>
 
             <!-- コメントフォームボタン群 -->
             <div class="flex justify-end space-x-2 mt-2">
