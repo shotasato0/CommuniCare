@@ -77,13 +77,22 @@ const triggerFileInput = () => {
     fileInput.value.click();
 };
 
-// 画像を削除する処理
+// 画像を削除する処理（レガシー対応）
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
     if (fileInput.value) {
         fileInput.value.value = "";
     }
+};
+
+// 統一ファイル添付システム用のハンドラー
+const handleFilesChanged = (files) => {
+    attachedFiles.value = files;
+};
+
+const handleFileUploadError = (errorMessage) => {
+    localErrorMessage.value = errorMessage;
 };
 
 // コメントの送信処理に画像データを追加
