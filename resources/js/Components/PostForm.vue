@@ -63,7 +63,7 @@ const handleFileUploadError = (errorMessage) => {
     localErrorMessage.value = errorMessage;
 };
 
-// 投稿の送信処理（画像やファイルを添付に対応）
+// 投稿の送信処理（統一ファイル添付システム対応）
 const submitPost = () => {
     if (!postData.value.forum_id || postData.value.forum_id === 0) {
         console.error("有効な掲示板IDが選択されていません。");
@@ -77,25 +77,23 @@ const submitPost = () => {
     formData.append("forum_id", postData.value.forum_id);
     formData.append("_token", getCsrfToken());
 
-    // 画像データが存在する場合、フォームデータに追加
-    if (image.value) {
-        formData.append("image", image.value); // 画像データの追加
+    // 統一ファイル添付システムの使用
+    if (useUnifiedUpload.value && attachedFiles.value.length > 0) {
+        attachedFiles.value.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+        });
+    }
+    // レガシー画像アップロード（後方互換性）
+    else if (image.value) {
+        formData.append("image", image.value);
     }
 
     // 投稿の送信
     router.post(route("forum.store"), formData, {
         onSuccess: () => {
             // 投稿成功後の処理
-            postData.value = {
-                // フォームデータをリセット
-                title: "",
-                message: "",
-                forum_id: props.forumId,
-            };
-            image.value = null; // 画像ファイルをリセット
-            imagePreview.value = null; // 画像プレビューをリセット
+            resetForm();
             router.get(
-                // 投稿成功後、掲示板のトップページにリダイレクト
                 route("forum.index", { forum_id: postData.value.forum_id }),
                 {
                     preserveState: true,
@@ -104,8 +102,33 @@ const submitPost = () => {
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
+            localErrorMessage.value = "投稿に失敗しました。もう一度お試しください。";
         },
     });
+};
+
+// フォームリセット処理
+const resetForm = () => {
+    postData.value = {
+        title: "",
+        message: "",
+        forum_id: props.forumId,
+    };
+    
+    // 統一ファイル添付システムのリセット
+    if (fileUploadRef.value) {
+        fileUploadRef.value.reset();
+    }
+    attachedFiles.value = [];
+    
+    // レガシー画像システムのリセット
+    image.value = null;
+    imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = "";
+    }
+    
+    localErrorMessage.value = null;
 };
 </script>
 
