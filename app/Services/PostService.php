@@ -11,10 +11,18 @@ use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
 use App\Traits\SecurityValidationTrait;
 use App\Traits\TenantBoundaryCheckTrait;
+use App\Services\AttachmentService;
 
 class PostService
 {
     use SecurityValidationTrait, TenantBoundaryCheckTrait;
+    
+    private AttachmentService $attachmentService;
+    
+    public function __construct(AttachmentService $attachmentService)
+    {
+        $this->attachmentService = $attachmentService;
+    }
     /**
      * 投稿を作成する
      */
