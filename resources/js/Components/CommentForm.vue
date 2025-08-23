@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
+import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
 import { handleImageChange } from "@/Utils/imageHandler";
 
 // コメントフォームのプロパティを定義
@@ -46,12 +47,17 @@ const commentData = ref({
     replyToName: props.replyToName, // 返信先のユーザー名
 });
 
-// 画像関連のrefを追加
+// 画像関連のrefを追加（レガシー対応）
 const image = ref(null); // 画像ファイル
 const imagePreview = ref(null); // 画像プレビュー
 const fileInput = ref(null); // ファイル選択ボタン
 const isModalOpen = ref(false); // モーダル表示
 const localErrorMessage = ref(null); // エラーメッセージ
+
+// 統一ファイル添付システム用
+const fileUploadRef = ref(null);
+const attachedFiles = ref([]);
+const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
 // コンポーネントのマウント時に初期値を設定
 onMounted(() => {
