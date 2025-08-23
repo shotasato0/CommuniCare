@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue"; // ImageModalコンポーネントをインポート
+import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
 import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
@@ -15,11 +16,16 @@ const postData = ref({
     forum_id: props.forumId ? Number(props.forumId) : null, // forum_id を追加し、初期値を適切に設定
 });
 
-const image = ref(null); // 画像ファイル
-const imagePreview = ref(null); // 画像プレビュー
-const fileInput = ref(null); // ファイル入力
+const image = ref(null); // 画像ファイル（レガシー対応）
+const imagePreview = ref(null); // 画像プレビュー（レガシー対応）
+const fileInput = ref(null); // ファイル入力（レガシー対応）
 const isModalOpen = ref(false); // モーダル表示
 const localErrorMessage = ref(null); // エラーメッセージ
+
+// 統一ファイル添付システム用
+const fileUploadRef = ref(null);
+const attachedFiles = ref([]);
+const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
 // forumIdの変更を監視し、postDataに反映
 watch(
