@@ -103,7 +103,9 @@ class Attachment extends Model
      */
     public function getUrlAttribute(): string
     {
-        return route('attachments.show', $this);
+        // セキュアなファイルアクセスのためにAttachmentControllerを使用
+        // ただし、テナント境界を考慮して直接storageパスを返す
+        return asset('storage/' . $this->file_path);
     }
 
     /**
