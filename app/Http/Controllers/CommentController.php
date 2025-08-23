@@ -4,11 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Post;
+use App\Services\CommentService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Comment\CommentStoreRequest;
+use App\Exceptions\Custom\TenantViolationException;
 
 class CommentController extends Controller
 {
+    private CommentService $commentService;
+
+    public function __construct(CommentService $commentService)
+    {
+        $this->commentService = $commentService;
+    }
     public function store(CommentStoreRequest $request)
     {
         $validated = $request->validated();
