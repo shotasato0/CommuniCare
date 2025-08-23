@@ -29,17 +29,24 @@ class PostService
     public function createPost(PostStoreRequest $request): Post
     {
         $validated = $request->validated();
-        $imgPath = $this->handleImageUpload($request);
-
-        return Post::create([
-            'user_id' => Auth::id(),
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'forum_id' => $validated['forum_id'],
-            'quoted_post_id' => $validated['quoted_post_id'] ?? null,
-            'img' => $imgPath,
-            'tenant_id' => Auth::user()->tenant_id,
-        ]);
+        
+        // DB トランザクションで投稿作成とファイル添付を安全に実行
+        return DB::transaction(function () use ($validated, $request) {
+            // 投稿を作成（imgフィールドは削除）
+            $post = Post::create([
+                'user_id' => Auth::id(),
+                'title' => $validated['title'],
+                'message' => $validated['message'],
+                'forum_id' => $validated['forum_id'],
+                'quoted_post_id' => $validated['quoted_post_id'] ?? null,
+                'tenant_id' => Auth::user()->tenant_id,
+            ]);
+            
+            // 統一ファイル添付システムでファイルを処理
+            $this->handleFileAttachments($request, $post);
+            
+            return $post;
+        });
     }
 
     /**
