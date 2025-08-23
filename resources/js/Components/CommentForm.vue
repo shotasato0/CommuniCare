@@ -95,53 +95,75 @@ const handleFileUploadError = (errorMessage) => {
     localErrorMessage.value = errorMessage;
 };
 
-// コメントの送信処理に画像データを追加
+// コメントの送信処理（統一ファイル添付システム対応）
 const submitComment = () => {
-    commentData.value._token = getCsrfToken(); // CSRFトークンを追加
-    commentData.value.post_id = props.postId; // 投稿IDを追加
+    const token = getCsrfToken();
 
     // フォームデータを作成
     const formData = new FormData();
-    formData.append("message", commentData.value.message); // コメントメッセージを追加
-    formData.append("post_id", commentData.value.post_id); // 投稿IDを追加
-    formData.append("_token", commentData.value._token); // CSRFトークンを追加
+    formData.append("message", commentData.value.message);
+    formData.append("post_id", props.postId);
+    formData.append("_token", token);
 
     // 親コメントIDが存在する場合はフォームデータに追加
     if (props.parentId) {
-        formData.append("parent_id", props.parentId); // 親コメントIDを追加
+        formData.append("parent_id", props.parentId);
     }
 
-    // 画像データが存在する場合はフォームデータに追加
-    if (image.value) {
-        // 画像データが存在する場合
-        formData.append("image", image.value); // 画像データをフォームデータに追加
+    // 統一ファイル添付システムの使用
+    if (useUnifiedUpload.value && attachedFiles.value.length > 0) {
+        attachedFiles.value.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+        });
+    }
+    // レガシー画像アップロード（後方互換性）
+    else if (image.value) {
+        formData.append("image", image.value);
     }
 
     // コメントの投稿処理を実行
     router.post(route("comment.store", { post: props.postId }), formData, {
-        preserveScroll: true, // スクロール位置を維持
+        preserveScroll: true,
         onSuccess: () => {
-            // 投稿成功時の処理
-            commentData.value = {
-                post_id: props.postId, // 投稿IDをリセット
-                parent_id: props.parentId, // 親コメントIDをリセット
-                message: "", // コメントメッセージをリセット
-            };
-            image.value = null; // 画像ファイルをリセット
-            imagePreview.value = null; // 画像プレビューをリセット
+            resetForm();
             router.visit(
-                route("forum.index", { forum_id: props.selectedForumId }), // 掲示板にリダイレクト
+                route("forum.index", { forum_id: props.selectedForumId }),
                 {
-                    preserveScroll: true, // スクロール位置を維持
-                    replace: true, // ページを置換
+                    preserveScroll: true,
+                    replace: true,
                 }
             );
         },
         onError: (errors) => {
-            // 投稿失敗時の処理
-            console.error("コメントの投稿に失敗しました:", errors); // エラーメッセージをコンソールに出力
+            console.error("コメントの投稿に失敗しました:", errors);
+            localErrorMessage.value = "コメントの投稿に失敗しました。もう一度お試しください。";
         },
     });
+};
+
+// フォームリセット処理
+const resetForm = () => {
+    commentData.value = {
+        post_id: props.postId,
+        parent_id: props.parentId,
+        message: props.replyToName && props.parentId ? `@${props.replyToName} ` : "",
+        replyToName: props.replyToName,
+    };
+    
+    // 統一ファイル添付システムのリセット
+    if (fileUploadRef.value) {
+        fileUploadRef.value.reset();
+    }
+    attachedFiles.value = [];
+    
+    // レガシー画像システムのリセット
+    image.value = null;
+    imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = "";
+    }
+    
+    localErrorMessage.value = null;
 };
 
 // キャンセルハンドラーを追加
