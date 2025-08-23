@@ -87,8 +87,8 @@ class CommentService
         if ($request->hasFile('image')) {
             $this->attachmentService->uploadSingleFile(
                 $request->file('image'),
-                $comment,
-                'image'
+                'App\\Models\\Comment',
+                $comment->id
             );
         }
         
