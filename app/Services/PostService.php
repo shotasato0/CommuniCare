@@ -279,10 +279,23 @@ class PostService
                 'quotedPost' => function($query) use ($currentUser) {
                     $query->select('id', 'title', 'message', 'user_id', 'tenant_id', 'created_at')
                           ->where('tenant_id', $currentUser->tenant_id)
-                          ->with(['user' => function($query) use ($currentUser) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $currentUser->tenant_id);
-                          }]);
+                          ->with([
+                              'user' => function($query) use ($currentUser) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id);
+                              },
+                              'attachments' => function($query) use ($currentUser) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->where('is_safe', true);
+                              }
+                          ]);
+                },
+                'attachments' => function($query) use ($currentUser) {
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->where('is_safe', true)
+                          ->orderBy('created_at', 'asc');
                 },
                 'comments' => function($query) use ($currentUser) {
                     $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at', 'updated_at')
@@ -292,13 +305,25 @@ class PostService
                                   $query->select('id', 'name', 'tenant_id')
                                         ->where('tenant_id', $currentUser->tenant_id);
                               },
+                              'attachments' => function($query) use ($currentUser) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->where('is_safe', true);
+                              },
                               'children' => function($query) use ($currentUser) {
                                   $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
                                         ->where('tenant_id', $currentUser->tenant_id)
-                                        ->with(['user' => function($query) use ($currentUser) {
-                                            $query->select('id', 'name', 'tenant_id')
-                                                  ->where('tenant_id', $currentUser->tenant_id);
-                                        }])
+                                        ->with([
+                                            'user' => function($query) use ($currentUser) {
+                                                $query->select('id', 'name', 'tenant_id')
+                                                      ->where('tenant_id', $currentUser->tenant_id);
+                                            },
+                                            'attachments' => function($query) use ($currentUser) {
+                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                                      ->where('tenant_id', $currentUser->tenant_id)
+                                                      ->where('is_safe', true);
+                                            }
+                                        ])
                                         ->latest();
                               }
                           ])
