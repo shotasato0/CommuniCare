@@ -35,23 +35,32 @@ watch(
     }
 );
 
-// 画像ファイルのチェック
+// 画像ファイルのチェック（レガシー対応）
 const onImageChange = (e) => {
     handleImageChange(e, image, imagePreview, localErrorMessage);
 };
 
-// ファイル選択ボタンをクリックしたときの処理
+// ファイル選択ボタンをクリックしたときの処理（レガシー対応）
 const triggerFileInput = () => {
     fileInput.value.click();
 };
 
-// 画像を削除する処理
+// 画像を削除する処理（レガシー対応）
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
     if (fileInput.value) {
         fileInput.value.value = ""; // ファイル入力の値をリセット
     }
+};
+
+// 統一ファイル添付システム用のハンドラー
+const handleFilesChanged = (files) => {
+    attachedFiles.value = files;
+};
+
+const handleFileUploadError = (errorMessage) => {
+    localErrorMessage.value = errorMessage;
 };
 
 // 投稿の送信処理（画像やファイルを添付に対応）
