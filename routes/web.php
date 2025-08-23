@@ -15,6 +15,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\AttachmentController;
 
 // トップページ
 Route::get('/', function () {
@@ -50,6 +51,10 @@ Route::middleware(['auth'])->group(function () {
     // 返信
     Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
     Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+
+    // 添付ファイル
+    Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
+    Route::delete('/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
 
     // ユーザー（職員）
     Route::resource('users', UserController::class);
