@@ -127,13 +127,16 @@ class AttachmentService
             throw new \RuntimeException('ファイルの保存に失敗しました');
         }
         
+        // 実際の保存パスを使用（storeAsは 'public/' プレフィックスを含む完全パスを返す）
+        $actualFilePath = str_replace('public/', '', $savedPath);
+        
         // Attachmentレコード作成
         $attachment = Attachment::create([
             'attachable_type' => $attachableType,
             'attachable_id' => $attachableId,
             'original_name' => $originalName,
             'file_name' => $fileName,
-            'file_path' => $filePath,
+            'file_path' => $actualFilePath, // 実際の保存パスを使用
             'file_size' => $file->getSize(),
             'mime_type' => $mimeType,
             'file_type' => $fileType,
