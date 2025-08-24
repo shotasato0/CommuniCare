@@ -153,11 +153,16 @@ export default {
     },
     
     formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes'
+      // null, undefined, NaN, または数値でない場合のエラーハンドリング
+      if (!bytes || isNaN(bytes) || bytes === 0) return '0 Bytes'
+      
       const k = 1024
       const sizes = ['Bytes', 'KB', 'MB', 'GB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+      
+      // iが範囲外の場合の安全対策
+      const sizeIndex = Math.min(i, sizes.length - 1)
+      return parseFloat((bytes / Math.pow(k, sizeIndex)).toFixed(2)) + ' ' + sizes[sizeIndex]
     },
     
     openImageModal(attachment) {
