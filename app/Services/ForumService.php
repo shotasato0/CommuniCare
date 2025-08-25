@@ -118,9 +118,9 @@ class ForumService
                                                       ->where('tenant_id', $user->tenant_id);
                                             },
                                             'attachments' => function($query) use ($user) {
-                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_path', 'file_size', 'mime_type', 'file_type', 'tenant_id')
                                                       ->where('tenant_id', $user->tenant_id)
-                                                      ->where('file_type', 'image');
+                                                      ->where('is_safe', true);
                                             }
                                         ]);
                               },
@@ -163,7 +163,17 @@ class ForumService
                 'message' => $post->message,
                 'formatted_message' => $post->formatted_message,
                 'img' => $post->img, // 後方互換性
-                'attachments' => $post->attachments ?? [], // 新Attachmentシステム
+                'attachments' => $post->attachments->map(function($attachment) {
+                    return [
+                        'id' => $attachment->id,
+                        'original_name' => $attachment->original_name,
+                        'file_name' => $attachment->file_name,
+                        'file_size' => $attachment->file_size,
+                        'file_type' => $attachment->file_type,
+                        'mime_type' => $attachment->mime_type,
+                        'url' => $attachment->url, // URLアクセサを明示的に呼び出し
+                    ];
+                })->toArray(), // 新Attachmentシステム
                 'created_at' => $post->created_at,
                 'user' => $post->user,
                 'like_count' => $post->likes_count,
