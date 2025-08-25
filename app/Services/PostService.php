@@ -32,18 +32,28 @@ class PostService
         
         // DB トランザクションで投稿作成とファイル添付を安全に実行
         return DB::transaction(function () use ($validated, $request) {
-            // 投稿を作成（imgフィールドは削除）
+            // レガシー画像アップロードの処理
+            $imgPath = null;
+            if ($request->hasFile('image') && !$request->hasFile('files')) {
+                // レガシーシステム: 直接imgフィールドに保存
+                $imgPath = $request->file('image')->store('images', 'public');
+            }
+            
+            // 投稿を作成
             $post = Post::create([
                 'user_id' => Auth::id(),
                 'title' => $validated['title'],
                 'message' => $validated['message'],
                 'forum_id' => $validated['forum_id'],
                 'quoted_post_id' => $validated['quoted_post_id'] ?? null,
+                'img' => $imgPath, // レガシー画像パス
                 'tenant_id' => Auth::user()->tenant_id,
             ]);
             
-            // 統一ファイル添付システムでファイルを処理
-            $this->handleFileAttachments($request, $post);
+            // 統一ファイル添付システムでファイルを処理（新システムの場合のみ）
+            if ($request->hasFile('files')) {
+                $this->handleFileAttachments($request, $post);
+            }
             
             return $post;
         });
