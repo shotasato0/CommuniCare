@@ -549,6 +549,15 @@ const openModal = (imageSrc) => {
                             v-html="post.formatted_message"
                         ></p>
 
+                        <!-- デバッグ表示 -->
+                        <div class="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded">
+                            <strong>DEBUG - Post ID: {{ post.id }}</strong><br>
+                            <span>Attachments count: {{ post.attachments ? post.attachments.length : 'undefined' }}</span><br>
+                            <span v-if="post.attachments && post.attachments.length > 0">
+                                First attachment: {{ JSON.stringify(post.attachments[0]) }}
+                            </span>
+                        </div>
+
                         <!-- 投稿の添付ファイル（統一システム） -->
                         <div v-if="post.attachments && post.attachments.length > 0" class="mt-3">
                             <AttachmentList 
