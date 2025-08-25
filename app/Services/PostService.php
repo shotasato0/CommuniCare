@@ -174,13 +174,10 @@ class PostService
         
         if ($post->tenant_id !== $currentTenantId) {
             throw new TenantViolationException(
-                'テナント境界違反: 他のテナントの投稿にアクセスしようとしました。',
-                [
-                    'user_tenant_id' => $currentTenantId,
-                    'post_tenant_id' => $post->tenant_id,
-                    'post_id' => $post->id,
-                    'user_id' => Auth::id()
-                ]
+            currentTenantId: $currentTenantId,
+            resourceTenantId: $post->tenant_id,
+            resourceType: 'post',
+            resourceId: $post->id
             );
         }
     }
