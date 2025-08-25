@@ -6,6 +6,7 @@ use App\Models\Attachment;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Exceptions\Custom\TenantViolationException;
@@ -121,14 +122,37 @@ class AttachmentService
             return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
         }
         
-        // ファイル保存
-        $savedPath = $file->storeAs('public/' . dirname($filePath), basename($filePath));
-        if (!$savedPath) {
+        // ファイル保存（直接的なアプローチ）
+        $fullStoragePath = storage_path('app/public/' . $filePath);
+        $storageDirectory = dirname($fullStoragePath);
+        
+        // ディレクトリが存在しない場合は作成
+        if (!is_dir($storageDirectory)) {
+            mkdir($storageDirectory, 0775, true);
+        }
+        
+        Log::info('AttachmentService: Attempting to save file', [
+            'filePath' => $filePath,
+            'fullStoragePath' => $fullStoragePath,
+            'directory_exists' => is_dir($storageDirectory)
+        ]);
+        
+        // ファイルを移動
+        $success = $file->move($storageDirectory, basename($filePath));
+        
+        if (!$success) {
+            Log::error('AttachmentService: File move failed');
             throw new \RuntimeException('ファイルの保存に失敗しました');
         }
         
-        // 実際の保存パスを使用（storeAsは 'public/' プレフィックスを含む完全パスを返す）
-        $actualFilePath = str_replace('public/', '', $savedPath);
+        // 保存の確認
+        $actualFilePath = $filePath;
+        
+        Log::info('AttachmentService: File saved successfully', [
+            'actualFilePath' => $actualFilePath,
+            'file_exists' => file_exists($fullStoragePath),
+            'file_size' => file_exists($fullStoragePath) ? filesize($fullStoragePath) : 'N/A'
+        ]);
         
         // Attachmentレコード作成
         $attachment = Attachment::create([
