@@ -211,7 +211,17 @@ class ForumService
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
             'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
-            'attachments' => $quotedPost->trashed() ? [] : ($quotedPost->attachments ?? []), // 新Attachmentシステム
+            'attachments' => $quotedPost->trashed() ? [] : $quotedPost->attachments->map(function($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'original_name' => $attachment->original_name,
+                    'file_name' => $attachment->file_name,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'mime_type' => $attachment->mime_type,
+                    'url' => $attachment->url,
+                ];
+            })->toArray(), // 新Attachmentシステム
             'user' => $quotedPost->trashed() ? null : $quotedPost->user,
         ];
     }
