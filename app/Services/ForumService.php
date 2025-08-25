@@ -236,7 +236,17 @@ class ForumService
             'message' => $comment->message,
             'formatted_message' => $comment->formatted_message,
             'img' => $comment->img, // 後方互換性のため保持
-            'attachments' => $comment->attachments ?? [], // 新Attachmentシステム
+            'attachments' => $comment->attachments->map(function($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'original_name' => $attachment->original_name,
+                    'file_name' => $attachment->file_name,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'mime_type' => $attachment->mime_type,
+                    'url' => $attachment->url,
+                ];
+            })->toArray(), // 新Attachmentシステム
             'created_at' => $comment->created_at,
             'user' => $comment->user,
             'like_count' => $comment->likes_count,
