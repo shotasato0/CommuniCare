@@ -25,7 +25,7 @@ const localErrorMessage = ref(null); // エラーメッセージ
 // 統一ファイル添付システム用
 const fileUploadRef = ref(null);
 const attachedFiles = ref([]);
-const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
+const useUnifiedUpload = ref(false); // 統一システムの使用フラグ（一時的にレガシーに戻す）
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -175,8 +175,20 @@ const resetForm = () => {
                 {{ localErrorMessage }}
             </div>
 
-            <!-- レガシー画像アップロード（後方互換性・非表示） -->
-            <div v-if="!useUnifiedUpload" class="legacy-upload" style="display: none;">
+            <!-- レガシー画像アップロード（後方互換性） -->
+            <div v-if="!useUnifiedUpload" class="legacy-upload">
+                <p class="font-medium text-gray-900 dark:text-gray-100 mb-2">画像添付</p>
+                
+                <!-- 画像選択ボタン -->
+                <button 
+                    type="button"
+                    @click="triggerFileInput"
+                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                    <i class="bi bi-image mr-2"></i>
+                    画像を選択
+                </button>
+                
                 <!-- 隠しファイル入力 -->
                 <input
                     type="file"
