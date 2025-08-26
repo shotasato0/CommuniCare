@@ -23,6 +23,15 @@ class PostController extends Controller
     public function store(PostStoreRequest $request)
     {
         try {
+            // デバッグ情報
+            Log::info('=== PostController::store Debug ===', [
+                'hasFile_files' => $request->hasFile('files'),
+                'hasFile_image' => $request->hasFile('image'),
+                'files_count' => $request->hasFile('files') ? count($request->file('files')) : 0,
+                'image_name' => $request->hasFile('image') ? $request->file('image')->getClientOriginalName() : null,
+                'all_files' => $request->allFiles()
+            ]);
+            
             $post = $this->postService->createPost($request);
             $user = Auth::user();
             
