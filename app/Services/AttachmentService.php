@@ -122,37 +122,47 @@ class AttachmentService
             return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
         }
         
-        // ファイル保存（直接的なアプローチ）
-        $fullStoragePath = storage_path('app/public/' . $filePath);
-        $storageDirectory = dirname($fullStoragePath);
-        
-        // ディレクトリが存在しない場合は作成
-        if (!is_dir($storageDirectory)) {
-            mkdir($storageDirectory, 0775, true);
-        }
-        
+        // Laravel Storage使用（推奨方法）
         Log::info('AttachmentService: Attempting to save file', [
             'filePath' => $filePath,
-            'fullStoragePath' => $fullStoragePath,
-            'directory_exists' => is_dir($storageDirectory)
+            'originalName' => $originalName,
+            'fileSize' => $file->getSize()
         ]);
         
-        // ファイルを移動
-        $success = $file->move($storageDirectory, basename($filePath));
-        
-        if (!$success) {
-            Log::error('AttachmentService: File move failed');
-            throw new \RuntimeException('ファイルの保存に失敗しました');
+        try {
+            // Laravel Storageを使用してファイル保存
+            $storedPath = $file->storeAs(
+                dirname($filePath), // ディレクトリパス（例: attachments/images）
+                basename($filePath), // ファイル名
+                'public' // ディスク
+            );
+            
+            if (!$storedPath) {
+                throw new \RuntimeException('ファイルの保存に失敗しました（storeAs returned false）');
+            }
+            
+            // 保存確認
+            $actualFilePath = $storedPath;
+            $exists = Storage::disk('public')->exists($actualFilePath);
+            $size = $exists ? Storage::disk('public')->size($actualFilePath) : 0;
+            
+            Log::info('AttachmentService: File saved successfully', [
+                'actualFilePath' => $actualFilePath,
+                'file_exists' => $exists,
+                'file_size' => $size
+            ]);
+            
+            if (!$exists) {
+                throw new \RuntimeException('ファイル保存確認に失敗しました');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('AttachmentService: File save failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new \RuntimeException('ファイルの保存に失敗しました: ' . $e->getMessage());
         }
-        
-        // 保存の確認
-        $actualFilePath = $filePath;
-        
-        Log::info('AttachmentService: File saved successfully', [
-            'actualFilePath' => $actualFilePath,
-            'file_exists' => file_exists($fullStoragePath),
-            'file_size' => file_exists($fullStoragePath) ? filesize($fullStoragePath) : 'N/A'
-        ]);
         
         // Attachmentレコード作成
         $attachment = Attachment::create([
