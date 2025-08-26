@@ -79,7 +79,7 @@ class AttachmentServiceTest extends DatabaseTestCase
         $this->assertEquals($this->user->id, $attachment->uploaded_by);
         $this->assertTrue($attachment->is_safe);
         
-        Storage::disk('public')->assertExists($attachment->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($attachment->file_path));
     }
 
     public function test_upload_single_pdf_file_successfully()
