@@ -25,7 +25,7 @@ const localErrorMessage = ref(null); // エラーメッセージ
 // 統一ファイル添付システム用
 const fileUploadRef = ref(null);
 const attachedFiles = ref([]);
-const useUnifiedUpload = ref(false); // 統一システムの使用フラグ（一時的にレガシーに戻す）
+const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -56,6 +56,9 @@ const removeImage = () => {
 
 // 統一ファイル添付システム用のハンドラー
 const handleFilesChanged = (files) => {
+    console.log('=== handleFilesChanged ===');
+    console.log('受信ファイル数:', files.length);
+    console.log('ファイル詳細:', files);
     attachedFiles.value = files;
 };
 
@@ -70,6 +73,13 @@ const submitPost = () => {
         return;
     }
 
+    // デバッグ情報
+    console.log('=== PostForm Debug ===');
+    console.log('useUnifiedUpload:', useUnifiedUpload.value);
+    console.log('attachedFiles.length:', attachedFiles.value.length);
+    console.log('attachedFiles:', attachedFiles.value);
+    console.log('image:', image.value);
+
     // フォームデータを作成
     const formData = new FormData();
     formData.append("title", postData.value.title);
@@ -79,13 +89,18 @@ const submitPost = () => {
 
     // 統一ファイル添付システムの使用
     if (useUnifiedUpload.value && attachedFiles.value.length > 0) {
+        console.log('統一システムでファイル送信:', attachedFiles.value.length, 'files');
         attachedFiles.value.forEach((file, index) => {
             formData.append(`files[${index}]`, file);
+            console.log(`files[${index}]:`, file.name, file.size);
         });
     }
     // レガシー画像アップロード（後方互換性）
     else if (image.value) {
+        console.log('レガシーシステムでファイル送信:', image.value.name);
         formData.append("image", image.value);
+    } else {
+        console.log('ファイルが選択されていません');
     }
 
     // 投稿の送信
