@@ -12,6 +12,7 @@ use App\Exceptions\Custom\PostOwnershipException;
 use App\Traits\SecurityValidationTrait;
 use App\Traits\TenantBoundaryCheckTrait;
 use App\Services\AttachmentService;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
