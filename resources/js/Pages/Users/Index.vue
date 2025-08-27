@@ -385,12 +385,15 @@ const totalFilteredUsers = computed(() => {
                                         >
                                             <img
                                                 :src="
-                                                    user.icon
-                                                        ? `/storage/${user.icon}`
+                                                    user.icon 
+                                                        ? (user.icon.startsWith('/storage/') 
+                                                            ? user.icon 
+                                                            : `/storage/${user.icon}`)
                                                         : '/images/default_user_icon.png'
                                                 "
                                                 alt="Profile Icon"
                                                 class="w-12 h-12 rounded-full"
+                                                @error="$event.target.src='/images/default_user_icon.png'"
                                             />
                                             <div
                                                 class="flex justify-between items-start w-full"
