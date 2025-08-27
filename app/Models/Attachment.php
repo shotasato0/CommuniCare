@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Attachment extends Model
@@ -104,8 +103,8 @@ class Attachment extends Model
      */
     public function getUrlAttribute(): string
     {
-        // Laravel Storage を使用して正確なURLを生成
-        return Storage::disk('public')->url($this->file_path);
+        // セキュアファイル配信ルートを使用
+        return route('attachments.show', ['attachment' => $this->id]);
     }
 
     /**
