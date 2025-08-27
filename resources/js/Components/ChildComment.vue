@@ -48,6 +48,7 @@ const openModal = (imagePath) => {
                         alt="User Icon"
                         class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
+                        @error="$event.target.src='/images/default_user_icon.png'"
                     />
                     <img
                         v-else
