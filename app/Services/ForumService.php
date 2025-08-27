@@ -273,7 +273,7 @@ class ForumService
                          }])
                          ->get(),
             'users' => User::where('tenant_id', $currentUser->tenant_id)
-                         ->select('id', 'name', 'tenant_id')
+                         ->select('id', 'name', 'tenant_id', 'unit_id', 'icon')
                          ->get(),
             'selectedForumId' => null,
             'userUnitId' => $currentUser->unit_id,
@@ -299,7 +299,7 @@ class ForumService
                          }])
                          ->get(),
             'users' => User::where('tenant_id', $currentUser->tenant_id)
-                         ->select('id', 'name', 'tenant_id')
+                         ->select('id', 'name', 'tenant_id', 'unit_id', 'icon')
                          ->get(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
