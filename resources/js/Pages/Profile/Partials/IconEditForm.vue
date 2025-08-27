@@ -20,12 +20,10 @@ const imagePreview = ref(null);
 
 // アイコンのプレビューURLを定義
 const previewUrl = ref(
-    props.user.icon &&
-        typeof props.user.icon === "string" &&
-        props.user.icon.startsWith("/storage/")
-        ? props.user.icon
-        : props.user.icon
-        ? `/storage/${props.user.icon}`
+    props.user.icon 
+        ? (props.user.icon.startsWith("/storage/") 
+            ? props.user.icon 
+            : `/storage/${props.user.icon}`)
         : "/images/default_user_icon.png"
 );
 
