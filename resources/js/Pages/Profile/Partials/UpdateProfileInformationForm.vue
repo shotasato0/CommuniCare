@@ -52,25 +52,20 @@ const form = useForm({
 const isSuccess = ref(false);
 
 // フォーム送信の処理を修正
-const submitForm = async () => {
-    await form.patch(route("profile.update"));
-    isSuccess.value = true;
-    setTimeout(() => {
-        isSuccess.value = false;
-    }, 8000);
+const submitForm = () => {
+    form.patch(route("profile.update"), {
+        onSuccess: () => {
+            isSuccess.value = true;
+            setTimeout(() => {
+                isSuccess.value = false;
+            }, 8000);
+        }
+    });
 };
 
 // アイコン編集を開く関数
 const handleOpenIconEdit = () => {
     emit("openIconEdit");
-};
-
-// アイコン更新成功時のメッセージ表示
-const handleSuccessMessage = (message) => {
-    isSuccess.value = true;
-    setTimeout(() => {
-        isSuccess.value = false;
-    }, 8000);
 };
 </script>
 
@@ -117,16 +112,15 @@ const handleSuccessMessage = (message) => {
                     <!-- プロフィール画像 -->
                     <img
                         :src="
-                            user.icon &&
-                            typeof user.icon === 'string' &&
-                            user.icon.startsWith('/storage/')
-                                ? user.icon
-                                : user.icon
-                                ? `/storage/${user.icon}`
+                            user.icon 
+                                ? (user.icon.startsWith('/storage/') 
+                                    ? user.icon 
+                                    : `/storage/${user.icon}`)
                                 : '/images/default_user_icon.png'
                         "
                         alt="ユーザーのプロフィール写真"
                         class="w-full h-full rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
+                        @error="$event.target.src='/images/default_user_icon.png'"
                     />
 
                     <!-- ペンのマーク -->
