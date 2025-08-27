@@ -55,6 +55,7 @@ const currentUnitUsers = computed(() => {
                     "
                     alt="User Icon"
                     class="w-12 h-12 rounded-full"
+                    @error="$event.target.src='/images/default_user_icon.png'"
                 />
                 <img
                     v-else
