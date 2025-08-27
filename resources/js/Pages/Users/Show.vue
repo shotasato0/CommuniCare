@@ -43,12 +43,15 @@ export default {
         >
             <img
                 :src="
-                    user.icon
-                        ? `/storage/${user.icon}`
+                    user.icon 
+                        ? (user.icon.startsWith('/storage/') 
+                            ? user.icon 
+                            : `/storage/${user.icon}`)
                         : '/images/default_user_icon.png'
                 "
                 alt="ユーザーのプロフィール写真"
                 class="w-24 h-24 rounded-full object-cover mx-auto mb-4"
+                @error="$event.target.src='/images/default_user_icon.png'"
             />
 
             <div class="info mb-4 text-left">
