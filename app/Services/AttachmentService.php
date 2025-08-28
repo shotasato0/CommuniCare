@@ -186,12 +186,14 @@ class AttachmentService
     /**
      * ファイル削除（セキュリティチェック付き）
      */
-    public function deleteAttachment(int $attachmentId): bool
+    public function deleteAttachment(\App\Models\Attachment|int $attachment): bool
     {
         /** @var User $currentUser */
         $currentUser = Auth::user();
-        
-        $attachment = Attachment::find($attachmentId);
+
+        if (!$attachment instanceof Attachment) {
+            $attachment = Attachment::find($attachment);
+        }
         if (!$attachment) {
             return false;
         }
@@ -202,7 +204,7 @@ class AttachmentService
                 currentTenantId: $currentUser->tenant_id,
                 resourceTenantId: $attachment->tenant_id,
                 resourceType: 'attachment',
-                resourceId: $attachmentId
+                resourceId: $attachment->id
             );
         }
         
@@ -220,7 +222,7 @@ class AttachmentService
         // セキュリティログ記録
         if ($deleted) {
             $this->auditAction('attachment_deleted', [
-                'attachment_id' => $attachmentId,
+                'attachment_id' => $attachment->id,
                 'file_name' => $attachment->original_name,
                 'file_size' => $attachment->file_size
             ]);
