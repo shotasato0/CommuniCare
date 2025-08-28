@@ -55,7 +55,7 @@ class ProfileController extends Controller
             }
 
             // AttachmentServiceを使用して新しいアイコンをアップロード
-            $attachment = $attachmentService->uploadSingleFile(
+            $attachmentService->uploadSingleFile(
                 $request->file('icon'),
                 get_class($user),
                 $user->id
