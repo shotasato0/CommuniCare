@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Unit;
+use App\Services\AttachmentService;
 
 class ProfileController extends Controller
 {
@@ -36,42 +36,47 @@ class ProfileController extends Controller
     }
 
     public function updateIcon(Request $request)
-{
-    // バリデーション
-    $request->validate([
-        'icon' => 'required|image:allow_svg|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
-    ], [
-        'icon.max' => '画像のサイズが大きすぎます。4MB以下にしてください。',
-    ]);
+    {
+        // バリデーション
+        $request->validate([
+            'icon' => 'required|image:allow_svg|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+        ], [
+            'icon.max' => '画像のサイズが大きすぎます。4MB以下にしてください。',
+        ]);
 
-    try {
-        // ファイルを取得
-    $file = $request->file('icon');
+        try {
+            $user = $request->user();
+            $attachmentService = app(AttachmentService::class);
 
-    // 一意のファイル名を生成
-    $fileName = uniqid() . '.' . $file->getClientOriginalExtension();
+            // 既存のアイコンAttachmentを削除
+            $existingAttachment = $user->iconAttachment;
+            if ($existingAttachment) {
+                $attachmentService->deleteAttachment($existingAttachment->id);
+            }
 
-    // ファイルを保存（共通の 'icons' ディレクトリに保存）
-    $path = $file->storeAs('icons', $fileName, 'public');
+            // AttachmentServiceを使用して新しいアイコンをアップロード
+            $attachment = $attachmentService->uploadSingleFile(
+                $request->file('icon'),
+                get_class($user),
+                $user->id
+            );
 
-    // 既存のアイコンを削除（必要に応じて）
-    if ($request->user()->icon) {
-        Storage::disk('public')->delete($request->user()->icon);
+            // レガシーiconフィールドをクリア（iconUrlアクセサを使用するため）
+            $user->icon = null;
+            $user->save();
+
+            Log::info("User icon updated successfully for user {$user->id}");
+
+            return redirect()->route('profile.edit')
+                ->with('success', 'プロフィール画像が更新されました。');
+
+        } catch (\Exception $e) {
+            Log::error("Failed to update user icon for user {$request->user()->id}: " . $e->getMessage());
+            
+            return redirect()->route('profile.edit')
+                ->with('error', 'プロフィール画像の更新に失敗しました。');
+        }
     }
-
-        // データベースに新しいパスを保存
-        $user = $request->user();
-        $user->icon = 'icons/' . $fileName;
-        $user->save();
-        // アイコン編集が完了したらユーザープロフィールページにリダイレクト
-        return redirect()->route('profile.edit')
-            ->with('success', 'プロフィール画像が更新されました。');
-    } catch (\Exception $e) {
-        // エラーが発生した場合はエラーメッセージを表示
-        return redirect()->route('profile.edit')
-            ->with('error', 'プロフィール画像の更新に失敗しました。');
-    }
-}
 
     /**
      * Update the user's profile information.
