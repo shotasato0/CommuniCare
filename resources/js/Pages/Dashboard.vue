@@ -112,13 +112,7 @@ const closeUserProfile = () => {
                                 class="flex items-center space-x-4 group hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 cursor-pointer"
                             >
                                 <img
-                                    :src="
-                                        props.auth.user.icon 
-                                            ? (props.auth.user.icon.startsWith('/storage/') 
-                                                ? props.auth.user.icon 
-                                                : `/storage/${props.auth.user.icon}`)
-                                            : '/images/default_user_icon.png'
-                                    "
+                                    :src="props.auth.user.iconUrl || '/images/default_user_icon.png'"
                                     alt="Profile Icon"
                                     class="w-12 h-12 rounded-full"
                                     @error="$event.target.src='/images/default_user_icon.png'"
