@@ -11,6 +11,10 @@ class User extends Authenticatable
 {
     use HasRoles, HasFactory, Notifiable;
 
+    protected $appends = [
+        'icon_url',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -50,6 +54,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function toArray(): array
+    {
+        $array = parent::toArray();
+        $array['iconUrl'] = $array['icon_url'] ?? $this->icon_url;
+        return $array;
     }
 
     public function tenant()
