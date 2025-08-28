@@ -70,6 +70,7 @@ class CommentController extends Controller
     public function addAttachments(Request $request, Comment $comment)
     {
         $request->validate([
+            'files' => 'required|array|max:10',
             'files.*' => 'required|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:10240',
         ]);
         
