@@ -47,21 +47,10 @@ const currentUnitUsers = computed(() => {
                 @click="$emit('user-selected', user)"
             >
                 <img
-                    v-if="user.icon"
-                    :src="
-                        user.icon.startsWith('/storage/')
-                            ? user.icon
-                            : `/storage/${user.icon}`
-                    "
+                    :src="user.iconUrl || '/images/default_user_icon.png'"
                     alt="User Icon"
                     class="w-12 h-12 rounded-full"
                     @error="$event.target.src='/images/default_user_icon.png'"
-                />
-                <img
-                    v-else
-                    src="/images/default_user_icon.png"
-                    alt="Default Icon"
-                    class="w-12 h-12 rounded-full"
                 />
                 <span>{{ user.name }}</span>
             </li>
