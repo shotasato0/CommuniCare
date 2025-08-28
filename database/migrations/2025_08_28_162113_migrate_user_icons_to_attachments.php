@@ -16,55 +16,66 @@ return new class extends Migration
     {
         Log::info('Starting user icons migration to attachments system');
         
-        $attachmentService = app(AttachmentService::class);
-        
         // 既存のiconフィールドがあるユーザーを取得
         $users = User::whereNotNull('icon')->get();
         
         foreach ($users as $user) {
             try {
                 $iconPath = $user->icon;
-                $filePath = null;
+                $sourceFilePath = null;
                 
                 // ファイルパスの正規化と存在チェック
                 if (str_starts_with($iconPath, 'images/profiles/')) {
-                    $filePath = public_path($iconPath);
+                    $sourceFilePath = public_path($iconPath);
                 } elseif (!str_starts_with($iconPath, '/')) {
                     // storage/app/public/icons/ にあると想定
                     $storagePath = 'icons/' . $iconPath;
                     if (Storage::disk('public')->exists($storagePath)) {
-                        $filePath = Storage::disk('public')->path($storagePath);
+                        $sourceFilePath = Storage::disk('public')->path($storagePath);
                     }
                 }
                 
-                if ($filePath && file_exists($filePath)) {
+                if ($sourceFilePath && file_exists($sourceFilePath)) {
                     // ファイル情報を取得
-                    $originalName = basename($filePath);
-                    $mimeType = mime_content_type($filePath);
-                    $fileSize = filesize($filePath);
+                    $originalName = basename($sourceFilePath);
+                    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+                    $mimeType = mime_content_type($sourceFilePath);
+                    $fileSize = filesize($sourceFilePath);
+                    $hash = hash_file('sha256', $sourceFilePath);
                     
-                    // AttachmentServiceを使用してAttachmentレコードを作成
-                    $attachmentData = [
+                    // AttachmentService準拠の安全なファイル名生成
+                    $safeName = Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) ?: 'icon';
+                    $fileName = $safeName . '_' . time() . '_' . Str::random(8) . '.' . $extension;
+                    
+                    // AttachmentService準拠のストレージパス
+                    $destinationPath = 'attachments/images/' . $fileName;
+                    
+                    // ファイルをStorage::disk('public')にコピー
+                    $fileContent = file_get_contents($sourceFilePath);
+                    Storage::disk('public')->put($destinationPath, $fileContent);
+                    
+                    // 保存確認
+                    if (!Storage::disk('public')->exists($destinationPath)) {
+                        throw new \RuntimeException('ファイルのコピーに失敗しました');
+                    }
+                    
+                    // Attachmentレコード作成
+                    $attachment = Attachment::create([
+                        'attachable_type' => User::class,
+                        'attachable_id' => $user->id,
                         'original_name' => $originalName,
-                        'file_name' => $originalName,
-                        'file_path' => $filePath, // 一時的なファイルパス
+                        'file_name' => $fileName,
+                        'file_path' => $destinationPath,
                         'file_size' => $fileSize,
                         'mime_type' => $mimeType,
                         'file_type' => 'image',
-                    ];
+                        'tenant_id' => $user->tenant_id,
+                        'uploaded_by' => $user->id, // 自分自身をアップロード者とする
+                        'hash' => $hash,
+                        'is_safe' => true // 既存ファイルは安全とみなす
+                    ]);
                     
-                    // Attachmentレコードを作成
-                    $attachment = new Attachment();
-                    $attachment->fill($attachmentData);
-                    $attachment->tenant_id = $user->tenant_id;
-                    
-                    // ポリモーフィック関係の設定
-                    $user->attachments()->save($attachment);
-                    
-                    // AttachmentServiceを使用してファイルを適切な場所にコピー
-                    $attachmentService->moveFileToFinalLocation($attachment, $filePath);
-                    
-                    Log::info("Successfully migrated icon for user {$user->id}: {$iconPath}");
+                    Log::info("Successfully migrated icon for user {$user->id}: {$iconPath} -> {$destinationPath}");
                 } else {
                     Log::warning("Icon file not found for user {$user->id}: {$iconPath}");
                 }
