@@ -111,13 +111,7 @@ const handleOpenIconEdit = () => {
                 >
                     <!-- プロフィール画像 -->
                     <img
-                        :src="
-                            user.icon 
-                                ? (user.icon.startsWith('/storage/') 
-                                    ? user.icon 
-                                    : `/storage/${user.icon}`)
-                                : '/images/default_user_icon.png'
-                        "
+                        :src="user.iconUrl || '/images/default_user_icon.png'"
                         alt="ユーザーのプロフィール写真"
                         class="w-full h-full rounded-full object-cover transition-opacity duration-300 group-hover:opacity-70"
                         @error="$event.target.src='/images/default_user_icon.png'"
