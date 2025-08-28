@@ -440,17 +440,6 @@ const openModal = (imageSrc) => {
                                                 )
                                             "
                                         />
-                                        <img
-                                            v-else
-                                            src="/images/default_user_icon.png"
-                                            alt="Default Icon"
-                                            class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                            @click="
-                                                openUserProfile(
-                                                    post.quoted_post
-                                                )
-                                            "
-                                        />
                                         <span
                                             @click="
                                                 openUserProfile(
