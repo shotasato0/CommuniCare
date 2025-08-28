@@ -42,13 +42,7 @@ export default {
             class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-h-screen overflow-auto w-80"
         >
             <img
-                :src="
-                    user.icon 
-                        ? (user.icon.startsWith('/storage/') 
-                            ? user.icon 
-                            : `/storage/${user.icon}`)
-                        : '/images/default_user_icon.png'
-                "
+                :src="user.iconUrl || '/images/default_user_icon.png'"
                 alt="ユーザーのプロフィール写真"
                 class="w-24 h-24 rounded-full object-cover mx-auto mb-4"
                 @error="$event.target.src='/images/default_user_icon.png'"
