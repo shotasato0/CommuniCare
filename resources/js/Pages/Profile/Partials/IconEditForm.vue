@@ -19,13 +19,7 @@ const image = ref(null);
 const imagePreview = ref(null);
 
 // アイコンのプレビューURLを定義
-const previewUrl = ref(
-    props.user.icon 
-        ? (props.user.icon.startsWith("/storage/") 
-            ? props.user.icon 
-            : `/storage/${props.user.icon}`)
-        : "/images/default_user_icon.png"
-);
+const previewUrl = ref(props.user.iconUrl || "/images/default_user_icon.png");
 
 // 成功メッセージとエラーメッセージのrefを定義
 const localSuccessMessage = ref(null); // 初期値をnullに設定
