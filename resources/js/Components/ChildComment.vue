@@ -39,23 +39,11 @@ const openModal = (imagePath) => {
                 <!-- プロフィール画像とユーザー名 -->
                 <div class="flex items-center space-x-2 mt-1">
                     <img
-                        v-if="comment.user && comment.user.icon"
-                        :src="
-                            comment.user.icon.startsWith('/storage/')
-                                ? comment.user.icon
-                                : `/storage/${comment.user.icon}`
-                        "
+                        :src="comment.user?.iconUrl || '/images/default_user_icon.png'"
                         alt="User Icon"
                         class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
                         @click="openUserProfile(comment)"
                         @error="$event.target.src='/images/default_user_icon.png'"
-                    />
-                    <img
-                        v-else
-                        src="/images/default_user_icon.png"
-                        alt="Default Icon"
-                        class="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300"
-                        @click="openUserProfile(comment)"
                     />
 
                     <span
