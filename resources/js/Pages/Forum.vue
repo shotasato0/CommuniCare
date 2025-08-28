@@ -431,17 +431,7 @@ const openModal = (imageSrc) => {
                                 >
                                     <div class="flex items-center space-x-2">
                                         <img
-                                            v-if="
-                                                post.quoted_post.user &&
-                                                post.quoted_post.user.icon
-                                            "
-                                            :src="
-                                                post.quoted_post.user.icon.startsWith(
-                                                    '/storage/'
-                                                )
-                                                    ? post.quoted_post.user.icon
-                                                    : `/storage/${post.quoted_post.user.icon}`
-                                            "
+                                            :src="post.quoted_post.user?.iconUrl || '/images/default_user_icon.png'"
                                             alt="User Icon"
                                             class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                             @click="
