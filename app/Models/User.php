@@ -85,6 +85,17 @@ class User extends Authenticatable
      */
     public function iconAttachment()
     {
-        return $this->attachments()->where('file_type', 'image')->latest()->first();
+        return $this->morphOne(Attachment::class, 'attachable')->where('file_type', 'image');
+    }
+
+    /**
+     * Get the user's icon URL attribute - 完全に統一システムで管理
+     */
+    public function getIconUrlAttribute(): string 
+    {
+        $attachment = $this->iconAttachment;
+        return $attachment 
+            ? route('attachments.show', ['attachment' => $attachment->id])
+            : '/images/default_user_icon.png';
     }
 }
