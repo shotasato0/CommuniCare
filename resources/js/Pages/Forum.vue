@@ -501,20 +501,8 @@ const openModal = (imageSrc) => {
                             >
                                 <!-- ユーザーアイコンの表示 -->
                                 <img
-                                    v-if="post.user.icon"
-                                    :src="
-                                        post.user.icon.startsWith('/storage/')
-                                            ? post.user.icon
-                                            : `/storage/${post.user.icon}`
-                                    "
+                                    :src="post.user?.iconUrl || '/images/default_user_icon.png'"
                                     alt="User Icon"
-                                    class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
-                                    @click="openUserProfile(post)"
-                                />
-                                <img
-                                    v-else
-                                    src="/images/default_user_icon.png"
-                                    alt="Default Icon"
                                     class="w-12 h-12 rounded-full cursor-pointer hover:scale-110 transition-transform duration-300 mb-1"
                                     @click="openUserProfile(post)"
                                 />
