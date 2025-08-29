@@ -170,19 +170,6 @@ abstract class TestCase extends BaseTestCase
      */
     private function mockMySQLSpecificOperations(): void
     {
-        // DBファサードの実体を取得し、インスタンス部分モックでDDLのみ無害化
-        $manager = DB::getFacadeRoot();
-        if ($manager) {
-            $mock = \Mockery::mock($manager)->makePartial();
-            DB::swap($mock);
-
-            $mock->shouldReceive('statement')
-                ->with(\Mockery::pattern('/ALTER\s+TABLE\s+posts\s+ADD\s+INDEX\s+message_index/i'))
-                ->andReturn(true);
-
-            $mock->shouldReceive('statement')
-                ->with(\Mockery::pattern('/ALTER\s+TABLE\s+attachments\s+ADD\s+file_type\s+ENUM/i'))
-                ->andReturn(true);
-        }
+        // MySQL専用DDLはマイグレーション側のドライバ分岐で回避するため、ここでは何もしない
     }
 }
