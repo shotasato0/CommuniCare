@@ -170,8 +170,9 @@ abstract class TestCase extends BaseTestCase
      */
     private function mockMySQLSpecificOperations(): void
     {
-        // DBファサードをモックして、SQLite非対応のクエリを無害化
-        DB::shouldReceive('statement')
+        // DBファサードを部分モックし、SQLite非対応のクエリのみ無害化
+        DB::partialMock()
+            ->shouldReceive('statement')
             ->with(\Mockery::pattern('/ALTER TABLE.*ADD INDEX.*message_index/'))
             ->andReturn(true);
     }
