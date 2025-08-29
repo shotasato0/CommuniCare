@@ -33,12 +33,8 @@ class PostService
         
         // DB トランザクションで投稿作成とファイル添付を安全に実行
         return DB::transaction(function () use ($validated, $request) {
-            // レガシー画像アップロードの処理
-            $imgPath = null;
-            if ($request->hasFile('image') && !$request->hasFile('files')) {
-                // レガシーシステム: 直接imgフィールドに保存
-                $imgPath = $request->file('image')->store('images', 'public');
-            }
+            // レガシー画像アップロードの処理（私有メソッドに委譲）
+            $imgPath = $this->handleImageUpload($request);
             
             // 投稿を作成
             $post = Post::create([
@@ -58,6 +54,17 @@ class PostService
             
             return $post;
         });
+    }
+
+    /**
+     * レガシー画像アップロード（後方互換用）
+     */
+    private function handleImageUpload(PostStoreRequest $request): ?string
+    {
+        if ($request->hasFile('image') && !$request->hasFile('files')) {
+            return $request->file('image')->store('images', 'public');
+        }
+        return null;
     }
 
     /**
