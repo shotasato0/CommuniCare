@@ -173,7 +173,12 @@ abstract class TestCase extends BaseTestCase
         // DBファサードを部分モックし、SQLite非対応のクエリのみ無害化
         DB::partialMock()
             ->shouldReceive('statement')
-            ->with(\Mockery::pattern('/ALTER TABLE.*ADD INDEX.*message_index/'))
+            ->with(\Mockery::pattern('/ALTER TABLE.*ADD INDEX.*message_index/i'))
+            ->andReturn(true);
+
+        DB::partialMock()
+            ->shouldReceive('statement')
+            ->with(\Mockery::pattern('/ALTER TABLE\s+attachments\s+ADD\s+file_type\s+ENUM/i'))
             ->andReturn(true);
     }
 }
