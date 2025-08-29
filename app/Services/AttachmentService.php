@@ -6,6 +6,7 @@ use App\Models\Attachment;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Exceptions\Custom\TenantViolationException;
@@ -121,10 +122,46 @@ class AttachmentService
             return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
         }
         
-        // ファイル保存
-        $savedPath = $file->storeAs('public/' . dirname($filePath), basename($filePath));
-        if (!$savedPath) {
-            throw new \RuntimeException('ファイルの保存に失敗しました');
+        // Laravel Storage使用（推奨方法）
+        Log::info('AttachmentService: Attempting to save file', [
+            'filePath' => $filePath,
+            'originalName' => $originalName,
+            'fileSize' => $file->getSize()
+        ]);
+        
+        try {
+            // Laravel Storageを使用してファイル保存
+            $storedPath = $file->storeAs(
+                dirname($filePath), // ディレクトリパス（例: attachments/images）
+                basename($filePath), // ファイル名
+                'public' // ディスク
+            );
+            
+            if (!$storedPath) {
+                throw new \RuntimeException('ファイルの保存に失敗しました（storeAs returned false）');
+            }
+            
+            // 保存確認
+            $actualFilePath = $storedPath;
+            $exists = Storage::disk('public')->exists($actualFilePath);
+            $size = $exists ? Storage::disk('public')->size($actualFilePath) : 0;
+            
+            Log::info('AttachmentService: File saved successfully', [
+                'actualFilePath' => $actualFilePath,
+                'file_exists' => $exists,
+                'file_size' => $size
+            ]);
+            
+            if (!$exists) {
+                throw new \RuntimeException('ファイル保存確認に失敗しました');
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('AttachmentService: File save failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new \RuntimeException('ファイルの保存に失敗しました: ' . $e->getMessage());
         }
         
         // Attachmentレコード作成
@@ -133,7 +170,7 @@ class AttachmentService
             'attachable_id' => $attachableId,
             'original_name' => $originalName,
             'file_name' => $fileName,
-            'file_path' => $filePath,
+            'file_path' => $actualFilePath, // 実際の保存パスを使用
             'file_size' => $file->getSize(),
             'mime_type' => $mimeType,
             'file_type' => $fileType,
@@ -149,12 +186,14 @@ class AttachmentService
     /**
      * ファイル削除（セキュリティチェック付き）
      */
-    public function deleteAttachment(int $attachmentId): bool
+    public function deleteAttachment(\App\Models\Attachment|int $attachment): bool
     {
         /** @var User $currentUser */
         $currentUser = Auth::user();
-        
-        $attachment = Attachment::find($attachmentId);
+
+        if (!$attachment instanceof Attachment) {
+            $attachment = Attachment::find($attachment);
+        }
         if (!$attachment) {
             return false;
         }
@@ -165,7 +204,7 @@ class AttachmentService
                 currentTenantId: $currentUser->tenant_id,
                 resourceTenantId: $attachment->tenant_id,
                 resourceType: 'attachment',
-                resourceId: $attachmentId
+                resourceId: $attachment->id
             );
         }
         
@@ -183,7 +222,7 @@ class AttachmentService
         // セキュリティログ記録
         if ($deleted) {
             $this->auditAction('attachment_deleted', [
-                'attachment_id' => $attachmentId,
+                'attachment_id' => $attachment->id,
                 'file_name' => $attachment->original_name,
                 'file_size' => $attachment->file_size
             ]);

@@ -28,8 +28,8 @@ class CreatePostsTable extends Migration
             $table->index('title', 'title_index');
         });
 
-        // messageカラムに部分インデックスを追加
-        DB::statement('ALTER TABLE posts ADD INDEX message_index (message(255))');
+        // messageカラムの部分インデックスは、MySQL環境でのみ
+        // 2025_08_29_120000_add_message_index_to_posts_table.php にて付与
 
         // 外部キーの追加（テーブル作成後に実施）
         Schema::table('posts', function (Blueprint $table) {

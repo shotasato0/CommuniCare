@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 use App\Services\AttachmentService;
 use App\Models\Attachment;
 use App\Models\Post;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class AttachmentServiceTest extends TestCase
+class AttachmentServiceTest extends DatabaseTestCase
 {
 
     private AttachmentService $attachmentService;
@@ -79,7 +79,7 @@ class AttachmentServiceTest extends TestCase
         $this->assertEquals($this->user->id, $attachment->uploaded_by);
         $this->assertTrue($attachment->is_safe);
         
-        Storage::disk('public')->assertExists($attachment->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($attachment->file_path));
     }
 
     public function test_upload_single_pdf_file_successfully()

@@ -28,15 +28,11 @@ trait TenantBoundaryCheckTrait
             );
             
             throw new TenantViolationException(
-                "他のテナントのリソースにアクセスしようとしました。",
-                [
-                    'user_id' => $currentUser->id,
-                    'user_tenant_id' => $currentUser->tenant_id,
-                    'resource_tenant_id' => $resource->tenant_id ?? null,
-                    'resource_type' => get_class($resource),
-                    'resource_id' => $resource->id ?? null,
-                    'action' => 'tenant_boundary_check'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: (string) ($resource->tenant_id ?? ''),
+                resourceType: get_class($resource),
+                resourceId: (int) ($resource->id ?? 0),
+                message: "他のテナントのリソースにアクセスしようとしました。"
             );
         }
     }
@@ -53,14 +49,11 @@ trait TenantBoundaryCheckTrait
         
         if (!$resource) {
             throw new TenantViolationException(
-                "指定されたリソースが見つかりません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'resource_type' => $modelClass,
-                    'resource_id' => $resourceId,
-                    'action' => 'resource_not_found'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: '',
+                resourceType: $modelClass,
+                resourceId: (int) $resourceId,
+                message: "指定されたリソースが見つかりません。"
             );
         }
         

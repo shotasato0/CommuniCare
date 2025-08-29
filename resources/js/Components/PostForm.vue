@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue"; // ImageModalコンポーネントをインポート
+import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
 import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
@@ -15,11 +16,16 @@ const postData = ref({
     forum_id: props.forumId ? Number(props.forumId) : null, // forum_id を追加し、初期値を適切に設定
 });
 
-const image = ref(null); // 画像ファイル
-const imagePreview = ref(null); // 画像プレビュー
-const fileInput = ref(null); // ファイル入力
+const image = ref(null); // 画像ファイル（レガシー対応）
+const imagePreview = ref(null); // 画像プレビュー（レガシー対応）
+const fileInput = ref(null); // ファイル入力（レガシー対応）
 const isModalOpen = ref(false); // モーダル表示
 const localErrorMessage = ref(null); // エラーメッセージ
+
+// 統一ファイル添付システム用
+const fileUploadRef = ref(null);
+const attachedFiles = ref([]);
+const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -29,17 +35,17 @@ watch(
     }
 );
 
-// 画像ファイルのチェック
+// 画像ファイルのチェック（レガシー対応）
 const onImageChange = (e) => {
     handleImageChange(e, image, imagePreview, localErrorMessage);
 };
 
-// ファイル選択ボタンをクリックしたときの処理
+// ファイル選択ボタンをクリックしたときの処理（レガシー対応）
 const triggerFileInput = () => {
     fileInput.value.click();
 };
 
-// 画像を削除する処理
+// 画像を削除する処理（レガシー対応）
 const removeImage = () => {
     image.value = null;
     imagePreview.value = null;
@@ -48,12 +54,31 @@ const removeImage = () => {
     }
 };
 
-// 投稿の送信処理（画像やファイルを添付に対応）
+// 統一ファイル添付システム用のハンドラー
+const handleFilesChanged = (files) => {
+    console.log('=== handleFilesChanged ===');
+    console.log('受信ファイル数:', files.length);
+    console.log('ファイル詳細:', files);
+    attachedFiles.value = files;
+};
+
+const handleFileUploadError = (errorMessage) => {
+    localErrorMessage.value = errorMessage;
+};
+
+// 投稿の送信処理（統一ファイル添付システム対応）
 const submitPost = () => {
     if (!postData.value.forum_id || postData.value.forum_id === 0) {
         console.error("有効な掲示板IDが選択されていません。");
         return;
     }
+
+    // デバッグ情報
+    console.log('=== PostForm Debug ===');
+    console.log('useUnifiedUpload:', useUnifiedUpload.value);
+    console.log('attachedFiles.length:', attachedFiles.value.length);
+    console.log('attachedFiles:', attachedFiles.value);
+    console.log('image:', image.value);
 
     // フォームデータを作成
     const formData = new FormData();
@@ -62,25 +87,28 @@ const submitPost = () => {
     formData.append("forum_id", postData.value.forum_id);
     formData.append("_token", getCsrfToken());
 
-    // 画像データが存在する場合、フォームデータに追加
-    if (image.value) {
-        formData.append("image", image.value); // 画像データの追加
+    // 統一ファイル添付システムの使用
+    if (useUnifiedUpload.value && attachedFiles.value.length > 0) {
+        console.log('統一システムでファイル送信:', attachedFiles.value.length, 'files');
+        attachedFiles.value.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+            console.log(`files[${index}]:`, file.name, file.size);
+        });
+    }
+    // レガシー画像アップロード（後方互換性）
+    else if (image.value) {
+        console.log('レガシーシステムでファイル送信:', image.value.name);
+        formData.append("image", image.value);
+    } else {
+        console.log('ファイルが選択されていません');
     }
 
     // 投稿の送信
     router.post(route("forum.store"), formData, {
         onSuccess: () => {
             // 投稿成功後の処理
-            postData.value = {
-                // フォームデータをリセット
-                title: "",
-                message: "",
-                forum_id: props.forumId,
-            };
-            image.value = null; // 画像ファイルをリセット
-            imagePreview.value = null; // 画像プレビューをリセット
+            resetForm();
             router.get(
-                // 投稿成功後、掲示板のトップページにリダイレクト
                 route("forum.index", { forum_id: postData.value.forum_id }),
                 {
                     preserveState: true,
@@ -89,8 +117,33 @@ const submitPost = () => {
         },
         onError: (errors) => {
             console.error("投稿に失敗しました:", errors);
+            localErrorMessage.value = "投稿に失敗しました。もう一度お試しください。";
         },
     });
+};
+
+// フォームリセット処理
+const resetForm = () => {
+    postData.value = {
+        title: "",
+        message: "",
+        forum_id: props.forumId,
+    };
+    
+    // 統一ファイル添付システムのリセット
+    if (fileUploadRef.value) {
+        fileUploadRef.value.reset();
+    }
+    attachedFiles.value = [];
+    
+    // レガシー画像システムのリセット
+    image.value = null;
+    imagePreview.value = null;
+    if (fileInput.value) {
+        fileInput.value.value = "";
+    }
+    
+    localErrorMessage.value = null;
 };
 </script>
 
@@ -111,69 +164,84 @@ const submitPost = () => {
             </div>
 
             <!-- 本文 -->
-            <div class="flex flex-col mt-2 relative">
+            <div class="flex flex-col mt-2">
                 <p class="font-medium text-gray-900 dark:text-gray-100">本文</p>
                 <!-- テキスト入力ボックス -->
                 <textarea
                     v-model="postData.message"
-                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     required
                     placeholder="本文を入力してください"
                     rows="3"
                 ></textarea>
-
-                <!-- 画像選択アイコン -->
-                <div
-                    class="absolute right-3 bottom-3 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
-                    style="width: 40px; height: 40px"
-                    @click="triggerFileInput"
-                    title="ファイルを選択"
-                >
-                    <i class="bi bi-card-image text-2xl"></i>
-                </div>
             </div>
-            <!-- 隠しファイル入力 -->
-            <input
-                type="file"
-                accept="image/*"
-                ref="fileInput"
-                @change="onImageChange"
-                style="display: none"
-            />
+
+            <!-- 統一ファイル添付システム -->
+            <div class="mt-4">
+                <FileUpload 
+                    ref="fileUploadRef"
+                    @files-changed="handleFilesChanged"
+                    @error="handleFileUploadError"
+                />
+            </div>
 
             <!-- エラーメッセージ表示 -->
             <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
                 {{ localErrorMessage }}
             </div>
 
-            <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="relative mt-2 inline-block">
-                <img
-                    :src="imagePreview"
-                    alt="画像プレビュー"
-                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                    @click="isModalOpen = true"
-                />
-                <!-- 削除ボタン -->
-                <div
-                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
-                    @click="removeImage"
-                    title="画像を削除"
-                    style="width: 24px; height: 24px"
+            <!-- レガシー画像アップロード（後方互換性） -->
+            <div v-if="!useUnifiedUpload" class="legacy-upload">
+                <p class="font-medium text-gray-900 dark:text-gray-100 mb-2">画像添付</p>
+                
+                <!-- 画像選択ボタン -->
+                <button 
+                    type="button"
+                    @click="triggerFileInput"
+                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                    <i
-                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
-                    ></i>
-                </div>
-            </div>
-
-            <!-- モーダル表示 -->
-            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
-                <img
-                    :src="imagePreview"
-                    class="max-w-full max-h-full rounded-lg"
+                    <i class="bi bi-image mr-2"></i>
+                    画像を選択
+                </button>
+                
+                <!-- 隠しファイル入力 -->
+                <input
+                    type="file"
+                    accept="image/*"
+                    ref="fileInput"
+                    @change="onImageChange"
+                    style="display: none"
                 />
-            </ImageModal>
+
+                <!-- プレビュー表示 -->
+                <div v-if="imagePreview" class="relative mt-2 inline-block">
+                    <img
+                        :src="imagePreview"
+                        alt="画像プレビュー"
+                        class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
+                        @click="isModalOpen = true"
+                    />
+                    <!-- 削除ボタン -->
+                    <div
+                        class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
+                        @click="removeImage"
+                        title="画像を削除"
+                        style="width: 24px; height: 24px"
+                    >
+                        <i
+                            class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
+                        ></i>
+                    </div>
+                </div>
+
+                <!-- モーダル表示 -->
+                <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
+                    <img
+                        :src="imagePreview"
+                        class="max-w-full max-h-full rounded-lg"
+                    />
+                </ImageModal>
+            </div>
 
             <!-- 送信ボタン -->
             <div class="flex justify-end mt-2">

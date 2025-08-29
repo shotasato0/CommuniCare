@@ -15,6 +15,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\LegalController;
+use App\Http\Controllers\AttachmentController;
 
 // トップページ
 Route::get('/', function () {
@@ -45,11 +46,19 @@ Route::middleware(['auth'])->group(function () {
     // 投稿
     Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
     Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
+    Route::post('/forum/post/{post}/attachments', [PostController::class, 'addAttachments'])->name('forum.post.attachments.add');
+    Route::delete('/forum/post/{post}/attachments/{attachmentId}', [PostController::class, 'removeAttachment'])->name('forum.post.attachments.remove');
     Route::post('/like/toggle', [LikeController::class, 'toggleLike'])->name('like.toggle');
 
     // 返信
     Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
     Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    Route::post('/forum/comment/{comment}/attachments', [CommentController::class, 'addAttachments'])->name('forum.comment.attachments.add');
+    Route::delete('/forum/comment/{comment}/attachments/{attachmentId}', [CommentController::class, 'removeAttachment'])->name('forum.comment.attachments.remove');
+
+    // 添付ファイル
+    Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
+    Route::delete('/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
 
     // ユーザー（職員）
     Route::resource('users', UserController::class);
