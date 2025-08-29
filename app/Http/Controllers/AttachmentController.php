@@ -34,16 +34,22 @@ class AttachmentController extends Controller
             abort(404, 'ファイルが見つかりません');
         }
         
-        // ファイルストリーミング応答
-        return Storage::disk('public')->response(
-            $attachment->file_path,
-            $attachment->original_name,
-            [
-                'Content-Type' => $attachment->mime_type,
-                'Cache-Control' => 'public, max-age=31536000',
-                'Expires' => now()->addYear()->toRfc7231String(),
-            ]
-        );
+        // ファイルストリーミング応答（StreamedResponseで返却）
+        $stream = Storage::disk('public')->readStream($attachment->file_path);
+        if ($stream === false) {
+            abort(404, 'ファイルが見つかりません');
+        }
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, [
+            'Content-Type' => $attachment->mime_type,
+            'Cache-Control' => 'public, max-age=31536000',
+            'Expires' => now()->addYear()->toRfc7231String(),
+            'Content-Disposition' => 'inline; filename="' . $attachment->original_name . '"',
+        ]);
     }
 
     /**
@@ -72,13 +78,11 @@ class AttachmentController extends Controller
         
         if ($attachment->tenant_id !== $currentTenantId) {
             throw new TenantViolationException(
-                'テナント境界違反: 他のテナントのファイルにアクセスしようとしました。',
-                [
-                    'user_tenant_id' => $currentTenantId,
-                    'attachment_tenant_id' => $attachment->tenant_id,
-                    'attachment_id' => $attachment->id,
-                    'user_id' => Auth::id()
-                ]
+                currentTenantId: (string) $currentTenantId,
+                resourceTenantId: (string) $attachment->tenant_id,
+                resourceType: 'attachment',
+                resourceId: (int) $attachment->id,
+                message: 'テナント境界違反: 他のテナントのファイルにアクセスしようとしました。'
             );
         }
     }
@@ -88,6 +92,7 @@ class AttachmentController extends Controller
      */
     private function validateDeletePermission(Attachment $attachment): void
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         
         // アップロード者または管理者のみ削除可能
