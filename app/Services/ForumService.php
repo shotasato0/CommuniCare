@@ -211,7 +211,8 @@ class ForumService
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
             'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
-            'attachments' => $quotedPost->trashed() ? [] : $quotedPost->attachments->map(function($attachment) {
+            'attachments' => ($quotedPost->trashed() ? collect() : collect($quotedPost->attachments))
+                ->map(function($attachment) {
                 return [
                     'id' => $attachment->id,
                     'original_name' => $attachment->original_name,
@@ -236,7 +237,7 @@ class ForumService
             'message' => $comment->message,
             'formatted_message' => $comment->formatted_message,
             'img' => $comment->img, // 後方互換性のため保持
-            'attachments' => $comment->attachments->map(function($attachment) {
+            'attachments' => collect($comment->attachments)->map(function($attachment) {
                 return [
                     'id' => $attachment->id,
                     'original_name' => $attachment->original_name,
