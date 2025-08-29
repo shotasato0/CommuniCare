@@ -110,13 +110,11 @@ class UnitService
             
         if (!$unit) {
             throw new TenantViolationException(
-                "指定された部署へのアクセスが許可されていません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'requested_unit_id' => $unitId,
-                    'action' => 'unit_delete'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: '',
+                resourceType: 'unit',
+                resourceId: (int) $unitId,
+                message: "指定された部署へのアクセスが許可されていません。"
             );
         }
 
@@ -147,13 +145,11 @@ class UnitService
                     
                 if (!$unit) {
                     throw new TenantViolationException(
-                        "並び順更新対象の部署にアクセスする権限がありません。",
-                        [
-                            'user_id' => $currentUser->id,
-                            'tenant_id' => $currentUser->tenant_id,
-                            'requested_unit_id' => $unitData['id'],
-                            'action' => 'unit_sort_update'
-                        ]
+                        currentTenantId: (string) $currentUser->tenant_id,
+                        resourceTenantId: '',
+                        resourceType: 'unit',
+                        resourceId: (int) $unitData['id'],
+                        message: "並び順更新対象の部署にアクセスする権限がありません。"
                     );
                 }
                 
