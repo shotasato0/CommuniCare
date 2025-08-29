@@ -135,14 +135,11 @@ class CommentService
         if ($model->tenant_id !== $currentTenantId) {
             $modelType = class_basename($model);
             throw new TenantViolationException(
-                "テナント境界違反: 他のテナントの{$modelType}にアクセスしようとしました。",
-                [
-                    'user_tenant_id' => $currentTenantId,
-                    'resource_tenant_id' => $model->tenant_id,
-                    'resource_type' => $modelType,
-                    'resource_id' => $model->id,
-                    'user_id' => Auth::id()
-                ]
+                currentTenantId: (string) $currentTenantId,
+                resourceTenantId: (string) $model->tenant_id,
+                resourceType: $modelType,
+                resourceId: (int) $model->id,
+                message: "テナント境界違反: 他のテナントの{$modelType}にアクセスしようとしました。"
             );
         }
     }
