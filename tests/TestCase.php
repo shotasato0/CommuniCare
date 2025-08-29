@@ -170,15 +170,19 @@ abstract class TestCase extends BaseTestCase
      */
     private function mockMySQLSpecificOperations(): void
     {
-        // DBファサードを部分モックし、SQLite非対応のクエリのみ無害化
-        DB::partialMock()
-            ->shouldReceive('statement')
-            ->with(\Mockery::pattern('/ALTER TABLE.*ADD INDEX.*message_index/i'))
-            ->andReturn(true);
+        // DBファサードの実体を取得し、インスタンス部分モックでDDLのみ無害化
+        $manager = DB::getFacadeRoot();
+        if ($manager) {
+            $mock = \Mockery::mock($manager)->makePartial();
+            DB::swap($mock);
 
-        DB::partialMock()
-            ->shouldReceive('statement')
-            ->with(\Mockery::pattern('/ALTER TABLE\s+attachments\s+ADD\s+file_type\s+ENUM/i'))
-            ->andReturn(true);
+            $mock->shouldReceive('statement')
+                ->with(\Mockery::pattern('/ALTER\s+TABLE\s+posts\s+ADD\s+INDEX\s+message_index/i'))
+                ->andReturn(true);
+
+            $mock->shouldReceive('statement')
+                ->with(\Mockery::pattern('/ALTER\s+TABLE\s+attachments\s+ADD\s+file_type\s+ENUM/i'))
+                ->andReturn(true);
+        }
     }
 }
