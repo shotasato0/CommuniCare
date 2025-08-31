@@ -62,13 +62,14 @@ class AttachmentModelTest extends DatabaseTestCase
         $this->post->forum_id = $forum->id;
         $this->post->save();
         
-        // コメント作成
+        // コメント作成（forum_id をセット）
         $this->comment = new Comment();
         $this->comment->id = 1;
         $this->comment->user_id = $this->user->id;
         $this->comment->post_id = $this->post->id;
         $this->comment->tenant_id = $this->tenant->id;
         $this->comment->message = 'Test comment';
+        $this->comment->forum_id = $forum->id;
         $this->comment->save();
     }
 
