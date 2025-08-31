@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Tenant;
+use App\Models\Forum;
 
 class AttachmentModelTest extends DatabaseTestCase
 {
@@ -41,6 +42,16 @@ class AttachmentModelTest extends DatabaseTestCase
         $this->user->password = 'password';
         $this->user->save();
         
+        // フォーラム作成（posts.forum_id の NOT NULL 対応）
+        $forum = new Forum();
+        $forum->name = 'Test Forum';
+        $forum->unit_id = null; // テスト用のため未紐付け
+        $forum->tenant_id = $this->tenant->id;
+        $forum->description = '';
+        $forum->visibility = 'public';
+        $forum->status = 'active';
+        $forum->save();
+
         // 投稿作成
         $this->post = new Post();
         $this->post->id = 1;
@@ -48,6 +59,7 @@ class AttachmentModelTest extends DatabaseTestCase
         $this->post->tenant_id = $this->tenant->id;
         $this->post->title = 'Test Post';
         $this->post->message = 'Test message';
+        $this->post->forum_id = $forum->id;
         $this->post->save();
         
         // コメント作成
