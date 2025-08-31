@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up()
     {
+        // MySQL専用のinformation_schema参照が含まれるため、SQLite等ではスキップ
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
         $tables = ['users', 'units', 'posts', 'forums'];
 
         foreach ($tables as $tableName) {
@@ -40,6 +44,9 @@ return new class extends Migration
 
     public function down()
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
         $tables = ['users', 'units', 'posts', 'forums'];
 
         foreach ($tables as $tableName) {
