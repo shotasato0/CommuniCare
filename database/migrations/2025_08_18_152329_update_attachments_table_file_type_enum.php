@@ -13,14 +13,18 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // MySQL以外（SQLite等）ではスキップ
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
         // AttachmentServiceの定数と一致するようにENUMを更新
         $supportedTypes = AttachmentService::getSupportedFileTypes();
         $enumValues = "'" . implode("','", $supportedTypes) . "'";
-        
+
         Schema::table('attachments', function (Blueprint $table) {
             $table->dropColumn('file_type');
         });
-        
+
         DB::statement("ALTER TABLE attachments ADD file_type ENUM($enumValues) NOT NULL");
     }
 
@@ -29,10 +33,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            return;
+        }
         Schema::table('attachments', function (Blueprint $table) {
             $table->dropColumn('file_type');
         });
-        
+
         Schema::table('attachments', function (Blueprint $table) {
             $table->enum('file_type', ['image', 'pdf', 'document', 'excel', 'text']);
         });
