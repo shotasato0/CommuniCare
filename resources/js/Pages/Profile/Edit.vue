@@ -24,9 +24,12 @@ const closeIconEdit = () => {
     isIconEditVisible.value = false;
 };
 
-// アイコン更新の反映
+// アイコン更新の反映（統一添付システムのURLに合わせて更新）
 const handleUpdateIcon = (newIconUrl) => {
-    user.icon = newIconUrl; // 新しいアイコンURLを更新
+    // 互換のため両方更新（camelCase / snake_case / レガシー）
+    user.iconUrl = newIconUrl;
+    user.icon_url = newIconUrl;
+    user.icon = newIconUrl;
 };
 
 watch(successMessage, (newVal) => {

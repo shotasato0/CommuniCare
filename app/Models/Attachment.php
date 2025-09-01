@@ -97,4 +97,26 @@ class Attachment extends Model
     {
         return $this->is_safe && file_exists(storage_path('app/public/' . $this->file_path));
     }
+
+    /**
+     * ファイルアクセス用のURL取得
+     */
+    public function getUrlAttribute(): string
+    {
+        // セキュアファイル配信ルートを使用
+        return route('attachments.show', ['attachment' => $this->id]);
+    }
+
+    /**
+     * 画像表示用の最適化されたURL（プレビュー用）
+     */
+    public function getPreviewUrlAttribute(): string
+    {
+        if ($this->isImage()) {
+            return $this->url;
+        }
+        
+        // 非画像の場合はファイルタイプのアイコンを返す
+        return asset('images/file-icons/' . $this->file_type . '.svg');
+    }
 }

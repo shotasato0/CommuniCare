@@ -36,13 +36,11 @@ class ResidentService
                 
             if (!$unitExists) {
                 throw new TenantViolationException(
-                    "指定された部署へのアクセスが許可されていません。",
-                    [
-                        'user_id' => $currentUser->id,
-                        'tenant_id' => $currentUser->tenant_id,
-                        'requested_unit_id' => $unitId,
-                        'action' => 'resident_filter_by_unit'
-                    ]
+                    currentTenantId: (string) $currentUser->tenant_id,
+                    resourceTenantId: '',
+                    resourceType: 'unit',
+                    resourceId: (int) $unitId,
+                    message: "指定された部署へのアクセスが許可されていません。"
                 );
             }
             

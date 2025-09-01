@@ -20,13 +20,7 @@ const imagePreview = ref(null);
 
 // アイコンのプレビューURLを定義
 const previewUrl = ref(
-    props.user.icon &&
-        typeof props.user.icon === "string" &&
-        props.user.icon.startsWith("/storage/")
-        ? props.user.icon
-        : props.user.icon
-        ? `/storage/${props.user.icon}`
-        : "/images/default_user_icon.png"
+    props.user.iconUrl || props.user.icon_url || "/images/default_user_icon.png"
 );
 
 // 成功メッセージとエラーメッセージのrefを定義
@@ -49,20 +43,15 @@ const submit = () => {
     form.post(route("profile.updateIcon"), {
         forceFormData: true,
         onSuccess: () => {
-            // サーバーから新しいアイコンパスが返される場合は、その値を使う
-            const updatedIcon = usePage().props.auth.user.icon;
+            // auth.user の最新propsからiconUrl(またはicon_url)を参照
+            const pageProps = usePage().props;
+            const updatedIconUrl =
+                pageProps?.auth?.user?.iconUrl ||
+                pageProps?.auth?.user?.icon_url ||
+                "/images/default_user_icon.png";
 
-            if (updatedIcon) {
-                // 正しいパスを構築する
-                previewUrl.value = `/storage/${updatedIcon}`;
-                emit("updateIcon", previewUrl.value);
-                emit("successMessage", "プロフィール画像が更新されました");
-            } else {
-                // パスがない場合はデフォルトアイコンに戻す
-                previewUrl.value = "/images/default_user_icon.png";
-            }
-
-            // サクセスメッセージをemitして親コンポーネントで表示させる
+            previewUrl.value = updatedIconUrl;
+            emit("updateIcon", updatedIconUrl);
             emit("successMessage", "プロフィール画像が更新されました");
 
             // 成功メッセージを設定

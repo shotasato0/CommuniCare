@@ -2,19 +2,16 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 use App\Models\Attachment;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Tenant;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Database\Eloquent\Collection;
 
-class AttachmentPolymorphicRelationshipTest extends TestCase
+class AttachmentPolymorphicRelationshipTest extends DatabaseTestCase
 {
-    use RefreshDatabase;
-
     private Tenant $tenant;
     private User $user;
     private Post $post;

@@ -89,9 +89,9 @@ class ForumService
                                         ->where('tenant_id', $user->tenant_id);
                               },
                               'attachments' => function($query) use ($user) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_path', 'file_size', 'mime_type', 'file_type', 'tenant_id')
                                         ->where('tenant_id', $user->tenant_id)
-                                        ->where('file_type', 'image');
+                                        ->where('is_safe', true);
                               }
                           ]);
                 },
@@ -105,9 +105,9 @@ class ForumService
                                         ->where('tenant_id', $user->tenant_id);
                               },
                               'attachments' => function($query) use ($user) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_path', 'file_size', 'mime_type', 'file_type', 'tenant_id')
                                         ->where('tenant_id', $user->tenant_id)
-                                        ->where('file_type', 'image');
+                                        ->where('is_safe', true);
                               },
                               'children' => function($query) use ($user) {
                                   $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'img', 'created_at')
@@ -118,9 +118,9 @@ class ForumService
                                                       ->where('tenant_id', $user->tenant_id);
                                             },
                                             'attachments' => function($query) use ($user) {
-                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_path', 'file_size', 'mime_type', 'file_type', 'tenant_id')
                                                       ->where('tenant_id', $user->tenant_id)
-                                                      ->where('file_type', 'image');
+                                                      ->where('is_safe', true);
                                             }
                                         ]);
                               },
@@ -140,9 +140,9 @@ class ForumService
                           ->where('user_id', $user->id);
                 },
                 'attachments' => function($query) use ($user) {
-                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_path', 'file_type', 'tenant_id')
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_path', 'file_size', 'mime_type', 'file_type', 'tenant_id')
                           ->where('tenant_id', $user->tenant_id)
-                          ->where('file_type', 'image');
+                          ->where('is_safe', true);
                 }
             ])
             ->withCount(['likes' => function($query) use ($user) {
@@ -162,8 +162,18 @@ class ForumService
                 'title' => $post->title,
                 'message' => $post->message,
                 'formatted_message' => $post->formatted_message,
-                'img' => $post->img, // 後方互換性
-                'attachments' => $post->attachments ?? [], // 新Attachmentシステム
+                'img' => ($post->img ?? null), // 未定義モック対応
+                'attachments' => collect($post->attachments ?? null)->map(function($attachment) {
+                    return [
+                        'id' => $attachment->id,
+                        'original_name' => $attachment->original_name,
+                        'file_name' => $attachment->file_name,
+                        'file_size' => $attachment->file_size,
+                        'file_type' => $attachment->file_type,
+                        'mime_type' => $attachment->mime_type,
+                        'url' => $attachment->url, // URLアクセサを明示的に呼び出し
+                    ];
+                })->toArray(), // 新Attachmentシステム
                 'created_at' => $post->created_at,
                 'user' => $post->user,
                 'like_count' => $post->likes_count,
@@ -200,8 +210,19 @@ class ForumService
             'message' => $quotedPost->trashed() ? null : $quotedPost->message,
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
-            'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
-            'attachments' => $quotedPost->trashed() ? [] : ($quotedPost->attachments ?? []), // 新Attachmentシステム
+            'img' => $quotedPost->trashed() ? null : ($quotedPost->img ?? null), // 未定義モック対応
+            'attachments' => ($quotedPost->trashed() ? collect() : collect($quotedPost->attachments ?? null))
+                ->map(function($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'original_name' => $attachment->original_name,
+                    'file_name' => $attachment->file_name,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'mime_type' => $attachment->mime_type,
+                    'url' => $attachment->url,
+                ];
+            })->toArray(), // 新Attachmentシステム
             'user' => $quotedPost->trashed() ? null : $quotedPost->user,
         ];
     }
@@ -215,8 +236,18 @@ class ForumService
             'id' => $comment->id,
             'message' => $comment->message,
             'formatted_message' => $comment->formatted_message,
-            'img' => $comment->img, // 後方互換性のため保持
-            'attachments' => $comment->attachments ?? [], // 新Attachmentシステム
+            'img' => ($comment->img ?? null), // 未定義モック対応（後方互換性維持）
+            'attachments' => collect($comment->attachments ?? null)->map(function($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'original_name' => $attachment->original_name,
+                    'file_name' => $attachment->file_name,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'mime_type' => $attachment->mime_type,
+                    'url' => $attachment->url,
+                ];
+            })->toArray(), // 新Attachmentシステム
             'created_at' => $comment->created_at,
             'user' => $comment->user,
             'like_count' => $comment->likes_count,
@@ -243,7 +274,7 @@ class ForumService
                          }])
                          ->get(),
             'users' => User::where('tenant_id', $currentUser->tenant_id)
-                         ->select('id', 'name', 'tenant_id')
+                         ->select('id', 'name', 'tenant_id', 'unit_id', 'icon')
                          ->get(),
             'selectedForumId' => null,
             'userUnitId' => $currentUser->unit_id,
@@ -269,7 +300,7 @@ class ForumService
                          }])
                          ->get(),
             'users' => User::where('tenant_id', $currentUser->tenant_id)
-                         ->select('id', 'name', 'tenant_id')
+                         ->select('id', 'name', 'tenant_id', 'unit_id', 'icon')
                          ->get(),
             'selectedForumId' => $forumId,
             'errorMessage' => null,
