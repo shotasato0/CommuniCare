@@ -194,7 +194,8 @@ class AttachmentService
         $currentUser = Auth::user();
 
         if (!$attachment instanceof Attachment) {
-            $attachment = Attachment::find($attachment);
+            // テナントスコープを外して取得し、境界チェックを自前で行う
+            $attachment = Attachment::withoutGlobalScopes()->find($attachment);
         }
         if (!$attachment) {
             return false;
