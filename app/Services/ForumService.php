@@ -162,8 +162,8 @@ class ForumService
                 'title' => $post->title,
                 'message' => $post->message,
                 'formatted_message' => $post->formatted_message,
-                'img' => $post->img, // 後方互換性
-                'attachments' => $post->attachments->map(function($attachment) {
+                'img' => ($post->img ?? null), // 未定義モック対応
+                'attachments' => collect($post->attachments ?? null)->map(function($attachment) {
                     return [
                         'id' => $attachment->id,
                         'original_name' => $attachment->original_name,
@@ -210,8 +210,8 @@ class ForumService
             'message' => $quotedPost->trashed() ? null : $quotedPost->message,
             'formatted_message' => $quotedPost->trashed() ? null : $quotedPost->formatted_message,
             'title' => $quotedPost->trashed() ? null : $quotedPost->title,
-            'img' => $quotedPost->trashed() ? null : $quotedPost->img, // 後方互換性
-            'attachments' => ($quotedPost->trashed() ? collect() : collect($quotedPost->attachments))
+            'img' => $quotedPost->trashed() ? null : ($quotedPost->img ?? null), // 未定義モック対応
+            'attachments' => ($quotedPost->trashed() ? collect() : collect($quotedPost->attachments ?? null))
                 ->map(function($attachment) {
                 return [
                     'id' => $attachment->id,
@@ -236,8 +236,8 @@ class ForumService
             'id' => $comment->id,
             'message' => $comment->message,
             'formatted_message' => $comment->formatted_message,
-            'img' => $comment->img, // 後方互換性のため保持
-            'attachments' => collect($comment->attachments)->map(function($attachment) {
+            'img' => ($comment->img ?? null), // 未定義モック対応（後方互換性維持）
+            'attachments' => collect($comment->attachments ?? null)->map(function($attachment) {
                 return [
                     'id' => $attachment->id,
                     'original_name' => $attachment->original_name,
