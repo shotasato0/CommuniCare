@@ -111,7 +111,10 @@ export default {
         'application/vnd.ms-excel',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'text/plain', 'text/csv'
-      ]
+      ],
+      // 生成したオブジェクトURLをファイル単位でキャッシュ
+      // リーク防止のため、削除時/破棄時にrevokeする
+      previewUrlKey: '_previewUrl'
     }
   },
 
@@ -172,6 +175,12 @@ export default {
     },
 
     removeFile(index) {
+      const file = this.files[index]
+      // 画像のプレビューURLを確実にクリーンアップ
+      if (file && this.isImage(file) && file[this.previewUrlKey]) {
+        URL.revokeObjectURL(file[this.previewUrlKey])
+        delete file[this.previewUrlKey]
+      }
       this.files.splice(index, 1)
       this.$emit('files-changed', this.files)
     },
@@ -193,10 +202,11 @@ export default {
     },
 
     getPreviewUrl(file) {
-      if (this.isImage(file)) {
-        return URL.createObjectURL(file)
+      if (!this.isImage(file)) return null
+      if (!file[this.previewUrlKey]) {
+        file[this.previewUrlKey] = URL.createObjectURL(file)
       }
-      return null
+      return file[this.previewUrlKey]
     },
 
     formatFileSize(bytes) {
@@ -239,8 +249,9 @@ export default {
   beforeUnmount() {
     // プレビュー用のオブジェクトURLをクリーンアップ
     this.files.forEach(file => {
-      if (this.isImage(file)) {
-        URL.revokeObjectURL(this.getPreviewUrl(file))
+      if (this.isImage(file) && file[this.previewUrlKey]) {
+        URL.revokeObjectURL(file[this.previewUrlKey])
+        delete file[this.previewUrlKey]
       }
     })
   }

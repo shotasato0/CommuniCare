@@ -25,8 +25,9 @@ class PostServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // 依存注入：AttachmentService を明示的に渡す
-        $this->postService = new PostService(new AttachmentService());
+        // 依存注入：AttachmentService をモックで渡す（テスト制御性向上）
+        $attachmentServiceMock = Mockery::mock(AttachmentService::class);
+        $this->postService = new PostService($attachmentServiceMock);
     }
 
     public function test_service_class_instantiation()
