@@ -213,8 +213,8 @@ class AttachmentService
             return false;
         }
         
-        // 物理ファイル削除
-        Storage::delete('public/' . $attachment->file_path);
+        // 物理ファイル削除（Storage::disk('public') を使用）
+        Storage::disk('public')->delete($attachment->file_path);
         
         // レコード削除
         $deleted = $attachment->delete();
