@@ -163,7 +163,9 @@ class AttachmentServiceTest extends DatabaseTestCase
     public function test_tenant_boundary_violation_throws_exception()
     {
         // 異なるテナントの投稿を作成（factory未定義のため手動生成）
-        $otherTenant = Tenant::factory()->create();
+        $otherTenant = new Tenant();
+        $otherTenant->id = 'test-tenant-' . uniqid();
+        $otherTenant->save();
         $otherForum = Forum::create([
             'name' => 'Other Forum',
             'unit_id' => null,
@@ -235,7 +237,9 @@ class AttachmentServiceTest extends DatabaseTestCase
     public function test_delete_attachment_tenant_violation()
     {
         // 異なるテナントのユーザー作成
-        $otherTenant = Tenant::factory()->create();
+        $otherTenant = new Tenant();
+        $otherTenant->id = 'test-tenant-' . uniqid();
+        $otherTenant->save();
         $otherUser = User::factory()->create(['tenant_id' => $otherTenant->id]);
         
         $file = UploadedFile::fake()->image('test.jpg');
