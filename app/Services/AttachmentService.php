@@ -95,6 +95,8 @@ class AttachmentService
     {
         /** @var User $currentUser */
         $currentUser = Auth::user();
+        // マルチテナント境界チェック
+        $this->validateTenantBoundary($attachableType, $attachableId, $currentUser->tenant_id);
         
         // ファイル検証
         $validation = $this->validateFile($file);
