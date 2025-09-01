@@ -2,19 +2,20 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 use App\Services\AttachmentService;
 use App\Models\Attachment;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Tenant;
+use App\Models\Forum;
 use App\Exceptions\Custom\TenantViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class AttachmentServiceTest extends TestCase
+class AttachmentServiceTest extends DatabaseTestCase
 {
 
     private AttachmentService $attachmentService;
@@ -49,6 +50,16 @@ class AttachmentServiceTest extends TestCase
         $this->user->password = 'password';
         $this->user->save();
         
+        // フォーラム作成（posts.forum_id の NOT NULL 対応）
+        $forum = new Forum();
+        $forum->name = 'Test Forum';
+        $forum->unit_id = null; // テスト用
+        $forum->tenant_id = $this->tenant->id;
+        $forum->description = '';
+        $forum->visibility = 'public';
+        $forum->status = 'active';
+        $forum->save();
+
         // 投稿作成
         $this->post = new Post();
         $this->post->id = 1;
@@ -56,6 +67,7 @@ class AttachmentServiceTest extends TestCase
         $this->post->tenant_id = $this->tenant->id;
         $this->post->title = 'Test Post';
         $this->post->message = 'Test message';
+        $this->post->forum_id = $forum->id;
         $this->post->save();
         
         Auth::login($this->user);
@@ -79,7 +91,7 @@ class AttachmentServiceTest extends TestCase
         $this->assertEquals($this->user->id, $attachment->uploaded_by);
         $this->assertTrue($attachment->is_safe);
         
-        Storage::disk('public')->assertExists($attachment->file_path);
+        $this->assertTrue(Storage::disk('public')->exists($attachment->file_path));
     }
 
     public function test_upload_single_pdf_file_successfully()
@@ -150,10 +162,24 @@ class AttachmentServiceTest extends TestCase
 
     public function test_tenant_boundary_violation_throws_exception()
     {
-        // 異なるテナントの投稿を作成
-        $otherTenant = Tenant::factory()->create();
-        $otherPost = Post::factory()->create([
-            'tenant_id' => $otherTenant->id
+        // 異なるテナントの投稿を作成（factory未定義のため手動生成）
+        $otherTenant = new Tenant();
+        $otherTenant->id = 'test-tenant-' . uniqid();
+        $otherTenant->save();
+        $otherForum = Forum::create([
+            'name' => 'Other Forum',
+            'unit_id' => null,
+            'tenant_id' => $otherTenant->id,
+            'description' => '',
+            'visibility' => 'public',
+            'status' => 'active',
+        ]);
+        $otherPost = Post::create([
+            'user_id' => $this->user->id,
+            'tenant_id' => $otherTenant->id,
+            'title' => 'Other Post',
+            'message' => 'Other message',
+            'forum_id' => $otherForum->id,
         ]);
         
         $file = UploadedFile::fake()->image('test.jpg');
@@ -211,7 +237,9 @@ class AttachmentServiceTest extends TestCase
     public function test_delete_attachment_tenant_violation()
     {
         // 異なるテナントのユーザー作成
-        $otherTenant = Tenant::factory()->create();
+        $otherTenant = new Tenant();
+        $otherTenant->id = 'test-tenant-' . uniqid();
+        $otherTenant->save();
         $otherUser = User::factory()->create(['tenant_id' => $otherTenant->id]);
         
         $file = UploadedFile::fake()->image('test.jpg');

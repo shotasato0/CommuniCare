@@ -32,6 +32,8 @@ class PostStoreRequest extends FormRequest
             'forum_id' => 'required|exists:forums,id',
             'quoted_post_id' => 'nullable|exists:posts,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            // 統一ファイル添付システム対応
+            'files.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:10240',
         ];
     }
 
@@ -67,6 +69,10 @@ class PostStoreRequest extends FormRequest
             'img.image' => 'ファイルは画像である必要があります。',
             'img.mimes' => 'jpeg、png、jpg、gif形式のファイルのみアップロード可能です。',
             'img.max' => 'ファイルサイズは10MB以下にしてください。',
+            // 統一ファイル添付システム用メッセージ
+            'files.*.file' => 'ファイルが正しく選択されていません。',
+            'files.*.mimes' => 'サポートされていないファイル形式です。画像・PDF・文書ファイルのみアップロード可能です。',
+            'files.*.max' => 'ファイルサイズは10MB以下にしてください。',
         ];
     }
 }

@@ -11,27 +11,60 @@ use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
 use App\Traits\SecurityValidationTrait;
 use App\Traits\TenantBoundaryCheckTrait;
+use App\Services\AttachmentService;
+use Illuminate\Support\Facades\Log;
 
 class PostService
 {
     use SecurityValidationTrait, TenantBoundaryCheckTrait;
+    
+    private AttachmentService $attachmentService;
+    
+    public function __construct(AttachmentService $attachmentService)
+    {
+        $this->attachmentService = $attachmentService;
+    }
     /**
      * 投稿を作成する
      */
     public function createPost(PostStoreRequest $request): Post
     {
         $validated = $request->validated();
-        $imgPath = $this->handleImageUpload($request);
+        
+        // DB トランザクションで投稿作成とファイル添付を安全に実行
+        return DB::transaction(function () use ($validated, $request) {
+            // レガシー画像アップロードの処理（私有メソッドに委譲）
+            $imgPath = $this->handleImageUpload($request);
+            
+            // 投稿を作成
+            $post = Post::create([
+                'user_id' => Auth::id(),
+                'title' => $validated['title'],
+                'message' => $validated['message'],
+                'forum_id' => $validated['forum_id'],
+                'quoted_post_id' => $validated['quoted_post_id'] ?? null,
+                'img' => $imgPath, // レガシー画像パス
+                'tenant_id' => Auth::user()->tenant_id,
+            ]);
+            
+            // 統一ファイル添付システムでファイルを処理（新システムの場合のみ）
+            if ($request->hasFile('files')) {
+                $this->handleFileAttachments($request, $post);
+            }
+            
+            return $post;
+        });
+    }
 
-        return Post::create([
-            'user_id' => Auth::id(),
-            'title' => $validated['title'],
-            'message' => $validated['message'],
-            'forum_id' => $validated['forum_id'],
-            'quoted_post_id' => $validated['quoted_post_id'] ?? null,
-            'img' => $imgPath,
-            'tenant_id' => Auth::user()->tenant_id,
-        ]);
+    /**
+     * レガシー画像アップロード（後方互換用）
+     */
+    private function handleImageUpload(PostStoreRequest $request): ?string
+    {
+        if ($request->hasFile('image') && !$request->hasFile('files')) {
+            return $request->file('image')->store('images', 'public');
+        }
+        return null;
     }
 
     /**
@@ -94,15 +127,77 @@ class PostService
     }
 
     /**
-     * 画像アップロードを処理
+     * 統一ファイル添付システムでファイルを処理
      */
-    private function handleImageUpload(PostStoreRequest $request): ?string
+    private function handleFileAttachments(PostStoreRequest $request, Post $post): void
     {
-        if (!$request->hasFile('image')) {
-            return null;
+        Log::info('=== handleFileAttachments Debug ===', [
+            'hasFile_image' => $request->hasFile('image'),
+            'hasFile_files' => $request->hasFile('files'),
+            'post_id' => $post->id
+        ]);
+        
+        // レガシー画像フィールドの処理（後方互換性）
+        if ($request->hasFile('image')) {
+            Log::info('Calling uploadSingleFile for image');
+            $this->attachmentService->uploadSingleFile(
+                $request->file('image'),
+                'App\\Models\\Post',
+                $post->id
+            );
         }
-
-        return $request->file('image')->store('images', 'public');
+        
+        // 新しい統一ファイル添付システム
+        if ($request->hasFile('files')) {
+            Log::info('Calling uploadFiles for files array', [
+                'files_count' => count($request->file('files'))
+            ]);
+            $this->attachmentService->uploadFiles(
+                $request->file('files'),
+                'App\\Models\\Post',
+                $post->id
+            );
+        }
+    }
+    
+    /**
+     * 既存の投稿にファイルを追加
+     */
+    public function addAttachmentsToPost(Post $post, array $files): array
+    {
+        // テナント境界チェック
+        $this->validateTenantAccess($post);
+        
+        return $this->attachmentService->uploadFiles($files, 'App\\Models\\Post', $post->id);
+    }
+    
+    /**
+     * 投稿からファイルを削除
+     */
+    public function removeAttachmentFromPost(Post $post, int $attachmentId): void
+    {
+        // テナント境界チェック
+        $this->validateTenantAccess($post);
+        
+        $attachment = $post->attachments()->findOrFail($attachmentId);
+        $this->attachmentService->deleteAttachment($attachment);
+    }
+    
+    /**
+     * テナントアクセス検証
+     */
+    private function validateTenantAccess(Post $post): void
+    {
+        $currentTenantId = Auth::user()->tenant_id;
+        
+        if ($post->tenant_id !== $currentTenantId) {
+            throw new TenantViolationException(
+            currentTenantId: $currentTenantId,
+            resourceTenantId: $post->tenant_id,
+            resourceType: 'post',
+            resourceId: $post->id
+            );
+        }
     }
 
     /**
@@ -128,13 +223,25 @@ class PostService
                                     ->where('tenant_id', $currentUser->tenant_id);
                           }]);
                 },
+                'attachments' => function($query) use ($currentUser) {
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->where('is_safe', true);
+                },
                 'comments' => function($query) use ($currentUser) {
                     $query->select('id', 'post_id', 'user_id', 'message', 'tenant_id', 'created_at')
                           ->where('tenant_id', $currentUser->tenant_id)
-                          ->with(['user' => function($query) use ($currentUser) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $currentUser->tenant_id);
-                          }])
+                          ->with([
+                              'user' => function($query) use ($currentUser) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id);
+                              },
+                              'attachments' => function($query) use ($currentUser) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->where('is_safe', true);
+                              }
+                          ])
                           ->latest()
                           ->limit(10); // コメント数制限
                 },
@@ -198,10 +305,23 @@ class PostService
                 'quotedPost' => function($query) use ($currentUser) {
                     $query->select('id', 'title', 'message', 'user_id', 'tenant_id', 'created_at')
                           ->where('tenant_id', $currentUser->tenant_id)
-                          ->with(['user' => function($query) use ($currentUser) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $currentUser->tenant_id);
-                          }]);
+                          ->with([
+                              'user' => function($query) use ($currentUser) {
+                                  $query->select('id', 'name', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id);
+                              },
+                              'attachments' => function($query) use ($currentUser) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->where('is_safe', true);
+                              }
+                          ]);
+                },
+                'attachments' => function($query) use ($currentUser) {
+                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id', 'created_at')
+                          ->where('tenant_id', $currentUser->tenant_id)
+                          ->where('is_safe', true)
+                          ->orderBy('created_at', 'asc');
                 },
                 'comments' => function($query) use ($currentUser) {
                     $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at', 'updated_at')
@@ -211,13 +331,25 @@ class PostService
                                   $query->select('id', 'name', 'tenant_id')
                                         ->where('tenant_id', $currentUser->tenant_id);
                               },
+                              'attachments' => function($query) use ($currentUser) {
+                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                        ->where('tenant_id', $currentUser->tenant_id)
+                                        ->where('is_safe', true);
+                              },
                               'children' => function($query) use ($currentUser) {
                                   $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
                                         ->where('tenant_id', $currentUser->tenant_id)
-                                        ->with(['user' => function($query) use ($currentUser) {
-                                            $query->select('id', 'name', 'tenant_id')
-                                                  ->where('tenant_id', $currentUser->tenant_id);
-                                        }])
+                                        ->with([
+                                            'user' => function($query) use ($currentUser) {
+                                                $query->select('id', 'name', 'tenant_id')
+                                                      ->where('tenant_id', $currentUser->tenant_id);
+                                            },
+                                            'attachments' => function($query) use ($currentUser) {
+                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
+                                                      ->where('tenant_id', $currentUser->tenant_id)
+                                                      ->where('is_safe', true);
+                                            }
+                                        ])
                                         ->latest();
                               }
                           ])

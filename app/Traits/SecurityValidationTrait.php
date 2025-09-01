@@ -64,14 +64,11 @@ trait SecurityValidationTrait
             ]);
             
             throw new TenantViolationException(
-                "このリソースへのアクセス権限がありません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'resource_type' => get_class($resource),
-                    'resource_id' => $resource->id ?? null,
-                    'action' => 'resource_ownership_validation'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: (string) $currentUser->tenant_id,
+                resourceType: get_class($resource),
+                resourceId: (int) ($resource->id ?? 0),
+                message: "このリソースへのアクセス権限がありません。"
             );
         }
     }
@@ -90,14 +87,11 @@ trait SecurityValidationTrait
             ]);
             
             throw new TenantViolationException(
-                "この操作には管理者権限が必要です。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'required_role' => 'admin',
-                    'user_roles' => $currentUser->getRoleNames()->toArray(),
-                    'action' => 'admin_role_validation'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: (string) $currentUser->tenant_id,
+                resourceType: 'admin_operation',
+                resourceId: 0,
+                message: "この操作には管理者権限が必要です。"
             );
         }
     }

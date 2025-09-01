@@ -2,14 +2,15 @@
 
 namespace Tests\Unit;
 
-use Tests\TestCase;
+use Tests\DatabaseTestCase;
 use App\Models\Attachment;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\User;
 use App\Models\Tenant;
+use App\Models\Forum;
 
-class AttachmentModelTest extends TestCase
+class AttachmentModelTest extends DatabaseTestCase
 {
 
     private Tenant $tenant;
@@ -41,6 +42,16 @@ class AttachmentModelTest extends TestCase
         $this->user->password = 'password';
         $this->user->save();
         
+        // フォーラム作成（posts.forum_id の NOT NULL 対応）
+        $forum = new Forum();
+        $forum->name = 'Test Forum';
+        $forum->unit_id = null; // テスト用のため未紐付け
+        $forum->tenant_id = $this->tenant->id;
+        $forum->description = '';
+        $forum->visibility = 'public';
+        $forum->status = 'active';
+        $forum->save();
+
         // 投稿作成
         $this->post = new Post();
         $this->post->id = 1;
@@ -48,15 +59,17 @@ class AttachmentModelTest extends TestCase
         $this->post->tenant_id = $this->tenant->id;
         $this->post->title = 'Test Post';
         $this->post->message = 'Test message';
+        $this->post->forum_id = $forum->id;
         $this->post->save();
         
-        // コメント作成
+        // コメント作成（forum_id をセット）
         $this->comment = new Comment();
         $this->comment->id = 1;
         $this->comment->user_id = $this->user->id;
         $this->comment->post_id = $this->post->id;
         $this->comment->tenant_id = $this->tenant->id;
         $this->comment->message = 'Test comment';
+        $this->comment->forum_id = $forum->id;
         $this->comment->save();
     }
 

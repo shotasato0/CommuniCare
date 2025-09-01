@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use App\Services\PostService;
+use App\Services\AttachmentService;
 use App\Http\Requests\Post\PostStoreRequest;
 use Illuminate\Http\UploadedFile;
 use Mockery;
@@ -24,7 +25,9 @@ class PostServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->postService = new PostService();
+        // 依存注入：AttachmentService をモックで渡す（テスト制御性向上）
+        $attachmentServiceMock = Mockery::mock(AttachmentService::class);
+        $this->postService = new PostService($attachmentServiceMock);
     }
 
     public function test_service_class_instantiation()
@@ -74,6 +77,7 @@ class PostServiceTest extends TestCase
         $file = Mockery::mock(UploadedFile::class);
         
         $request->shouldReceive('hasFile')->with('image')->andReturn(true);
+        $request->shouldReceive('hasFile')->with('files')->andReturn(false);
         $request->shouldReceive('file')->with('image')->andReturn($file);
         $file->shouldReceive('store')->with('images', 'public')->andReturn('images/test-image.jpg');
 
