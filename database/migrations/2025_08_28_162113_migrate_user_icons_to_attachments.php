@@ -81,7 +81,15 @@ return new class extends Migration
                 }
                 
             } catch (\Exception $e) {
-                Log::error("Failed to migrate icon for user {$user->id}: " . $e->getMessage());
+                Log::error(
+                    "Failed to migrate icon for user {$user->id}",
+                    [
+                        'iconPath' => $iconPath ?? null,
+                        'sourceFilePath' => $sourceFilePath ?? null,
+                        'error' => $e->getMessage(),
+                        'exception' => get_class($e),
+                    ]
+                );
             }
         }
         

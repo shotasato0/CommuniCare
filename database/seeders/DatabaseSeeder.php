@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Forum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 use Stancl\Tenancy\Database\Models\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
 
@@ -65,7 +66,10 @@ class DatabaseSeeder extends Seeder
             ]);
         } catch (\Throwable $e) {
             // forums.tenant_id の NOT NULL 制約等で失敗しても他のシーディングは継続
-            // 最小修正のため、ここでは黙殺して完走を優先
+            // 最小修正のため、ここでは完走を優先しつつログに警告を残す
+            Log::warning('ForumsTableSeeder failed and was skipped: ' . $e->getMessage(), [
+                'exception' => get_class($e),
+            ]);
         }
     }
 }
