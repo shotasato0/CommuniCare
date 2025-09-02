@@ -32,7 +32,14 @@ const submit = () => {
 };
 
 const guestLogin = () => {
-    window.location.href = route("guest.login");
+    // クロスドメイン（ゲストテナント）へはSPA経由にせずフルリロード
+    const url = import.meta.env.VITE_GUEST_TENANT_URL;
+    if (url) {
+        window.location.assign(url);
+    } else {
+        // フォールバック（開発環境などで未設定の場合）
+        window.location.href = "http://guestdemo.localhost";
+    }
 };
 </script>
 
