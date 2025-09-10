@@ -1,8 +1,7 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { router } from "@inertiajs/vue3";
-import { handleImageChange } from "@/Utils/imageHandler";
-import ImageModal from "./ImageModal.vue";
+import FileUpload from "./FileUpload.vue";
 
 // 引用付き投稿フォームのprops
 const props = defineProps({
@@ -18,13 +17,77 @@ const emit = defineEmits(["close"]); // フォームを閉じる
 const newPostContent = ref(""); // 投稿の内容
 const newPostTitle = ref(""); // 投稿のタイトル
 
-// 画像関連のref
-const image = ref(null); // 画像ファイル
-const imagePreview = ref(null); // 画像プレビュー
-const isModalOpen = ref(false); // モーダル表示
-const fileInput = ref(null); // ファイル選択ボタン
+// 統一ファイル添付システム
+const fileUploadRef = ref(null);
+const attachedFiles = ref([]);
+const localErrorMessage = ref(null);
 
-const localErrorMessage = ref(null); // エラーメッセージ
+// D&D UIをテキストエリア上のみ表示するための状態
+const isDragOverTextbox = ref(false);
+const textAreaRef = ref(null);
+let dragDepth = 0;
+let _preventIfFiles;
+
+const hasFiles = (e) => {
+    const types = e?.dataTransfer?.types;
+    return types && (types.includes && types.includes('Files'));
+};
+
+const onTextDragEnter = (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth++;
+    isDragOverTextbox.value = true;
+};
+
+const onTextDragOver = (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    isDragOverTextbox.value = true;
+};
+
+const onTextDragLeave = (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (dragDepth === 0) {
+        isDragOverTextbox.value = false;
+    }
+};
+
+const onTextDrop = (e) => {
+    if (!hasFiles(e)) return;
+    e.preventDefault();
+    dragDepth = 0;
+    isDragOverTextbox.value = false;
+    const files = e.dataTransfer?.files || [];
+    if (fileUploadRef.value && files.length > 0) {
+        fileUploadRef.value.processExternalFiles(files);
+    }
+};
+
+// テキストエリア外に完全にマウスが離れた場合のフェイルセーフ
+const onTextMouseLeave = () => {
+    dragDepth = 0;
+    isDragOverTextbox.value = false;
+};
+
+onMounted(() => {
+    _preventIfFiles = (e) => {
+        if (hasFiles(e)) {
+            e.preventDefault();
+        }
+    };
+    window.addEventListener('dragover', _preventIfFiles);
+    window.addEventListener('drop', _preventIfFiles);
+});
+
+onUnmounted(() => {
+    if (_preventIfFiles) {
+        window.removeEventListener('dragover', _preventIfFiles);
+        window.removeEventListener('drop', _preventIfFiles);
+    }
+});
 
 // CSRFトークンを取得する関数
 function getCsrfToken() {
@@ -37,24 +100,12 @@ function getCsrfToken() {
     return token;
 }
 
-// 画像変更時の処理
-const onImageChange = (event) => {
-    handleImageChange(event, image, imagePreview, localErrorMessage);
+// FileUploadイベント
+const handleFilesChanged = (files) => {
+    attachedFiles.value = files;
 };
-
-// ファイル選択ボタンをクリックしたときの処理
-const triggerFileInput = () => {
-    fileInput.value.click();
-};
-
-// 画像を削除する
-const removeImage = () => {
-    image.value = null; // 画像を削除
-    imagePreview.value = null; // 画像プレビューを削除
-    localErrorMessage.value = null; // エラーメッセージを削除
-    if (fileInput.value) {
-        fileInput.value.value = ""; // ファイル入力の値をリセット
-    }
+const handleFileUploadError = (msg) => {
+    localErrorMessage.value = msg;
 };
 
 // キャンセルボタン
@@ -78,19 +129,21 @@ const submitQuotePost = () => {
     formData.append("quoted_post_id", props.quotedPost.id); // 引用元の投稿IDを追加
     formData.append("_token", getCsrfToken()); // CSRFトークンを追加
 
-    // 画像データが存在する場合、フォームデータに追加
-    if (image.value) {
-        formData.append("image", image.value);
+    // 添付ファイル（統一システム）
+    if (attachedFiles.value.length > 0) {
+        attachedFiles.value.forEach((file, index) => {
+            formData.append(`files[${index}]`, file);
+        });
     }
 
     // 投稿の送信
     router.post(route("forum.store"), formData, {
         onSuccess: () => {
             // 投稿成功後の処理
-            newPostTitle.value = ""; // タイトルをリセット
-            newPostContent.value = ""; // 投稿内容をリセット
-            image.value = null; // 画像をリセット
-            imagePreview.value = null; // 画像プレビューをリセット
+            newPostTitle.value = "";
+            newPostContent.value = "";
+            if (fileUploadRef.value) fileUploadRef.value.reset();
+            attachedFiles.value = [];
             // 掲示板ページにリダイレクト
             router.get(route("forum.index", { forum_id: props.forumId }), {
                 preserveState: true, // ページの状態を保存
@@ -137,51 +190,48 @@ const truncatedMessage = computed(() => {
                     class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded mb-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="投稿文を入力してください"
                     rows="4"
+                    ref="textAreaRef"
+                    @dragenter="onTextDragEnter"
+                    @dragover="onTextDragOver"
+                    @dragleave="onTextDragLeave"
+                    @drop="onTextDrop"
+                    @mouseleave="onTextMouseLeave"
                 ></textarea>
-
-                <!-- 画像選択アイコン -->
-                <div
-                    class="absolute right-3 bottom-9 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 hover:text-white rounded-md flex items-center justify-center cursor-pointer p-2"
+                <!-- 小さな添付ボタン（クリックで選択） -->
+                <button
+                    type="button"
+                    class="absolute right-3 bottom-9 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
                     style="width: 40px; height: 40px"
-                    @click="triggerFileInput"
+                    @click="fileUploadRef?.openFileDialog()"
                     title="ファイルを選択"
                 >
-                    <i class="bi bi-card-image text-2xl"></i>
+                    <i class="bi bi-paperclip text-2xl"></i>
+                </button>
+
+                <!-- ドラッグ中のみ表示するオーバーレイのD&D UI -->
+                <div v-if="isDragOverTextbox" class="absolute inset-0 z-10 flex items-center justify-center">
+                    <div class="w-full h-full border-2 border-dashed border-blue-400 bg-blue-50/70 dark:bg-blue-900/30 rounded-md flex items-center justify-center">
+                        <div class="text-center text-blue-700 dark:text-blue-200">
+                            <i class="bi bi-paperclip text-3xl mb-2 block"></i>
+                            <p>ここにファイルをドロップして添付</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 隠しファイル入力 -->
-            <input
-                type="file"
-                accept="image/*"
-                ref="fileInput"
-                @change="onImageChange"
-                style="display: none"
-            />
             <!-- エラーメッセージ表示 -->
             <div v-if="localErrorMessage" class="text-red-500 dark:text-red-400 mt-2">
                 {{ localErrorMessage }}
             </div>
-            <!-- プレビュー表示 -->
-            <div v-if="imagePreview" class="relative mt-2 inline-block">
-                <!-- プレビュー画像 -->
-                <img
-                    :src="imagePreview"
-                    alt="画像プレビュー"
-                    class="w-32 h-32 object-cover rounded-md cursor-pointer hover:opacity-80 transition"
-                    @click="isModalOpen = true"
+
+            <!-- 統一ファイル添付（ドロップUIは非表示、一覧・削除のみ） -->
+            <div class="mt-2">
+                <FileUpload
+                    ref="fileUploadRef"
+                    :showDropZone="false"
+                    @files-changed="handleFilesChanged"
+                    @error="handleFileUploadError"
                 />
-                <!-- プレビュー画像削除ボタン -->
-                <div
-                    class="absolute top-0 right-0 bg-white dark:bg-gray-800 rounded-full p-1 cursor-pointer flex items-center justify-center"
-                    @click="removeImage"
-                    title="画像を削除"
-                    style="width: 24px; height: 24px"
-                >
-                    <i
-                        class="bi bi-x-circle text-black dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400"
-                    ></i>
-                </div>
             </div>
 
             <!-- 送信ボタン -->
@@ -200,14 +250,6 @@ const truncatedMessage = computed(() => {
                 </button>
             </div>
 
-            <!-- 引用投稿の画像モーダル -->
-            <ImageModal :isOpen="isModalOpen" @close="isModalOpen = false">
-                <img
-                    :src="imagePreview"
-                    alt="投稿画像"
-                    class="max-w-full max-h-full rounded-lg"
-                />
-            </ImageModal>
         </div>
     </div>
 </template>
