@@ -66,6 +66,12 @@ const onTextDrop = (e) => {
     }
 };
 
+// テキストエリア外に完全にマウスが離れた場合のフェイルセーフ
+const onTextMouseLeave = () => {
+    dragDepth = 0;
+    isDragOverTextbox.value = false;
+};
+
 onMounted(() => {
     _preventIfFiles = (e) => {
         if (hasFiles(e)) {
@@ -189,6 +195,7 @@ const truncatedMessage = computed(() => {
                     @dragover="onTextDragOver"
                     @dragleave="onTextDragLeave"
                     @drop="onTextDrop"
+                    @mouseleave="onTextMouseLeave"
                 ></textarea>
                 <!-- 小さな添付ボタン（クリックで選択） -->
                 <button
@@ -243,7 +250,6 @@ const truncatedMessage = computed(() => {
                 </button>
             </div>
 
-            
         </div>
     </div>
 </template>
