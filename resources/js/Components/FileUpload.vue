@@ -119,6 +119,17 @@ export default {
   },
 
   methods: {
+    // 親コンポーネントから直接ファイルを投入するための公開メソッド
+    processExternalFiles(newFiles) {
+      if (!newFiles || newFiles.length === 0) return
+      const list = Array.from(newFiles)
+      this.processFiles(list)
+    },
+
+    // 親からファイル選択ダイアログを開くための公開メソッド
+    openFileDialog() {
+      if (this.$refs.fileInput) this.$refs.fileInput.click()
+    },
     handleDrop(e) {
       e.preventDefault()
       this.isDragging = false
