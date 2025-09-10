@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
@@ -17,14 +18,8 @@ use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\AttachmentController;
 
-// トップページ
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
-    })->name('welcome');
+// トップページ（Closureを廃止しControllerへ）
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // 認証が必要なルート
 Route::middleware(['auth'])->group(function () {
