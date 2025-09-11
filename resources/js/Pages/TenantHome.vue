@@ -6,19 +6,15 @@ import { Link } from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
 
 defineProps({
-    adminExists: Boolean,
+    adminExists: { type: Boolean, default: false },
+    isGuestHome: { type: Boolean, default: false },
 });
 
 const page = usePage();
 const tenant = page.props.tenant || {};
 
-let currentUrl; // 現在のページURLを格納する変数
-let guestTenantUrl; // 環境変数で指定されたゲストテナントのURL
-let isGuestHome = false; // 現在のページがゲストホームかどうかのフラグ
-
 // フラッシュメッセージの処理
-const { props } = usePage();
-const flash = props.flash;
+const flash = page.props.flash;
 const flashMessage = ref(flash.message || null);
 const showFlashMessage = ref(!!flashMessage.value);
 
@@ -29,20 +25,7 @@ if (showFlashMessage.value) {
     }, 8000);
 }
 
-// try-catchでエラーハンドリング
-try {
-    currentUrl = new URL(window.location.href); // 現在のURLをインスタンス化
-    guestTenantUrl = new URL(
-        import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost" // ゲストテナントのURLをインスタンス化
-    );
-
-    isGuestHome =
-        currentUrl.hostname === guestTenantUrl.hostname &&
-        currentUrl.pathname === "/"; // ゲストホームかどうかを判定
-} catch (error) {
-    // エラーが発生した場合の処理を記述
-    console.error("URLの処理中にエラーが発生しました:", error);
-}
+// ゲスト表示判定はサーバからのpropsに委譲
 </script>
 
 <template>

@@ -21,13 +21,16 @@ class TenantHomeController extends Controller
             ->where('tenant_id', $tenantId)
             ->exists();
 
+        // ゲスト表示ルートかどうか（/guest/login 経由）
+        $isGuestHome = request()->routeIs('guest.login.view') || request()->is('guest/login');
+
         return Inertia::render('TenantHome', [
             'canLogin' => \Route::has('login'),
             'canRegister' => \Route::has('register'),
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
             'adminExists' => $adminExists,
+            'isGuestHome' => $isGuestHome,
         ]);
     }
 }
-
