@@ -12,6 +12,8 @@ use App\Http\Middleware\SetSessionDomain;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,6 +21,27 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            // 環境に応じたテナントドメインをconfigから取得（config:cacheと整合）
+            $env = config('app.env');
+            $tenantDomain = match ($env) {
+                'local'      => config('guest.domains.local'),
+                'staging'    => config('guest.domains.staging'),
+                'production' => config('guest.domains.production'),
+                default      => config('guest.domains.production'),
+            };
+
+            if ($tenantDomain && file_exists(base_path('routes/tenant.php'))) {
+                Route::domain($tenantDomain)
+                    ->middleware([
+                        'web',
+                        \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+                        \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+                        SetSessionDomain::class,
+                    ])
+                    ->group(base_path('routes/tenant.php'));
+            }
+        }
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(prepend: [
@@ -26,7 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AuthenticateSession::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
-            InitializeTenancyCustom::class,
+            // テナント初期化はドメイン限定のルートグループ側で付与する
             SetTenantCookie::class,
         ]);
     })
