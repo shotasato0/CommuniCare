@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use Stancl\Tenancy\Database\Models\Domain;
 use Illuminate\Support\Facades\Cookie;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class GuestTenantController extends Controller
 {
@@ -40,5 +41,43 @@ class GuestTenantController extends Controller
         $protocol = config('app.env') === 'local' ? 'http' : 'https';
         return Inertia::location($protocol . '://' . $guestDomain . '/');
     }
-}
 
+    // 中央→テナントへのフルリダイレクト（Inertia::location）をconfigベースで生成
+    public function redirect()
+    {
+        $env = config('app.env');
+        $domain = match ($env) {
+            'local'      => config('guest.domains.local'),
+            'staging'    => config('guest.domains.staging'),
+            'production' => config('guest.domains.production'),
+            default      => config('guest.domains.production'),
+        };
+
+        $scheme = config('guest.protocol', $env === 'local' ? 'http' : 'https');
+        $port   = match ($env) {
+            'local'      => config('guest.ports.local'),
+            'staging'    => config('guest.ports.staging'),
+            'production' => config('guest.ports.production'),
+            default      => null,
+        };
+
+        if (empty($domain)) {
+            Log::error('ゲストドメイン設定が未定義です', ['env' => $env]);
+            abort(500, 'ゲストドメイン設定が未定義です。');
+        }
+
+        $host = $domain . ($port ? ":{$port}" : '');
+        $url  = "{$scheme}://{$host}/guest/login";
+
+        Log::info('ゲスト遷移URLを生成', compact('env', 'domain', 'port', 'url'));
+
+        try {
+            return Inertia::location($url);
+        } catch (\Throwable $e) {
+            Log::error('Inertia::location で例外が発生したため away() にフォールバック', [
+                'message' => $e->getMessage(),
+            ]);
+            return redirect()->away($url);
+        }
+    }
+}
