@@ -6,6 +6,10 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, Link } from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
+// サーバから受け取る遷移先URL（中央→テナント）
+defineProps({
+    guestLoginUrl: { type: String, required: true },
+});
 // フォーム定義
 const form = useForm({
     business_name: "",
@@ -31,16 +35,7 @@ const submit = () => {
     });
 };
 
-const guestLogin = () => {
-    // クロスドメイン（ゲストテナント）へはSPA経由にせずフルリロード
-    const url = import.meta.env.VITE_GUEST_TENANT_URL;
-    if (url) {
-        window.location.assign(url);
-    } else {
-        // フォールバック（開発環境などで未設定の場合）
-        window.location.href = "http://guestdemo.localhost";
-    }
-};
+// 画面側のロジックは不要（Inertia::location へのGETでフル遷移）
 </script>
 
 <template>
@@ -115,8 +110,10 @@ const guestLogin = () => {
                             </ul>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <button
-                                @click="guestLogin"
+                            <Link
+                                :href="guestLoginUrl"
+                                method="get"
+                                as="button"
                                 class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
                             >
                                 <span class="mr-2">デモで体験する</span>
@@ -132,7 +129,7 @@ const guestLogin = () => {
                                         clip-rule="evenodd"
                                     />
                                 </svg>
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
