@@ -31,9 +31,8 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
 
-    // ゲストログイン
-    Route::get('/guest/login', [GuestTenantController::class, 'redirectToGuestTenant'])->name('guest.login');
-    Route::get('/guest/user/login', [GuestLoginController::class, 'loginAsGuest'])->name('guest.user.login');
+    // 中央→テナントへのリダイレクトをサーバ主導のフルリダイレクトに一本化
+    Route::get('/guest/redirect', [GuestTenantController::class, 'redirect'])->name('guest.login.redirect');
 
     // 管理者登録ルート
     Route::get('/auth/register-admin', [UserController::class, 'showRegisterAdminForm'])->name('register-admin.form');

@@ -6,20 +6,18 @@ import { Link } from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
 
 defineProps({
-    adminExists: Boolean,
+    adminExists: { type: Boolean, default: false },
+    isGuestHome: { type: Boolean, default: false },
+    isAuthenticated: { type: Boolean, default: false },
+    sessionExpired: { type: Boolean, default: false },
 });
 
 const page = usePage();
-const tenant = page.props.tenant || {};
+const tenant = page.props?.tenant ?? {};
 
-let currentUrl; // 現在のページURLを格納する変数
-let guestTenantUrl; // 環境変数で指定されたゲストテナントのURL
-let isGuestHome = false; // 現在のページがゲストホームかどうかのフラグ
-
-// フラッシュメッセージの処理
-const { props } = usePage();
-const flash = props.flash;
-const flashMessage = ref(flash.message || null);
+// フラッシュメッセージの処理（props.flash が未定義でも安全に）
+const flash = page.props?.flash ?? {};
+const flashMessage = ref(flash?.message ?? null);
 const showFlashMessage = ref(!!flashMessage.value);
 
 // フラッシュメッセージを8秒後に非表示にする
@@ -29,20 +27,7 @@ if (showFlashMessage.value) {
     }, 8000);
 }
 
-// try-catchでエラーハンドリング
-try {
-    currentUrl = new URL(window.location.href); // 現在のURLをインスタンス化
-    guestTenantUrl = new URL(
-        import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost" // ゲストテナントのURLをインスタンス化
-    );
-
-    isGuestHome =
-        currentUrl.hostname === guestTenantUrl.hostname &&
-        currentUrl.pathname === "/"; // ゲストホームかどうかを判定
-} catch (error) {
-    // エラーが発生した場合の処理を記述
-    console.error("URLの処理中にエラーが発生しました:", error);
-}
+// ゲスト表示判定はサーバからのpropsに委譲
 </script>
 
 <template>
@@ -59,6 +44,13 @@ try {
     <div
         class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 flex flex-col justify-center items-center text-center px-4"
     >
+        <!-- セッション切れ通知（ゲストホーム表示時かつ未認証、expired=1 クエリでのみ） -->
+        <div
+            v-if="isGuestHome && !isAuthenticated && sessionExpired"
+            class="w-full max-w-3xl mb-6 p-4 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded"
+        >
+            セッションが切れました。アプリケーションロゴをクリックして、新たなゲストユーザーとしてログインし直してください。
+        </div>
         <!-- メインコンテンツ -->
         <div
             class="flex flex-col sm:flex-row items-center justify-center w-full max-w-7xl gap-8 sm:gap-16"
