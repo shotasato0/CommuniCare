@@ -63,6 +63,9 @@ class TenantHomeController extends Controller
             'phpVersion' => PHP_VERSION,
             'adminExists' => $adminExists,
             'isGuestHome' => $isGuestHome,
+            // セッション関連の表示制御用フラグ
+            'isAuthenticated' => \Illuminate\Support\Facades\Auth::check(),
+            'sessionExpired' => (bool) request()->boolean('expired'),
         ]);
     }
 }

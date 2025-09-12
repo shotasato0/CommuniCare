@@ -8,6 +8,8 @@ import Footer from "@/Layouts/Footer.vue";
 defineProps({
     adminExists: { type: Boolean, default: false },
     isGuestHome: { type: Boolean, default: false },
+    isAuthenticated: { type: Boolean, default: false },
+    sessionExpired: { type: Boolean, default: false },
 });
 
 const page = usePage();
@@ -42,6 +44,13 @@ if (showFlashMessage.value) {
     <div
         class="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 flex flex-col justify-center items-center text-center px-4"
     >
+        <!-- セッション切れ通知（ゲストホーム表示時かつ未認証、expired=1 クエリでのみ） -->
+        <div
+            v-if="isGuestHome && !isAuthenticated && sessionExpired"
+            class="w-full max-w-3xl mb-6 p-4 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded"
+        >
+            セッションが切れました。アプリケーションロゴをクリックして、新たなゲストユーザーとしてログインし直してください。
+        </div>
         <!-- メインコンテンツ -->
         <div
             class="flex flex-col sm:flex-row items-center justify-center w-full max-w-7xl gap-8 sm:gap-16"

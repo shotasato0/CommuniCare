@@ -14,6 +14,7 @@ use App\Exceptions\Custom\PostOwnershipException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Illuminate\Auth\AuthenticationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -55,6 +56,25 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // カスタム例外のハンドリング
+        $exceptions->render(function (AuthenticationException $e) {
+            if (request()->expectsJson() || request()->wantsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+
+            $env = config('app.env');
+            $guestDomain = match ($env) {
+                'local'      => config('guest.domains.local'),
+                'staging'    => config('guest.domains.staging'),
+                'production' => config('guest.domains.production'),
+                default      => config('guest.domains.production'),
+            };
+
+            $isGuestDomain = $guestDomain && request()->getHost() === $guestDomain;
+            if ($isGuestDomain) {
+                return redirect()->to(route('guest.login.view', ['expired' => 1]));
+            }
+            return redirect()->guest(route('login'));
+        });
         $exceptions->render(function (TenantViolationException $e) {
             Log::critical('テナント境界違反が発生しました', $e->getLogContext());
             
