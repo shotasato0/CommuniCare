@@ -11,10 +11,10 @@ defineProps({
 });
 
 const page = usePage();
-const tenant = (page.props && page.props.tenant) ? page.props.tenant : {};
+const tenant = page.props?.tenant ?? {};
 
 // フラッシュメッセージの処理（props.flash が未定義でも安全に）
-const flash = (page.props && page.props.flash) ? page.props.flash : {};
+const flash = page.props?.flash ?? {};
 const flashMessage = ref(flash?.message ?? null);
 const showFlashMessage = ref(!!flashMessage.value);
 
