@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 use App\Models\User;
 use Stancl\Tenancy\Database\Models\Domain;
+use Illuminate\Support\Facades\Cache;
 class TenantHomeController extends Controller
 {
     public function index()
@@ -18,7 +19,16 @@ class TenantHomeController extends Controller
         $tenantId = tenant('id');
         if (!$tenantId) {
             $host = request()->getHost();
-            $tenantId = Domain::where('domain', $host)->value('tenant_id');
+            // ホスト名の簡易バリデーション（Host ヘッダ汚染対策）
+            if (is_string($host) && preg_match('/^[A-Za-z0-9.-]+$/', $host)) {
+                // ドメイン→テナントIDの解決を短時間キャッシュ
+                $cacheKey = 'tenantIdByDomain:' . strtolower($host);
+                $tenantId = Cache::remember($cacheKey, now()->addMinutes(5), function () use ($host) {
+                    return Domain::where('domain', $host)->value('tenant_id');
+                });
+            } else {
+                $tenantId = null;
+            }
         }
 
         // このテナントに管理者が存在するかを確認
