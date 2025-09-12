@@ -74,8 +74,11 @@ class GuestTenantController extends Controller
         try {
             return Inertia::location($url);
         } catch (\Throwable $e) {
-            Log::error('Inertia::location で例外が発生したため away() にフォールバック', [
-                'message' => $e->getMessage(),
+            // 例外の詳細なメッセージはログに残さない（情報漏えい対策）
+            Log::error('Inertia::location 例外により away() にフォールバック', [
+                'exception' => get_class($e),
+                'env' => $env,
+                'url' => $url,
             ]);
             return redirect()->away($url);
         }
