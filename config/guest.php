@@ -4,7 +4,7 @@ return [
     'domains' => [
         'local'      => env('GUEST_DOMAIN_LOCAL', 'guestdemo.localhost'),
         'staging'    => env('GUEST_DOMAIN_STAGING', 'guestdemo.staging.example.com'),
-        'production' => env('GUEST_DOMAIN_PRODUCTION', 'guestdemo.example.com'),
+        'production' => env('GUEST_DOMAIN_PRODUCTION', 'guestdemo.communi-care.jp'),
     ],
 
     // config読み込み中はapp()を使わず、env()のみで分岐させる
