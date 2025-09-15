@@ -4,6 +4,7 @@ import { router } from "@inertiajs/vue3";
 import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
 import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
+import TextareaWithAttach from "./TextareaWithAttach.vue";
 import { handleImageChange } from "@/Utils/imageHandler";
 
 // コメントフォームのプロパティを定義
@@ -188,25 +189,12 @@ const handleCancel = () => {
         <!-- コメントフォーム -->
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
             <div>
-                <!-- コメントメッセージ入力欄（クリップアイコン付き） -->
-                <div class="relative">
-                    <textarea
-                        v-model="commentData.message"
-                        class="w-full p-2 pr-12 pb-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                        required
-                        :placeholder="placeholder"
-                        rows="3"
-                    ></textarea>
-                    <button
-                        type="button"
-                        class="absolute right-3 bottom-5 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
-                        style="width: 40px; height: 40px"
-                        @click="fileUploadRef?.openFileDialog()"
-                        title="ファイルを選択"
-                    >
-                        <i class="bi bi-paperclip text-2xl"></i>
-                    </button>
-                </div>
+                <TextareaWithAttach
+                    v-model="commentData.message"
+                    :rows="3"
+                    :placeholder="placeholder"
+                    @attach-click="fileUploadRef?.openFileDialog()"
+                />
             </div>
 
             <!-- 統一ファイル添付システム -->
