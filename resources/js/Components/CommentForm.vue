@@ -199,7 +199,7 @@ const handleCancel = () => {
                     ></textarea>
                     <button
                         type="button"
-                        class="absolute right-3 bottom-9 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
+                        class="absolute right-3 bottom-5 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
                         style="width: 40px; height: 40px"
                         @click="fileUploadRef?.openFileDialog()"
                         title="ファイルを選択"
