@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { router } from "@inertiajs/vue3";
 import FileUpload from "./FileUpload.vue";
+import TextareaWithAttach from "./TextareaWithAttach.vue";
 
 // 引用付き投稿フォームのprops
 const props = defineProps({
@@ -183,30 +184,19 @@ const truncatedMessage = computed(() => {
                 </p>
             </div>
 
-            <!-- 新しい投稿の入力フォーム -->
-            <div class="relative">
-                <textarea
+            <!-- 新しい投稿の入力フォーム（共通コンポーネント使用） -->
+            <div class="relative mb-4">
+                <TextareaWithAttach
                     v-model="newPostContent"
-                    class="w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded mb-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    :rows="4"
                     placeholder="投稿文を入力してください"
-                    rows="4"
-                    ref="textAreaRef"
+                    @attach-click="fileUploadRef?.openFileDialog()"
                     @dragenter="onTextDragEnter"
                     @dragover="onTextDragOver"
                     @dragleave="onTextDragLeave"
                     @drop="onTextDrop"
                     @mouseleave="onTextMouseLeave"
-                ></textarea>
-                <!-- 小さな添付ボタン（クリックで選択） -->
-                <button
-                    type="button"
-                    class="absolute right-3 bottom-9 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
-                    style="width: 40px; height: 40px"
-                    @click="fileUploadRef?.openFileDialog()"
-                    title="ファイルを選択"
-                >
-                    <i class="bi bi-paperclip text-2xl"></i>
-                </button>
+                />
 
                 <!-- ドラッグ中のみ表示するオーバーレイのD&D UI -->
                 <div v-if="isDragOverTextbox" class="absolute inset-0 z-10 flex items-center justify-center">
