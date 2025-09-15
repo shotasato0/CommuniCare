@@ -1,5 +1,6 @@
 <script setup>
 import { computed, toRefs, useAttrs } from 'vue'
+defineOptions({ inheritAttrs: false })
 
 // このコンポーネントはテキストエリア右下に添付ボタンを重ねる共通UI
 // - 親から v-model で値を受け取る
@@ -12,7 +13,7 @@ const props = defineProps({
   rows: { type: Number, default: 3 },
   textareaClass: { type: String, default: 'w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100' },
   rightOffsetClass: { type: String, default: 'right-3' },
-  bottomOffsetClass: { type: String, default: 'bottom-9' },
+  bottomOffsetClass: { type: String, default: 'bottom-5' },
   buttonTitle: { type: String, default: 'ファイルを選択' },
   buttonAriaLabel: { type: String, default: 'ファイルを選択' },
 })
@@ -49,4 +50,3 @@ const valueProxy = computed({
     </button>
   </div>
 </template>
-
