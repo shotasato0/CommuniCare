@@ -59,6 +59,9 @@ const fileUploadRef = ref(null);
 const attachedFiles = ref([]);
 const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
+// クリップアイコンクリックでファイルダイアログを開く
+// アイコンから直接 fileUploadRef を呼び出すため追加の関数は不要
+
 // コンポーネントのマウント時に初期値を設定
 onMounted(() => {
     // コメントに対する返信の場合のみメンションを追加
@@ -185,14 +188,25 @@ const handleCancel = () => {
         <!-- コメントフォーム -->
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
             <div>
-                <!-- コメントメッセージ入力欄 -->
-                <textarea
-                    v-model="commentData.message"
-                    class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                    required
-                    :placeholder="placeholder"
-                    rows="3"
-                ></textarea>
+                <!-- コメントメッセージ入力欄（クリップアイコン付き） -->
+                <div class="relative">
+                    <textarea
+                        v-model="commentData.message"
+                        class="w-full p-2 pr-12 pb-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        required
+                        :placeholder="placeholder"
+                        rows="3"
+                    ></textarea>
+                    <button
+                        type="button"
+                        class="absolute right-3 bottom-9 bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
+                        style="width: 40px; height: 40px"
+                        @click="fileUploadRef?.openFileDialog()"
+                        title="ファイルを選択"
+                    >
+                        <i class="bi bi-paperclip text-2xl"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- 統一ファイル添付システム -->
