@@ -1,5 +1,5 @@
 <template>
-  <div class="file-upload-container">
+  <div class="file-upload-container" v-show="visible">
     <!-- ドラッグ&ドロップエリア -->
     <div
       @drop="handleDrop"
@@ -95,6 +95,11 @@ export default {
   name: 'FileUpload',
   emits: ['files-changed', 'error'],
   
+  props: {
+    // パネルの表示/非表示（機能は常時有効）
+    visible: { type: Boolean, default: true },
+  },
+
   data() {
     return {
       files: [],
