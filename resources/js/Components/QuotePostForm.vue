@@ -190,6 +190,7 @@ const truncatedMessage = computed(() => {
                     v-model="newPostContent"
                     :rows="4"
                     placeholder="投稿文を入力してください"
+                    :drag-active="isDragOverTextbox"
                     @attach-click="fileUploadRef?.openFileDialog()"
                     @dragenter="onTextDragEnter"
                     @dragover="onTextDragOver"
@@ -199,7 +200,7 @@ const truncatedMessage = computed(() => {
                 />
 
                 <!-- ドラッグ中のみ表示するオーバーレイのD&D UI -->
-                <div v-if="isDragOverTextbox" class="absolute inset-0 z-10 flex items-center justify-center">
+                <div v-if="isDragOverTextbox" class="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
                     <div class="w-full h-full border-2 border-dashed border-blue-400 bg-blue-50/70 dark:bg-blue-900/30 rounded-md flex items-center justify-center">
                         <div class="text-center text-blue-700 dark:text-blue-200">
                             <i class="bi bi-paperclip text-3xl mb-2 block"></i>
