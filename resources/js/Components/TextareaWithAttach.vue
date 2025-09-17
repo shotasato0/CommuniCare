@@ -16,6 +16,7 @@ const props = defineProps({
   bottomOffsetClass: { type: String, default: 'bottom-5' },
   buttonTitle: { type: String, default: 'ファイルを選択' },
   buttonAriaLabel: { type: String, default: 'ファイルを選択' },
+  dragActive: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue', 'attach-click'])
@@ -40,7 +41,7 @@ const valueProxy = computed({
     <button
       type="button"
       class="absolute bg-gray-300 dark:bg-gray-600 text-black dark:text-gray-300 transition hover:bg-gray-400 dark:hover:bg-gray-500 rounded-md flex items-center justify-center cursor-pointer p-2"
-      :class="[rightOffsetClass, bottomOffsetClass]"
+      :class="[rightOffsetClass, bottomOffsetClass, { 'pointer-events-none': dragActive }]"
       style="width: 40px; height: 40px"
       :title="buttonTitle"
       :aria-label="buttonAriaLabel"
