@@ -200,7 +200,7 @@ const resetForm = () => {
             <div class="mt-4">
                 <FileUpload 
                     ref="fileUploadRef"
-                    :visible="false"
+                    :visible="isDragOver || (attachedFiles && attachedFiles.length > 0)"
                     @files-changed="handleFilesChanged"
                     @error="handleFileUploadError"
                 />
