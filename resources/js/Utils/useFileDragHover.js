@@ -6,6 +6,25 @@ export function useFileDragHover(dropCallback) {
   const isDragOver = ref(false)
   let dragDepth = 0
   let _preventIfFiles
+  let hideTimer = null // タイマーID
+
+  // 即座に表示する
+  const setVisible = () => {
+    if (hideTimer) { //もし非表示タイマーがあればキャンセル
+      clearTimeout(hideTimer) // タイマークリア
+      hideTimer = null // タイマーIDクリア
+    }
+    isDragOver.value = true // ドラッグオーバー状態に
+  }
+
+  // 指定時間後に非表示にする
+  const scheduleHide = (delay = 100) => {
+    if (hideTimer) clearTimeout(hideTimer)
+    hideTimer = setTimeout(() => {
+      isDragOver.value = false
+      hideTimer = null
+    }, delay)
+  }
 
   const hasFiles = (e) => {
     const types = e?.dataTransfer?.types
@@ -16,13 +35,13 @@ export function useFileDragHover(dropCallback) {
     if (!hasFiles(e)) return
     e.preventDefault()
     dragDepth++
-    isDragOver.value = true
+    setVisible() // 即座に表示
   }
 
   const onTextDragOver = (e) => {
     if (!hasFiles(e)) return
     e.preventDefault()
-    isDragOver.value = true
+    setVisible() // 即座に表示
   }
 
   const onTextDragLeave = (e) => {
@@ -30,7 +49,7 @@ export function useFileDragHover(dropCallback) {
     e.preventDefault()
     dragDepth = Math.max(0, dragDepth - 1)
     if (dragDepth === 0) {
-      isDragOver.value = false
+      scheduleHide(120)
     }
   }
 
@@ -38,6 +57,10 @@ export function useFileDragHover(dropCallback) {
     if (!hasFiles(e)) return
     e.preventDefault()
     dragDepth = 0
+    if (hideTimer) { //もし非表示タイマーがあればキャンセル
+      clearTimeout(hideTimer)
+      hideTimer = null
+    }
     isDragOver.value = false
     const files = e.dataTransfer?.files || []
     if (files && files.length > 0 && typeof dropCallback === 'function') {
@@ -74,4 +97,3 @@ export function useFileDragHover(dropCallback) {
     onTextMouseLeave,
   }
 }
-
