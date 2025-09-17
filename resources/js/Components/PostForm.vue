@@ -5,6 +5,8 @@ import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue"; // ImageModalコンポーネントをインポート
 import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
 import TextareaWithAttach from "./TextareaWithAttach.vue";
+import DropOverlay from "./DropOverlay.vue";
+import { useFileDragHover } from "@/Utils/useFileDragHover";
 import { handleImageChange } from "@/Utils/imageHandler";
 
 const props = defineProps({
@@ -28,8 +30,12 @@ const fileUploadRef = ref(null);
 const attachedFiles = ref([]);
 const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
-// クリップアイコンクリックでファイルダイアログを開く
-// アイコンから直接 fileUploadRef を呼び出すため追加の関数は不要
+// ドラッグ&ドロップ（テキストエリア上限定）
+const { isDragOver, onTextDragEnter, onTextDragOver, onTextDragLeave, onTextDrop, onTextMouseLeave } = useFileDragHover((files) => {
+    if (fileUploadRef.value) {
+        fileUploadRef.value.processExternalFiles(files);
+    }
+});
 
 // forumIdの変更を監視し、postDataに反映
 watch(
@@ -170,21 +176,30 @@ const resetForm = () => {
             <!-- 本文 -->
             <div class="flex flex-col mt-2">
                 <p class="font-medium text-gray-900 dark:text-gray-100">本文</p>
-                <TextareaWithAttach
-                    v-model="postData.message"
-                    :rows="3"
-                    placeholder="本文を入力してください"
-                    :textarea-class="'w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'"
-                    button-title="ファイルを選択"
-                    button-aria-label="ファイルを選択"
-                    @attach-click="fileUploadRef?.openFileDialog()"
-                />
+                <div class="relative">
+                    <TextareaWithAttach
+                        v-model="postData.message"
+                        :rows="3"
+                        placeholder="本文を入力してください"
+                        :textarea-class="'w-full p-2 pr-12 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'"
+                        button-title="ファイルを選択"
+                        button-aria-label="ファイルを選択"
+                        @attach-click="fileUploadRef?.openFileDialog()"
+                        @dragenter="onTextDragEnter"
+                        @dragover="onTextDragOver"
+                        @dragleave="onTextDragLeave"
+                        @drop="onTextDrop"
+                        @mouseleave="onTextMouseLeave"
+                    />
+                    <DropOverlay v-if="isDragOver" />
+                </div>
             </div>
 
             <!-- 統一ファイル添付システム -->
             <div class="mt-4">
                 <FileUpload 
                     ref="fileUploadRef"
+                    :visible="false"
                     @files-changed="handleFilesChanged"
                     @error="handleFileUploadError"
                 />
