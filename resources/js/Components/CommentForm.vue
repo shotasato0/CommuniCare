@@ -5,6 +5,8 @@ import { getCsrfToken } from "@/Utils/csrf";
 import ImageModal from "./ImageModal.vue";
 import FileUpload from "./FileUpload.vue"; // 統一ファイル添付コンポーネント
 import TextareaWithAttach from "./TextareaWithAttach.vue";
+import DropOverlay from "./DropOverlay.vue";
+import { useFileDragHover } from "@/Utils/useFileDragHover";
 import { handleImageChange } from "@/Utils/imageHandler";
 
 // コメントフォームのプロパティを定義
@@ -62,6 +64,13 @@ const useUnifiedUpload = ref(true); // 統一システムの使用フラグ
 
 // クリップアイコンクリックでファイルダイアログを開く
 // アイコンから直接 fileUploadRef を呼び出すため追加の関数は不要
+
+// ドラッグ&ドロップ（テキストエリア上限定）
+const { isDragOver, onTextDragEnter, onTextDragOver, onTextDragLeave, onTextDrop, onTextMouseLeave } = useFileDragHover((files) => {
+    if (fileUploadRef.value) {
+        fileUploadRef.value.processExternalFiles(files);
+    }
+});
 
 // コンポーネントのマウント時に初期値を設定
 onMounted(() => {
@@ -189,18 +198,28 @@ const handleCancel = () => {
         <!-- コメントフォーム -->
         <form @submit.prevent="submitComment" enctype="multipart/form-data">
             <div>
-                <TextareaWithAttach
-                    v-model="commentData.message"
-                    :rows="3"
-                    :placeholder="placeholder"
-                    @attach-click="fileUploadRef?.openFileDialog()"
-                />
+                <div class="relative">
+                    <TextareaWithAttach
+                        v-model="commentData.message"
+                        :rows="3"
+                        :placeholder="placeholder"
+                        :drag-active="isDragOver"
+                        @attach-click="fileUploadRef?.openFileDialog()"
+                        @dragenter="onTextDragEnter"
+                        @dragover="onTextDragOver"
+                        @dragleave="onTextDragLeave"
+                        @drop="onTextDrop"
+                        @mouseleave="onTextMouseLeave"
+                    />
+                    <DropOverlay v-if="isDragOver" />
+                </div>
             </div>
 
             <!-- 統一ファイル添付システム -->
             <div class="mt-3">
                 <FileUpload 
                     ref="fileUploadRef"
+                    :visible="isDragOver || (attachedFiles && attachedFiles.length > 0)"
                     @files-changed="handleFilesChanged"
                     @error="handleFileUploadError"
                 />
