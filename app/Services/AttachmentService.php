@@ -117,11 +117,26 @@ class AttachmentService
         // ファイルハッシュ生成（重複検出用）
         $hash = hash_file('sha256', $file->getRealPath());
         
-        // 重複チェック
+        // 重複チェック（同一テナント内）
         $existingAttachment = $this->findDuplicateFile($hash, $currentUser->tenant_id);
         if ($existingAttachment) {
-            // 重複ファイルの場合は既存のAttachmentを新しい関連付けでコピー
-            return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
+            // 既存の物理ファイルが現在のテナントFSに存在するかを検証
+            $existingPath = $existingAttachment->file_path;
+            $existsOnTenantFs = Storage::disk('public')->exists($existingPath);
+            if ($existsOnTenantFs) {
+                // 物理実体が存在する → DBだけ複製して容量節約
+                return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
+            }
+            // 物理実体が存在しない → 過去の保存が中央FS/他テナントにあり欠損の可能性
+            // 安全のため今回のアップロードを新規保存として扱う（self-healは別途コマンドで実施）
+            Log::warning('AttachmentService: Duplicate hash found but file missing on tenant FS, saving new copy', [
+                'existing_attachment_id' => $existingAttachment->id,
+                'existing_path' => $existingPath,
+                'tenant_id' => $currentUser->tenant_id,
+                'attachable_type' => $attachableType,
+                'attachable_id' => $attachableId,
+            ]);
+            // 続行して新規保存
         }
         
         // Laravel Storage使用（推奨方法）
