@@ -35,25 +35,8 @@ Route::middleware(['auth'])->group(function () {
     // ユーザーの所属ユニットのforum_idを取得（エンドポイント）
     Route::get('/user-forum-id', [UserController::class, 'getUserForumId']);
 
-    // フォーラム
-    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
-
-    // 投稿
-    Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
-    Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
-    Route::post('/forum/post/{post}/attachments', [PostController::class, 'addAttachments'])->name('forum.post.attachments.add');
-    Route::delete('/forum/post/{post}/attachments/{attachmentId}', [PostController::class, 'removeAttachment'])->name('forum.post.attachments.remove');
-    Route::post('/like/toggle', [LikeController::class, 'toggleLike'])->name('like.toggle');
-
-    // 返信
-    Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
-    Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
-    Route::post('/forum/comment/{comment}/attachments', [CommentController::class, 'addAttachments'])->name('forum.comment.attachments.add');
-    Route::delete('/forum/comment/{comment}/attachments/{attachmentId}', [CommentController::class, 'removeAttachment'])->name('forum.comment.attachments.remove');
-
-    // 添付ファイル
-    Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
-    Route::delete('/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
+    // NOTE: フォーラム/投稿/コメント/添付はテナントドメイン配下に移動（routes/tenant.php）
+    // web.php 側では定義しないことで、保存と表示のFSコンテキスト不一致を回避
 
     // ユーザー（職員）
     Route::resource('users', UserController::class);

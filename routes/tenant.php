@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TenantHomeController;
 use App\Http\Controllers\Auth\GuestLoginController;
+use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 
 // テナントドメイン限定のルートは、bootstrap/app.php 側の Route::domain() で
 // ミドルウェア（InitializeTenancyByDomain 等）を付与して読み込まれる前提。
@@ -15,3 +20,28 @@ Route::get('/guest/login', [TenantHomeController::class, 'index'])->name('guest.
 
 // 実行：ゲストで入る（中央には置かない）
 Route::middleware('guest')->get('/guest/user/login', [GuestLoginController::class, 'loginAsGuest'])->name('guest.user.login');
+
+// 認証配下のテナントルート（保存・表示のFSコンテキストを統一）
+Route::middleware(['auth'])->group(function () {
+    // 添付
+    Route::get('/attachments/{attachment}', [AttachmentController::class, 'show'])->name('attachments.show');
+    Route::delete('/attachments/{attachment}', [AttachmentController::class, 'destroy'])->name('attachments.destroy');
+
+    // フォーラム
+    Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
+
+    // 投稿
+    Route::post('/forum/post', [PostController::class, 'store'])->name('forum.store');
+    Route::delete('/forum/post/{id}', [PostController::class, 'destroy'])->name('forum.destroy');
+    Route::post('/forum/post/{post}/attachments', [PostController::class, 'addAttachments'])->name('forum.post.attachments.add');
+    Route::delete('/forum/post/{post}/attachments/{attachmentId}', [PostController::class, 'removeAttachment'])->name('forum.post.attachments.remove');
+
+    // いいね
+    Route::post('/like/toggle', [LikeController::class, 'toggleLike'])->name('like.toggle');
+
+    // コメント
+    Route::post('/forum/comment', [CommentController::class, 'store'])->name('comment.store');
+    Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
+    Route::post('/forum/comment/{comment}/attachments', [CommentController::class, 'addAttachments'])->name('forum.comment.attachments.add');
+    Route::delete('/forum/comment/{comment}/attachments/{attachmentId}', [CommentController::class, 'removeAttachment'])->name('forum.comment.attachments.remove');
+});
