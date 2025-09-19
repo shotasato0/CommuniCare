@@ -4,6 +4,9 @@
 /public/hot
 /public/storage
 /storage/*.key
+# Ignore all generated/storage files (tenant FS, attachments, caches, etc.)
+/storage/**
+!/storage/.gitignore
 /vendor
 .env
 .env.backup
@@ -20,4 +23,3 @@ yarn-error.log
 /.vscode
 my.cnf
 !database/migrations/*.php
-
