@@ -81,6 +81,24 @@ class PostService
             // この投稿を引用している投稿のフラグを更新
             $this->updateQuotingPosts($postId);
 
+            // 添付ファイル（統一システム）を物理削除
+            foreach ($post->attachments as $attachment) {
+                $this->attachmentService->deleteAttachment($attachment);
+            }
+
+            // レガシー画像（img フィールド）があれば物理削除
+            if (!empty($post->img)) {
+                try {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($post->img);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Failed to delete legacy post image', [
+                        'post_id' => $post->id,
+                        'img' => $post->img,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
             // 投稿を完全削除
             $post->forceDelete();
         });
