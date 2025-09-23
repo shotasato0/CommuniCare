@@ -33,6 +33,7 @@ class PostStoreRequest extends FormRequest
             'quoted_post_id' => 'nullable|exists:posts,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             // 統一ファイル添付システム対応
+            'files' => 'nullable|array|max:10',
             'files.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:10240',
         ];
     }
@@ -70,6 +71,8 @@ class PostStoreRequest extends FormRequest
             'img.mimes' => 'jpeg、png、jpg、gif形式のファイルのみアップロード可能です。',
             'img.max' => 'ファイルサイズは10MB以下にしてください。',
             // 統一ファイル添付システム用メッセージ
+            'files.array' => 'ファイルは配列で送信してください。',
+            'files.max' => '一度に添付できるファイルは最大10個までです。',
             'files.*.file' => 'ファイルが正しく選択されていません。',
             'files.*.mimes' => 'サポートされていないファイル形式です。画像・PDF・文書ファイルのみアップロード可能です。',
             'files.*.max' => 'ファイルサイズは10MB以下にしてください。',

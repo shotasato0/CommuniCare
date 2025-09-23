@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Exceptions\Custom\TenantViolationException;
@@ -112,30 +113,46 @@ class AttachmentService
         
         // 安全なファイル名生成
         $fileName = $this->generateSafeFileName($originalName, $extension);
-        $filePath = $this->getStoragePath($fileType) . '/' . $fileName;
+        $finalPath = $this->getStoragePath($fileType) . '/' . $fileName;
+        $tempPath = 'temp/' . $finalPath;
         
         // ファイルハッシュ生成（重複検出用）
         $hash = hash_file('sha256', $file->getRealPath());
         
-        // 重複チェック
+        // 重複チェック（同一テナント内）
         $existingAttachment = $this->findDuplicateFile($hash, $currentUser->tenant_id);
         if ($existingAttachment) {
-            // 重複ファイルの場合は既存のAttachmentを新しい関連付けでコピー
-            return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
+            // 既存の物理ファイルが現在のテナントFSに存在するかを検証
+            $existingPath = $existingAttachment->file_path;
+            $existsOnTenantFs = Storage::disk('public')->exists($existingPath);
+            if ($existsOnTenantFs) {
+                // 物理実体が存在する → DBだけ複製して容量節約
+                return $this->duplicateAttachment($existingAttachment, $attachableType, $attachableId);
+            }
+            // 物理実体が存在しない → 過去の保存が中央FS/他テナントにあり欠損の可能性
+            // 安全のため今回のアップロードを新規保存として扱う（self-healは別途コマンドで実施）
+            Log::warning('AttachmentService: Duplicate hash found but file missing on tenant FS, saving new copy', [
+                'existing_attachment_id' => $existingAttachment->id,
+                'existing_path' => $existingPath,
+                'tenant_id' => $currentUser->tenant_id,
+                'attachable_type' => $attachableType,
+                'attachable_id' => $attachableId,
+            ]);
+            // 続行して新規保存
         }
         
-        // Laravel Storage使用（推奨方法）
-        Log::info('AttachmentService: Attempting to save file', [
-            'filePath' => $filePath,
+        // Laravel Storage使用（まずは一時領域へ保存）
+        if (config('attachments.debug_log')) Log::info('AttachmentService: Attempting to save file', [
+            'filePath' => $tempPath,
             'originalName' => $originalName,
             'fileSize' => $file->getSize()
         ]);
         
         try {
-            // Laravel Storageを使用してファイル保存
+            // 一時領域に保存（publicディスク内の temp/ 配下）
             $storedPath = $file->storeAs(
-                dirname($filePath), // ディレクトリパス（例: attachments/images）
-                basename($filePath), // ファイル名
+                dirname($tempPath), // ディレクトリパス（例: temp/attachments/images）
+                basename($tempPath), // ファイル名
                 'public' // ディスク
             );
             
@@ -144,11 +161,11 @@ class AttachmentService
             }
             
             // 保存確認
-            $actualFilePath = $storedPath;
+            $actualFilePath = $storedPath; // 現時点では temp パス
             $exists = Storage::disk('public')->exists($actualFilePath);
             $size = $exists ? Storage::disk('public')->size($actualFilePath) : 0;
             
-            Log::info('AttachmentService: File saved successfully', [
+            if (config('attachments.debug_log')) Log::info('AttachmentService: File saved successfully', [
                 'actualFilePath' => $actualFilePath,
                 'file_exists' => $exists,
                 'file_size' => $size
@@ -157,7 +174,7 @@ class AttachmentService
             if (!$exists) {
                 throw new \RuntimeException('ファイル保存確認に失敗しました');
             }
-            
+        
         } catch (\Exception $e) {
             Log::error('AttachmentService: File save failed', [
                 'error' => $e->getMessage(),
@@ -166,13 +183,13 @@ class AttachmentService
             throw new \RuntimeException('ファイルの保存に失敗しました: ' . $e->getMessage());
         }
         
-        // Attachmentレコード作成
+        // Attachmentレコード作成（現時点では temp パスを保持）
         $attachment = Attachment::create([
             'attachable_type' => $attachableType,
             'attachable_id' => $attachableId,
             'original_name' => $originalName,
             'file_name' => $fileName,
-            'file_path' => $actualFilePath, // 実際の保存パスを使用
+            'file_path' => $actualFilePath, // 一時保存パスを保持
             'file_size' => $file->getSize(),
             'mime_type' => $mimeType,
             'file_type' => $fileType,
@@ -182,6 +199,38 @@ class AttachmentService
             'is_safe' => $this->performSecurityScan($file)
         ]);
         
+        // トランザクション確定後に本番パスへ移動し、レコードを更新
+        DB::afterCommit(function () use ($attachment, $tempPath, $finalPath) {
+            try {
+                if (Storage::disk('public')->exists($tempPath)) {
+                    // 親ディレクトリが無ければ作成
+                    $dir = dirname($finalPath);
+                    if (!Storage::disk('public')->exists($dir)) {
+                        Storage::disk('public')->makeDirectory($dir);
+                    }
+                    Storage::disk('public')->move($tempPath, $finalPath);
+                    $attachment->update(['file_path' => $finalPath]);
+                    if (config('attachments.debug_log')) Log::info('AttachmentService: Finalized attachment file move', [
+                        'id' => $attachment->id,
+                        'from' => $tempPath,
+                        'to' => $finalPath
+                    ]);
+                } else {
+                    if (config('attachments.debug_log')) Log::warning('AttachmentService: Temp file missing at finalize time', [
+                        'id' => $attachment->id,
+                        'tempPath' => $tempPath
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::error('AttachmentService: Finalize move failed', [
+                    'id' => $attachment->id,
+                    'from' => $tempPath,
+                    'to' => $finalPath,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        });
+
         return $attachment;
     }
 

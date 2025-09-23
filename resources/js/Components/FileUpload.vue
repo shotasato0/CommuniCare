@@ -1,34 +1,5 @@
 <template>
   <div class="file-upload-container">
-    <!-- ドラッグ&ドロップエリア -->
-    <div
-      @drop="handleDrop"
-      @dragover.prevent
-      @dragenter.prevent
-      :class="[
-        'drag-drop-area',
-        { 'drag-over': isDragging, 'has-error': hasError }
-      ]"
-      @dragenter="isDragging = true"
-      @dragleave="isDragging = false"
-    >
-      <div class="drag-drop-content">
-        <i class="bi bi-paperclip drag-drop-icon"></i>
-        <p class="drag-drop-text">
-          ファイルをドラッグ&ドロップ または
-          <button 
-            type="button" 
-            @click="$refs.fileInput.click()"
-            class="file-select-button"
-          >
-            ファイルを選択
-          </button>
-        </p>
-        <p class="file-types-hint">
-          対応形式: 画像, PDF, Word, Excel, テキスト (最大10MB)
-        </p>
-      </div>
-    </div>
 
     <!-- 隠しファイル入力 -->
     <input
@@ -47,7 +18,7 @@
     </div>
 
     <!-- アップロード済みファイル一覧 -->
-    <div v-if="files.length > 0" class="uploaded-files">
+    <div v-if="files.length > 0" v-show="visible" class="uploaded-files">
       <h4 class="uploaded-files-title">
         <i class="bi bi-files"></i>
         添付ファイル ({{ files.length }})
@@ -95,10 +66,16 @@ export default {
   name: 'FileUpload',
   emits: ['files-changed', 'error'],
   
+  props: {
+    // パネルの表示/非表示（機能は常時有効）
+    visible: { type: Boolean, default: true },
+    // 最大ファイル数（制約統一: 10）
+    maxFiles: { type: Number, default: 10 },
+  },
+
   data() {
     return {
       files: [],
-      isDragging: false,
       hasError: false,
       errorMessage: '',
       acceptedTypes: '.jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv',
@@ -130,14 +107,6 @@ export default {
     openFileDialog() {
       if (this.$refs.fileInput) this.$refs.fileInput.click()
     },
-    handleDrop(e) {
-      e.preventDefault()
-      this.isDragging = false
-      
-      const droppedFiles = Array.from(e.dataTransfer.files)
-      this.processFiles(droppedFiles)
-    },
-
     handleFileSelect(e) {
       const selectedFiles = Array.from(e.target.files)
       this.processFiles(selectedFiles)
@@ -147,8 +116,15 @@ export default {
       this.clearError()
       
       const validFiles = []
+
+      // 件数上限チェック（既存+追加がmaxFilesを超えないように）
+      const remaining = this.maxFiles - this.files.length
+      if (newFiles.length > remaining) {
+        this.showError(`一度に添付できるファイルは最大${this.maxFiles}個までです`)
+      }
+      const slice = newFiles.slice(0, Math.max(0, remaining))
       
-      for (const file of newFiles) {
+      for (const file of slice) {
         if (this.validateFile(file)) {
           validFiles.push(file)
         }
@@ -270,49 +246,7 @@ export default {
 </script>
 
 <style scoped>
-.file-upload-container {
-  @apply space-y-4;
-}
-
-.drag-drop-area {
-  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-200;
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.drag-drop-area:hover {
-  @apply border-blue-400 bg-blue-50;
-}
-
-.drag-drop-area.drag-over {
-  @apply border-blue-500 bg-blue-100;
-}
-
-.drag-drop-area.has-error {
-  @apply border-red-400 bg-red-50;
-}
-
-.drag-drop-content {
-  @apply space-y-2;
-}
-
-.drag-drop-icon {
-  @apply text-4xl text-gray-400 mb-2;
-}
-
-.drag-drop-text {
-  @apply text-gray-600 font-medium;
-}
-
-.file-select-button {
-  @apply text-blue-600 underline hover:text-blue-800 font-medium;
-}
-
-.file-types-hint {
-  @apply text-sm text-gray-500;
-}
+.file-upload-container { @apply space-y-4; }
 
 .hidden-file-input {
   display: none;

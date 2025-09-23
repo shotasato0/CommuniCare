@@ -15,3 +15,10 @@ app(Schedule::class)->command('cleanup:guest-users')
     ->runInBackground()
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/scheduler.log'));
+
+// attachments GC: 毎日深夜にtempをクリーン
+app(Schedule::class)->command('attachments:gc --days=1')
+    ->dailyAt('03:10')
+    ->runInBackground()
+    ->withoutOverlapping()
+    ->appendOutputTo(storage_path('logs/scheduler.log'));
