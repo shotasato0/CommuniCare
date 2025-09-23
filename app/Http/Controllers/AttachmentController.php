@@ -57,9 +57,49 @@ class AttachmentController extends Controller
             // ログ取得で例外が出ても本処理は継続
         }
         
-        // ファイル存在チェック
+        // ファイル存在チェック + self-heal（任意）
         if (!Storage::disk('public')->exists($attachment->file_path)) {
-            abort(404, 'ファイルが見つかりません');
+            if (config('attachments.self_heal')) {
+                // tenant FS になければ中央FSからの自己修復を試行
+                $tenant = function_exists('tenant') ? tenant() : null;
+                try {
+                    if ($tenant) tenancy()->end();
+                    $centralHas = Storage::disk('public')->exists($attachment->file_path);
+                    $content = $centralHas ? Storage::disk('public')->get($attachment->file_path) : null;
+                    if ($tenant) tenancy()->initialize($tenant);
+
+                    if ($centralHas && $content !== null) {
+                        // 親ディレクトリの作成
+                        $dir = dirname($attachment->file_path);
+                        if (!Storage::disk('public')->exists($dir)) {
+                            Storage::disk('public')->makeDirectory($dir);
+                        }
+                        Storage::disk('public')->put($attachment->file_path, $content);
+                        if (config('attachments.debug_log')) {
+                            \Log::info('Attachment self-heal: copied from central to tenant FS', [
+                                'attachment_id' => $attachment->id,
+                                'path' => $attachment->file_path,
+                                'tenant_id' => optional($tenant)->id,
+                            ]);
+                        }
+                    } else {
+                        abort(404, 'ファイルが見つかりません');
+                    }
+                } catch (\Throwable $e) {
+                    if ($tenant) {
+                        // 念のためテナントを再初期化
+                        try { tenancy()->initialize($tenant); } catch (\Throwable $ignored) {}
+                    }
+                    \Log::error('Attachment self-heal failed', [
+                        'attachment_id' => $attachment->id,
+                        'path' => $attachment->file_path,
+                        'error' => $e->getMessage()
+                    ]);
+                    abort(404, 'ファイルが見つかりません');
+                }
+            } else {
+                abort(404, 'ファイルが見つかりません');
+            }
         }
         
         // ファイルストリーミング応答（StreamedResponseで返却）

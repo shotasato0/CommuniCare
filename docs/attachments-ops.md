@@ -41,8 +41,20 @@ sail php artisan attachments:gc --days=1
 
 `.env` で `ATTACHMENTS_DEBUG_LOG=false`（既定）にするとデバッグログを出しません。
 
+## Self-heal（オプション）
+
+表示時にテナントFSにファイルが無い場合、中央FSから1回だけコピーして配信します。
+
+```
+# 有効化
+ATTACHMENTS_SELF_HEAL=true
+```
+
+注意:
+- 境界を跨がないよう、必ず `tenant()` の初期化・終了を正しく行います。
+- 監査ログ（debug_log=true 時に詳細）を確認できます。
+
 ## 制約の統一
 
 - バックエンド：Post/Comment の Request で `files`（最大10） と `files.*`（各10MB）を検証。
 - フロント：FileUpload で `maxFiles=10`、各10MBに到達前にUIで抑止。
-
