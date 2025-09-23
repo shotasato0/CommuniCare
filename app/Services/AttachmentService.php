@@ -142,7 +142,7 @@ class AttachmentService
         }
         
         // Laravel Storage使用（まずは一時領域へ保存）
-        Log::info('AttachmentService: Attempting to save file', [
+        if (config('attachments.debug_log')) Log::info('AttachmentService: Attempting to save file', [
             'filePath' => $tempPath,
             'originalName' => $originalName,
             'fileSize' => $file->getSize()
@@ -165,7 +165,7 @@ class AttachmentService
             $exists = Storage::disk('public')->exists($actualFilePath);
             $size = $exists ? Storage::disk('public')->size($actualFilePath) : 0;
             
-            Log::info('AttachmentService: File saved successfully', [
+            if (config('attachments.debug_log')) Log::info('AttachmentService: File saved successfully', [
                 'actualFilePath' => $actualFilePath,
                 'file_exists' => $exists,
                 'file_size' => $size
@@ -210,13 +210,13 @@ class AttachmentService
                     }
                     Storage::disk('public')->move($tempPath, $finalPath);
                     $attachment->update(['file_path' => $finalPath]);
-                    Log::info('AttachmentService: Finalized attachment file move', [
+                    if (config('attachments.debug_log')) Log::info('AttachmentService: Finalized attachment file move', [
                         'id' => $attachment->id,
                         'from' => $tempPath,
                         'to' => $finalPath
                     ]);
                 } else {
-                    Log::warning('AttachmentService: Temp file missing at finalize time', [
+                    if (config('attachments.debug_log')) Log::warning('AttachmentService: Temp file missing at finalize time', [
                         'id' => $attachment->id,
                         'tempPath' => $tempPath
                     ]);

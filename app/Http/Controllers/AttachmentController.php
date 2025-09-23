@@ -34,7 +34,7 @@ class AttachmentController extends Controller
         $this->validateTenantAccess($attachment);
 
         // デバッグログ（保存/表示のFSコンテキスト不一致確認用）
-        try {
+        if (config('attachments.debug_log')) try {
             $host = request()->getHost();
             $userTenantId = optional(Auth::user())->tenant_id;
             $currentTenantId = function_exists('tenant') && tenant() ? tenant()->id : null;
@@ -91,7 +91,7 @@ class AttachmentController extends Controller
         // テナント境界チェック
         $this->validateTenantAccess($attachment);
 
-        try {
+        if (config('attachments.debug_log')) try {
             Log::info('Attachment destroy debug', [
                 'host' => request()->getHost(),
                 'env' => config('app.env'),

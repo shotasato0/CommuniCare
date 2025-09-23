@@ -31,6 +31,9 @@ class CommentStoreRequest extends FormRequest
             'parent_id' => 'nullable|exists:comments,id',
             'message' => 'required|string|max:1000',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            // 統一ファイル添付システム対応
+            'files' => 'nullable|array|max:10',
+            'files.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,pdf,doc,docx,xls,xlsx,txt,csv|max:10240',
         ];
     }
 
@@ -51,6 +54,12 @@ class CommentStoreRequest extends FormRequest
             'img.image' => 'ファイルは画像である必要があります。',
             'img.mimes' => 'jpeg、png、jpg、gif形式のファイルのみアップロード可能です。',
             'img.max' => 'ファイルサイズは10MB以下にしてください。',
+            // 統一ファイル添付
+            'files.array' => 'ファイルは配列で送信してください。',
+            'files.max' => '一度に添付できるファイルは最大10個までです。',
+            'files.*.file' => 'ファイルが正しく選択されていません。',
+            'files.*.mimes' => 'サポートされていないファイル形式です。画像・PDF・文書ファイルのみアップロード可能です。',
+            'files.*.max' => 'ファイルサイズは10MB以下にしてください。',
         ];
     }
 }

@@ -69,6 +69,8 @@ export default {
   props: {
     // パネルの表示/非表示（機能は常時有効）
     visible: { type: Boolean, default: true },
+    // 最大ファイル数（制約統一: 10）
+    maxFiles: { type: Number, default: 10 },
   },
 
   data() {
@@ -114,8 +116,15 @@ export default {
       this.clearError()
       
       const validFiles = []
+
+      // 件数上限チェック（既存+追加がmaxFilesを超えないように）
+      const remaining = this.maxFiles - this.files.length
+      if (newFiles.length > remaining) {
+        this.showError(`一度に添付できるファイルは最大${this.maxFiles}個までです`)
+      }
+      const slice = newFiles.slice(0, Math.max(0, remaining))
       
-      for (const file of newFiles) {
+      for (const file of slice) {
         if (this.validateFile(file)) {
           validFiles.push(file)
         }
