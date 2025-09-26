@@ -64,19 +64,29 @@ class GuestLoginController extends Controller
     // 現在のセッションIDを取得
     $sessionId = session()->getId();
 
-    // セッションIDでゲストユーザーを検索・削除
+    // セッションIDでゲストユーザーを検索
     $guestUser = User::where('guest_session_id', $sessionId)->first();
 
-    if ($guestUser) {
-        $guestUser->delete();
-    } else {
-        Log::warning("該当するゲストユーザーが見つかりません: セッションID: {$sessionId}");
-    }
-
-    // セッション無効化とトークン再生成を最後に実行
+    // まずログアウトとセッション無効化を行う（ミドルウェアとの競合回避）
     Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
+
+    // 認証状態を切った後にクリーンアップ（関連FKに備えて失敗時は安全にフォールバック）
+    if ($guestUser) {
+        try {
+            $guestUser->delete();
+        } catch (\Throwable $e) {
+            // 外部キー制約等で削除できない場合はゲストフラグのみ解除して継続
+            \Log::warning('ゲストユーザー削除に失敗。guest_session_idを解除して継続', [
+                'user_id' => $guestUser->id,
+                'error' => $e->getMessage(),
+            ]);
+            $guestUser->forceFill(['guest_session_id' => null])->save();
+        }
+    } else {
+        Log::warning("該当するゲストユーザーが見つかりません: セッションID: {$sessionId}");
+    }
 
     // ホーム画面にリダイレクト
     return redirect('/')->with('message', 'ログアウトしました');
