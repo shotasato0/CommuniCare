@@ -78,7 +78,7 @@ class GuestLoginController extends Controller
             $guestUser->delete();
         } catch (\Throwable $e) {
             // 外部キー制約等で削除できない場合はゲストフラグのみ解除して継続
-            \Log::warning('ゲストユーザー削除に失敗。guest_session_idを解除して継続', [
+            Log::warning('ゲストユーザー削除に失敗。guest_session_idを解除して継続', [
                 'user_id' => $guestUser->id,
                 'error' => $e->getMessage(),
             ]);
