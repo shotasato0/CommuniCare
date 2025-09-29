@@ -49,12 +49,8 @@ class TenantHomeController extends Controller
         };
         $isGuestDomain = $guestDomain && request()->getHost() === $guestDomain;
 
-        // ゲスト表示条件: 専用パス or ゲストドメイン
-        $isGuestHome = (
-            request()->routeIs('guest.login.view') ||
-            request()->is('guest/login') ||
-            $isGuestDomain
-        );
+        // ゲスト表示条件: ゲストドメイン配下のルートアクセス時のみ
+        $isGuestHome = $isGuestDomain;
 
         return Inertia::render('TenantHome', [
             'canLogin' => \Route::has('login'),
