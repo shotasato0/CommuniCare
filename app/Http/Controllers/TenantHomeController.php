@@ -49,7 +49,7 @@ class TenantHomeController extends Controller
         };
         $isGuestDomain = $guestDomain && request()->getHost() === $guestDomain;
 
-        // ゲスト表示条件: ゲストドメイン配下のルートアクセス時のみ
+        // ゲスト表示条件: ゲストドメインでのアクセス時のみ（パスの判定は行っていません）
         $isGuestHome = $isGuestDomain;
 
         return Inertia::render('TenantHome', [
