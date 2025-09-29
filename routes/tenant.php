@@ -16,9 +16,7 @@ use App\Http\Controllers\LikeController;
 Route::get('/', [TenantHomeController::class, 'index'])->name('guest.login.view');
 
 // 後方互換: 旧URLからルートへ恒久的リダイレクト（周知期間後に削除予定）
-Route::get('/guest/login', function () {
-    return redirect('/')->setStatusCode(301);
-});
+Route::redirect('/guest/login', '/', 301);
 
 // 実行：ゲストで入る（中央には置かない）
 Route::middleware('guest')->get('/guest/user/login', [GuestLoginController::class, 'loginAsGuest'])->name('guest.user.login');
