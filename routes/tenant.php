@@ -12,11 +12,13 @@ use App\Http\Controllers\LikeController;
 // テナントドメイン限定のルートは、bootstrap/app.php 側の Route::domain() で
 // ミドルウェア（InitializeTenancyByDomain 等）を付与して読み込まれる前提。
 
-// テナントのトップページ
-Route::get('/', [TenantHomeController::class, 'index'])->name('tenant-home');
+// テナントのトップページ（ゲストデモ入口もここに統一）
+Route::get('/', [TenantHomeController::class, 'index'])->name('guest.login.view');
 
-// 表示：未ログインでも可（TenantHome.vue を見せる）
-Route::get('/guest/login', [TenantHomeController::class, 'index'])->name('guest.login.view');
+// 後方互換: 旧URLからルートへ恒久的リダイレクト（周知期間後に削除予定）
+Route::get('/guest/login', function () {
+    return redirect('/')->setStatusCode(301);
+});
 
 // 実行：ゲストで入る（中央には置かない）
 Route::middleware('guest')->get('/guest/user/login', [GuestLoginController::class, 'loginAsGuest'])->name('guest.user.login');
