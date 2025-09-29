@@ -67,7 +67,7 @@ class GuestTenantController extends Controller
         }
 
         $host = $domain . ($port ? ":{$port}" : '');
-        $url  = "{$scheme}://{$host}/guest/login";
+        $url  = "{$scheme}://{$host}/";
 
         Log::info('ゲスト遷移URLを生成', compact('env', 'domain', 'port', 'url'));
 
