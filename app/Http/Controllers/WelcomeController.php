@@ -23,7 +23,18 @@ class WelcomeController extends Controller
             'production' => config('guest.ports.production'),
             default      => null,
         };
-        $host = $domain . ($port ? ":{$port}" : '');
+        if (is_string($domain) && $domain !== '') {
+            $host = $domain . ($port ? ":{$port}" : '');
+        } else {
+            // フォールバック: app.url からスキーム/ホスト/ポートを解決
+            $appUrl = (string) config('app.url', '');
+            $fallbackHost   = parse_url($appUrl, PHP_URL_HOST) ?: 'localhost';
+            $fallbackPort   = parse_url($appUrl, PHP_URL_PORT);
+            $fallbackScheme = parse_url($appUrl, PHP_URL_SCHEME) ?: ($env === 'local' ? 'http' : 'https');
+            $host   = $fallbackHost . ($fallbackPort ? ":{$fallbackPort}" : '');
+            $scheme = $fallbackScheme ?: $scheme;
+        }
+
         $guestUrl = "{$scheme}://{$host}/";
 
         return Inertia::render('Welcome', [
