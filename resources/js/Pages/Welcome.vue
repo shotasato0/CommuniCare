@@ -110,10 +110,8 @@ const submit = () => {
                             </ul>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <Link
+                            <a
                                 :href="guestLoginUrl"
-                                method="get"
-                                as="button"
                                 class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
                             >
                                 <span class="mr-2">デモで体験する</span>
@@ -129,7 +127,7 @@ const submit = () => {
                                         clip-rule="evenodd"
                                     />
                                 </svg>
-                            </Link>
+                            </a>
                         </div>
                     </div>
 
