@@ -8,6 +8,19 @@ use Exception;
 
 abstract class TestCase extends BaseTestCase
 {
+    /**
+     * Laravelアプリケーションのブートストラップ
+     * 各テストで必要となるアプリケーションインスタンスを生成
+     */
+    public function createApplication()
+    {
+        $app = require __DIR__ . '/../bootstrap/app.php';
+
+        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+        return $app;
+    }
+
     protected function setUp(): void
     {
         // 🚨 第1段階：環境チェック（絶対に破ってはいけない壁）
