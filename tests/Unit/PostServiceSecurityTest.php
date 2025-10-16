@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Services\PostService;
 use App\Services\AttachmentService;
 use Illuminate\Support\Facades\Auth;
+use Tests\Support\UserStub;
 use Mockery;
 
 class PostServiceSecurityTest extends TestCase
@@ -31,11 +32,7 @@ class PostServiceSecurityTest extends TestCase
 
     public function test_can_delete_post_returns_true_for_owner(): void
     {
-        $user = new class {
-            public $id = 123;
-            public function hasRole($role) { return false; }
-        };
-        Auth::shouldReceive('user')->andReturn($user);
+        Auth::shouldReceive('user')->andReturn(new UserStub(123, 1, false));
 
         $post = new Post();
         $post->user_id = 123;
@@ -45,11 +42,7 @@ class PostServiceSecurityTest extends TestCase
 
     public function test_can_delete_post_returns_true_for_admin(): void
     {
-        $user = new class {
-            public $id = 999;
-            public function hasRole($role) { return $role === 'admin'; }
-        };
-        Auth::shouldReceive('user')->andReturn($user);
+        Auth::shouldReceive('user')->andReturn(new UserStub(999, 1, true));
 
         $post = new Post();
         $post->user_id = 123; // 別ユーザーの投稿
@@ -63,4 +56,3 @@ class PostServiceSecurityTest extends TestCase
         parent::tearDown();
     }
 }
-

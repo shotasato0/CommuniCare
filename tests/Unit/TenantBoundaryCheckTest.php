@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Traits\TenantBoundaryCheckTrait;
 use App\Exceptions\Custom\TenantViolationException;
 use Illuminate\Support\Facades\Auth;
+use Tests\Support\UserStub;
 use Illuminate\Database\Eloquent\Model;
 
 class TenantBoundaryCheckTest extends TestCase
@@ -76,11 +77,7 @@ class TenantBoundaryCheckTest extends TestCase
 
     private function mockAuthUser(int $id, int $tenantId): void
     {
-        $user = new class($id, $tenantId) {
-            public function __construct(public int $id, public int $tenant_id) {}
-        };
-
-        Auth::shouldReceive('user')->andReturn($user);
+        Auth::shouldReceive('user')->andReturn(new UserStub($id, $tenantId));
     }
 }
 
@@ -113,4 +110,3 @@ class DummyModel extends Model
         parent::__construct();
     }
 }
-

@@ -24,9 +24,7 @@ class DangerousOperationTest extends TestCase
         $this->assertSame(':memory:', env('DB_DATABASE'));
     }
 
-    /**
-     * @dataProvider dangerousCommands
-     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('dangerousCommands')]
     public function test_dangerous_artisan_commands_are_blocked(string $command): void
     {
         $this->expectException(Exception::class);
@@ -46,4 +44,3 @@ class DangerousOperationTest extends TestCase
         ];
     }
 }
-
