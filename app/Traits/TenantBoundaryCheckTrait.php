@@ -137,15 +137,11 @@ trait TenantBoundaryCheckTrait
         foreach ($relations as $relation) {
             if (!$currentResource->{$relation}) {
                 throw new TenantViolationException(
-                    "関連リソースが見つかりません。",
-                    [
-                        'user_id' => $currentUser->id,
-                        'tenant_id' => $currentUser->tenant_id,
-                        'resource_type' => get_class($resource),
-                        'resource_id' => $resource->id ?? null,
-                        'missing_relation' => $relation,
-                        'action' => 'related_resource_check'
-                    ]
+                    currentTenantId: (string) $currentUser->tenant_id,
+                    resourceTenantId: '',
+                    resourceType: get_class($resource) . "->{$relation}",
+                    resourceId: (int) ($resource->id ?? 0),
+                    message: "関連リソースが見つかりません。"
                 );
             }
             
@@ -169,17 +165,16 @@ trait TenantBoundaryCheckTrait
         if ($resources->count() !== count($resourceIds)) {
             $foundIds = $resources->pluck('id')->toArray();
             $missingIds = array_diff($resourceIds, $foundIds);
-            
+
+            // 代表的なIDをログ用途に採用（存在しない場合は0）
+            $representativeId = (int) (reset($missingIds) ?: 0);
+
             throw new TenantViolationException(
-                "一部のリソースへのアクセスが許可されていません。",
-                [
-                    'user_id' => $currentUser->id,
-                    'tenant_id' => $currentUser->tenant_id,
-                    'resource_type' => $modelClass,
-                    'requested_ids' => $resourceIds,
-                    'missing_ids' => $missingIds,
-                    'action' => 'batch_tenant_boundary_check'
-                ]
+                currentTenantId: (string) $currentUser->tenant_id,
+                resourceTenantId: '',
+                resourceType: $modelClass,
+                resourceId: $representativeId,
+                message: "一部のリソースへのアクセスが許可されていません。"
             );
         }
         
