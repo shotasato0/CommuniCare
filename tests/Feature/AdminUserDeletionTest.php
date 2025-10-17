@@ -1,0 +1,108 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+use App\Models\User;
+use App\Models\Attachment;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
+
+class AdminUserDeletionTest extends TestCase
+{
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // 安全なメモリDBにマイグレーション
+        $this->runSafeMigrations();
+        // 暗号化キー（テスト用）
+        config(['app.key' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=']);
+    }
+
+    private function createAdmin(string $tenantId = 'tenant-a'): User
+    {
+        Role::firstOrCreate(['name' => 'admin']);
+        $admin = User::factory()->create([
+            'tenant_id' => $tenantId,
+            'username_id' => 'admin_' . uniqid(),
+        ]);
+        $admin->assignRole('admin');
+        return $admin;
+    }
+
+    public function test_admin_can_delete_user_without_attachments(): void
+    {
+        $admin = $this->createAdmin('tenant-a');
+        $target = User::factory()->create([
+            'tenant_id' => 'tenant-a',
+            'username_id' => 'user_' . uniqid(),
+        ]);
+
+        $this->actingAs($admin);
+        $response = $this->delete(route('users.destroy', $target->id));
+
+        $response->assertRedirect(route('users.index'));
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    }
+
+    public function test_admin_deleting_user_with_attachments_sets_uploaded_by_to_null(): void
+    {
+        $admin = $this->createAdmin('tenant-a');
+        $target = User::factory()->create([
+            'tenant_id' => 'tenant-a',
+            'username_id' => 'user_' . uniqid(),
+        ]);
+
+        // 対象ユーザーがアップロードした添付を作成
+        $attachment = Attachment::factory()->create([
+            'tenant_id' => 'tenant-a',
+            'uploaded_by' => $target->id,
+        ]);
+
+        $this->actingAs($admin);
+        $response = $this->delete(route('users.destroy', $target->id));
+        $response->assertRedirect(route('users.index'));
+
+        // ユーザーは削除され、添付のuploaded_byはNULLになっていること
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+        $this->assertDatabaseHas('attachments', [
+            'id' => $attachment->id,
+            'uploaded_by' => null,
+        ]);
+    }
+
+    public function test_admin_cannot_delete_user_from_other_tenant(): void
+    {
+        $admin = $this->createAdmin('tenant-a');
+        $otherTenantUser = User::factory()->create([
+            'tenant_id' => 'tenant-b',
+            'username_id' => 'user_' . uniqid(),
+        ]);
+
+        $this->actingAs($admin);
+        $response = $this->delete(route('users.destroy', $otherTenantUser->id));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('users', ['id' => $otherTenantUser->id]);
+    }
+
+    public function test_regular_user_cannot_delete_user(): void
+    {
+        Role::firstOrCreate(['name' => 'user']);
+        $regular = User::factory()->create([
+            'tenant_id' => 'tenant-a',
+            'username_id' => 'user_regular_' . uniqid(),
+        ]);
+        $regular->assignRole('user');
+
+        $target = User::factory()->create([
+            'tenant_id' => 'tenant-a',
+            'username_id' => 'user_' . uniqid(),
+        ]);
+
+        $this->actingAs($regular);
+        $response = $this->delete(route('users.destroy', $target->id));
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('users', ['id' => $target->id]);
+    }
+}
+
