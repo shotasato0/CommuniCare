@@ -17,11 +17,14 @@ class AdminUserDeletionTest extends TestCase
         $this->runSafeMigrations();
         // 暗号化キー（テスト用）
         config(['app.key' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=']);
+
+        // 役割を事前作成（ミドルウェア内の User::role('admin') 参照対策）
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'user']);
     }
 
     private function createAdmin(string $tenantId = 'tenant-a'): User
     {
-        Role::firstOrCreate(['name' => 'admin']);
         $admin = User::factory()->create([
             'tenant_id' => $tenantId,
             'username_id' => 'admin_' . uniqid(),
@@ -52,6 +55,12 @@ class AdminUserDeletionTest extends TestCase
             'tenant_id' => 'tenant-a',
             'username_id' => 'user_' . uniqid(),
         ]);
+
+        // テナントを作成（attachments.tenant_id FK対策）
+        \App\Models\Tenant::unguard();
+        $tenant = new \App\Models\Tenant(['business_name' => '', 'tenant_domain_id' => '']);
+        $tenant->id = 'tenant-a';
+        $tenant->save();
 
         // 対象ユーザーがアップロードした添付を作成
         $attachment = Attachment::factory()->create([
@@ -87,7 +96,6 @@ class AdminUserDeletionTest extends TestCase
 
     public function test_regular_user_cannot_delete_user(): void
     {
-        Role::firstOrCreate(['name' => 'user']);
         $regular = User::factory()->create([
             'tenant_id' => 'tenant-a',
             'username_id' => 'user_regular_' . uniqid(),
@@ -105,4 +113,3 @@ class AdminUserDeletionTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $target->id]);
     }
 }
-
