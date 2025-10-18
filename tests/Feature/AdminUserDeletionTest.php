@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Attachment;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Schema;
 
 class AdminUserDeletionTest extends TestCase
 {
@@ -50,6 +51,9 @@ class AdminUserDeletionTest extends TestCase
 
     public function test_admin_deleting_user_with_attachments_sets_uploaded_by_to_null(): void
     {
+        if (Schema::getConnection()->getDriverName() !== 'mysql') {
+            $this->markTestSkipped('ON DELETE SET NULL 検証はMySQLでのみ実行');
+        }
         $admin = $this->createAdmin('tenant-a');
         $target = User::factory()->create([
             'tenant_id' => 'tenant-a',
@@ -96,12 +100,14 @@ class AdminUserDeletionTest extends TestCase
 
     public function test_regular_user_cannot_delete_user(): void
     {
+        /** @var User $regular */
         $regular = User::factory()->create([
             'tenant_id' => 'tenant-a',
             'username_id' => 'user_regular_' . uniqid(),
         ]);
         $regular->assignRole('user');
 
+        /** @var User $target */
         $target = User::factory()->create([
             'tenant_id' => 'tenant-a',
             'username_id' => 'user_' . uniqid(),
