@@ -31,6 +31,11 @@ return new class extends Migration {
         // カラムをNULL許可に変更
         DB::statement('ALTER TABLE `attachments` MODIFY `uploaded_by` BIGINT UNSIGNED NULL');
 
+        // 既存の孤児レコードを整理（参照先ユーザーがいない場合はNULL化）
+        DB::statement('UPDATE `attachments` a LEFT JOIN `users` u ON u.id = a.uploaded_by 
+            SET a.uploaded_by = NULL 
+            WHERE a.uploaded_by IS NOT NULL AND u.id IS NULL');
+
         // ON DELETE SET NULL で外部キーを再作成（名前はデフォルトに合わせる）
         DB::statement('ALTER TABLE `attachments`
             ADD CONSTRAINT `attachments_uploaded_by_foreign`
@@ -66,4 +71,3 @@ return new class extends Migration {
             FOREIGN KEY (`uploaded_by`) REFERENCES `users`(`id`)');
     }
 };
-
