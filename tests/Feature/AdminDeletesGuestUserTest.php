@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
 class AdminDeletesGuestUserTest extends TestCase
@@ -22,7 +21,7 @@ class AdminDeletesGuestUserTest extends TestCase
     public function test_admin_can_delete_guest_user(): void
     {
         // 前提: 管理者ロールを用意
-        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
 
         // 同一テナントの管理者ユーザーを作成
         $admin = User::factory()->create([

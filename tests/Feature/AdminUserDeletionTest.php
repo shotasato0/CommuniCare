@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Attachment;
-use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,8 +19,8 @@ class AdminUserDeletionTest extends TestCase
         config(['app.key' => 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=']);
 
         // 役割を事前作成（ミドルウェア内の User::role('admin') 参照対策）
-        Role::firstOrCreate(['name' => 'admin']);
-        Role::firstOrCreate(['name' => 'user']);
+        Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
     }
 
     private function createAdmin(string $tenantId = 'tenant-a'): User
@@ -61,10 +60,12 @@ class AdminUserDeletionTest extends TestCase
         ]);
 
         // テナントを作成（attachments.tenant_id FK対策）
-        \App\Models\Tenant::unguard();
-        $tenant = new \App\Models\Tenant(['business_name' => '', 'tenant_domain_id' => '']);
-        $tenant->id = 'tenant-a';
-        $tenant->save();
+        $tenant = \App\Models\Tenant::unguarded(function () {
+            $t = new \App\Models\Tenant(['business_name' => '', 'tenant_domain_id' => '']);
+            $t->id = 'tenant-a';
+            $t->save();
+            return $t;
+        });
 
         // 対象ユーザーがアップロードした添付を作成
         $attachment = Attachment::factory()->create([

@@ -62,6 +62,12 @@ return new class extends Migration {
             DB::statement('ALTER TABLE `attachments` DROP FOREIGN KEY `'.str_replace('`','',$fk->name).'`');
         }
 
+        // 既にNULL値が存在する場合、ダウングレードを明示的に拒否（安全側）
+        $nullCount = DB::table('attachments')->whereNull('uploaded_by')->count();
+        if ($nullCount > 0) {
+            throw new \RuntimeException('Down migration aborted: attachments.uploaded_by contains NULL values. Clean or reassign before reverting.');
+        }
+
         // NOT NULL に戻す
         DB::statement('ALTER TABLE `attachments` MODIFY `uploaded_by` BIGINT UNSIGNED NOT NULL');
 
