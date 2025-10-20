@@ -7,6 +7,9 @@ use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Requests\User\UserIconUpdateRequest;
 use Inertia\Inertia;
 use App\Models\Unit;
+use App\Models\Attachment;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -134,8 +137,34 @@ public function updateIcon(UserIconUpdateRequest $request)
      */
     public function destroy(string $id)
     {
+        $currentUser = Auth::user();
+
+        // 権限チェック: 管理者のみ
+        if (!$currentUser || !$currentUser->hasRole('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
         $user = User::findOrFail($id);
+
+        // テナント境界チェック: 同一テナントのみ削除可能
+        if ($user->tenant_id !== $currentUser->tenant_id) {
+            abort(403, 'Cross-tenant deletion is not allowed');
+        }
+
+        // 防御的対策: 外部キー制約（attachments.uploaded_by -> users.id）で
+        // 削除が失敗しないよう、参照をNULLへ更新（先にコミット）
+        try {
+            Attachment::where('uploaded_by', $user->id)->update(['uploaded_by' => null]);
+        } catch (\Throwable $e) {
+            Log::warning('Failed to nullify attachments.uploaded_by before user deletion', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // ユーザーを削除
         $user->delete();
+
         return redirect()->route('users.index')->with('success', '職員が削除されました。');
     }
 
