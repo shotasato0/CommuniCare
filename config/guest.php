@@ -4,7 +4,8 @@ return [
     'domains' => [
         'local'      => env('GUEST_DOMAIN_LOCAL', 'guestdemo.localhost'),
         'staging'    => env('GUEST_DOMAIN_STAGING', 'guestdemo.staging.example.com'),
-        'production' => env('GUEST_DOMAIN_PRODUCTION', 'guestdemo.communi-care.jp'),
+        // 本番はデフォルトを汎用値にし、実値は.envで切り替える
+        'production' => env('GUEST_DOMAIN_PRODUCTION', 'guestdemo.example.com'),
     ],
 
     // config読み込み中はapp()を使わず、env()のみで分岐させる
