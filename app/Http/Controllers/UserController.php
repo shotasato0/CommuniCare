@@ -154,7 +154,11 @@ public function updateIcon(UserIconUpdateRequest $request)
         // 防御的対策: 外部キー制約（attachments.uploaded_by -> users.id）で
         // 削除が失敗しないよう、参照をNULLへ更新（先にコミット）
         try {
-            Attachment::where('uploaded_by', $user->id)->update(['uploaded_by' => null]);
+            // Tenancyのグローバルスコープを回避しつつ、同一テナントに絞ってNULL化
+            Attachment::withoutGlobalScope(\Stancl\Tenancy\Database\TenantScope::class)
+                ->where('tenant_id', $user->tenant_id)
+                ->where('uploaded_by', $user->id)
+                ->update(['uploaded_by' => null]);
         } catch (\Throwable $e) {
             Log::warning('Failed to nullify attachments.uploaded_by before user deletion', [
                 'user_id' => $user->id,
