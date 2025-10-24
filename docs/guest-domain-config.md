@@ -7,7 +7,7 @@
 - 環境依存値を `config/guest.php` に直書きすると、デプロイのたびに上書きや差分が発生し、挙動の不一致や混乱の原因になります。
 
 ## 対応方針
-- 12factor/Laravelの原則に従い、環境依存値は `.env` で切り替えます。
+- 12factor/Laravelの原則（[12‑factor app: Config](https://12factor.net/config)）に従い、環境依存値は `.env` で切り替えます。
 - `config/guest.php` は汎用デフォルト値のみを保持し、実値は `GUEST_DOMAIN_*` 環境変数から解決します。
 
 ## 必要な環境変数
@@ -38,4 +38,3 @@ php artisan config:cache
 - デプロイ時の差分がなくなり、環境ごとの設定の一貫性を維持
 - 本番・ステージング・ローカルで安全にドメインを切替可能
 - GitHub上のコードと本番サーバの状態が乖離しにくく、保守性が向上
-
