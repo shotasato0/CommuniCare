@@ -155,7 +155,7 @@ public function updateIcon(UserIconUpdateRequest $request)
         // 削除が失敗しないよう、参照をNULLへ更新（先にコミット）
         try {
             // Tenancyのグローバルスコープを回避しつつ、同一テナントに絞ってNULL化
-            Attachment::withoutGlobalScopes()
+            Attachment::withoutGlobalScope(\Stancl\Tenancy\Database\TenantScope::class)
                 ->where('tenant_id', $user->tenant_id)
                 ->where('uploaded_by', $user->id)
                 ->update(['uploaded_by' => null]);
