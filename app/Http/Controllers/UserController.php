@@ -144,7 +144,8 @@ public function updateIcon(UserIconUpdateRequest $request)
         if ($currentUser) {
             $hasAdminRole = User::whereKey($currentUser->id)
                 ->whereHas('roles', function ($q) {
-                    $q->where('name', 'admin');
+                    $q->where('name', 'admin')
+                      ->where('guard_name', 'web');
                 })
                 ->exists();
         }
