@@ -139,17 +139,11 @@ public function updateIcon(UserIconUpdateRequest $request)
     {
         $currentUser = Auth::user();
 
-        // 権限チェック: 管理者のみ（IDE/環境差異で hasRole が未定義と判定されるケースを回避）
-        $hasAdminRole = false;
-        if ($currentUser) {
-            $hasAdminRole = User::whereKey($currentUser->id)
-                ->whereHas('roles', function ($q) {
-                    $q->where('name', 'admin')
-                      ->where('guard_name', 'web');
-                })
-                ->exists();
-        }
-        if (!$hasAdminRole) {
+        // 権限チェック: 管理者のみ（モデルインスタンスのrolesリレーションで判定）
+        if (!$currentUser || !$currentUser->roles()
+                ->where('name', 'admin')
+                ->where('guard_name', 'web')
+                ->exists()) {
             abort(403, 'Unauthorized');
         }
 
