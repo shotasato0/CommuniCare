@@ -15,6 +15,12 @@ class RolePermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'register staff', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'view staff list', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'register unit names', 'guard_name' => 'web']);
+        
+        // スケジュール関連権限
+        Permission::firstOrCreate(['name' => 'schedules.view', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'schedules.create', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'schedules.update', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'schedules.delete', 'guard_name' => 'web']);
 
         // ロールを作成 (存在しない場合のみ作成)
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
@@ -26,6 +32,18 @@ class RolePermissionSeeder extends Seeder
             'register staff',
             'view staff list',
             'register unit names',
+            'schedules.view',
+            'schedules.create',
+            'schedules.update',
+            'schedules.delete',
+        ]);
+        
+        // 一般ユーザーロールに権限を割り当てる
+        $userRole->syncPermissions([
+            'schedules.view',
+            'schedules.create',
+            'schedules.update',
+            'schedules.delete',
         ]);
     }
 }

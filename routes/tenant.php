@@ -8,6 +8,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\ScheduleController;
 
 // テナントドメイン限定のルートは、bootstrap/app.php 側の Route::domain() で
 // ミドルウェア（InitializeTenancyByDomain 等）を付与して読み込まれる前提。
@@ -44,4 +45,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/forum/comment/{id}', [CommentController::class, 'destroy'])->name('comment.destroy');
     Route::post('/forum/comment/{comment}/attachments', [CommentController::class, 'addAttachments'])->name('forum.comment.attachments.add');
     Route::delete('/forum/comment/{comment}/attachments/{attachmentId}', [CommentController::class, 'removeAttachment'])->name('forum.comment.attachments.remove');
+
+    // スケジュール
+    Route::get('/calendar/schedules', [ScheduleController::class, 'index'])->name('calendar.schedules.index');
+    Route::post('/calendar/schedule', [ScheduleController::class, 'store'])->name('calendar.schedule.store');
 });
