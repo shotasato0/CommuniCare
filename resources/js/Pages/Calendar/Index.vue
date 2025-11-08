@@ -9,6 +9,7 @@ import { useI18n } from 'vue-i18n'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
 import jaLocale from '@fullcalendar/core/locales/ja.js'
+import ScheduleForm from '@/Components/ScheduleForm.vue'
 
 dayjs.locale('ja')
 
@@ -20,6 +21,11 @@ const residents = ref(props.residents || [])
 const scheduleTypes = ref(props.scheduleTypes || [])
 const monthStats = ref(props.monthStats || { total: 0, by_type: {} })
 const currentDate = ref(props.currentDate || dayjs().format('YYYY-MM-DD'))
+
+// スケジュール作成フォームの表示状態
+const showScheduleForm = ref(false)
+const formInitialDate = ref(null)
+const formInitialResidentId = ref(null)
 
 // FullCalendarの設定
 const calendarOptions = ref({
@@ -42,6 +48,7 @@ const calendarOptions = ref({
     height: 'auto',
     editable: false, // M3-1では編集不可
     selectable: false, // M3-1では選択不可
+    dateClick: handleDateClick, // 日付クリック時の処理
     dayMaxEvents: true,
     moreLinkClick: 'popover',
 })
@@ -60,6 +67,26 @@ const handleDateChange = (info) => {
             preserveScroll: true,
         })
     }
+}
+
+// 日付クリック時の処理
+const handleDateClick = (info) => {
+    formInitialDate.value = dayjs(info.date).format('YYYY-MM-DD')
+    formInitialResidentId.value = null
+    showScheduleForm.value = true
+}
+
+// スケジュール作成成功時の処理
+const handleScheduleCreated = () => {
+    // カレンダーを再読み込み
+    router.reload({ only: ['events', 'monthStats'] })
+}
+
+// フォームを閉じる
+const closeScheduleForm = () => {
+    showScheduleForm.value = false
+    formInitialDate.value = null
+    formInitialResidentId.value = null
 }
 </script>
 
@@ -97,6 +124,17 @@ const handleDateChange = (info) => {
                 </div>
             </div>
         </div>
+
+        <!-- スケジュール作成フォーム -->
+        <ScheduleForm
+            :show="showScheduleForm"
+            :initial-date="formInitialDate"
+            :initial-resident-id="formInitialResidentId"
+            :residents="residents"
+            :schedule-types="scheduleTypes"
+            @close="closeScheduleForm"
+            @success="handleScheduleCreated"
+        />
     </AuthenticatedLayout>
 </template>
 
