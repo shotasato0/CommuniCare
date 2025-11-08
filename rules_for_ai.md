@@ -129,6 +129,20 @@ main, master, develop, release/\* への push/rebase
 
 ユーザー確認なしでの git commit/git push の実行
 
+マージ時の PR 作成必須
+
+main, master, develop, release/\* へのマージを行う場合は、必ず事前に Pull Request を作成し、レビューを経てからマージする。
+
+直接マージ（`git merge` を main/master に直接実行）は禁止。
+
+マージ前の確認事項:
+
+-   PR が作成されているか
+-   PR のレビューが完了しているか（必要に応じて）
+-   CI/CD チェックが通過しているか
+
+例外: 緊急のホットフィックスなど、明示的な許可がある場合のみ直接マージを許可する。
+
 5. Git commit 指針
 
 コミット実行前の確認
