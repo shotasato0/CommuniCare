@@ -49,4 +49,6 @@ Route::middleware(['auth'])->group(function () {
     // スケジュール
     Route::get('/calendar/schedules', [ScheduleController::class, 'index'])->name('calendar.schedules.index');
     Route::post('/calendar/schedule', [ScheduleController::class, 'store'])->name('calendar.schedule.store');
+    Route::put('/calendar/schedule/{schedule}', [ScheduleController::class, 'update'])->name('calendar.schedule.update');
+    Route::delete('/calendar/schedule/{schedule}', [ScheduleController::class, 'destroy'])->name('calendar.schedule.destroy');
 });

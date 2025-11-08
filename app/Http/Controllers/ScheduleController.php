@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Schedule\ScheduleStoreRequest;
+use App\Http\Requests\Schedule\ScheduleUpdateRequest;
 use App\Services\ScheduleService;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\ScheduleConflictException;
@@ -106,6 +107,87 @@ class ScheduleController extends Controller
 
             return response()->json([
                 'message' => 'スケジュールの作成に失敗しました。',
+            ], 500);
+        }
+    }
+
+    /**
+     * スケジュールを更新
+     *
+     * @param ScheduleUpdateRequest $request
+     * @param Schedule $schedule
+     * @return JsonResponse
+     */
+    public function update(ScheduleUpdateRequest $request, Schedule $schedule): JsonResponse
+    {
+        // 権限チェック
+        Gate::authorize('update', $schedule);
+
+        try {
+            $schedule = $this->scheduleService->updateSchedule($schedule, $request);
+
+            return response()->json([
+                'data' => $schedule->load(['calendarDate', 'resident', 'scheduleType', 'creator']),
+                'message' => 'スケジュールを更新しました。',
+            ]);
+        } catch (TenantViolationException $e) {
+            Log::critical('テナント境界違反によるスケジュール更新試行', $e->getLogContext());
+
+            return response()->json([
+                'message' => $e->getUserMessage(),
+                'error_code' => 'TENANT_VIOLATION',
+            ], 403);
+        } catch (ScheduleConflictException $e) {
+            Log::warning('スケジュール重複による更新試行', $e->getLogContext());
+
+            return response()->json([
+                'message' => $e->getUserMessage(),
+                'error_code' => 'SCHEDULE_CONFLICT',
+            ], 409);
+        } catch (\Exception $e) {
+            Log::error('スケジュールの更新に失敗しました', [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'スケジュールの更新に失敗しました。',
+            ], 500);
+        }
+    }
+
+    /**
+     * スケジュールを削除
+     *
+     * @param Schedule $schedule
+     * @return JsonResponse
+     */
+    public function destroy(Schedule $schedule): JsonResponse
+    {
+        // 権限チェック
+        Gate::authorize('delete', $schedule);
+
+        try {
+            $this->scheduleService->deleteSchedule($schedule);
+
+            return response()->json([
+                'message' => 'スケジュールを削除しました。',
+            ]);
+        } catch (TenantViolationException $e) {
+            Log::critical('テナント境界違反によるスケジュール削除試行', $e->getLogContext());
+
+            return response()->json([
+                'message' => $e->getUserMessage(),
+                'error_code' => 'TENANT_VIOLATION',
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('スケジュールの削除に失敗しました', [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'スケジュールの削除に失敗しました。',
             ], 500);
         }
     }
