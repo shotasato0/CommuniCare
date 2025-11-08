@@ -137,46 +137,19 @@ class ScheduleService
         $carbonDate = Carbon::parse($date);
         $dateString = $carbonDate->format('Y-m-d');
 
-        // 既存のレコードを検索（グローバルスコープを無視）
-        // tenancyが初期化されている場合でも、withoutGlobalScopesで検索可能
-        $calendarDate = CalendarDate::withoutGlobalScopes()
-            ->where('tenant_id', $tenantId)
-            ->where('date', $dateString)
-            ->first();
-
-        // 存在しない場合は作成（重複エラーをキャッチ）
-        if (!$calendarDate) {
-            try {
-                $calendarDate = CalendarDate::withoutGlobalScopes()->create([
-                    'tenant_id' => $tenantId,
-                    'date' => $dateString,
-                    'day_of_week' => $carbonDate->dayOfWeek,
-                    'is_holiday' => false,
-                    'holiday_name' => null,
-                ]);
-                
-                // 作成後、再度取得して確認（リレーション用）
-                $calendarDate->refresh();
-            } catch (\Illuminate\Database\QueryException $e) {
-                // 重複エラーの場合、再度検索（少し待機してから再試行）
-                if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'UNIQUE constraint')) {
-                    // 少し待機してから再検索（並行処理での競合を考慮）
-                    usleep(100000); // 0.1秒待機
-                    
-                    $calendarDate = CalendarDate::withoutGlobalScopes()
-                        ->where('tenant_id', $tenantId)
-                        ->where('date', $dateString)
-                        ->first();
-                    
-                    if (!$calendarDate) {
-                        // それでも見つからない場合は例外をスロー
-                        throw new \RuntimeException("CalendarDateが見つかりません: tenant_id={$tenantId}, date={$dateString}");
-                    }
-                } else {
-                    throw $e;
-                }
-            }
-        }
+        // firstOrCreateで原子的に取得または作成（グローバルスコープを無視）
+        // 並行処理での競合も安全に処理される
+        $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
+            [
+                'tenant_id' => $tenantId,
+                'date' => $dateString,
+            ],
+            [
+                'day_of_week' => $carbonDate->dayOfWeek,
+                'is_holiday' => false,
+                'holiday_name' => null,
+            ]
+        );
 
         return $calendarDate;
     }
@@ -187,7 +160,7 @@ class ScheduleService
      * @param int $residentId
      * @param int $calendarDateId
      * @param string $startTime HH:MM形式
-     * @param string $endTime HH:MM形式
+     * @param string $endTime HH:MM形式（M1では未使用、M2で時間帯重複チェックに使用予定）
      * @param int|null $excludeScheduleId 更新時は自分自身を除外
      * @return void
      * @throws ScheduleConflictException
@@ -214,7 +187,7 @@ class ScheduleService
             $calendarDate = CalendarDate::findOrFail($calendarDateId);
             throw new ScheduleConflictException(
                 residentId: $residentId,
-                date: $calendarDate->date->format('Y-m-d'),
+                date: $calendarDate->date->toDateString(),
                 startTime: $startTime,
                 endTime: $endTime
             );
