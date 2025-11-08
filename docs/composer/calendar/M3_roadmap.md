@@ -76,6 +76,13 @@ npm install @fullcalendar/vue3 @fullcalendar/core @fullcalendar/daygrid @fullcal
   - スケジュールイベントの表示
   - 日本語化対応
 
+- **ナビゲーションメニューへのリンク追加**: `resources/js/Layouts/AuthenticatedLayout.vue`
+  - Primary Navigation Menu内にカレンダーリンクを追加
+  - 利用者（Residents）リンクと管理者（Dashboard）リンクの間に配置
+  - デスクトップ表示（`hidden lg:flex`）とモバイル表示（`lg:hidden`）の両方に対応
+  - アクティブ状態のハイライト表示（`route().current('calendar.*')`を使用）
+  - 日本語化対応（`{{ $t("Calendar") }}`を使用）
+
 ### Phase 2: スケジュール操作UI（M3-2）
 
 #### 2.1 スケジュール作成UI
@@ -184,6 +191,7 @@ return Inertia::render('Calendar/Index', [
 - [ ] 月間ビューの表示
 - [ ] スケジュールイベントの表示
 - [ ] 日本語化対応
+- [ ] ナビゲーションメニューへのカレンダーリンク追加（利用者リンクと管理者リンクの間）
 
 ### M3-2: スケジュール操作UI
 - [ ] ScheduleForm.vueの実装
