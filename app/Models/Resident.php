@@ -24,4 +24,12 @@ class Resident extends Model
     {
         return $this->belongsTo(Unit::class);
     }
+
+    /**
+     * スケジュールとのリレーション
+     */
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }
