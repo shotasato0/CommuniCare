@@ -180,9 +180,6 @@ const closeScheduleModal = () => {
 </template>
 
 <style>
-@import '@fullcalendar/core/index.css';
-@import '@fullcalendar/daygrid/index.css';
-
 .calendar-container {
     margin-top: 1rem;
 }
