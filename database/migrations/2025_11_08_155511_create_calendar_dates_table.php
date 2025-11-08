@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('calendar_dates', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id', 36)->after('id')->index();
-            $table->date('date')->after('tenant_id');
-            $table->tinyInteger('day_of_week')->after('date')->comment('0=日, 1=月, ..., 6=土');
-            $table->boolean('is_holiday')->default(false)->after('day_of_week');
-            $table->string('holiday_name')->nullable()->after('is_holiday');
+            $table->string('tenant_id', 36)->index();
+            $table->date('date');
+            $table->tinyInteger('day_of_week')->comment('0=日, 1=月, ..., 6=土');
+            $table->boolean('is_holiday')->default(false);
+            $table->string('holiday_name')->nullable();
             $table->timestamps();
 
             // テナント内で日付の一意性を保証

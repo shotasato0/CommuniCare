@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id', 36)->after('id')->index();
-            $table->unsignedBigInteger('calendar_date_id')->after('tenant_id');
-            $table->unsignedBigInteger('resident_id')->after('calendar_date_id');
-            $table->unsignedBigInteger('schedule_type_id')->after('resident_id');
-            $table->time('start_time')->after('schedule_type_id');
-            $table->time('end_time')->after('start_time');
-            $table->text('memo')->nullable()->after('end_time');
-            $table->unsignedBigInteger('created_by')->nullable()->after('memo');
+            $table->string('tenant_id', 36)->index();
+            $table->unsignedBigInteger('calendar_date_id');
+            $table->unsignedBigInteger('resident_id');
+            $table->unsignedBigInteger('schedule_type_id');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->text('memo')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
 
             // インデックス
