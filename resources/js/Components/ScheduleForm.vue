@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import Modal from './Modal.vue'
 import dayjs from 'dayjs'

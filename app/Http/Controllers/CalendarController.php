@@ -43,15 +43,20 @@ class CalendarController extends Controller
             'date_from' => $startOfMonth,
             'date_to' => $endOfMonth,
         ];
-        $schedules = $this->scheduleService->getSchedules($filters, 1000); // 月間データなので大量取得
+        // 月間データなので全件取得（perPageをnullにすることで全件取得）
+        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
+            // Carbonを使用してISO 8601形式の日時文字列を生成
+            $startDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->start_time);
+            $endDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->end_time);
+            
             return [
                 'id' => $schedule->id,
                 'title' => $schedule->resident->name . ' - ' . $schedule->scheduleType->name,
-                'start' => $schedule->calendarDate->date->format('Y-m-d') . 'T' . $schedule->start_time . ':00',
-                'end' => $schedule->calendarDate->date->format('Y-m-d') . 'T' . $schedule->end_time . ':00',
+                'start' => $startDateTime->toIso8601String(),
+                'end' => $endDateTime->toIso8601String(),
                 'backgroundColor' => $schedule->scheduleType->color ?? '#3B82F6',
                 'borderColor' => $schedule->scheduleType->color ?? '#3B82F6',
                 'extendedProps' => [

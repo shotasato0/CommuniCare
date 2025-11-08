@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import FullCalendar from '@fullcalendar/vue3'
@@ -30,12 +30,12 @@ const formInitialResidentId = ref(null)
 const showScheduleModal = ref(false)
 const selectedSchedule = ref(null)
 
-// カレンダーの日付変更時の処理
-const handleDateChange = (info) => {
+// カレンダーの月変更時の処理
+const handleMonthChange = (info) => {
     // 月が変更された場合、新しい月のデータを取得
     const newDate = dayjs(info.start).format('YYYY-MM-DD')
-    const monthStart = dayjs(currentDate.value).startOfMonth().format('YYYY-MM-DD')
-    const newMonthStart = dayjs(info.start).startOfMonth().format('YYYY-MM-DD')
+    const monthStart = dayjs(currentDate.value).startOf('month').format('YYYY-MM-DD')
+    const newMonthStart = dayjs(info.start).startOf('month').format('YYYY-MM-DD')
     
     if (newMonthStart !== monthStart) {
         // Inertiaでページを再読み込み
@@ -60,7 +60,7 @@ const handleEventClick = (info) => {
 }
 
 // FullCalendarの設定
-const calendarOptions = ref({
+const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
     locale: jaLocale,
@@ -78,13 +78,13 @@ const calendarOptions = ref({
     events: events.value,
     eventDisplay: 'block',
     height: 'auto',
-    editable: false, // M3-1では編集不可
-    selectable: false, // M3-1では選択不可
+    editable: false, // 編集はモーダルから行う
+    selectable: false, // 範囲選択は無効 - 日付クリックで作成フォームを表示
     dateClick: handleDateClick, // 日付クリック時の処理
     eventClick: handleEventClick, // イベントクリック時の処理
     dayMaxEvents: true,
     moreLinkClick: 'popover',
-})
+}))
 
 // スケジュール作成成功時の処理
 const handleScheduleCreated = () => {
@@ -130,7 +130,7 @@ const closeScheduleModal = () => {
 
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">
-                            <FullCalendar :options="calendarOptions" @datesSet="handleDateChange" />
+                            <FullCalendar :options="calendarOptions" @datesSet="handleMonthChange" />
                         </div>
 
                         <!-- 月間統計情報 -->
