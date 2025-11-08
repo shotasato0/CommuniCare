@@ -11,6 +11,7 @@ use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 
 class ScheduleController extends Controller
@@ -115,11 +116,28 @@ class ScheduleController extends Controller
      * スケジュールを更新
      *
      * @param ScheduleUpdateRequest $request
-     * @param Schedule $schedule
+     * @param int $schedule
      * @return JsonResponse
      */
-    public function update(ScheduleUpdateRequest $request, Schedule $schedule): JsonResponse
+    public function update(ScheduleUpdateRequest $request, int $schedule): JsonResponse
     {
+        // ルートモデルバインディング時のテナントスコープ影響を避け、明示的に取得
+        $schedule = Schedule::withoutGlobalScopes()->findOrFail($schedule);
+        
+        // テナント境界チェック
+        if ($schedule->tenant_id !== Auth::user()->tenant_id) {
+            Log::critical('テナント境界違反によるスケジュール更新試行', [
+                'current_tenant_id' => Auth::user()->tenant_id,
+                'schedule_tenant_id' => $schedule->tenant_id,
+                'schedule_id' => $schedule->id,
+            ]);
+            
+            return response()->json([
+                'message' => '他のテナントのスケジュールにアクセスすることはできません。',
+                'error_code' => 'TENANT_VIOLATION',
+            ], 403);
+        }
+        
         // 権限チェック
         Gate::authorize('update', $schedule);
 
@@ -159,11 +177,28 @@ class ScheduleController extends Controller
     /**
      * スケジュールを削除
      *
-     * @param Schedule $schedule
+     * @param int $schedule
      * @return JsonResponse
      */
-    public function destroy(Schedule $schedule): JsonResponse
+    public function destroy(int $schedule): JsonResponse
     {
+        // ルートモデルバインディング時のテナントスコープ影響を避け、明示的に取得
+        $schedule = Schedule::withoutGlobalScopes()->findOrFail($schedule);
+        
+        // テナント境界チェック
+        if ($schedule->tenant_id !== Auth::user()->tenant_id) {
+            Log::critical('テナント境界違反によるスケジュール削除試行', [
+                'current_tenant_id' => Auth::user()->tenant_id,
+                'schedule_tenant_id' => $schedule->tenant_id,
+                'schedule_id' => $schedule->id,
+            ]);
+            
+            return response()->json([
+                'message' => '他のテナントのスケジュールにアクセスすることはできません。',
+                'error_code' => 'TENANT_VIOLATION',
+            ], 403);
+        }
+        
         // 権限チェック
         Gate::authorize('delete', $schedule);
 

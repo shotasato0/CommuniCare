@@ -140,17 +140,33 @@ class ScheduleService
 
         // firstOrCreateで原子的に取得または作成（グローバルスコープを無視）
         // 並行処理での競合も安全に処理される
-        $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'date' => $dateString,
-            ],
-            [
-                'day_of_week' => $carbonDate->dayOfWeek,
-                'is_holiday' => false,
-                'holiday_name' => null,
-            ]
-        );
+        try {
+            $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'date' => $dateString,
+                ],
+                [
+                    'day_of_week' => $carbonDate->dayOfWeek,
+                    'is_holiday' => false,
+                    'holiday_name' => null,
+                ]
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            // UNIQUE制約違反の場合、再度検索
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                $calendarDate = CalendarDate::withoutGlobalScopes()
+                    ->where('tenant_id', $tenantId)
+                    ->whereDate('date', $dateString)
+                    ->first();
+                
+                if (!$calendarDate) {
+                    throw new \RuntimeException("CalendarDateが見つかりません: tenant_id={$tenantId}, date={$dateString}");
+                }
+            } else {
+                throw $e;
+            }
+        }
 
         return $calendarDate;
     }
