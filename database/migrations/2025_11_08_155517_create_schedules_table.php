@@ -32,7 +32,7 @@ return new class extends Migration
 
             // テナント内で同一日付・同一利用者・同一時間帯の重複を禁止
             // 注意: 同じ時間帯に異なる種別のスケジュールは許可しない（時間帯のみで重複禁止）
-            $table->unique(['tenant_id', 'resident_id', 'calendar_date_id', 'start_time']);
+            $table->unique(['tenant_id', 'resident_id', 'calendar_date_id', 'start_time'], 'schedules_unique');
 
             // 外部キー制約（MySQLのみ）
             if (Schema::getConnection()->getDriverName() === 'mysql') {
