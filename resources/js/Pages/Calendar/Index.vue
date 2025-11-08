@@ -5,7 +5,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { useI18n } from 'vue-i18n'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
 import jaLocale from '@fullcalendar/core/locales/ja.js'
@@ -14,7 +13,6 @@ import ScheduleModal from '@/Components/ScheduleModal.vue'
 
 dayjs.locale('ja')
 
-const { t } = useI18n()
 const { props } = usePage()
 
 const events = ref(props.events || [])
