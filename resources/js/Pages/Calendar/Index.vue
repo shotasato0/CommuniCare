@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
 import jaLocale from '@fullcalendar/core/locales/ja.js'
 import ScheduleForm from '@/Components/ScheduleForm.vue'
+import ScheduleModal from '@/Components/ScheduleModal.vue'
 
 dayjs.locale('ja')
 
@@ -26,6 +27,10 @@ const currentDate = ref(props.currentDate || dayjs().format('YYYY-MM-DD'))
 const showScheduleForm = ref(false)
 const formInitialDate = ref(null)
 const formInitialResidentId = ref(null)
+
+// スケジュール詳細モーダルの表示状態
+const showScheduleModal = ref(false)
+const selectedSchedule = ref(null)
 
 // FullCalendarの設定
 const calendarOptions = ref({
@@ -49,6 +54,7 @@ const calendarOptions = ref({
     editable: false, // M3-1では編集不可
     selectable: false, // M3-1では選択不可
     dateClick: handleDateClick, // 日付クリック時の処理
+    eventClick: handleEventClick, // イベントクリック時の処理
     dayMaxEvents: true,
     moreLinkClick: 'popover',
 })
@@ -87,6 +93,30 @@ const closeScheduleForm = () => {
     showScheduleForm.value = false
     formInitialDate.value = null
     formInitialResidentId.value = null
+}
+
+// イベントクリック時の処理
+const handleEventClick = (info) => {
+    selectedSchedule.value = info.event
+    showScheduleModal.value = true
+}
+
+// スケジュール更新成功時の処理
+const handleScheduleUpdated = () => {
+    // カレンダーを再読み込み
+    router.reload({ only: ['events', 'monthStats'] })
+}
+
+// スケジュール削除成功時の処理
+const handleScheduleDeleted = () => {
+    // カレンダーを再読み込み
+    router.reload({ only: ['events', 'monthStats'] })
+}
+
+// モーダルを閉じる
+const closeScheduleModal = () => {
+    showScheduleModal.value = false
+    selectedSchedule.value = null
 }
 </script>
 
@@ -134,6 +164,17 @@ const closeScheduleForm = () => {
             :schedule-types="scheduleTypes"
             @close="closeScheduleForm"
             @success="handleScheduleCreated"
+        />
+
+        <!-- スケジュール詳細モーダル -->
+        <ScheduleModal
+            :show="showScheduleModal"
+            :schedule="selectedSchedule"
+            :residents="residents"
+            :schedule-types="scheduleTypes"
+            @close="closeScheduleModal"
+            @updated="handleScheduleUpdated"
+            @deleted="handleScheduleDeleted"
         />
     </AuthenticatedLayout>
 </template>
