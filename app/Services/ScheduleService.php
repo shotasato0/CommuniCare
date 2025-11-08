@@ -7,6 +7,7 @@ use App\Models\CalendarDate;
 use App\Models\Resident;
 use App\Models\ScheduleType;
 use App\Http\Requests\Schedule\ScheduleStoreRequest;
+use App\Http\Requests\Schedule\ScheduleUpdateRequest;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\ScheduleConflictException;
 use App\Traits\TenantBoundaryCheckTrait;
@@ -94,7 +95,7 @@ class ScheduleService
             $scheduleType = ScheduleType::findOrFail($validated['schedule_type_id']);
             $this->validateTenantBoundary($scheduleType);
 
-            // 簡易重複チェック（M1では同時刻一致のみ）
+            // 詳細な重複チェック（M2：時間帯の重複検証）
             $this->validateNoConflict(
                 $validated['resident_id'],
                 $calendarDate->id,
@@ -139,28 +140,135 @@ class ScheduleService
 
         // firstOrCreateで原子的に取得または作成（グローバルスコープを無視）
         // 並行処理での競合も安全に処理される
-        $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'date' => $dateString,
-            ],
-            [
-                'day_of_week' => $carbonDate->dayOfWeek,
-                'is_holiday' => false,
-                'holiday_name' => null,
-            ]
-        );
+        try {
+            $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
+                [
+                    'tenant_id' => $tenantId,
+                    'date' => $dateString,
+                ],
+                [
+                    'day_of_week' => $carbonDate->dayOfWeek,
+                    'is_holiday' => false,
+                    'holiday_name' => null,
+                ]
+            );
+        } catch (\Illuminate\Database\QueryException $e) {
+            // UNIQUE制約違反の場合、再度検索
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                $calendarDate = CalendarDate::withoutGlobalScopes()
+                    ->where('tenant_id', $tenantId)
+                    ->whereDate('date', $dateString)
+                    ->first();
+                
+                if (!$calendarDate) {
+                    throw new \RuntimeException("CalendarDateが見つかりません: tenant_id={$tenantId}, date={$dateString}");
+                }
+            } else {
+                throw $e;
+            }
+        }
 
         return $calendarDate;
     }
 
     /**
-     * 重複スケジュールをチェック（M1では簡易チェック：同時刻一致のみ）
+     * スケジュールを更新
+     *
+     * @param Schedule $schedule
+     * @param ScheduleUpdateRequest $request
+     * @return Schedule
+     * @throws TenantViolationException
+     * @throws ScheduleConflictException
+     */
+    public function updateSchedule(Schedule $schedule, ScheduleUpdateRequest $request): Schedule
+    {
+        $validated = $request->validated();
+        $currentUser = Auth::user();
+        $currentTenantId = $currentUser->tenant_id;
+
+        // テナント境界チェック
+        $this->validateTenantBoundary($schedule);
+
+        // 日付マスタの取得または作成（トランザクション外で実行）
+        $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
+
+        return DB::transaction(function () use ($schedule, $validated, $currentTenantId, $currentUser, $calendarDate) {
+            // 利用者のテナント境界チェック
+            $resident = Resident::findOrFail($validated['resident_id']);
+            $this->validateTenantBoundary($resident);
+
+            // 種別のテナント境界チェック
+            $scheduleType = ScheduleType::findOrFail($validated['schedule_type_id']);
+            $this->validateTenantBoundary($scheduleType);
+
+            // 詳細な重複チェック（M2：時間帯の重複検証）
+            $this->validateNoConflict(
+                $validated['resident_id'],
+                $calendarDate->id,
+                $validated['start_time'],
+                $validated['end_time'],
+                $schedule->id // 自分自身を除外
+            );
+
+            // スケジュール更新
+            $schedule->update([
+                'calendar_date_id' => $calendarDate->id,
+                'resident_id' => $validated['resident_id'],
+                'schedule_type_id' => $validated['schedule_type_id'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'memo' => $validated['memo'] ?? null,
+            ]);
+
+            Log::info('スケジュールを更新しました', [
+                'schedule_id' => $schedule->id,
+                'tenant_id' => $currentTenantId,
+                'resident_id' => $validated['resident_id'],
+                'date' => $validated['date'],
+            ]);
+
+            return $schedule->fresh();
+        });
+    }
+
+    /**
+     * スケジュールを削除
+     *
+     * @param Schedule $schedule
+     * @return void
+     * @throws TenantViolationException
+     */
+    public function deleteSchedule(Schedule $schedule): void
+    {
+        $currentUser = Auth::user();
+        $currentTenantId = $currentUser->tenant_id;
+
+        // テナント境界チェック
+        $this->validateTenantBoundary($schedule);
+
+        DB::transaction(function () use ($schedule, $currentTenantId) {
+            $scheduleId = $schedule->id;
+            $residentId = $schedule->resident_id;
+            $calendarDate = $schedule->calendarDate;
+
+            $schedule->delete();
+
+            Log::info('スケジュールを削除しました', [
+                'schedule_id' => $scheduleId,
+                'tenant_id' => $currentTenantId,
+                'resident_id' => $residentId,
+                'date' => $calendarDate ? $calendarDate->date->toDateString() : null,
+            ]);
+        });
+    }
+
+    /**
+     * 重複スケジュールをチェック（M2：時間帯の重複検証）
      *
      * @param int $residentId
      * @param int $calendarDateId
      * @param string $startTime HH:MM形式
-     * @param string $endTime HH:MM形式（M1では未使用、M2で時間帯重複チェックに使用予定）
+     * @param string $endTime HH:MM形式
      * @param int|null $excludeScheduleId 更新時は自分自身を除外
      * @return void
      * @throws ScheduleConflictException
@@ -174,22 +282,34 @@ class ScheduleService
     ): void {
         $currentTenantId = Auth::user()->tenant_id;
 
+        // 時間帯の重複をチェック
+        // 重複条件: 開始時刻 < 既存の終了時刻 かつ 終了時刻 > 既存の開始時刻
         $query = Schedule::where('tenant_id', $currentTenantId)
             ->where('resident_id', $residentId)
             ->where('calendar_date_id', $calendarDateId)
-            ->where('start_time', $startTime); // M1では同時刻一致のみチェック
+            ->where(function ($q) use ($startTime, $endTime) {
+                $q->where(function ($q2) use ($startTime, $endTime) {
+                    // 新しいスケジュールの開始時刻が既存のスケジュールの終了時刻より前
+                    // かつ新しいスケジュールの終了時刻が既存のスケジュールの開始時刻より後
+                    $q2->where('start_time', '<', $endTime)
+                       ->where('end_time', '>', $startTime);
+                });
+            });
 
         if ($excludeScheduleId) {
             $query->where('id', '!=', $excludeScheduleId);
         }
 
-        if ($query->exists()) {
+        $conflictingSchedule = $query->first();
+
+        if ($conflictingSchedule) {
             $calendarDate = CalendarDate::findOrFail($calendarDateId);
             throw new ScheduleConflictException(
                 residentId: $residentId,
                 date: $calendarDate->date->toDateString(),
                 startTime: $startTime,
-                endTime: $endTime
+                endTime: $endTime,
+                conflictingScheduleId: $conflictingSchedule->id
             );
         }
     }
