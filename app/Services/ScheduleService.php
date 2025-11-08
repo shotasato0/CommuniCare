@@ -154,9 +154,15 @@ class ScheduleService
                     'is_holiday' => false,
                     'holiday_name' => null,
                 ]);
+                
+                // 作成後、再度取得して確認（リレーション用）
+                $calendarDate->refresh();
             } catch (\Illuminate\Database\QueryException $e) {
-                // 重複エラーの場合、再度検索
+                // 重複エラーの場合、再度検索（少し待機してから再試行）
                 if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                    // 少し待機してから再検索（並行処理での競合を考慮）
+                    usleep(100000); // 0.1秒待機
+                    
                     $calendarDate = CalendarDate::withoutGlobalScopes()
                         ->where('tenant_id', $tenantId)
                         ->where('date', $dateString)
