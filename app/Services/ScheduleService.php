@@ -82,10 +82,10 @@ class ScheduleService
         $currentUser = Auth::user();
         $currentTenantId = $currentUser->tenant_id;
 
-        return DB::transaction(function () use ($validated, $currentTenantId, $currentUser) {
-            // 日付マスタの取得または作成
-            $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
+        // 日付マスタの取得または作成（トランザクション外で実行）
+        $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
 
+        return DB::transaction(function () use ($validated, $currentTenantId, $currentUser, $calendarDate) {
             // 利用者のテナント境界チェック
             $resident = Resident::findOrFail($validated['resident_id']);
             $this->validateTenantBoundary($resident);
@@ -135,18 +135,44 @@ class ScheduleService
     private function ensureCalendarDate(string $date, string $tenantId): CalendarDate
     {
         $carbonDate = Carbon::parse($date);
+        $dateString = $carbonDate->format('Y-m-d');
 
-        return CalendarDate::firstOrCreate(
-            [
-                'tenant_id' => $tenantId,
-                'date' => $carbonDate->format('Y-m-d'),
-            ],
-            [
-                'day_of_week' => $carbonDate->dayOfWeek,
-                'is_holiday' => false,
-                'holiday_name' => null,
-            ]
-        );
+        // 既存のレコードを検索（グローバルスコープを無視）
+        // tenancyが初期化されている場合でも、withoutGlobalScopesで検索可能
+        $calendarDate = CalendarDate::withoutGlobalScopes()
+            ->where('tenant_id', $tenantId)
+            ->where('date', $dateString)
+            ->first();
+
+        // 存在しない場合は作成（重複エラーをキャッチ）
+        if (!$calendarDate) {
+            try {
+                $calendarDate = CalendarDate::withoutGlobalScopes()->create([
+                    'tenant_id' => $tenantId,
+                    'date' => $dateString,
+                    'day_of_week' => $carbonDate->dayOfWeek,
+                    'is_holiday' => false,
+                    'holiday_name' => null,
+                ]);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // 重複エラーの場合、再度検索
+                if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'UNIQUE constraint')) {
+                    $calendarDate = CalendarDate::withoutGlobalScopes()
+                        ->where('tenant_id', $tenantId)
+                        ->where('date', $dateString)
+                        ->first();
+                    
+                    if (!$calendarDate) {
+                        // それでも見つからない場合は例外をスロー
+                        throw new \RuntimeException("CalendarDateが見つかりません: tenant_id={$tenantId}, date={$dateString}");
+                    }
+                } else {
+                    throw $e;
+                }
+            }
+        }
+
+        return $calendarDate;
     }
 
     /**

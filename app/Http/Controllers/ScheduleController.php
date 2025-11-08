@@ -9,6 +9,7 @@ use App\Exceptions\Custom\ScheduleConflictException;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\JsonResponse;
 
 class ScheduleController extends Controller
@@ -29,7 +30,7 @@ class ScheduleController extends Controller
     public function index(Request $request): JsonResponse
     {
         // 権限チェック（viewAnyは実装していないため、個別のview権限でチェック）
-        $this->authorize('viewAny', Schedule::class);
+        Gate::authorize('viewAny', Schedule::class);
 
         try {
             $filters = [
@@ -74,7 +75,7 @@ class ScheduleController extends Controller
     public function store(ScheduleStoreRequest $request): JsonResponse
     {
         // 権限チェック
-        $this->authorize('create', Schedule::class);
+        Gate::authorize('create', Schedule::class);
 
         try {
             $schedule = $this->scheduleService->createSchedule($request);

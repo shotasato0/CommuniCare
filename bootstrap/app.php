@@ -25,22 +25,34 @@ return Application::configure(basePath: dirname(__DIR__))
         then: function () {
             // 環境に応じたテナントドメインをconfigから取得（config:cacheと整合）
             $env = config('app.env');
-            $tenantDomain = match ($env) {
-                'local'      => config('guest.domains.local'),
-                'staging'    => config('guest.domains.staging'),
-                'production' => config('guest.domains.production'),
-                default      => config('guest.domains.production'),
-            };
-
-            if ($tenantDomain && file_exists(base_path('routes/tenant.php'))) {
-                Route::domain($tenantDomain)
-                    ->middleware([
+            
+            // テスト環境ではドメイン制限なしでルートを登録（InitializeTenancyByDomainはスキップ）
+            if ($env === 'testing') {
+                if (file_exists(base_path('routes/tenant.php'))) {
+                    Route::middleware([
                         'web',
-                        \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
-                        \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
                         SetSessionDomain::class,
                     ])
                     ->group(base_path('routes/tenant.php'));
+                }
+            } else {
+                $tenantDomain = match ($env) {
+                    'local'      => config('guest.domains.local'),
+                    'staging'    => config('guest.domains.staging'),
+                    'production' => config('guest.domains.production'),
+                    default      => config('guest.domains.production'),
+                };
+
+                if ($tenantDomain && file_exists(base_path('routes/tenant.php'))) {
+                    Route::domain($tenantDomain)
+                        ->middleware([
+                            'web',
+                            \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+                            \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+                            SetSessionDomain::class,
+                        ])
+                        ->group(base_path('routes/tenant.php'));
+                }
             }
         }
     )

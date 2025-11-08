@@ -12,6 +12,7 @@ use App\Models\CalendarDate;
 use App\Models\Unit;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Stancl\Tenancy\Database\Models\Domain;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -68,11 +69,23 @@ class ScheduleTest extends TestCase
             'data' => [],
         ]);
         
+        // テナント1のドメイン作成
+        Domain::create([
+            'domain' => 'test1.localhost',
+            'tenant_id' => $this->tenant1->id,
+        ]);
+        
         $this->tenant2 = Tenant::create([
             'id' => 'tenant-2-' . uniqid(),
             'business_name' => 'Test Tenant 2',
             'tenant_domain_id' => 'test2',
             'data' => [],
+        ]);
+        
+        // テナント2のドメイン作成
+        Domain::create([
+            'domain' => 'test2.localhost',
+            'tenant_id' => $this->tenant2->id,
         ]);
         
         // ユーザー作成
@@ -112,6 +125,9 @@ class ScheduleTest extends TestCase
 
     public function test_can_create_schedule(): void
     {
+        // テナント1を直接初期化
+        tenancy()->initialize($this->tenant1);
+        
         $this->actingAs($this->user1);
         
         $date = Carbon::today()->format('Y-m-d');
@@ -150,17 +166,21 @@ class ScheduleTest extends TestCase
         
         $date = Carbon::today()->format('Y-m-d');
         
-        // 既存スケジュール作成
-        $calendarDate = CalendarDate::firstOrCreate(
+        // 既存スケジュール作成（テナント初期化前にCalendarDateを作成）
+        $calendarDate = CalendarDate::withoutGlobalScopes()->firstOrCreate(
             [
                 'tenant_id' => $this->tenant1->id,
-                'date' => $date,
+                'date' => Carbon::parse($date)->format('Y-m-d'),
             ],
             [
                 'day_of_week' => Carbon::parse($date)->dayOfWeek,
                 'is_holiday' => false,
+                'holiday_name' => null,
             ]
         );
+        
+        // テナント1を直接初期化
+        tenancy()->initialize($this->tenant1);
         
         Schedule::create([
             'tenant_id' => $this->tenant1->id,
@@ -190,17 +210,19 @@ class ScheduleTest extends TestCase
     public function test_cannot_access_other_tenant_schedule(): void
     {
         // tenant1のスケジュールを作成
+        tenancy()->initialize($this->tenant1);
         $this->actingAs($this->user1);
         
         $date = Carbon::today()->format('Y-m-d');
         $calendarDate = CalendarDate::firstOrCreate(
             [
                 'tenant_id' => $this->tenant1->id,
-                'date' => $date,
+                'date' => Carbon::parse($date)->format('Y-m-d'),
             ],
             [
                 'day_of_week' => Carbon::parse($date)->dayOfWeek,
                 'is_holiday' => false,
+                'holiday_name' => null,
             ]
         );
         
@@ -214,7 +236,9 @@ class ScheduleTest extends TestCase
             'created_by' => $this->user1->id,
         ]);
         
-        // tenant2のユーザーでアクセス試行
+        // tenant2のユーザーでアクセス試行（テナント2を初期化）
+        tenancy()->end();
+        tenancy()->initialize($this->tenant2);
         $this->actingAs($this->user2);
         
         $response = $this->getJson(route('calendar.schedules.index', [
