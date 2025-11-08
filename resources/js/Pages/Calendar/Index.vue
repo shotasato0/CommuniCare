@@ -30,6 +30,35 @@ const formInitialResidentId = ref(null)
 const showScheduleModal = ref(false)
 const selectedSchedule = ref(null)
 
+// カレンダーの日付変更時の処理
+const handleDateChange = (info) => {
+    // 月が変更された場合、新しい月のデータを取得
+    const newDate = dayjs(info.start).format('YYYY-MM-DD')
+    const monthStart = dayjs(currentDate.value).startOfMonth().format('YYYY-MM-DD')
+    const newMonthStart = dayjs(info.start).startOfMonth().format('YYYY-MM-DD')
+    
+    if (newMonthStart !== monthStart) {
+        // Inertiaでページを再読み込み
+        router.get(route('calendar.index'), { date: newDate }, {
+            preserveState: true,
+            preserveScroll: true,
+        })
+    }
+}
+
+// 日付クリック時の処理
+const handleDateClick = (info) => {
+    formInitialDate.value = dayjs(info.date).format('YYYY-MM-DD')
+    formInitialResidentId.value = null
+    showScheduleForm.value = true
+}
+
+// イベントクリック時の処理
+const handleEventClick = (info) => {
+    selectedSchedule.value = info.event
+    showScheduleModal.value = true
+}
+
 // FullCalendarの設定
 const calendarOptions = ref({
     plugins: [dayGridPlugin, interactionPlugin],
@@ -57,29 +86,6 @@ const calendarOptions = ref({
     moreLinkClick: 'popover',
 })
 
-// カレンダーの日付変更時の処理
-const handleDateChange = (info) => {
-    // 月が変更された場合、新しい月のデータを取得
-    const newDate = dayjs(info.start).format('YYYY-MM-DD')
-    const monthStart = dayjs(currentDate.value).startOfMonth().format('YYYY-MM-DD')
-    const newMonthStart = dayjs(info.start).startOfMonth().format('YYYY-MM-DD')
-    
-    if (newMonthStart !== monthStart) {
-        // Inertiaでページを再読み込み
-        router.get(route('calendar.index'), { date: newDate }, {
-            preserveState: true,
-            preserveScroll: true,
-        })
-    }
-}
-
-// 日付クリック時の処理
-const handleDateClick = (info) => {
-    formInitialDate.value = dayjs(info.date).format('YYYY-MM-DD')
-    formInitialResidentId.value = null
-    showScheduleForm.value = true
-}
-
 // スケジュール作成成功時の処理
 const handleScheduleCreated = () => {
     // カレンダーを再読み込み
@@ -91,12 +97,6 @@ const closeScheduleForm = () => {
     showScheduleForm.value = false
     formInitialDate.value = null
     formInitialResidentId.value = null
-}
-
-// イベントクリック時の処理
-const handleEventClick = (info) => {
-    selectedSchedule.value = info.event
-    showScheduleModal.value = true
 }
 
 // スケジュール更新成功時の処理
