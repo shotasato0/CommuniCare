@@ -334,39 +334,53 @@ const closeScheduleModal = () => {
     min-height: 150px;
 }
 
-/* カスタム日付セル */
-:deep(.custom-day-cell) {
+/* FullCalendarの日付セルを上下2分割にする */
+:deep(.fc-daygrid-day-frame) {
     display: flex;
     flex-direction: column;
     height: 100%;
     min-height: 150px;
 }
 
-:deep(.day-number) {
+:deep(.fc-daygrid-day) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 150px;
+}
+
+/* 日付番号部分 */
+:deep(.fc-daygrid-day-number) {
     font-weight: bold;
     font-size: 1.1rem;
     padding: 4px 8px;
     border-bottom: 1px solid #e5e7eb;
     background-color: #f9fafb;
+    flex-shrink: 0;
 }
 
-:deep(.day-content) {
+/* カスタムコンテンツコンテナ */
+:deep(.custom-day-content) {
     flex: 1;
     display: flex;
     flex-direction: column;
     padding: 4px;
     gap: 4px;
+    min-height: 0;
+    overflow: hidden;
 }
 
-/* スケジュールセクション */
+/* スケジュールセクション（上半分） */
 :deep(.schedules-section) {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2px;
     overflow-y: auto;
-    min-height: 60px;
-    max-height: 80px;
+    min-height: 0;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 :deep(.calendar-schedule-item) {
@@ -397,12 +411,11 @@ const closeScheduleModal = () => {
     white-space: nowrap;
 }
 
-/* 入浴予定者セクション */
+/* 入浴予定者セクション（下半分） */
 :deep(.calendar-residents-section) {
-    border-top: 2px solid #e5e7eb;
-    padding-top: 4px;
-    margin-top: 4px;
+    flex-shrink: 0;
     min-height: 50px;
+    padding-top: 4px;
 }
 
 :deep(.residents-label) {
