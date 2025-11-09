@@ -87,27 +87,16 @@ class ScheduleService
         $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
 
         return DB::transaction(function () use ($validated, $currentTenantId, $currentUser, $calendarDate) {
-            // 利用者のテナント境界チェック
-            $resident = Resident::findOrFail($validated['resident_id']);
-            $this->validateTenantBoundary($resident);
-
             // 種別のテナント境界チェック
             $scheduleType = ScheduleType::findOrFail($validated['schedule_type_id']);
             $this->validateTenantBoundary($scheduleType);
-
-            // 詳細な重複チェック（M2：時間帯の重複検証）
-            $this->validateNoConflict(
-                $validated['resident_id'],
-                $calendarDate->id,
-                $validated['start_time'],
-                $validated['end_time']
-            );
 
             // スケジュール作成
             $schedule = Schedule::create([
                 'tenant_id' => $currentTenantId,
                 'calendar_date_id' => $calendarDate->id,
-                'resident_id' => $validated['resident_id'],
+                'resident_id' => $validated['resident_id'] ?? null,
+                'schedule_name' => $validated['schedule_name'],
                 'schedule_type_id' => $validated['schedule_type_id'],
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
@@ -118,7 +107,7 @@ class ScheduleService
             Log::info('スケジュールを作成しました', [
                 'schedule_id' => $schedule->id,
                 'tenant_id' => $currentTenantId,
-                'resident_id' => $validated['resident_id'],
+                'schedule_name' => $validated['schedule_name'],
                 'date' => $validated['date'],
             ]);
 

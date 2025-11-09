@@ -1,8 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue'
-import { useForm } from '@inertiajs/vue3'
-import Modal from './Modal.vue'
-import dayjs from 'dayjs'
+import { ref, watch } from "vue";
+import { useForm } from "@inertiajs/vue3";
+import Modal from "./Modal.vue";
+import dayjs from "dayjs";
 
 const props = defineProps({
     show: {
@@ -25,73 +25,76 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-})
+});
 
-const emit = defineEmits(['close', 'success'])
+const emit = defineEmits(["close", "success"]);
 
 const form = useForm({
-    date: props.initialDate || dayjs().format('YYYY-MM-DD'),
+    date: props.initialDate || dayjs().format("YYYY-MM-DD"),
     resident_id: props.initialResidentId || null,
+    schedule_name: "",
     schedule_type_id: null,
-    start_time: '09:00',
-    end_time: '10:00',
-    memo: '',
-})
+    start_time: "09:00",
+    end_time: "10:00",
+    memo: "",
+});
 
 // propsの変更を監視してフォームを更新
 watch(
     () => props.initialDate,
     (newDate) => {
         if (newDate) {
-            form.date = newDate
+            form.date = newDate;
         }
     }
-)
+);
 
 watch(
     () => props.initialResidentId,
     (newResidentId) => {
         if (newResidentId) {
-            form.resident_id = newResidentId
+            form.resident_id = newResidentId;
         }
     }
-)
+);
 
 // モーダルが閉じられたときにフォームをリセット
 watch(
     () => props.show,
     (isOpen) => {
         if (!isOpen) {
-            form.reset()
-            form.clearErrors()
+            form.reset();
+            form.clearErrors();
         }
     }
-)
+);
 
 const submit = () => {
-    form.post(route('calendar.schedule.store'), {
+    form.post(route("calendar.schedule.store"), {
         preserveScroll: true,
         onSuccess: () => {
-            emit('success')
-            emit('close')
-            form.reset()
+            emit("success");
+            emit("close");
+            form.reset();
         },
         onError: () => {
             // エラーはform.errorsに自動的に設定される
         },
-    })
-}
+    });
+};
 
 const close = () => {
-    emit('close')
-}
+    emit("close");
+};
 </script>
 
 <template>
     <Modal :show="show" max-width="2xl" @close="close">
         <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                <h2
+                    class="text-xl font-semibold text-gray-900 dark:text-gray-100"
+                >
                     スケジュール作成
                 </h2>
                 <button
@@ -118,39 +121,35 @@ const close = () => {
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': form.errors.date }"
                     />
-                    <div v-if="form.errors.date" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <div
+                        v-if="form.errors.date"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400"
+                    >
                         {{ form.errors.date }}
                     </div>
                 </div>
 
-                <!-- 利用者 -->
+                <!-- スケジュール名 -->
                 <div class="mb-4">
                     <label
-                        for="resident_id"
+                        for="schedule_name"
                         class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                     >
-                        利用者 <span class="text-red-500">*</span>
+                        スケジュール名 <span class="text-red-500">*</span>
                     </label>
-                    <select
-                        id="resident_id"
-                        v-model="form.resident_id"
+                    <input
+                        id="schedule_name"
+                        v-model="form.schedule_name"
+                        type="text"
+                        placeholder="スケジュール名を入力してください"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{ 'border-red-500': form.errors.resident_id }"
-                    >
-                        <option value="">選択してください</option>
-                        <option
-                            v-for="resident in residents"
-                            :key="resident.id"
-                            :value="resident.id"
-                        >
-                            {{ resident.name }}
-                        </option>
-                    </select>
+                        :class="{ 'border-red-500': form.errors.schedule_name }"
+                    />
                     <div
-                        v-if="form.errors.resident_id"
+                        v-if="form.errors.schedule_name"
                         class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
-                        {{ form.errors.resident_id }}
+                        {{ form.errors.schedule_name }}
                     </div>
                 </div>
 
@@ -166,7 +165,9 @@ const close = () => {
                         id="schedule_type_id"
                         v-model="form.schedule_type_id"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{ 'border-red-500': form.errors.schedule_type_id }"
+                        :class="{
+                            'border-red-500': form.errors.schedule_type_id,
+                        }"
                     >
                         <option value="">選択してください</option>
                         <option
@@ -199,7 +200,9 @@ const close = () => {
                             v-model="form.start_time"
                             type="time"
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            :class="{ 'border-red-500': form.errors.start_time }"
+                            :class="{
+                                'border-red-500': form.errors.start_time,
+                            }"
                         />
                         <div
                             v-if="form.errors.start_time"
@@ -246,7 +249,10 @@ const close = () => {
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': form.errors.memo }"
                     ></textarea>
-                    <div v-if="form.errors.memo" class="mt-1 text-sm text-red-600 dark:text-red-400">
+                    <div
+                        v-if="form.errors.memo"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400"
+                    >
                         {{ form.errors.memo }}
                     </div>
                 </div>
@@ -265,11 +271,10 @@ const close = () => {
                         :disabled="form.processing"
                         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {{ form.processing ? '作成中...' : '作成' }}
+                        {{ form.processing ? "作成中..." : "作成" }}
                     </button>
                 </div>
             </form>
         </div>
     </Modal>
 </template>
-

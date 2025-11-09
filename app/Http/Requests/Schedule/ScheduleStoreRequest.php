@@ -29,7 +29,7 @@ class ScheduleStoreRequest extends FormRequest
     {
         return [
             'date' => 'required|date|date_format:Y-m-d',
-            'resident_id' => 'required|exists:residents,id',
+            'schedule_name' => 'required|string|max:255',
             'schedule_type_id' => 'required|exists:schedule_types,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
@@ -48,8 +48,9 @@ class ScheduleStoreRequest extends FormRequest
             'date.required' => '日付は必須です。',
             'date.date' => '日付の形式が正しくありません。',
             'date.date_format' => '日付はYYYY-MM-DD形式で入力してください。',
-            'resident_id.required' => '利用者の指定は必須です。',
-            'resident_id.exists' => '指定された利用者が存在しません。',
+            'schedule_name.required' => 'スケジュール名は必須です。',
+            'schedule_name.string' => 'スケジュール名は文字列で入力してください。',
+            'schedule_name.max' => 'スケジュール名は255文字以内で入力してください。',
             'schedule_type_id.required' => 'スケジュール種別の指定は必須です。',
             'schedule_type_id.exists' => '指定されたスケジュール種別が存在しません。',
             'start_time.required' => '開始時刻は必須です。',
