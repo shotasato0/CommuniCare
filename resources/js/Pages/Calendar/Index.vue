@@ -398,10 +398,23 @@ const closeScheduleModal = () => {
     overflow-y: auto;
     min-height: 60px !important;
     max-height: none;
-    border-bottom: 3px solid #d1d5db !important;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
-    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+    border-bottom: 4px solid #9ca3af !important;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    background-color: rgba(249, 250, 251, 0.5);
+    position: relative;
+}
+
+/* 分割線をより明確にするための疑似要素 */
+:deep(.schedules-section::after) {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #6b7280;
+    border-top: 1px solid #4b5563;
 }
 
 :deep(.calendar-schedule-item) {
@@ -439,9 +452,23 @@ const closeScheduleModal = () => {
     flex-direction: column !important;
     min-height: 50px !important;
     max-height: none;
-    padding-top: 6px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    margin-top: 2px;
+    padding-top: 8px;
+    border-top: 4px solid #9ca3af !important;
+    margin-top: 0;
+    background-color: rgba(243, 244, 246, 0.5);
+    position: relative;
+}
+
+/* 分割線をより明確にするための疑似要素 */
+:deep(.calendar-residents-section::before) {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #6b7280;
+    border-bottom: 1px solid #4b5563;
 }
 
 :deep(.residents-label) {
