@@ -168,7 +168,10 @@ const dayCellDidMount = (info) => {
         })
     }
     
-    // 入浴予定者セクション
+    // スケジュールセクションを追加（常に追加）
+    contentContainer.appendChild(schedulesSection)
+    
+    // 入浴予定者セクション（下半分）
     if (dayData.residents.size > 0) {
         const residentsSection = document.createElement('div')
         residentsSection.className = 'calendar-residents-section'
@@ -188,10 +191,13 @@ const dayCellDidMount = (info) => {
         residentsSection.appendChild(labelDiv)
         residentsSection.appendChild(listDiv)
         
-        contentContainer.appendChild(schedulesSection)
         contentContainer.appendChild(residentsSection)
     } else {
-        contentContainer.appendChild(schedulesSection)
+        // 入浴予定者がいない場合でも、下半分のスペースを確保
+        const emptyResidentsSection = document.createElement('div')
+        emptyResidentsSection.className = 'calendar-residents-section'
+        emptyResidentsSection.style.minHeight = '50px'
+        contentContainer.appendChild(emptyResidentsSection)
     }
 }
 
