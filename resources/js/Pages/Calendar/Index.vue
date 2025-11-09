@@ -134,7 +134,7 @@ const dayCellDidMount = (info) => {
     
     // カスタムコンテンツコンテナを作成
     const contentContainer = document.createElement('div')
-    contentContainer.className = 'custom-day-content'
+    contentContainer.className = 'flex-1 flex flex-col p-1 gap-1 min-h-0 overflow-hidden w-full'
     
     // .fc-daygrid-day-numberの後に挿入
     const dayNumberEl = dayFrame.querySelector('.fc-daygrid-day-number')
@@ -146,21 +146,21 @@ const dayCellDidMount = (info) => {
     
     // スケジュールセクション（上半分）- 常に作成
     const schedulesSection = document.createElement('div')
-    schedulesSection.className = 'schedules-section'
+    schedulesSection.className = 'flex flex-col gap-0.5 overflow-y-auto min-h-[60px] flex-1 border-b-4 border-gray-400 pb-2 mb-2 bg-gray-50'
     
     if (dayData && dayData.schedules.length > 0) {
         dayData.schedules.forEach(schedule => {
             const scheduleItem = document.createElement('div')
-            scheduleItem.className = 'calendar-schedule-item'
+            scheduleItem.className = 'flex items-center gap-1 px-1 py-0.5 rounded text-sm text-white cursor-pointer hover:opacity-80'
             scheduleItem.style.backgroundColor = schedule.backgroundColor || '#3B82F6'
             scheduleItem.setAttribute('data-event-id', schedule.id)
             
             const timeSpan = document.createElement('span')
-            timeSpan.className = 'schedule-time'
+            timeSpan.className = 'font-bold whitespace-nowrap'
             timeSpan.textContent = dayjs(schedule.start).format('HH:mm')
             
             const titleSpan = document.createElement('span')
-            titleSpan.className = 'schedule-title'
+            titleSpan.className = 'flex-1 overflow-hidden text-ellipsis whitespace-nowrap'
             titleSpan.textContent = schedule.extendedProps?.schedule_type_name || schedule.title
             
             scheduleItem.appendChild(timeSpan)
@@ -187,25 +187,24 @@ const dayCellDidMount = (info) => {
     
     // 入浴予定者セクション（下半分）- 常に作成
     const residentsSection = document.createElement('div')
-    residentsSection.className = 'calendar-residents-section'
+    residentsSection.className = 'flex flex-col min-h-[50px] flex-1 border-t-4 border-gray-400 pt-2 bg-gray-100'
     
     const labelDiv = document.createElement('div')
-    labelDiv.className = 'residents-label'
+    labelDiv.className = 'text-xs font-bold text-gray-600 mb-0.5'
     labelDiv.textContent = '入浴予定者'
     
     const listDiv = document.createElement('div')
-    listDiv.className = 'residents-list'
     
     if (dayData && dayData.residents.size > 0) {
+        listDiv.className = 'text-sm text-gray-700 leading-relaxed break-words'
         const residentsList = Array.from(dayData.residents).map(residentId => {
             const resident = residents.value.find(r => r.id === residentId)
             return resident ? resident.name : ''
         }).filter(Boolean)
         listDiv.textContent = residentsList.join(', ')
     } else {
+        listDiv.className = 'text-sm text-gray-400 italic'
         listDiv.textContent = 'なし'
-        listDiv.style.color = '#9ca3af'
-        listDiv.style.fontStyle = 'italic'
     }
     
     residentsSection.appendChild(labelDiv)
