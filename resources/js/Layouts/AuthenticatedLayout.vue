@@ -144,6 +144,18 @@ const isForumPage = ref(window.location.pathname === "/forum");
                                 <div
                                     :class="[
                                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
+                                        route().current('calendar.*')
+                                            ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
+                                            : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
+                                    ]"
+                                    @click="() => $inertia.get(route('calendar.index'))"
+                                >
+                                    {{ $t("Calendar") }}
+                                </div>
+
+                                <div
+                                    :class="[
+                                        'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5 cursor-pointer whitespace-nowrap',
                                         route().current('dashboard')
                                             ? 'text-blue-500 dark:text-blue-400 border-blue-500 dark:border-blue-400 focus:outline-none focus:border-blue-700 dark:focus:border-blue-300'
                                             : 'text-gray-500 dark:text-gray-300 border-transparent hover:text-gray-700 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500',
@@ -324,6 +336,18 @@ const isForumPage = ref(window.location.pathname === "/forum");
                             ]"
                         >
                             {{ $t("Residents") }}
+                        </div>
+
+                        <div
+                            @click="() => $inertia.get(route('calendar.index'))"
+                            :class="[
+                                'block px-1 py-2 text-lg font-medium leading-5 cursor-pointer whitespace-nowrap transition duration-150 ease-in-out',
+                                route().current('calendar.*')
+                                    ? 'bg-indigo-100 dark:bg-indigo-900 text-blue-500 dark:text-blue-400 border-l-4 border-blue-500 dark:border-blue-400 focus:outline-none'
+                                    : 'text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:text-gray-700 dark:focus:text-gray-100 focus:bg-gray-100 dark:focus:bg-gray-700',
+                            ]"
+                        >
+                            {{ $t("Calendar") }}
                         </div>
 
                         <div

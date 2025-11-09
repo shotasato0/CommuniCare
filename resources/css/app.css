@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* FullCalendar v6 CSS - CDNから読み込む */
+@import url('https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/index.global.min.css');
+@import url('https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.19/index.global.min.css');
+
 img {
     max-width: 100%; /* 親要素の幅に合わせる */
     height: auto; /* アスペクト比を保ちながら高さを自動調整 */

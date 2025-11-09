@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id', 36)->after('id')->index();
-            $table->unsignedBigInteger('calendar_date_id')->after('tenant_id');
-            $table->unsignedBigInteger('resident_id')->after('calendar_date_id');
-            $table->unsignedBigInteger('schedule_type_id')->after('resident_id');
-            $table->time('start_time')->after('schedule_type_id');
-            $table->time('end_time')->after('start_time');
-            $table->text('memo')->nullable()->after('end_time');
-            $table->unsignedBigInteger('created_by')->nullable()->after('memo');
+            $table->string('tenant_id', 36)->index();
+            $table->unsignedBigInteger('calendar_date_id');
+            $table->unsignedBigInteger('resident_id');
+            $table->unsignedBigInteger('schedule_type_id');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->text('memo')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
 
             // インデックス
@@ -32,7 +32,7 @@ return new class extends Migration
 
             // テナント内で同一日付・同一利用者・同一時間帯の重複を禁止
             // 注意: 同じ時間帯に異なる種別のスケジュールは許可しない（時間帯のみで重複禁止）
-            $table->unique(['tenant_id', 'resident_id', 'calendar_date_id', 'start_time']);
+            $table->unique(['tenant_id', 'resident_id', 'calendar_date_id', 'start_time'], 'schedules_unique');
 
             // 外部キー制約（MySQLのみ）
             if (Schema::getConnection()->getDriverName() === 'mysql') {

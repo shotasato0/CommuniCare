@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('schedule_types', function (Blueprint $table) {
             $table->id();
-            $table->string('tenant_id', 36)->after('id')->index();
-            $table->string('name')->after('tenant_id');
-            $table->string('color', 7)->default('#3B82F6')->after('name')->comment('HEXカラーコード');
-            $table->text('description')->nullable()->after('color');
-            $table->integer('sort_order')->default(0)->after('description');
+            $table->string('tenant_id', 36)->index();
+            $table->string('name');
+            $table->string('color', 7)->default('#3B82F6')->comment('HEXカラーコード');
+            $table->text('description')->nullable();
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
 
             // テナント内でのソート用インデックス
