@@ -21,6 +21,11 @@ const scheduleTypes = ref(props.scheduleTypes || [])
 const monthStats = ref(props.monthStats || { total: 0, by_type: {} })
 const currentDate = ref(props.currentDate || dayjs().format('YYYY-MM-DD'))
 
+// デバッグ: 初期データを確認
+console.log('Initial props:', props)
+console.log('Initial events:', events.value)
+console.log('Initial residents:', residents.value)
+
 // スケジュール作成フォームの表示状態
 const showScheduleForm = ref(false)
 const formInitialDate = ref(null)
