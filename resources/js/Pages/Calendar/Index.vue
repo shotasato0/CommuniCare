@@ -109,20 +109,42 @@ const dayCellDidMount = (info) => {
     const dateStr = dayjs(info.date).format('YYYY-MM-DD')
     const dayData = eventsByDate.value[dateStr]
     
-    // 既存のコンテンツをクリア（日付番号以外）
-    const dayNumberEl = info.el.querySelector('.fc-daygrid-day-number')
-    if (!dayNumberEl) return
+    // FullCalendarのDOM構造:
+    // .fc-daygrid-day
+    //   .fc-daygrid-day-frame
+    //     .fc-daygrid-day-number (日付番号)
+    //     .fc-daygrid-day-events (デフォルトイベントコンテナ - 非表示にする)
+    //     .fc-daygrid-day-bg (背景)
     
-    // カスタムコンテンツコンテナを作成
-    let contentContainer = info.el.querySelector('.custom-day-content')
-    if (!contentContainer) {
-        contentContainer = document.createElement('div')
-        contentContainer.className = 'custom-day-content'
-        info.el.appendChild(contentContainer)
-    } else {
-        contentContainer.innerHTML = ''
+    // .fc-daygrid-day-frameを取得
+    const dayFrame = info.el.querySelector('.fc-daygrid-day-frame')
+    if (!dayFrame) return
+    
+    // デフォルトのイベント表示を非表示にする
+    const dayEvents = dayFrame.querySelector('.fc-daygrid-day-events')
+    if (dayEvents) {
+        dayEvents.style.display = 'none'
     }
     
+    // 既存のカスタムコンテンツを削除
+    const existingContent = dayFrame.querySelector('.custom-day-content')
+    if (existingContent) {
+        existingContent.remove()
+    }
+    
+    // カスタムコンテンツコンテナを作成
+    const contentContainer = document.createElement('div')
+    contentContainer.className = 'custom-day-content'
+    
+    // .fc-daygrid-day-numberの後に挿入
+    const dayNumberEl = dayFrame.querySelector('.fc-daygrid-day-number')
+    if (dayNumberEl && dayNumberEl.nextSibling) {
+        dayFrame.insertBefore(contentContainer, dayNumberEl.nextSibling)
+    } else {
+        dayFrame.appendChild(contentContainer)
+    }
+    
+    // データがない場合は空のコンテナだけ追加して終了
     if (!dayData || (dayData.schedules.length === 0 && dayData.residents.size === 0)) {
         return
     }
