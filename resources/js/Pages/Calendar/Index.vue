@@ -122,6 +122,34 @@ const dayCellContent = (info) => {
     }
 }
 
+// 日付セルがマウントされた後にクリックイベントをバインド
+const dayCellDidMount = (info) => {
+    // スケジュールアイテムのクリックイベントをバインド
+    const scheduleItems = info.el.querySelectorAll('.calendar-schedule-item')
+    scheduleItems.forEach(item => {
+        const eventId = item.getAttribute('data-event-id')
+        if (eventId) {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation()
+                const event = events.value.find(ev => ev.id === eventId)
+                if (event) {
+                    // FullCalendarのEventオブジェクト形式に変換
+                    const fcEvent = {
+                        id: event.id,
+                        title: event.title,
+                        start: event.start,
+                        end: event.end,
+                        backgroundColor: event.backgroundColor,
+                        borderColor: event.borderColor,
+                        extendedProps: event.extendedProps,
+                    }
+                    handleEventClick({ event: fcEvent })
+                }
+            })
+        }
+    })
+}
+
 // FullCalendarの設定
 const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin],
@@ -146,6 +174,7 @@ const calendarOptions = computed(() => ({
     dateClick: handleDateClick,
     eventClick: handleEventClick,
     dayCellContent: dayCellContent, // カスタム日付セルコンテンツ
+    dayCellDidMount: dayCellDidMount, // 日付セルマウント後の処理
     dayMaxEvents: false, // カスタム表示のため無効化
 }))
 
