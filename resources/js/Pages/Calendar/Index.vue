@@ -98,82 +98,101 @@ const eventsByDate = computed(() => {
     return grouped
 })
 
-// 日付セルのカスタムコンテンツ
+// 日付セルのカスタムコンテンツ（日付番号のみを返す）
 const dayCellContent = (info) => {
+    // 日付番号のみを返し、コンテンツはdayCellDidMountで追加
+    return info.dayNumberText
+}
+
+// 日付セルがマウントされた後にコンテンツを追加
+const dayCellDidMount = (info) => {
     const dateStr = dayjs(info.date).format('YYYY-MM-DD')
     const dayData = eventsByDate.value[dateStr]
     
-    console.log('dayCellContent called for date:', dateStr, 'dayData:', dayData)
+    // 既存のコンテンツをクリア（日付番号以外）
+    const dayNumberEl = info.el.querySelector('.fc-daygrid-day-number')
+    if (!dayNumberEl) return
+    
+    // カスタムコンテンツコンテナを作成
+    let contentContainer = info.el.querySelector('.custom-day-content')
+    if (!contentContainer) {
+        contentContainer = document.createElement('div')
+        contentContainer.className = 'custom-day-content'
+        info.el.appendChild(contentContainer)
+    } else {
+        contentContainer.innerHTML = ''
+    }
+    
+    if (!dayData || (dayData.schedules.length === 0 && dayData.residents.size === 0)) {
+        return
+    }
     
     // スケジュールセクション
-    const schedulesHtml = dayData && dayData.schedules.length > 0
-        ? dayData.schedules.map(schedule => {
-            const time = dayjs(schedule.start).format('HH:mm')
-            const title = schedule.extendedProps?.schedule_type_name || schedule.title
-            const color = schedule.backgroundColor || '#3B82F6'
-            return `<div class="calendar-schedule-item" style="background-color: ${color};" data-event-id="${schedule.id}">
-                <span class="schedule-time">${time}</span>
-                <span class="schedule-title">${title}</span>
-            </div>`
-        }).join('')
-        : ''
+    const schedulesSection = document.createElement('div')
+    schedulesSection.className = 'schedules-section'
+    
+    if (dayData.schedules.length > 0) {
+        dayData.schedules.forEach(schedule => {
+            const scheduleItem = document.createElement('div')
+            scheduleItem.className = 'calendar-schedule-item'
+            scheduleItem.style.backgroundColor = schedule.backgroundColor || '#3B82F6'
+            scheduleItem.setAttribute('data-event-id', schedule.id)
+            
+            const timeSpan = document.createElement('span')
+            timeSpan.className = 'schedule-time'
+            timeSpan.textContent = dayjs(schedule.start).format('HH:mm')
+            
+            const titleSpan = document.createElement('span')
+            titleSpan.className = 'schedule-title'
+            titleSpan.textContent = schedule.extendedProps?.schedule_type_name || schedule.title
+            
+            scheduleItem.appendChild(timeSpan)
+            scheduleItem.appendChild(titleSpan)
+            
+            // クリックイベントをバインド
+            scheduleItem.addEventListener('click', (e) => {
+                e.stopPropagation()
+                const fcEvent = {
+                    id: schedule.id,
+                    title: schedule.title,
+                    start: schedule.start,
+                    end: schedule.end,
+                    backgroundColor: schedule.backgroundColor,
+                    borderColor: schedule.borderColor,
+                    extendedProps: schedule.extendedProps,
+                }
+                handleEventClick({ event: fcEvent })
+            })
+            
+            schedulesSection.appendChild(scheduleItem)
+        })
+    }
     
     // 入浴予定者セクション
-    const residentsList = dayData && dayData.residents.size > 0
-        ? Array.from(dayData.residents).map(residentId => {
+    if (dayData.residents.size > 0) {
+        const residentsSection = document.createElement('div')
+        residentsSection.className = 'calendar-residents-section'
+        
+        const labelDiv = document.createElement('div')
+        labelDiv.className = 'residents-label'
+        labelDiv.textContent = '入浴予定者'
+        
+        const listDiv = document.createElement('div')
+        listDiv.className = 'residents-list'
+        const residentsList = Array.from(dayData.residents).map(residentId => {
             const resident = residents.value.find(r => r.id === residentId)
             return resident ? resident.name : ''
         }).filter(Boolean)
-        : []
-    
-    const residentsHtml = residentsList.length > 0 
-        ? `<div class="calendar-residents-section">
-            <div class="residents-label">入浴予定者</div>
-            <div class="residents-list">${residentsList.join(', ')}</div>
-        </div>`
-        : ''
-    
-    // FullCalendar v6のdayCellContentは、{ html: string }形式を返す必要があります
-    const html = `<div class="custom-day-cell">
-        <div class="day-number">${info.dayNumberText}</div>
-        <div class="day-content">
-            <div class="schedules-section">${schedulesHtml}</div>
-            ${residentsHtml}
-        </div>
-    </div>`
-    
-    console.log('dayCellContent returning html for', dateStr, ':', html.substring(0, 100))
-    
-    // FullCalendar v6では、{ html: string }形式を返す必要があります
-    return { html }
-}
-
-// 日付セルがマウントされた後にクリックイベントをバインド
-const dayCellDidMount = (info) => {
-    // スケジュールアイテムのクリックイベントをバインド
-    const scheduleItems = info.el.querySelectorAll('.calendar-schedule-item')
-    scheduleItems.forEach(item => {
-        const eventId = item.getAttribute('data-event-id')
-        if (eventId) {
-            item.addEventListener('click', (e) => {
-                e.stopPropagation()
-                const event = events.value.find(ev => ev.id === eventId)
-                if (event) {
-                    // FullCalendarのEventオブジェクト形式に変換
-                    const fcEvent = {
-                        id: event.id,
-                        title: event.title,
-                        start: event.start,
-                        end: event.end,
-                        backgroundColor: event.backgroundColor,
-                        borderColor: event.borderColor,
-                        extendedProps: event.extendedProps,
-                    }
-                    handleEventClick({ event: fcEvent })
-                }
-            })
-        }
-    })
+        listDiv.textContent = residentsList.join(', ')
+        
+        residentsSection.appendChild(labelDiv)
+        residentsSection.appendChild(listDiv)
+        
+        contentContainer.appendChild(schedulesSection)
+        contentContainer.appendChild(residentsSection)
+    } else {
+        contentContainer.appendChild(schedulesSection)
+    }
 }
 
 // FullCalendarの設定
