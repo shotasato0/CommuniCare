@@ -83,26 +83,26 @@ const dayCellContent = (info) => {
     const dateStr = dayjs(info.date).format('YYYY-MM-DD')
     const dayData = eventsByDate.value[dateStr]
     
-    if (!dayData) {
-        return { html: '' }
-    }
-    
     // スケジュールセクション
-    const schedulesHtml = dayData.schedules.map(schedule => {
-        const time = dayjs(schedule.start).format('HH:mm')
-        const title = schedule.extendedProps?.schedule_type_name || schedule.title
-        const color = schedule.backgroundColor || '#3B82F6'
-        return `<div class="calendar-schedule-item" style="background-color: ${color};" data-event-id="${schedule.id}">
-            <span class="schedule-time">${time}</span>
-            <span class="schedule-title">${title}</span>
-        </div>`
-    }).join('')
+    const schedulesHtml = dayData && dayData.schedules.length > 0
+        ? dayData.schedules.map(schedule => {
+            const time = dayjs(schedule.start).format('HH:mm')
+            const title = schedule.extendedProps?.schedule_type_name || schedule.title
+            const color = schedule.backgroundColor || '#3B82F6'
+            return `<div class="calendar-schedule-item" style="background-color: ${color};" data-event-id="${schedule.id}">
+                <span class="schedule-time">${time}</span>
+                <span class="schedule-title">${title}</span>
+            </div>`
+        }).join('')
+        : ''
     
     // 入浴予定者セクション
-    const residentsList = Array.from(dayData.residents).map(residentId => {
-        const resident = residents.value.find(r => r.id === residentId)
-        return resident ? resident.name : ''
-    }).filter(Boolean)
+    const residentsList = dayData && dayData.residents.size > 0
+        ? Array.from(dayData.residents).map(residentId => {
+            const resident = residents.value.find(r => r.id === residentId)
+            return resident ? resident.name : ''
+        }).filter(Boolean)
+        : []
     
     const residentsHtml = residentsList.length > 0 
         ? `<div class="calendar-residents-section">
