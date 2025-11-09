@@ -144,16 +144,11 @@ const dayCellDidMount = (info) => {
         dayFrame.appendChild(contentContainer)
     }
     
-    // データがない場合は空のコンテナだけ追加して終了
-    if (!dayData || (dayData.schedules.length === 0 && dayData.residents.size === 0)) {
-        return
-    }
-    
-    // スケジュールセクション
+    // スケジュールセクション（上半分）- 常に作成
     const schedulesSection = document.createElement('div')
     schedulesSection.className = 'schedules-section'
     
-    if (dayData.schedules.length > 0) {
+    if (dayData && dayData.schedules.length > 0) {
         dayData.schedules.forEach(schedule => {
             const scheduleItem = document.createElement('div')
             scheduleItem.className = 'calendar-schedule-item'
@@ -190,37 +185,35 @@ const dayCellDidMount = (info) => {
         })
     }
     
-    // スケジュールセクションを追加（常に追加）
-    contentContainer.appendChild(schedulesSection)
+    // 入浴予定者セクション（下半分）- 常に作成
+    const residentsSection = document.createElement('div')
+    residentsSection.className = 'calendar-residents-section'
     
-    // 入浴予定者セクション（下半分）
-    if (dayData.residents.size > 0) {
-        const residentsSection = document.createElement('div')
-        residentsSection.className = 'calendar-residents-section'
-        
-        const labelDiv = document.createElement('div')
-        labelDiv.className = 'residents-label'
-        labelDiv.textContent = '入浴予定者'
-        
-        const listDiv = document.createElement('div')
-        listDiv.className = 'residents-list'
+    const labelDiv = document.createElement('div')
+    labelDiv.className = 'residents-label'
+    labelDiv.textContent = '入浴予定者'
+    
+    const listDiv = document.createElement('div')
+    listDiv.className = 'residents-list'
+    
+    if (dayData && dayData.residents.size > 0) {
         const residentsList = Array.from(dayData.residents).map(residentId => {
             const resident = residents.value.find(r => r.id === residentId)
             return resident ? resident.name : ''
         }).filter(Boolean)
         listDiv.textContent = residentsList.join(', ')
-        
-        residentsSection.appendChild(labelDiv)
-        residentsSection.appendChild(listDiv)
-        
-        contentContainer.appendChild(residentsSection)
     } else {
-        // 入浴予定者がいない場合でも、下半分のスペースを確保
-        const emptyResidentsSection = document.createElement('div')
-        emptyResidentsSection.className = 'calendar-residents-section'
-        emptyResidentsSection.style.minHeight = '50px'
-        contentContainer.appendChild(emptyResidentsSection)
+        listDiv.textContent = 'なし'
+        listDiv.style.color = '#9ca3af'
+        listDiv.style.fontStyle = 'italic'
     }
+    
+    residentsSection.appendChild(labelDiv)
+    residentsSection.appendChild(listDiv)
+    
+    // 両方のセクションを常に追加
+    contentContainer.appendChild(schedulesSection)
+    contentContainer.appendChild(residentsSection)
 }
 
 // FullCalendarの設定
@@ -398,12 +391,13 @@ const closeScheduleModal = () => {
 
 /* スケジュールセクション（上半分） */
 :deep(.schedules-section) {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1 1 50% !important;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 2px;
     overflow-y: auto;
-    min-height: 0;
+    min-height: 60px !important;
+    max-height: none;
     border-bottom: 2px solid #e5e7eb;
     padding-bottom: 4px;
     margin-bottom: 4px;
@@ -439,8 +433,11 @@ const closeScheduleModal = () => {
 
 /* 入浴予定者セクション（下半分） */
 :deep(.calendar-residents-section) {
-    flex-shrink: 0;
-    min-height: 50px;
+    flex: 1 1 50% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 50px !important;
+    max-height: none;
     padding-top: 4px;
 }
 
