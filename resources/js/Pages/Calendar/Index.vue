@@ -62,6 +62,7 @@ const handleEventClick = (info) => {
 // 日付ごとにスケジュールと入浴予定者をグループ化
 const eventsByDate = computed(() => {
     const grouped = {}
+    console.log('eventsByDate computed - events.value:', events.value)
     events.value.forEach(event => {
         const date = dayjs(event.start).format('YYYY-MM-DD')
         if (!grouped[date]) {
@@ -75,6 +76,7 @@ const eventsByDate = computed(() => {
             grouped[date].residents.add(event.extendedProps.resident_id)
         }
     })
+    console.log('eventsByDate computed - grouped:', grouped)
     return grouped
 })
 
@@ -82,6 +84,8 @@ const eventsByDate = computed(() => {
 const dayCellContent = (info) => {
     const dateStr = dayjs(info.date).format('YYYY-MM-DD')
     const dayData = eventsByDate.value[dateStr]
+    
+    console.log('dayCellContent called for date:', dateStr, 'dayData:', dayData)
     
     // スケジュールセクション
     const schedulesHtml = dayData && dayData.schedules.length > 0
@@ -111,15 +115,17 @@ const dayCellContent = (info) => {
         </div>`
         : ''
     
-    return {
-        html: `<div class="custom-day-cell">
-            <div class="day-number">${info.dayNumberText}</div>
-            <div class="day-content">
-                <div class="schedules-section">${schedulesHtml}</div>
-                ${residentsHtml}
-            </div>
-        </div>`
-    }
+    const html = `<div class="custom-day-cell">
+        <div class="day-number">${info.dayNumberText}</div>
+        <div class="day-content">
+            <div class="schedules-section">${schedulesHtml}</div>
+            ${residentsHtml}
+        </div>
+    </div>`
+    
+    console.log('dayCellContent returning html for', dateStr, ':', html.substring(0, 100))
+    
+    return { html }
 }
 
 // 日付セルがマウントされた後にクリックイベントをバインド
