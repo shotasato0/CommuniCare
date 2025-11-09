@@ -110,4 +110,165 @@ class CalendarController extends Controller
             'currentDate' => $date,
         ]);
     }
+
+    /**
+     * 週間カレンダーページを表示
+     *
+     * @param Request $request
+     * @return \Inertia\Response
+     */
+    public function week(Request $request)
+    {
+        $currentUser = Auth::user();
+        $currentTenantId = $currentUser->tenant_id;
+
+        // リクエストから日付を取得（デフォルトは今週）
+        $date = $request->input('date', now()->format('Y-m-d'));
+        $carbonDate = Carbon::parse($date);
+
+        // 現在の週の開始日と終了日を取得（月曜日始まり）
+        $startOfWeek = $carbonDate->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        $endOfWeek = $carbonDate->copy()->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+
+        // スケジュールを取得
+        $filters = [
+            'date_from' => $startOfWeek,
+            'date_to' => $endOfWeek,
+        ];
+        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+
+        // FullCalendar用のイベント形式に変換
+        $events = $schedules->map(function ($schedule) {
+            $startDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->start_time);
+            $endDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->end_time);
+            
+            return [
+                'id' => $schedule->id,
+                'title' => $schedule->resident->name . ' - ' . $schedule->scheduleType->name,
+                'start' => $startDateTime->toIso8601String(),
+                'end' => $endDateTime->toIso8601String(),
+                'backgroundColor' => $schedule->scheduleType->color ?? '#3B82F6',
+                'borderColor' => $schedule->scheduleType->color ?? '#3B82F6',
+                'extendedProps' => [
+                    'resident_id' => $schedule->resident_id,
+                    'resident_name' => $schedule->resident->name,
+                    'schedule_type_id' => $schedule->schedule_type_id,
+                    'schedule_type_name' => $schedule->scheduleType->name,
+                    'memo' => $schedule->memo,
+                ],
+            ];
+        });
+
+        // 利用者一覧を取得
+        $residents = Resident::where('tenant_id', $currentTenantId)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($resident) {
+                return [
+                    'id' => $resident->id,
+                    'name' => $resident->name,
+                    'unit_id' => $resident->unit_id,
+                ];
+            });
+
+        // スケジュール種別一覧を取得
+        $scheduleTypes = ScheduleType::where('tenant_id', $currentTenantId)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($type) {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name,
+                    'color' => $type->color ?? '#3B82F6',
+                    'description' => $type->description,
+                ];
+            });
+
+        return Inertia::render('Calendar/Week', [
+            'events' => $events,
+            'residents' => $residents,
+            'scheduleTypes' => $scheduleTypes,
+            'currentDate' => $date,
+            'startOfWeek' => $startOfWeek,
+            'endOfWeek' => $endOfWeek,
+        ]);
+    }
+
+    /**
+     * 日間カレンダーページを表示
+     *
+     * @param Request $request
+     * @param string|null $date
+     * @return \Inertia\Response
+     */
+    public function day(Request $request, ?string $date = null)
+    {
+        $currentUser = Auth::user();
+        $currentTenantId = $currentUser->tenant_id;
+
+        // リクエストから日付を取得（デフォルトは今日）
+        $date = $date ?? $request->input('date', now()->format('Y-m-d'));
+        $carbonDate = Carbon::parse($date);
+
+        // 指定日のスケジュールを取得
+        $filters = [
+            'date_from' => $carbonDate->format('Y-m-d'),
+            'date_to' => $carbonDate->format('Y-m-d'),
+        ];
+        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+
+        // FullCalendar用のイベント形式に変換
+        $events = $schedules->map(function ($schedule) {
+            $startDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->start_time);
+            $endDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->end_time);
+            
+            return [
+                'id' => $schedule->id,
+                'title' => $schedule->resident->name . ' - ' . $schedule->scheduleType->name,
+                'start' => $startDateTime->toIso8601String(),
+                'end' => $endDateTime->toIso8601String(),
+                'backgroundColor' => $schedule->scheduleType->color ?? '#3B82F6',
+                'borderColor' => $schedule->scheduleType->color ?? '#3B82F6',
+                'extendedProps' => [
+                    'resident_id' => $schedule->resident_id,
+                    'resident_name' => $schedule->resident->name,
+                    'schedule_type_id' => $schedule->schedule_type_id,
+                    'schedule_type_name' => $schedule->scheduleType->name,
+                    'memo' => $schedule->memo,
+                ],
+            ];
+        });
+
+        // 利用者一覧を取得
+        $residents = Resident::where('tenant_id', $currentTenantId)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($resident) {
+                return [
+                    'id' => $resident->id,
+                    'name' => $resident->name,
+                    'unit_id' => $resident->unit_id,
+                ];
+            });
+
+        // スケジュール種別一覧を取得
+        $scheduleTypes = ScheduleType::where('tenant_id', $currentTenantId)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($type) {
+                return [
+                    'id' => $type->id,
+                    'name' => $type->name,
+                    'color' => $type->color ?? '#3B82F6',
+                    'description' => $type->description,
+                ];
+            });
+
+        return Inertia::render('Calendar/Day', [
+            'events' => $events,
+            'residents' => $residents,
+            'scheduleTypes' => $scheduleTypes,
+            'currentDate' => $date,
+        ]);
+    }
 }
