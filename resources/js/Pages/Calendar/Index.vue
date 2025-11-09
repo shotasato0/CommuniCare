@@ -68,8 +68,21 @@ const handleEventClick = (info) => {
 const eventsByDate = computed(() => {
     const grouped = {}
     console.log('eventsByDate computed - events.value:', events.value)
-    events.value.forEach(event => {
+    console.log('eventsByDate computed - events.value.length:', events.value?.length)
+    
+    if (!events.value || events.value.length === 0) {
+        console.warn('events.value is empty or undefined')
+        return grouped
+    }
+    
+    events.value.forEach((event, index) => {
+        console.log(`Processing event ${index}:`, event)
+        if (!event.start) {
+            console.warn(`Event ${index} has no start date:`, event)
+            return
+        }
         const date = dayjs(event.start).format('YYYY-MM-DD')
+        console.log(`Event ${index} date:`, date)
         if (!grouped[date]) {
             grouped[date] = {
                 schedules: [],
