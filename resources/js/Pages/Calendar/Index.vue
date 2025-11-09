@@ -125,7 +125,8 @@ const dayCellContent = (info) => {
     
     console.log('dayCellContent returning html for', dateStr, ':', html.substring(0, 100))
     
-    return { html }
+    // FullCalendar v6では、stringまたは{ html: string }形式を返すことができます
+    return html
 }
 
 // 日付セルがマウントされた後にクリックイベントをバインド
