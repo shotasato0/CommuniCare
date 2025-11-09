@@ -398,9 +398,10 @@ const closeScheduleModal = () => {
     overflow-y: auto;
     min-height: 60px !important;
     max-height: none;
-    border-bottom: 2px solid #e5e7eb;
-    padding-bottom: 4px;
-    margin-bottom: 4px;
+    border-bottom: 3px solid #d1d5db !important;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
 }
 
 :deep(.calendar-schedule-item) {
@@ -438,7 +439,9 @@ const closeScheduleModal = () => {
     flex-direction: column !important;
     min-height: 50px !important;
     max-height: none;
-    padding-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin-top: 2px;
 }
 
 :deep(.residents-label) {
