@@ -59,6 +59,69 @@ const handleEventClick = (info) => {
     showScheduleModal.value = true
 }
 
+// 日付ごとにスケジュールと入浴予定者をグループ化
+const eventsByDate = computed(() => {
+    const grouped = {}
+    events.value.forEach(event => {
+        const date = dayjs(event.start).format('YYYY-MM-DD')
+        if (!grouped[date]) {
+            grouped[date] = {
+                schedules: [],
+                residents: new Set()
+            }
+        }
+        grouped[date].schedules.push(event)
+        if (event.extendedProps?.resident_id) {
+            grouped[date].residents.add(event.extendedProps.resident_id)
+        }
+    })
+    return grouped
+})
+
+// 日付セルのカスタムコンテンツ
+const dayCellContent = (info) => {
+    const dateStr = dayjs(info.date).format('YYYY-MM-DD')
+    const dayData = eventsByDate.value[dateStr]
+    
+    if (!dayData) {
+        return { html: '' }
+    }
+    
+    // スケジュールセクション
+    const schedulesHtml = dayData.schedules.map(schedule => {
+        const time = dayjs(schedule.start).format('HH:mm')
+        const title = schedule.extendedProps?.schedule_type_name || schedule.title
+        const color = schedule.backgroundColor || '#3B82F6'
+        return `<div class="calendar-schedule-item" style="background-color: ${color};" data-event-id="${schedule.id}">
+            <span class="schedule-time">${time}</span>
+            <span class="schedule-title">${title}</span>
+        </div>`
+    }).join('')
+    
+    // 入浴予定者セクション
+    const residentsList = Array.from(dayData.residents).map(residentId => {
+        const resident = residents.value.find(r => r.id === residentId)
+        return resident ? resident.name : ''
+    }).filter(Boolean)
+    
+    const residentsHtml = residentsList.length > 0 
+        ? `<div class="calendar-residents-section">
+            <div class="residents-label">入浴予定者</div>
+            <div class="residents-list">${residentsList.join(', ')}</div>
+        </div>`
+        : ''
+    
+    return {
+        html: `<div class="custom-day-cell">
+            <div class="day-number">${info.dayNumberText}</div>
+            <div class="day-content">
+                <div class="schedules-section">${schedulesHtml}</div>
+                ${residentsHtml}
+            </div>
+        </div>`
+    }
+}
+
 // FullCalendarの設定
 const calendarOptions = computed(() => ({
     plugins: [dayGridPlugin, interactionPlugin],
@@ -76,14 +139,14 @@ const calendarOptions = computed(() => ({
         day: '日',
     },
     events: events.value,
-    eventDisplay: 'block',
+    eventDisplay: 'none', // カスタム表示のため標準イベント表示を無効化
     height: 'auto',
-    editable: false, // 編集はモーダルから行う
-    selectable: false, // 範囲選択は無効 - 日付クリックで作成フォームを表示
-    dateClick: handleDateClick, // 日付クリック時の処理
-    eventClick: handleEventClick, // イベントクリック時の処理
-    dayMaxEvents: true,
-    moreLinkClick: 'popover',
+    editable: false,
+    selectable: false,
+    dateClick: handleDateClick,
+    eventClick: handleEventClick,
+    dayCellContent: dayCellContent, // カスタム日付セルコンテンツ
+    dayMaxEvents: false, // カスタム表示のため無効化
 }))
 
 // スケジュール作成成功時の処理
@@ -180,6 +243,141 @@ const closeScheduleModal = () => {
 <style>
 .calendar-container {
     margin-top: 1rem;
+}
+
+/* カレンダー全体を大きくする */
+:deep(.fc) {
+    font-size: 1.1rem;
+}
+
+:deep(.fc-daygrid-day-frame) {
+    min-height: 150px;
+    height: auto;
+}
+
+:deep(.fc-daygrid-day) {
+    height: auto;
+    min-height: 150px;
+}
+
+/* カスタム日付セル */
+:deep(.custom-day-cell) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 150px;
+}
+
+:deep(.day-number) {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 4px 8px;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+}
+
+:deep(.day-content) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+    gap: 4px;
+}
+
+/* スケジュールセクション */
+:deep(.schedules-section) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    min-height: 60px;
+    max-height: 80px;
+}
+
+:deep(.calendar-schedule-item) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+:deep(.calendar-schedule-item:hover) {
+    opacity: 0.8;
+}
+
+:deep(.schedule-time) {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+:deep(.schedule-title) {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 入浴予定者セクション */
+:deep(.calendar-residents-section) {
+    border-top: 2px solid #e5e7eb;
+    padding-top: 4px;
+    margin-top: 4px;
+    min-height: 50px;
+}
+
+:deep(.residents-label) {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+:deep(.residents-list) {
+    font-size: 0.85rem;
+    color: #374151;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* 今日の日付を強調 */
+:deep(.fc-day-today .day-number) {
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 4px;
+}
+
+/* ダークモード対応 */
+.dark :deep(.day-number) {
+    background-color: #374151;
+    color: #f9fafb;
+    border-bottom-color: #4b5563;
+}
+
+.dark :deep(.day-content) {
+    background-color: #1f2937;
+}
+
+.dark :deep(.calendar-residents-section) {
+    border-top-color: #4b5563;
+}
+
+.dark :deep(.residents-label) {
+    color: #9ca3af;
+}
+
+.dark :deep(.residents-list) {
+    color: #e5e7eb;
+}
+
+.dark :deep(.fc-day-today .day-number) {
+    background-color: #2563eb;
+    color: white;
 }
 </style>
 
