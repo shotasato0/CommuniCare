@@ -352,50 +352,48 @@ const closeScheduleModal = () => {
     font-size: 1.1rem;
 }
 
-:deep(.fc-daygrid-day-frame) {
-    min-height: 150px;
-    height: auto;
-}
-
-:deep(.fc-daygrid-day) {
-    height: auto;
-    min-height: 150px;
-}
-
 /* FullCalendarの日付セルを上下2分割にする */
+/* .fc-daygrid-day-frameはFullCalendarが自動生成するフレーム要素 */
 :deep(.fc-daygrid-day-frame) {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 150px;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 150px !important;
+    position: relative;
 }
 
 :deep(.fc-daygrid-day) {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    height: auto;
     min-height: 150px;
 }
 
-/* 日付番号部分 */
+/* 日付番号部分 - 上部に固定 */
 :deep(.fc-daygrid-day-number) {
     font-weight: bold;
     font-size: 1.1rem;
     padding: 4px 8px;
     border-bottom: 1px solid #e5e7eb;
     background-color: #f9fafb;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+    order: 1;
 }
 
-/* カスタムコンテンツコンテナ */
+/* デフォルトのイベント表示を非表示 */
+:deep(.fc-daygrid-day-events) {
+    display: none !important;
+}
+
+/* カスタムコンテンツコンテナ - 日付番号の下に配置 */
 :deep(.custom-day-content) {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding: 4px;
     gap: 4px;
     min-height: 0;
     overflow: hidden;
+    order: 2;
+    width: 100%;
 }
 
 /* スケジュールセクション（上半分） */
