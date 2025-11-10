@@ -44,13 +44,6 @@ class Schedule extends Model
         return $this->belongsTo(Resident::class);
     }
 
-    /**
-     * 種別とのリレーション
-     */
-    public function scheduleType()
-    {
-        return $this->belongsTo(ScheduleType::class);
-    }
 
     /**
      * 作成者とのリレーション

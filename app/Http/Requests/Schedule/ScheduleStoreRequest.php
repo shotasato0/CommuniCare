@@ -30,7 +30,6 @@ class ScheduleStoreRequest extends FormRequest
         return [
             'date' => 'required|date|date_format:Y-m-d',
             'schedule_name' => 'required|string|max:255',
-            'schedule_type_id' => 'required|exists:schedule_types,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'memo' => 'nullable|string|max:1000',
@@ -51,8 +50,6 @@ class ScheduleStoreRequest extends FormRequest
             'schedule_name.required' => 'スケジュール名は必須です。',
             'schedule_name.string' => 'スケジュール名は文字列で入力してください。',
             'schedule_name.max' => 'スケジュール名は255文字以内で入力してください。',
-            'schedule_type_id.required' => 'スケジュール種別の指定は必須です。',
-            'schedule_type_id.exists' => '指定されたスケジュール種別が存在しません。',
             'start_time.required' => '開始時刻は必須です。',
             'start_time.date_format' => '開始時刻はHH:MM形式で入力してください。',
             'end_time.required' => '終了時刻は必須です。',

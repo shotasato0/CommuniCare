@@ -33,7 +33,6 @@ const form = useForm({
     date: props.initialDate || dayjs().format("YYYY-MM-DD"),
     resident_id: props.initialResidentId || null,
     schedule_name: "",
-    schedule_type_id: null,
     start_time: "09:00",
     end_time: "10:00",
     memo: "",
@@ -150,39 +149,6 @@ const close = () => {
                         class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
                         {{ form.errors.schedule_name }}
-                    </div>
-                </div>
-
-                <!-- スケジュール種別 -->
-                <div class="mb-4">
-                    <label
-                        for="schedule_type_id"
-                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                    >
-                        スケジュール種別 <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                        id="schedule_type_id"
-                        v-model="form.schedule_type_id"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{
-                            'border-red-500': form.errors.schedule_type_id,
-                        }"
-                    >
-                        <option value="">選択してください</option>
-                        <option
-                            v-for="type in scheduleTypes"
-                            :key="type.id"
-                            :value="type.id"
-                        >
-                            {{ type.name }}
-                        </option>
-                    </select>
-                    <div
-                        v-if="form.errors.schedule_type_id"
-                        class="mt-1 text-sm text-red-600 dark:text-red-400"
-                    >
-                        {{ form.errors.schedule_type_id }}
                     </div>
                 </div>
 
