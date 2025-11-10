@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\ScheduleService;
 use App\Models\Resident;
-use App\Models\ScheduleType;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -217,23 +216,9 @@ class CalendarController extends Controller
                 ];
             });
 
-        // スケジュール種別一覧を取得
-        $scheduleTypes = ScheduleType::where('tenant_id', $currentTenantId)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(function ($type) {
-                return [
-                    'id' => $type->id,
-                    'name' => $type->name,
-                    'color' => $type->color ?? '#3B82F6',
-                    'description' => $type->description,
-                ];
-            });
-
         return Inertia::render('Calendar/Day', [
             'events' => $events,
             'residents' => $residents,
-            'scheduleTypes' => $scheduleTypes,
             'currentDate' => $date,
         ]);
     }
