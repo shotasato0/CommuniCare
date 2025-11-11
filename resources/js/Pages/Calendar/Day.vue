@@ -137,9 +137,23 @@ const handleScheduleUpdated = () => {
 }
 
 // スケジュール削除成功時の処理
-const handleScheduleDeleted = () => {
-    // カレンダーを再読み込み
-    router.reload({ only: ['events'] })
+const handleScheduleDeleted = (deletedScheduleId) => {
+    console.log('handleScheduleDeleted called (Day)', deletedScheduleId);
+    
+    if (deletedScheduleId) {
+        // 削除されたスケジュールをeventsから直接削除
+        events.value = events.value.filter(event => event.id !== deletedScheduleId);
+        console.log('Removed deleted event from events.value:', events.value.length);
+        
+        // FullCalendarのイベントを更新
+        if (calendarRef.value) {
+            const calendarApi = calendarRef.value.getApi();
+            calendarApi.refetchEvents();
+        }
+    }
+    
+    // モーダルを閉じる
+    closeScheduleModal();
 }
 
 // モーダルを閉じる

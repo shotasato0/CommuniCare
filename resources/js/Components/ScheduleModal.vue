@@ -100,7 +100,8 @@ const deleteSchedule = async () => {
             },
         })
 
-        emit('deleted')
+        // 削除されたスケジュールIDを親コンポーネントに渡す
+        emit('deleted', props.schedule.id)
         emit('close')
     } catch (error) {
         console.error('ScheduleModal delete error:', error)

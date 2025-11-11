@@ -375,9 +375,44 @@ const handleScheduleUpdated = () => {
 };
 
 // スケジュール削除成功時の処理
-const handleScheduleDeleted = () => {
-    // カレンダーを再読み込み
-    router.reload({ only: ["events", "monthStats"] });
+const handleScheduleDeleted = (deletedScheduleId) => {
+    console.log('handleScheduleDeleted called', deletedScheduleId);
+    
+    if (deletedScheduleId) {
+        // 削除されたスケジュールをeventsから直接削除
+        events.value = events.value.filter(event => event.id !== deletedScheduleId);
+        console.log('Removed deleted event from events.value:', events.value.length);
+        
+        // eventsByDateが更新されるのを待つ
+        nextTick(() => {
+            console.log('eventsByDate updated, re-rendering calendar');
+            
+            // FullCalendarを強制的に再レンダリング
+            if (calendarRef.value) {
+                const calendarApi = calendarRef.value.getApi();
+                
+                // カレンダーを完全に再レンダリングするために、月を変更して戻す
+                const currentDate = calendarApi.getDate();
+                calendarApi.gotoDate(dayjs(currentDate).subtract(1, 'month').toDate());
+                
+                setTimeout(() => {
+                    calendarApi.gotoDate(currentDate);
+                    console.log('Calendar force updated and re-rendered after deletion');
+                }, 100);
+            }
+        });
+        
+        // 月間統計情報も更新
+        if (monthStats.value) {
+            monthStats.value = {
+                ...monthStats.value,
+                total: Math.max(0, monthStats.value.total - 1),
+            };
+        }
+    }
+    
+    // モーダルを閉じる
+    closeScheduleModal();
 };
 
 // モーダルを閉じる
