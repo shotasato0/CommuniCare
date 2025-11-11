@@ -29,6 +29,7 @@ class ScheduleStoreRequest extends FormRequest
     {
         return [
             'date' => 'required|date|date_format:Y-m-d',
+            'resident_id' => 'nullable|integer|exists:residents,id',
             'schedule_name' => 'required|string|max:255',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',

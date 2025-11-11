@@ -82,6 +82,20 @@ class ScheduleService
         $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
 
         return DB::transaction(function () use ($validated, $currentTenantId, $currentUser, $calendarDate) {
+            // 利用者のテナント境界チェック（resident_idが指定されている場合）
+            if (isset($validated['resident_id']) && $validated['resident_id'] !== null) {
+                $resident = Resident::findOrFail($validated['resident_id']);
+                $this->validateTenantBoundary($resident);
+
+                // 詳細な重複チェック（M2：時間帯の重複検証）
+                $this->validateNoConflict(
+                    $validated['resident_id'],
+                    $calendarDate->id,
+                    $validated['start_time'],
+                    $validated['end_time']
+                );
+            }
+
             // スケジュール作成
             $schedule = Schedule::create([
                 'tenant_id' => $currentTenantId,

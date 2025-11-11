@@ -3,6 +3,7 @@ import { ref, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import Modal from "./Modal.vue";
 import dayjs from "dayjs";
+import axios from "axios";
 
 const props = defineProps({
     show: {
@@ -38,6 +39,12 @@ const form = useForm({
     memo: "",
 });
 
+// ローディング状態を手動で管理
+const isSubmitting = ref(false);
+
+// エラー状態を手動で管理
+const localErrors = ref({});
+
 // propsの変更を監視してフォームを更新
 watch(
     () => props.initialDate,
@@ -68,18 +75,69 @@ watch(
     }
 );
 
-const submit = () => {
-    form.post(route("calendar.schedule.store"), {
-        preserveScroll: true,
-        onSuccess: () => {
+const submit = async () => {
+    // バリデーション
+    form.clearErrors();
+    localErrors.value = {};
+    isSubmitting.value = true;
+
+    try {
+        // axiosを使って直接APIリクエストを送信
+        const response = await axios.post(
+            route("calendar.schedule.store"),
+            {
+                date: form.date,
+                resident_id: form.resident_id,
+                schedule_name: form.schedule_name,
+                start_time: form.start_time,
+                end_time: form.end_time,
+                memo: form.memo,
+            },
+            {
+                headers: {
+                    "X-Inertia": "true", // Inertia.jsリクエストとして識別
+                    Accept: "application/json",
+                },
+            }
+        );
+
+        console.log("ScheduleForm API response:", response.data);
+
+        // 作成されたイベントデータを親コンポーネントに渡す
+        if (response.data?.event) {
+            emit("success", response.data.event);
+        } else {
             emit("success");
-            emit("close");
-            form.reset();
-        },
-        onError: () => {
-            // エラーはform.errorsに自動的に設定される
-        },
-    });
+        }
+        emit("close");
+        form.reset();
+        localErrors.value = {};
+    } catch (error) {
+        console.error("ScheduleForm API error:", error);
+
+        // バリデーションエラーの場合
+        if (error.response?.status === 422 && error.response?.data?.errors) {
+            // ローカルエラーに設定
+            localErrors.value = {};
+            Object.keys(error.response.data.errors).forEach((key) => {
+                localErrors.value[key] = error.response.data.errors[key][0];
+            });
+        } else if (error.response?.status === 409) {
+            // スケジュール重複エラーの場合
+            const errorMessage =
+                error.response?.data?.message ||
+                "指定された時間帯に既にスケジュールが登録されています。";
+            localErrors.value = { schedule_name: errorMessage };
+        } else {
+            // その他のエラー
+            const errorMessage =
+                error.response?.data?.message ||
+                "スケジュールの作成に失敗しました。";
+            localErrors.value = { schedule_name: errorMessage };
+        }
+    } finally {
+        isSubmitting.value = false;
+    }
 };
 
 const close = () => {
@@ -118,13 +176,16 @@ const close = () => {
                         v-model="form.date"
                         type="date"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{ 'border-red-500': form.errors.date }"
+                        :class="{
+                            'border-red-500':
+                                form.errors.date || localErrors.date,
+                        }"
                     />
                     <div
-                        v-if="form.errors.date"
+                        v-if="form.errors.date || localErrors.date"
                         class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
-                        {{ form.errors.date }}
+                        {{ form.errors.date || localErrors.date }}
                     </div>
                 </div>
 
@@ -142,13 +203,23 @@ const close = () => {
                         type="text"
                         placeholder="スケジュール名を入力してください"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{ 'border-red-500': form.errors.schedule_name }"
+                        :class="{
+                            'border-red-500':
+                                form.errors.schedule_name ||
+                                localErrors.schedule_name,
+                        }"
                     />
                     <div
-                        v-if="form.errors.schedule_name"
+                        v-if="
+                            form.errors.schedule_name ||
+                            localErrors.schedule_name
+                        "
                         class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
-                        {{ form.errors.schedule_name }}
+                        {{
+                            form.errors.schedule_name ||
+                            localErrors.schedule_name
+                        }}
                     </div>
                 </div>
 
@@ -159,7 +230,7 @@ const close = () => {
                             for="start_time"
                             class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                         >
-                            開始時刻 <span class="text-red-500">*</span>
+                            開始時刻 <span class="textxじ-red-500">*</span>
                         </label>
                         <input
                             id="start_time"
@@ -167,14 +238,20 @@ const close = () => {
                             type="time"
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             :class="{
-                                'border-red-500': form.errors.start_time,
+                                'border-red-500':
+                                    form.errors.start_time ||
+                                    localErrors.start_time,
                             }"
                         />
                         <div
-                            v-if="form.errors.start_time"
+                            v-if="
+                                form.errors.start_time || localErrors.start_time
+                            "
                             class="mt-1 text-sm text-red-600 dark:text-red-400"
                         >
-                            {{ form.errors.start_time }}
+                            {{
+                                form.errors.start_time || localErrors.start_time
+                            }}
                         </div>
                     </div>
                     <div>
@@ -189,13 +266,17 @@ const close = () => {
                             v-model="form.end_time"
                             type="time"
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            :class="{ 'border-red-500': form.errors.end_time }"
+                            :class="{
+                                'border-red-500':
+                                    form.errors.end_time ||
+                                    localErrors.end_time,
+                            }"
                         />
                         <div
-                            v-if="form.errors.end_time"
+                            v-if="form.errors.end_time || localErrors.end_time"
                             class="mt-1 text-sm text-red-600 dark:text-red-400"
                         >
-                            {{ form.errors.end_time }}
+                            {{ form.errors.end_time || localErrors.end_time }}
                         </div>
                     </div>
                 </div>
@@ -213,13 +294,16 @@ const close = () => {
                         v-model="form.memo"
                         rows="3"
                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                        :class="{ 'border-red-500': form.errors.memo }"
+                        :class="{
+                            'border-red-500':
+                                form.errors.memo || localErrors.memo,
+                        }"
                     ></textarea>
                     <div
-                        v-if="form.errors.memo"
+                        v-if="form.errors.memo || localErrors.memo"
                         class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
-                        {{ form.errors.memo }}
+                        {{ form.errors.memo || localErrors.memo }}
                     </div>
                 </div>
 
@@ -234,10 +318,10 @@ const close = () => {
                     </button>
                     <button
                         type="submit"
-                        :disabled="form.processing"
+                        :disabled="isSubmitting"
                         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {{ form.processing ? "作成中..." : "作成" }}
+                        {{ isSubmitting ? "作成中..." : "作成" }}
                     </button>
                 </div>
             </form>

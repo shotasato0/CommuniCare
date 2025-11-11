@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 
 class ScheduleController extends Controller
 {
@@ -72,23 +75,68 @@ class ScheduleController extends Controller
      * スケジュールを作成
      *
      * @param ScheduleStoreRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|RedirectResponse
      */
-    public function store(ScheduleStoreRequest $request): JsonResponse
+    public function store(ScheduleStoreRequest $request)
     {
+        // デバッグ: 現在のユーザーの権限状態をログに記録
+        $user = Auth::user();
+        Log::info('スケジュール作成試行', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_tenant_id' => $user->tenant_id,
+            'user_roles' => $user->getRoleNames()->toArray(),
+            'user_permissions' => $user->getAllPermissions()->pluck('name')->toArray(),
+            'has_schedules_create_permission' => $user->hasPermissionTo('schedules.create'),
+        ]);
+
         // 権限チェック
         Gate::authorize('create', Schedule::class);
 
         try {
             $schedule = $this->scheduleService->createSchedule($request);
+            $schedule->load(['calendarDate', 'resident', 'scheduleType', 'creator']);
 
+            // FullCalendar用のイベント形式に変換
+            $startDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->start_time);
+            $endDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->end_time);
+            
+            $eventData = [
+                'id' => $schedule->id,
+                'title' => ($schedule->resident ? $schedule->resident->name . ' - ' : '') . $schedule->schedule_name,
+                'start' => $startDateTime->toIso8601String(),
+                'end' => $endDateTime->toIso8601String(),
+                'backgroundColor' => '#3B82F6',
+                'borderColor' => '#3B82F6',
+                'extendedProps' => [
+                    'resident_id' => $schedule->resident_id,
+                    'resident_name' => $schedule->resident ? $schedule->resident->name : null,
+                    'schedule_name' => $schedule->schedule_name,
+                    'memo' => $schedule->memo,
+                ],
+            ];
+
+            // Inertia.jsのリクエストかどうかを判定
+            if ($request->header('X-Inertia')) {
+                // Inertia.jsリクエストの場合: 作成されたイベントデータを返す
+                // redirect()->back()を使わず、JSONレスポンスでイベントデータを返す
+                return response()->json([
+                    'success' => true,
+                    'message' => 'スケジュールを作成しました。',
+                    'event' => $eventData,
+                ], 201);
+            }
+
+            // APIリクエストの場合
             return response()->json([
-                'data' => $schedule->load(['calendarDate', 'resident', 'scheduleType', 'creator']),
+                'data' => $schedule,
+                'event' => $eventData,
                 'message' => 'スケジュールを作成しました。',
             ], 201);
         } catch (TenantViolationException $e) {
             Log::critical('テナント境界違反によるスケジュール作成試行', $e->getLogContext());
 
+            // axiosリクエストの場合もJSONレスポンスを返す
             return response()->json([
                 'message' => $e->getUserMessage(),
                 'error_code' => 'TENANT_VIOLATION',
@@ -96,6 +144,7 @@ class ScheduleController extends Controller
         } catch (ScheduleConflictException $e) {
             Log::warning('スケジュール重複による作成試行', $e->getLogContext());
 
+            // axiosリクエストの場合もJSONレスポンスを返す
             return response()->json([
                 'message' => $e->getUserMessage(),
                 'error_code' => 'SCHEDULE_CONFLICT',
@@ -104,8 +153,10 @@ class ScheduleController extends Controller
             Log::error('スケジュールの作成に失敗しました', [
                 'exception' => $e,
                 'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
+            // axiosリクエストの場合もJSONレスポンスを返す
             return response()->json([
                 'message' => 'スケジュールの作成に失敗しました。',
             ], 500);
