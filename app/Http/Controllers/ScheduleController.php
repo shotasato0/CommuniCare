@@ -80,8 +80,23 @@ class ScheduleController extends Controller
      */
     public function store(ScheduleStoreRequest $request)
     {
-        // デバッグ: 現在のユーザーの権限状態をログに記録
         $user = Auth::user();
+        
+        // ゲストユーザーでロールが割り当てられていない場合は割り当てる
+        if ($user->guest_session_id !== null) {
+            $user->load('roles');
+            if ($user->roles->isEmpty()) {
+                $userRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+                $user->assignRole($userRole);
+                $user->refresh();
+                Log::info('ゲストユーザーにロールを割り当てました（スケジュール作成時）', [
+                    'user_id' => $user->id,
+                    'role' => 'user',
+                ]);
+            }
+        }
+        
+        // デバッグ: 現在のユーザーの権限状態をログに記録
         Log::info('スケジュール作成試行', [
             'user_id' => $user->id,
             'user_name' => $user->name,
