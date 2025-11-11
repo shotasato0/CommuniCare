@@ -95,7 +95,21 @@ class SchedulePolicy
      */
     public function delete(User $user, Schedule $schedule): bool
     {
-        // updateと同じロジック
-        return $this->update($user, $schedule);
+        // テナント境界チェック（必須）
+        if (!$this->checkTenantBoundary($user, $schedule)) {
+            return false;
+        }
+
+        // 権限チェック
+        if (!$user->hasPermissionTo('schedules.delete')) {
+            return false;
+        }
+
+        // 一般ユーザーは自分が作成したスケジュールのみ削除可能
+        if (!$user->hasRole('admin') && $schedule->created_by !== $user->id) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useForm, router } from '@inertiajs/vue3'
 import Modal from './Modal.vue'
 import dayjs from 'dayjs'
+import axios from 'axios'
 
 const props = defineProps({
     show: {
@@ -26,6 +27,8 @@ const props = defineProps({
 const emit = defineEmits(['close', 'updated', 'deleted'])
 
 const isEditing = ref(false)
+const deleteError = ref('')
+const isDeleting = ref(false)
 
 const form = useForm({
     date: '',
@@ -56,9 +59,11 @@ watch(
         if (isOpen && props.schedule) {
             initializeForm()
             isEditing.value = false
+            deleteError.value = ''
         } else {
             form.reset()
             form.clearErrors()
+            deleteError.value = ''
         }
     }
 )
@@ -77,20 +82,43 @@ const updateSchedule = () => {
     })
 }
 
-const deleteSchedule = () => {
+const deleteSchedule = async () => {
     if (!props.schedule) return
 
     if (!confirm('このスケジュールを削除してもよろしいですか？')) {
         return
     }
 
-    router.delete(route('calendar.schedule.destroy', props.schedule.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('deleted')
-            emit('close')
-        },
-    })
+    deleteError.value = ''
+    isDeleting.value = true
+
+    try {
+        await axios.delete(route('calendar.schedule.destroy', props.schedule.id), {
+            headers: {
+                'X-Inertia': 'true',
+                Accept: 'application/json',
+            },
+        })
+
+        emit('deleted')
+        emit('close')
+    } catch (error) {
+        console.error('ScheduleModal delete error:', error)
+        
+        // エラーメッセージを取得
+        const errorMessage =
+            error.response?.data?.message ||
+            'スケジュールの削除に失敗しました。'
+        
+        deleteError.value = errorMessage
+        
+        // エラーメッセージを3秒後にクリア
+        setTimeout(() => {
+            deleteError.value = ''
+        }, 5000)
+    } finally {
+        isDeleting.value = false
+    }
 }
 
 const close = () => {
@@ -98,6 +126,7 @@ const close = () => {
     isEditing.value = false
     form.reset()
     form.clearErrors()
+    deleteError.value = ''
 }
 
 const startEdit = () => {
@@ -348,13 +377,24 @@ const cancelEdit = () => {
                         </div>
                     </dl>
 
+                    <!-- エラーメッセージ -->
+                    <div
+                        v-if="deleteError"
+                        class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
+                    >
+                        <p class="text-sm text-red-600 dark:text-red-400">
+                            {{ deleteError }}
+                        </p>
+                    </div>
+
                     <!-- ボタン -->
                     <div class="mt-6 flex justify-end space-x-3">
                         <button
                             @click="deleteSchedule"
-                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                            :disabled="isDeleting"
+                            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            削除
+                            {{ isDeleting ? '削除中...' : '削除' }}
                         </button>
                         <button
                             @click="startEdit"

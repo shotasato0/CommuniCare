@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ScheduleController extends Controller
 {
@@ -250,15 +251,57 @@ class ScheduleController extends Controller
             ], 403);
         }
         
-        // 権限チェック
-        Gate::authorize('delete', $schedule);
-
         try {
+            $currentUser = Auth::user();
+            
+            // 権限チェック（schedules.delete権限があるか）
+            if (!$currentUser->hasPermissionTo('schedules.delete')) {
+                Log::warning('権限不足によるスケジュール削除試行', [
+                    'user_id' => $currentUser->id,
+                    'schedule_id' => $schedule->id,
+                    'reason' => 'missing_permission',
+                ]);
+
+                return response()->json([
+                    'message' => 'スケジュールを削除する権限がありません。',
+                    'error_code' => 'AUTHORIZATION_FAILED',
+                ], 403);
+            }
+
+            // 所有権チェック（一般ユーザーは自分が作成したスケジュールのみ削除可能）
+            if (!$currentUser->hasRole('admin') && $schedule->created_by !== $currentUser->id) {
+                Log::warning('所有権違反によるスケジュール削除試行', [
+                    'user_id' => $currentUser->id,
+                    'schedule_id' => $schedule->id,
+                    'schedule_created_by' => $schedule->created_by,
+                    'reason' => 'ownership_violation',
+                ]);
+
+                return response()->json([
+                    'message' => '自分が作成したスケジュールのみ削除できます。',
+                    'error_code' => 'OWNERSHIP_VIOLATION',
+                ], 403);
+            }
+
+            // 権限チェック（Policyを使用）
+            Gate::authorize('delete', $schedule);
+
             $this->scheduleService->deleteSchedule($schedule);
 
             return response()->json([
                 'message' => 'スケジュールを削除しました。',
             ]);
+        } catch (AuthorizationException $e) {
+            Log::warning('権限不足によるスケジュール削除試行', [
+                'user_id' => Auth::user()->id,
+                'schedule_id' => $schedule->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'このスケジュールを削除する権限がありません。',
+                'error_code' => 'AUTHORIZATION_FAILED',
+            ], 403);
         } catch (TenantViolationException $e) {
             Log::critical('テナント境界違反によるスケジュール削除試行', $e->getLogContext());
 
