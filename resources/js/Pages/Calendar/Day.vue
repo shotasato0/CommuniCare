@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import FullCalendar from '@fullcalendar/vue3'
@@ -20,6 +20,25 @@ const events = ref(props.events || [])
 const residents = ref(props.residents || [])
 const scheduleTypes = ref(props.scheduleTypes || [])
 const currentDate = ref(props.currentDate || dayjs().format('YYYY-MM-DD'))
+
+// FullCalendarのref
+const calendarRef = ref(null)
+
+// propsの変更を監視してrefを更新
+watch(
+    () => props.events,
+    (newEvents) => {
+        if (newEvents) {
+            events.value = newEvents
+            // FullCalendarのイベントを更新
+            if (calendarRef.value) {
+                const calendarApi = calendarRef.value.getApi()
+                calendarApi.refetchEvents()
+            }
+        }
+    },
+    { deep: true }
+)
 
 // スケジュール作成フォームの表示状態
 const showScheduleForm = ref(false)
@@ -88,9 +107,20 @@ const calendarOptions = computed(() => ({
 }))
 
 // スケジュール作成成功時の処理
-const handleScheduleCreated = () => {
-    // カレンダーを再読み込み
-    router.reload({ only: ['events'] })
+const handleScheduleCreated = (newEvent) => {
+    console.log('handleScheduleCreated called (Day)', newEvent);
+    
+    if (newEvent) {
+        // 作成されたイベントを直接eventsに追加
+        events.value = [...events.value, newEvent];
+        console.log('Added new event to events.value:', events.value.length);
+        
+        // FullCalendarのイベントを更新
+        if (calendarRef.value) {
+            const calendarApi = calendarRef.value.getApi();
+            calendarApi.refetchEvents();
+        }
+    }
 }
 
 // フォームを閉じる
@@ -133,7 +163,7 @@ const closeScheduleModal = () => {
 
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">
-                            <FullCalendar :options="calendarOptions" @datesSet="handleDayChange" />
+                            <FullCalendar ref="calendarRef" :options="calendarOptions" @datesSet="handleDayChange" />
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { Head, usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import FullCalendar from "@fullcalendar/vue3";
@@ -20,6 +20,63 @@ const residents = ref(props.residents || []);
 const scheduleTypes = ref(props.scheduleTypes || []);
 const monthStats = ref(props.monthStats || { total: 0, by_type: {} });
 const currentDate = ref(props.currentDate || dayjs().format("YYYY-MM-DD"));
+
+// FullCalendarのref
+const calendarRef = ref(null);
+
+// propsの変更を監視してrefを更新
+watch(
+    () => props.events,
+    (newEvents, oldEvents) => {
+        console.log('props.events changed:', {
+            oldLength: oldEvents?.length || 0,
+            newLength: newEvents?.length || 0,
+            oldEvents: oldEvents,
+            newEvents: newEvents
+        });
+        if (newEvents) {
+            // 配列の参照を変更して確実に更新
+            events.value = [...newEvents];
+            console.log('events.value updated:', events.value.length);
+            
+            // FullCalendarのイベントを更新
+            if (calendarRef.value) {
+                const calendarApi = calendarRef.value.getApi();
+                console.log('Updating calendar events, current events:', calendarApi.getEvents().length);
+                
+                // すべてのイベントを削除
+                calendarApi.removeAllEvents();
+                
+                // 新しいイベントを追加
+                if (Array.isArray(newEvents) && newEvents.length > 0) {
+                    newEvents.forEach(event => {
+                        calendarApi.addEvent(event);
+                    });
+                }
+                
+                // カレンダーを再レンダリングしてdayCellDidMountを再実行
+                // 現在の日付を取得して、同じ日付に戻すことで再レンダリングを強制
+                const currentDate = calendarApi.getDate();
+                calendarApi.gotoDate(currentDate);
+                
+                console.log('Calendar updated, new events:', calendarApi.getEvents().length);
+            } else {
+                console.warn('calendarRef.value is null');
+            }
+        }
+    },
+    { deep: true, immediate: false }
+);
+
+watch(
+    () => props.monthStats,
+    (newStats) => {
+        if (newStats) {
+            monthStats.value = newStats;
+        }
+    },
+    { deep: true }
+);
 
 // デバッグ: 初期データを確認
 console.log("Initial props:", props);
@@ -266,9 +323,42 @@ const calendarOptions = computed(() => ({
 }));
 
 // スケジュール作成成功時の処理
-const handleScheduleCreated = () => {
-    // カレンダーを再読み込み
-    router.reload({ only: ["events", "monthStats"] });
+const handleScheduleCreated = (newEvent) => {
+    console.log('handleScheduleCreated called', newEvent);
+    
+    if (newEvent) {
+        // 作成されたイベントを直接eventsに追加
+        events.value = [...events.value, newEvent];
+        console.log('Added new event to events.value:', events.value.length);
+        
+        // eventsByDateが更新されるのを待つ
+        nextTick(() => {
+            console.log('eventsByDate updated, re-rendering calendar');
+            console.log('eventsByDate keys:', Object.keys(eventsByDate.value));
+            
+            // FullCalendarを強制的に再レンダリング
+            if (calendarRef.value) {
+                const calendarApi = calendarRef.value.getApi();
+                
+                // カレンダーを完全に再レンダリングするために、月を変更して戻す
+                const currentDate = calendarApi.getDate();
+                calendarApi.gotoDate(dayjs(currentDate).subtract(1, 'month').toDate());
+                
+                setTimeout(() => {
+                    calendarApi.gotoDate(currentDate);
+                    console.log('Calendar force updated and re-rendered');
+                }, 100);
+            }
+        });
+        
+        // 月間統計情報も更新
+        if (monthStats.value) {
+            monthStats.value = {
+                ...monthStats.value,
+                total: monthStats.value.total + 1,
+            };
+        }
+    }
 };
 
 // フォームを閉じる
@@ -312,6 +402,7 @@ const closeScheduleModal = () => {
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">
                             <FullCalendar
+                                ref="calendarRef"
                                 :options="calendarOptions"
                                 @datesSet="handleMonthChange"
                             />
