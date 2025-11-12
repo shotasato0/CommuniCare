@@ -28,38 +28,44 @@ const calendarRef = ref(null);
 watch(
     () => props.events,
     (newEvents, oldEvents) => {
-        console.log('props.events changed:', {
+        console.log("props.events changed:", {
             oldLength: oldEvents?.length || 0,
             newLength: newEvents?.length || 0,
             oldEvents: oldEvents,
-            newEvents: newEvents
+            newEvents: newEvents,
         });
         if (newEvents) {
             // 配列の参照を変更して確実に更新
             events.value = [...newEvents];
-            console.log('events.value updated:', events.value.length);
-            
+            console.log("events.value updated:", events.value.length);
+
             // FullCalendarのイベントを更新
             if (calendarRef.value) {
                 const calendarApi = calendarRef.value.getApi();
-                console.log('Updating calendar events, current events:', calendarApi.getEvents().length);
-                
+                console.log(
+                    "Updating calendar events, current events:",
+                    calendarApi.getEvents().length
+                );
+
                 // すべてのイベントを削除
                 calendarApi.removeAllEvents();
-                
+
                 // 新しいイベントを追加
                 if (Array.isArray(newEvents) && newEvents.length > 0) {
-                    newEvents.forEach(event => {
+                    newEvents.forEach((event) => {
                         calendarApi.addEvent(event);
                     });
                 }
-                
+
                 // dayCellDidMountはeventsByDateが変更されると自動的に再実行されるため
                 // gotoDateを使わずにイベントの更新のみを行う
-                
-                console.log('Calendar updated, new events:', calendarApi.getEvents().length);
+
+                console.log(
+                    "Calendar updated, new events:",
+                    calendarApi.getEvents().length
+                );
             } else {
-                console.warn('calendarRef.value is null');
+                console.warn("calendarRef.value is null");
             }
         }
     },
@@ -122,12 +128,12 @@ const handleDateClick = (info) => {
     const clickedElement = info.jsEvent?.target;
     if (clickedElement) {
         // カスタムスケジュールアイテムまたはその子要素がクリックされた場合は無視
-        const scheduleItem = clickedElement.closest('[data-event-id]');
+        const scheduleItem = clickedElement.closest("[data-event-id]");
         if (scheduleItem) {
             return; // イベントクリックで処理されるため、dateClickは無視
         }
     }
-    
+
     formInitialDate.value = dayjs(info.date).format("YYYY-MM-DD");
     formInitialResidentId.value = null;
     showScheduleForm.value = true;
@@ -137,7 +143,7 @@ const handleDateClick = (info) => {
 const handleEventClick = (info) => {
     // スケジュール作成フォームを閉じる（誤って開かないように）
     showScheduleForm.value = false;
-    
+
     selectedSchedule.value = info.event;
     showScheduleModal.value = true;
 };
@@ -201,6 +207,61 @@ const dayCellDidMount = (info) => {
     const dayFrame = info.el.querySelector(".fc-daygrid-day-frame");
     if (!dayFrame) return;
 
+    // 当日かどうかを判定
+    const todayStr = dayjs().format("YYYY-MM-DD");
+    const isToday = dateStr === todayStr;
+
+    // 当日のセルの透明な膜（背景要素）を削除
+    if (isToday) {
+        // .fc-daygrid-day-bg要素を非表示にする
+        const dayBg = dayFrame.querySelector(".fc-daygrid-day-bg");
+        if (dayBg) {
+            dayBg.style.display = "none";
+        }
+
+        // セル全体の背景も透明にする
+        const dayCell = info.el;
+        if (dayCell) {
+            dayCell.style.backgroundColor = "transparent";
+        }
+    }
+
+    // 日付番号要素を取得して当日のスタイルを適用
+    const dayNumberEl = dayFrame.querySelector(".fc-daygrid-day-number");
+    if (dayNumberEl) {
+        if (isToday) {
+            // ダークモードかどうかを判定
+            const isDarkMode =
+                document.documentElement.classList.contains("dark");
+
+            // 当日の場合はTailwindクラスを追加
+            dayNumberEl.classList.add(
+                "bg-blue-600",
+                "text-white",
+                "rounded",
+                "dark:bg-blue-700"
+            );
+            // 既存のスタイルを上書き（ダークモード対応）
+            dayNumberEl.style.backgroundColor = isDarkMode
+                ? "#1d4ed8"
+                : "#2563eb";
+            dayNumberEl.style.color = "white";
+            dayNumberEl.style.borderRadius = "4px";
+        } else {
+            // 当日でない場合は当日用のクラスを削除
+            dayNumberEl.classList.remove(
+                "bg-blue-600",
+                "text-white",
+                "rounded",
+                "dark:bg-blue-700"
+            );
+            // スタイルをリセット
+            dayNumberEl.style.backgroundColor = "";
+            dayNumberEl.style.color = "";
+            dayNumberEl.style.borderRadius = "";
+        }
+    }
+
     // デフォルトのイベント表示を非表示にする
     const dayEvents = dayFrame.querySelector(".fc-daygrid-day-events");
     if (dayEvents) {
@@ -218,8 +279,7 @@ const dayCellDidMount = (info) => {
     contentContainer.className =
         "flex-1 flex flex-col p-1 gap-1 min-h-0 overflow-hidden w-full custom-day-content";
 
-    // .fc-daygrid-day-numberの後に挿入
-    const dayNumberEl = dayFrame.querySelector(".fc-daygrid-day-number");
+    // .fc-daygrid-day-numberの後に挿入（既に取得済みのdayNumberElを使用）
     if (dayNumberEl && dayNumberEl.nextSibling) {
         dayFrame.insertBefore(contentContainer, dayNumberEl.nextSibling);
     } else {
@@ -337,74 +397,103 @@ const calendarOptions = computed(() => ({
 
 // スケジュール作成成功時の処理
 const handleScheduleCreated = (newEvent) => {
-    console.log('handleScheduleCreated called', newEvent);
-    
+    console.log("handleScheduleCreated called", newEvent);
+
     if (newEvent) {
         // 作成されたスケジュールの日付を取得
-        const createdDate = newEvent.start ? dayjs(newEvent.start).format("YYYY-MM-DD") : null;
-        
+        const createdDate = newEvent.start
+            ? dayjs(newEvent.start).format("YYYY-MM-DD")
+            : null;
+
         // 作成されたイベントを直接eventsに追加
         events.value = [...events.value, newEvent];
-        console.log('Added new event to events.value:', events.value.length);
-        
+        console.log("Added new event to events.value:", events.value.length);
+
         // FullCalendarのイベントを更新
         if (calendarRef.value) {
             const calendarApi = calendarRef.value.getApi();
-            
+
             // 新しいイベントをFullCalendarに追加
             calendarApi.addEvent(newEvent);
         }
-        
+
         // eventsByDateが更新されるのを待つ（複数のnextTickで確実に更新されるのを待つ）
         nextTick(() => {
             // もう一度nextTickで確実にeventsByDateが更新されるのを待つ
             nextTick(() => {
-                console.log('eventsByDate updated after creation');
-                
+                console.log("eventsByDate updated after creation");
+
                 // FullCalendarのイベントを再読み込み
                 if (calendarRef.value) {
                     const calendarApi = calendarRef.value.getApi();
-                    
+
                     // 作成されたスケジュールの日付のセルを手動で更新
                     if (createdDate) {
-                        const dayElements = calendarApi.el.querySelectorAll('.fc-daygrid-day');
+                        const dayElements =
+                            calendarApi.el.querySelectorAll(".fc-daygrid-day");
                         dayElements.forEach((dayEl) => {
-                            const dayNumberEl = dayEl.querySelector('.fc-daygrid-day-number');
+                            const dayNumberEl = dayEl.querySelector(
+                                ".fc-daygrid-day-number"
+                            );
                             if (dayNumberEl) {
                                 // 日付番号から日付を推測
                                 const view = calendarApi.view;
                                 if (view && view.activeStart) {
-                                    const cellIndex = Array.from(dayElements).indexOf(dayEl);
+                                    const cellIndex =
+                                        Array.from(dayElements).indexOf(dayEl);
                                     if (cellIndex >= 0) {
-                                        const cellDate = dayjs(view.activeStart).add(cellIndex, 'day');
-                                        const cellDateStr = cellDate.format("YYYY-MM-DD");
-                                        
+                                        const cellDate = dayjs(
+                                            view.activeStart
+                                        ).add(cellIndex, "day");
+                                        const cellDateStr =
+                                            cellDate.format("YYYY-MM-DD");
+
                                         // 作成されたスケジュールの日付のセルのみ更新
                                         if (cellDateStr === createdDate) {
-                                            const dayFrame = dayEl.querySelector(".fc-daygrid-day-frame");
+                                            const dayFrame =
+                                                dayEl.querySelector(
+                                                    ".fc-daygrid-day-frame"
+                                                );
                                             if (dayFrame) {
                                                 // 既存のカスタムコンテンツを完全に削除
-                                                const existingContents = dayFrame.querySelectorAll(".custom-day-content");
-                                                existingContents.forEach(content => {
-                                                    content.remove();
-                                                });
-                                                
+                                                const existingContents =
+                                                    dayFrame.querySelectorAll(
+                                                        ".custom-day-content"
+                                                    );
+                                                existingContents.forEach(
+                                                    (content) => {
+                                                        content.remove();
+                                                    }
+                                                );
+
                                                 // 念のため、dayFrame内のすべての子要素を確認して、カスタムコンテンツを削除
-                                                const dayNumberEl = dayFrame.querySelector(".fc-daygrid-day-number");
+                                                const dayNumberEl =
+                                                    dayFrame.querySelector(
+                                                        ".fc-daygrid-day-number"
+                                                    );
                                                 if (dayNumberEl) {
                                                     // dayNumberElの次の兄弟要素から最後まで、カスタムコンテンツの可能性がある要素を削除
-                                                    let nextSibling = dayNumberEl.nextSibling;
+                                                    let nextSibling =
+                                                        dayNumberEl.nextSibling;
                                                     while (nextSibling) {
-                                                        const toRemove = nextSibling;
-                                                        nextSibling = nextSibling.nextSibling;
+                                                        const toRemove =
+                                                            nextSibling;
+                                                        nextSibling =
+                                                            nextSibling.nextSibling;
                                                         // .fc-daygrid-day-eventsと.fc-daygrid-day-bgは残す
-                                                        if (!toRemove.classList.contains('fc-daygrid-day-events') && 
-                                                            !toRemove.classList.contains('fc-daygrid-day-bg')) {
+                                                        if (
+                                                            !toRemove.classList.contains(
+                                                                "fc-daygrid-day-events"
+                                                            ) &&
+                                                            !toRemove.classList.contains(
+                                                                "fc-daygrid-day-bg"
+                                                            )
+                                                        ) {
                                                             toRemove.remove();
                                                         }
                                                     }
                                                 }
-                                                
+
                                                 // dayCellDidMountを再実行
                                                 const cellInfo = {
                                                     date: cellDate.toDate(),
@@ -421,12 +510,15 @@ const handleScheduleCreated = (newEvent) => {
                         // 日付が取得できない場合は、すべてのセルを再レンダリング
                         calendarApi.render();
                     }
-                    
-                    console.log('Calendar updated after creation, events:', calendarApi.getEvents().length);
+
+                    console.log(
+                        "Calendar updated after creation, events:",
+                        calendarApi.getEvents().length
+                    );
                 }
             });
         });
-        
+
         // 月間統計情報も更新
         if (monthStats.value) {
             monthStats.value = {
@@ -452,96 +544,135 @@ const handleScheduleUpdated = () => {
 
 // スケジュール削除成功時の処理
 const handleScheduleDeleted = (deletedScheduleId) => {
-    console.log('handleScheduleDeleted called', deletedScheduleId);
-    
+    console.log("handleScheduleDeleted called", deletedScheduleId);
+
     // まずモーダルを閉じる（確実に閉じるため）
     closeScheduleModal();
-    
+
     // スケジュール作成フォームも閉じる（誤って開かないように）
     showScheduleForm.value = false;
-    
+
     if (deletedScheduleId) {
         // 削除される前のスケジュールの日付を取得
-        const deletedEvent = events.value.find(event => event.id === deletedScheduleId);
-        const deletedDate = deletedEvent ? dayjs(deletedEvent.start).format("YYYY-MM-DD") : null;
-        
+        const deletedEvent = events.value.find(
+            (event) => event.id === deletedScheduleId
+        );
+        const deletedDate = deletedEvent
+            ? dayjs(deletedEvent.start).format("YYYY-MM-DD")
+            : null;
+
         // 削除されたスケジュールをeventsから直接削除
-        events.value = events.value.filter(event => event.id !== deletedScheduleId);
-        console.log('Removed deleted event from events.value:', events.value.length);
-        
+        events.value = events.value.filter(
+            (event) => event.id !== deletedScheduleId
+        );
+        console.log(
+            "Removed deleted event from events.value:",
+            events.value.length
+        );
+
         // FullCalendarのイベントを更新
         if (calendarRef.value) {
             const calendarApi = calendarRef.value.getApi();
-            
+
             // 削除されたイベントをFullCalendarからも削除
             const eventToRemove = calendarApi.getEventById(deletedScheduleId);
             if (eventToRemove) {
                 eventToRemove.remove();
             }
         }
-        
+
         // eventsByDateが更新されるのを待つ（複数のnextTickで確実に更新されるのを待つ）
         nextTick(() => {
             // もう一度nextTickで確実にeventsByDateが更新されるのを待つ
             nextTick(() => {
-                console.log('eventsByDate updated after deletion');
-                
+                console.log("eventsByDate updated after deletion");
+
                 // FullCalendarのイベントを再読み込み
                 if (calendarRef.value) {
                     const calendarApi = calendarRef.value.getApi();
-                    
+
                     // すべてのイベントを削除してから再追加
                     calendarApi.removeAllEvents();
-                    
+
                     // 新しいイベントを追加
-                    if (Array.isArray(events.value) && events.value.length > 0) {
-                        events.value.forEach(event => {
+                    if (
+                        Array.isArray(events.value) &&
+                        events.value.length > 0
+                    ) {
+                        events.value.forEach((event) => {
                             calendarApi.addEvent(event);
                         });
                     }
-                    
+
                     // 削除されたスケジュールの日付のセルを手動で更新
                     if (deletedDate) {
-                        const dayElements = calendarApi.el.querySelectorAll('.fc-daygrid-day');
+                        const dayElements =
+                            calendarApi.el.querySelectorAll(".fc-daygrid-day");
                         dayElements.forEach((dayEl) => {
-                            const dayNumberEl = dayEl.querySelector('.fc-daygrid-day-number');
+                            const dayNumberEl = dayEl.querySelector(
+                                ".fc-daygrid-day-number"
+                            );
                             if (dayNumberEl) {
                                 // 日付番号から日付を推測
                                 const view = calendarApi.view;
                                 if (view && view.activeStart) {
-                                    const cellIndex = Array.from(dayElements).indexOf(dayEl);
+                                    const cellIndex =
+                                        Array.from(dayElements).indexOf(dayEl);
                                     if (cellIndex >= 0) {
-                                        const cellDate = dayjs(view.activeStart).add(cellIndex, 'day');
-                                        const cellDateStr = cellDate.format("YYYY-MM-DD");
-                                        
+                                        const cellDate = dayjs(
+                                            view.activeStart
+                                        ).add(cellIndex, "day");
+                                        const cellDateStr =
+                                            cellDate.format("YYYY-MM-DD");
+
                                         // 削除されたスケジュールの日付のセルのみ更新
                                         if (cellDateStr === deletedDate) {
-                                            const dayFrame = dayEl.querySelector(".fc-daygrid-day-frame");
+                                            const dayFrame =
+                                                dayEl.querySelector(
+                                                    ".fc-daygrid-day-frame"
+                                                );
                                             if (dayFrame) {
                                                 // 既存のカスタムコンテンツを完全に削除
                                                 // .custom-day-contentクラスを持つ要素をすべて削除
-                                                const existingContents = dayFrame.querySelectorAll(".custom-day-content");
-                                                existingContents.forEach(content => {
-                                                    content.remove();
-                                                });
-                                                
+                                                const existingContents =
+                                                    dayFrame.querySelectorAll(
+                                                        ".custom-day-content"
+                                                    );
+                                                existingContents.forEach(
+                                                    (content) => {
+                                                        content.remove();
+                                                    }
+                                                );
+
                                                 // 念のため、dayFrame内のすべての子要素を確認して、カスタムコンテンツを削除
                                                 // .fc-daygrid-day-number以外の要素を削除（カスタムコンテンツの可能性がある）
-                                                const dayNumberEl = dayFrame.querySelector(".fc-daygrid-day-number");
+                                                const dayNumberEl =
+                                                    dayFrame.querySelector(
+                                                        ".fc-daygrid-day-number"
+                                                    );
                                                 if (dayNumberEl) {
                                                     // dayNumberElの次の兄弟要素から最後まで、カスタムコンテンツの可能性がある要素を削除
-                                                    let nextSibling = dayNumberEl.nextSibling;
+                                                    let nextSibling =
+                                                        dayNumberEl.nextSibling;
                                                     while (nextSibling) {
-                                                        const toRemove = nextSibling;
-                                                        nextSibling = nextSibling.nextSibling;
+                                                        const toRemove =
+                                                            nextSibling;
+                                                        nextSibling =
+                                                            nextSibling.nextSibling;
                                                         // .fc-daygrid-day-eventsと.fc-daygrid-day-bgは残す
-                                                        if (!toRemove.classList.contains('fc-daygrid-day-events') && 
-                                                            !toRemove.classList.contains('fc-daygrid-day-bg')) {
+                                                        if (
+                                                            !toRemove.classList.contains(
+                                                                "fc-daygrid-day-events"
+                                                            ) &&
+                                                            !toRemove.classList.contains(
+                                                                "fc-daygrid-day-bg"
+                                                            )
+                                                        ) {
                                                             toRemove.remove();
                                                         }
                                                     }
                                                 }
-                                                
+
                                                 // dayCellDidMountを再実行
                                                 const cellInfo = {
                                                     date: cellDate.toDate(),
@@ -558,12 +689,15 @@ const handleScheduleDeleted = (deletedScheduleId) => {
                         // 日付が取得できない場合は、すべてのセルを再レンダリング
                         calendarApi.render();
                     }
-                    
-                    console.log('Calendar updated after deletion, events:', calendarApi.getEvents().length);
+
+                    console.log(
+                        "Calendar updated after deletion, events:",
+                        calendarApi.getEvents().length
+                    );
                 }
             });
         });
-        
+
         // 月間統計情報も更新
         if (monthStats.value) {
             monthStats.value = {
@@ -811,14 +945,23 @@ const closeScheduleModal = () => {
 }
 
 /* 今日の日付を強調 */
-:deep(.fc-day-today .day-number) {
+/* 当日のセルの透明な膜（背景）を削除 */
+:deep(.fc-day-today) {
+    background-color: transparent !important;
+}
+
+:deep(.fc-day-today .fc-daygrid-day-bg) {
+    display: none !important;
+}
+
+:deep(.fc-day-today .fc-daygrid-day-number) {
     background-color: #3b82f6;
     color: white;
     border-radius: 4px;
 }
 
 /* ダークモード対応 */
-.dark :deep(.day-number) {
+.dark :deep(.fc-daygrid-day-number) {
     background-color: #374151;
     color: #f9fafb;
     border-bottom-color: #4b5563;
@@ -840,7 +983,7 @@ const closeScheduleModal = () => {
     color: #e5e7eb;
 }
 
-.dark :deep(.fc-day-today .day-number) {
+.dark :deep(.fc-day-today .fc-daygrid-day-number) {
     background-color: #2563eb;
     color: white;
 }
