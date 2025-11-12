@@ -66,6 +66,16 @@ const handleDayChange = (info) => {
 
 // 日付クリック時の処理
 const handleDateClick = (info) => {
+    // イベントがクリックされた場合は何もしない（eventClickで処理される）
+    const clickedElement = info.jsEvent?.target;
+    if (clickedElement) {
+        // イベント要素がクリックされた場合は無視
+        const eventElement = clickedElement.closest('.fc-event');
+        if (eventElement) {
+            return; // イベントクリックで処理されるため、dateClickは無視
+        }
+    }
+    
     formInitialDate.value = dayjs(info.date).format('YYYY-MM-DD')
     formInitialResidentId.value = null
     showScheduleForm.value = true
@@ -73,6 +83,9 @@ const handleDateClick = (info) => {
 
 // イベントクリック時の処理
 const handleEventClick = (info) => {
+    // スケジュール作成フォームを閉じる（誤って開かないように）
+    showScheduleForm.value = false
+    
     selectedSchedule.value = info.event
     showScheduleModal.value = true
 }
@@ -140,6 +153,9 @@ const handleScheduleUpdated = () => {
 const handleScheduleDeleted = (deletedScheduleId) => {
     console.log('handleScheduleDeleted called (Day)', deletedScheduleId);
     
+    // まずモーダルを閉じる（確実に閉じるため）
+    closeScheduleModal();
+    
     if (deletedScheduleId) {
         // 削除されたスケジュールをeventsから直接削除
         events.value = events.value.filter(event => event.id !== deletedScheduleId);
@@ -151,9 +167,6 @@ const handleScheduleDeleted = (deletedScheduleId) => {
             calendarApi.refetchEvents();
         }
     }
-    
-    // モーダルを閉じる
-    closeScheduleModal();
 }
 
 // モーダルを閉じる
