@@ -43,7 +43,9 @@ class CalendarController extends Controller
             'date_to' => $endOfMonth,
         ];
         // 月間データなので全件取得（perPageをnullにすることで全件取得）
-        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        // Paginatorからコレクションを取得
+        $schedules = $schedulesPaginator->getCollection();
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
@@ -116,7 +118,9 @@ class CalendarController extends Controller
             'date_from' => $startOfWeek,
             'date_to' => $endOfWeek,
         ];
-        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        // Paginatorからコレクションを取得
+        $schedules = $schedulesPaginator->getCollection();
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
@@ -181,7 +185,9 @@ class CalendarController extends Controller
             'date_from' => $carbonDate->format('Y-m-d'),
             'date_to' => $carbonDate->format('Y-m-d'),
         ];
-        $schedules = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
+        // Paginatorからコレクションを取得
+        $schedules = $schedulesPaginator->getCollection();
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
