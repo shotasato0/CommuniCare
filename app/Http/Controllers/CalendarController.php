@@ -48,6 +48,11 @@ class CalendarController extends Controller
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
+            // リレーションがnullの場合はスキップ
+            if (!$schedule->resident || !$schedule->scheduleType || !$schedule->calendarDate) {
+                return null;
+            }
+
             // Carbonを使用してISO 8601形式の日時文字列を生成
             $startDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->start_time);
             $endDateTime = Carbon::parse($schedule->calendarDate->date->format('Y-m-d') . ' ' . $schedule->end_time);
@@ -67,7 +72,7 @@ class CalendarController extends Controller
                     'memo' => $schedule->memo,
                 ],
             ];
-        });
+        })->filter(); // nullの要素を除外
 
         // 利用者一覧を取得
         $residents = Resident::where('tenant_id', $currentTenantId)
