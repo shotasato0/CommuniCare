@@ -35,15 +35,14 @@ const showScheduleModal = ref(false);
 const selectedSchedule = ref(null);
 
 // props.eventsの変更を監視してeventsを更新
+// props.eventsの変更を監視してeventsを更新
 watch(
     () => props.events,
     (newEvents) => {
-        console.log("Watcher: props.events changed", newEvents?.length);
         if (newEvents) {
             events.value = newEvents;
             // コンポーネントを再生成して完全にリセット
             calendarKey.value++;
-            console.log("Watcher: incremented calendarKey to", calendarKey.value);
         }
     },
     { deep: true }
@@ -113,7 +112,6 @@ const handleEventClick = (info) => {
 
 // 日付ごとにスケジュールと入浴予定者をグループ化
 const eventsByDate = computed(() => {
-    console.log("Computed: eventsByDate recalculating", events.value?.length);
     const grouped = {};
     
     if (!events.value || events.value.length === 0) {
@@ -124,8 +122,6 @@ const eventsByDate = computed(() => {
         if (!event.start) return;
         
         const date = dayjs(event.start).format("YYYY-MM-DD");
-        // デバッグ: 全イベントの日付変換ログ
-        console.log(`Event[${index}] id=${event.id} start=${event.start} -> date=${date}`);
         
         if (!grouped[date]) {
             grouped[date] = {
@@ -138,7 +134,6 @@ const eventsByDate = computed(() => {
             grouped[date].residents.add(event.extendedProps.resident_id);
         }
     });
-    console.log("Computed: eventsByDate keys:", Object.keys(grouped));
     return grouped;
 });
 
@@ -146,16 +141,6 @@ const eventsByDate = computed(() => {
 const renderDayCellContent = (info) => {
     const dateStr = dayjs(info.date).format("YYYY-MM-DD");
     const dayData = eventsByDate.value[dateStr];
-    
-    // 特定の日付（例：イベントがあるはずの日）でログを出力
-    if (dayData) {
-        console.log(`Render: Found data for ${dateStr}:`, dayData.schedules.length, "schedules");
-    } else {
-        // データがない場合も、特定の日付（例：4日）だけログ出す
-        if (dateStr.endsWith("-04") || dateStr.endsWith("-02")) {
-             console.log(`Render: No data for ${dateStr}`);
-        }
-    }
     
     const isToday = dateStr === dayjs().format("YYYY-MM-DD");
     const isDarkMode = document.documentElement.classList.contains("dark");
@@ -316,7 +301,6 @@ const calendarOptions = computed(() => ({
 
 // スケジュール作成成功時の処理
 const handleScheduleCreated = (newEvent) => {
-    console.log("handleScheduleCreated called", newEvent);
 
     if (newEvent) {
         // 作成されたスケジュールの日付を取得
@@ -326,7 +310,6 @@ const handleScheduleCreated = (newEvent) => {
 
         // 作成されたイベントを直接eventsに追加
         events.value = [...events.value, newEvent];
-        console.log("Added new event to events.value:", events.value.length);
 
         // FullCalendarのイベントを更新
         if (calendarRef.value) {
@@ -370,7 +353,6 @@ const handleScheduleUpdated = () => {
 
 // スケジュール削除成功時の処理
 const handleScheduleDeleted = (deletedScheduleId) => {
-    console.log("handleScheduleDeleted called", deletedScheduleId);
 
     // まずモーダルを閉じる（確実に閉じるため）
     closeScheduleModal();
@@ -390,10 +372,6 @@ const handleScheduleDeleted = (deletedScheduleId) => {
         // 削除されたスケジュールをeventsから直接削除
         events.value = events.value.filter(
             (event) => event.id !== deletedScheduleId
-        );
-        console.log(
-            "Removed deleted event from events.value:",
-            events.value.length
         );
 
         // FullCalendarのイベントを更新
@@ -446,7 +424,7 @@ const closeScheduleModal = () => {
                         <h1 class="text-2xl font-bold mb-6">カレンダー</h1>
 
                         <!-- デバッグ用セクション -->
-                        <div class="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-sm text-black">
+                        <!-- <div class="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-sm text-black">
                             <h3 class="font-bold mb-2">デバッグ情報</h3>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>Events Length: {{ events.length }}</div>
@@ -465,7 +443,7 @@ const closeScheduleModal = () => {
                             <div class="mt-2 text-xs text-gray-600">
                                 <p>Events Sample: {{ events.length > 0 ? JSON.stringify(events[0]).substring(0, 100) + '...' : 'None' }}</p>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">

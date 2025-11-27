@@ -86,12 +86,6 @@ class CalendarController extends Controller
             'total' => $schedules->count(),
         ];
 
-        \Illuminate\Support\Facades\Log::info('CalendarController::index', [
-            'date' => $date,
-            'events_count' => $events->count(),
-            'residents_count' => $residents->count(),
-            'first_event' => $events->first(),
-        ]);
 
         return Inertia::render('Calendar/Index', [
             'events' => $events,
