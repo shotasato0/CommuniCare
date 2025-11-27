@@ -147,55 +147,55 @@ const renderDayCellContent = (info) => {
 
     // コンテナ
     const container = document.createElement("div");
-    container.className = "flex flex-col h-full w-full overflow-hidden";
+    container.className = "flex flex-col h-full w-full overflow-hidden relative group transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50";
     
     // 1. 日付番号エリア
     const headerDiv = document.createElement("div");
-    headerDiv.className = "flex justify-end p-1";
+    headerDiv.className = "flex justify-between items-start p-1.5";
     
-    const dayNumberLink = document.createElement("a");
-    dayNumberLink.className = "fc-daygrid-day-number cursor-pointer no-underline hover:underline";
-    dayNumberLink.innerText = info.dayNumberText;
+    // 日付番号
+    const dayNumberSpan = document.createElement("span");
+    dayNumberSpan.className = "text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full transition-colors";
+    dayNumberSpan.innerText = info.dayNumberText.replace('日', ''); // "日"を削除して数字のみに
     
     // 当日のスタイル適用
     if (isToday) {
-        dayNumberLink.classList.add(
+        dayNumberSpan.classList.add(
             "bg-blue-600",
             "text-white",
-            "rounded",
-            "px-1",
-            "dark:bg-blue-700"
+            "shadow-md",
+            "dark:bg-blue-500"
         );
-        dayNumberLink.style.backgroundColor = isDarkMode ? "#1d4ed8" : "#2563eb";
-        dayNumberLink.style.color = "white";
     } else {
-        dayNumberLink.classList.add("text-gray-700", "dark:text-gray-300");
+        dayNumberSpan.classList.add("text-gray-700", "dark:text-gray-300");
     }
     
-    headerDiv.appendChild(dayNumberLink);
+    headerDiv.appendChild(dayNumberSpan);
     container.appendChild(headerDiv);
 
     // 2. カスタムコンテンツエリア
     const contentContainer = document.createElement("div");
-    contentContainer.className = "flex-1 flex flex-col p-1 gap-1 min-h-0 overflow-hidden w-full custom-day-content";
+    contentContainer.className = "flex-1 flex flex-col px-1 pb-1 gap-1 min-h-0 overflow-hidden w-full";
 
-    // スケジュールセクション（上半分）
+    // スケジュールリスト
     const schedulesSection = document.createElement("div");
-    schedulesSection.className = "flex flex-col gap-0.5 overflow-y-auto min-h-[60px] flex-1 border-b-4 border-gray-400 pb-2 mb-2 bg-gray-50 dark:bg-gray-700";
+    schedulesSection.className = "flex flex-col gap-1 overflow-y-auto flex-1 min-h-0";
 
     if (dayData && dayData.schedules.length > 0) {
         dayData.schedules.forEach((schedule) => {
             const scheduleItem = document.createElement("div");
-            scheduleItem.className = "flex items-center gap-1 px-1 py-0.5 rounded text-sm text-white cursor-pointer hover:opacity-80";
+            // モダンなピル型デザイン
+            scheduleItem.className = "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-white cursor-pointer hover:opacity-90 transition-all shadow-sm transform hover:scale-[1.02]";
             scheduleItem.style.backgroundColor = schedule.backgroundColor || "#3B82F6";
+            scheduleItem.style.borderLeft = `3px solid ${schedule.borderColor || 'rgba(0,0,0,0.1)'}`;
             scheduleItem.setAttribute("data-event-id", schedule.id);
 
             const timeSpan = document.createElement("span");
-            timeSpan.className = "font-bold whitespace-nowrap";
+            timeSpan.className = "font-bold whitespace-nowrap opacity-90 text-[10px]";
             timeSpan.textContent = dayjs(schedule.start).format("HH:mm");
 
             const titleSpan = document.createElement("span");
-            titleSpan.className = "flex-1 overflow-hidden text-ellipsis whitespace-nowrap";
+            titleSpan.className = "flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium";
             titleSpan.textContent = schedule.extendedProps?.schedule_type_name || schedule.title;
 
             scheduleItem.appendChild(timeSpan);
@@ -221,31 +221,33 @@ const renderDayCellContent = (info) => {
     }
     contentContainer.appendChild(schedulesSection);
 
-    // 入浴予定者セクション（下半分）
-    const residentsSection = document.createElement("div");
-    residentsSection.className = "flex flex-col min-h-[50px] flex-1 border-t-4 border-gray-400 pt-2 bg-gray-100 dark:bg-gray-600";
-
-    const labelDiv = document.createElement("div");
-    labelDiv.className = "text-xs font-bold text-gray-600 dark:text-gray-300 mb-0.5";
-    labelDiv.textContent = "入浴予定者";
-    residentsSection.appendChild(labelDiv);
-
-    const listDiv = document.createElement("div");
+    // 入浴予定者セクション（下部に控えめに表示）
     if (dayData && dayData.residents.size > 0) {
-        listDiv.className = "text-sm text-gray-700 dark:text-gray-200 leading-relaxed break-words";
+        const residentsSection = document.createElement("div");
+        residentsSection.className = "mt-auto pt-1 border-t border-gray-100 dark:border-gray-700";
+
+        const residentsContainer = document.createElement("div");
+        residentsContainer.className = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400";
+        
+        // アイコン
+        const icon = document.createElement("i");
+        icon.className = "bi bi-droplet-fill text-blue-400 text-[10px]";
+        residentsContainer.appendChild(icon);
+
+        const listSpan = document.createElement("span");
+        listSpan.className = "truncate";
         const residentsList = Array.from(dayData.residents)
             .map((residentId) => {
                 const resident = residents.value.find((r) => r.id === residentId);
                 return resident ? resident.name : "";
             })
             .filter(Boolean);
-        listDiv.textContent = residentsList.join(", ");
-    } else {
-        listDiv.className = "text-sm text-gray-400 italic";
-        listDiv.textContent = "なし";
+        listSpan.textContent = residentsList.join(", ");
+        
+        residentsContainer.appendChild(listSpan);
+        residentsSection.appendChild(residentsContainer);
+        contentContainer.appendChild(residentsSection);
     }
-    residentsSection.appendChild(listDiv);
-    contentContainer.appendChild(residentsSection);
 
     container.appendChild(contentContainer);
 
@@ -297,6 +299,7 @@ const calendarOptions = computed(() => ({
     dayCellContent: renderDayCellContent, // カスタム日付セルコンテンツ（全置換）
     dayCellDidMount: dayCellDidMount, // 日付セルマウント後の処理（スタイル調整のみ）
     dayMaxEvents: false, // カスタム表示のため無効化
+    dayHeaderFormat: { weekday: 'short' }, // 曜日を短縮形に（月、火...）
 }));
 
 // スケジュール作成成功時の処理
@@ -415,36 +418,20 @@ const closeScheduleModal = () => {
     <AuthenticatedLayout>
         <Head title="カレンダー" />
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg"
-                >
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h1 class="text-2xl font-bold mb-6">カレンダー</h1>
+        <div class="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- ヘッダーエリア -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">カレンダー</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">スケジュールの確認と管理ができます</p>
+                    </div>
+                </div>
 
-                        <!-- デバッグ用セクション -->
-                        <!-- <div class="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded text-sm text-black">
-                            <h3 class="font-bold mb-2">デバッグ情報</h3>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>Events Length: {{ events.length }}</div>
-                                <div>Grouped Dates: {{ Object.keys(eventsByDate).length }}</div>
-                                <div>Calendar Ref: {{ calendarRef ? 'Present' : 'Null' }}</div>
-                                <div>Current Date: {{ currentDate }}</div>
-                            </div>
-                            <div class="mt-2 flex gap-2">
-                                <button 
-                                    @click="() => calendarRef.getApi().render()"
-                                    class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-                                >
-                                    強制レンダリング (Render)
-                                </button>
-                            </div>
-                            <div class="mt-2 text-xs text-gray-600">
-                                <p>Events Sample: {{ events.length > 0 ? JSON.stringify(events[0]).substring(0, 100) + '...' : 'None' }}</p>
-                            </div>
-                        </div> -->
-
+                <!-- カレンダーメインエリア -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="p-6">
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">
                             <FullCalendar
@@ -454,34 +441,43 @@ const closeScheduleModal = () => {
                                 @datesSet="handleMonthChange"
                             />
                         </div>
+                    </div>
+                </div>
 
-                        <!-- 月間統計情報 -->
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div
-                                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
-                            >
-                                <div
-                                    class="text-sm text-gray-600 dark:text-gray-400"
-                                >
-                                    総スケジュール数
-                                </div>
-                                <div class="text-2xl font-bold">
-                                    {{ monthStats.total }}
+                <!-- 月間統計情報（カードデザイン） -->
+                <div class="mt-8">
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 px-1">今月の統計</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- 総スケジュール数 -->
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-transform hover:-translate-y-1 duration-300">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">総スケジュール</div>
+                                <div class="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                                    <i class="bi bi-calendar-check text-lg"></i>
                                 </div>
                             </div>
-                            <div
-                                v-for="type in scheduleTypes"
-                                :key="type.id"
-                                class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
-                            >
-                                <div
-                                    class="text-sm text-gray-600 dark:text-gray-400"
+                            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                                {{ monthStats.total }}
+                            </div>
+                        </div>
+
+                        <!-- スケジュールタイプ別 -->
+                        <div
+                            v-for="type in scheduleTypes"
+                            :key="type.id"
+                            class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 transition-transform hover:-translate-y-1 duration-300"
+                        >
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ type.name }}</div>
+                                <div 
+                                    class="p-2 rounded-lg"
+                                    :style="{ backgroundColor: type.color ? `${type.color}20` : '#e5e7eb', color: type.color || '#6b7280' }"
                                 >
-                                    {{ type.name }}
+                                    <i class="bi bi-circle-fill text-xs"></i>
                                 </div>
-                                <div class="text-2xl font-bold">
-                                    {{ monthStats.by_type[type.id] || 0 }}
-                                </div>
+                            </div>
+                            <div class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                                {{ monthStats.by_type[type.id] || 0 }}
                             </div>
                         </div>
                     </div>
@@ -514,196 +510,129 @@ const closeScheduleModal = () => {
 </template>
 
 <style scoped>
+/* カレンダーコンテナ */
 .calendar-container {
-    margin-top: 1rem;
+    font-family: 'Inter', sans-serif;
 }
 
-/* カレンダー全体を大きくする */
+/* FullCalendarの全体スタイル調整 */
 :deep(.fc) {
-    font-size: 1.1rem;
+    --fc-border-color: #f3f4f6; /* 枠線を薄く */
+    --fc-today-bg-color: transparent; /* 今日の背景色をクリア */
+    --fc-neutral-bg-color: #f9fafb;
+    --fc-page-bg-color: #ffffff;
 }
 
-/* FullCalendarの日付セルを上下2分割にする */
-/* .fc-daygrid-day-frameはFullCalendarが自動生成するフレーム要素 */
-:deep(.fc-daygrid-day-frame) {
-    display: flex !important;
-    flex-direction: column !important;
-    height: 100% !important;
-    min-height: 150px !important;
-    position: relative;
+.dark :deep(.fc) {
+    --fc-border-color: #374151;
+    --fc-neutral-bg-color: #1f2937;
+    --fc-page-bg-color: #1f2937;
 }
 
-:deep(.fc-daygrid-day) {
-    height: auto;
-    min-height: 150px;
+/* ヘッダーツールバー */
+:deep(.fc-header-toolbar) {
+    margin-bottom: 1.5rem !important;
 }
 
-/* 日付番号部分 - 上部に固定 */
-:deep(.fc-daygrid-day-number) {
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding: 4px 8px;
-    border-bottom: 1px solid #e5e7eb;
-    background-color: #f9fafb;
-    flex-shrink: 0 !important;
-    order: 1;
+:deep(.fc-toolbar-title) {
+    font-size: 1.5rem !important;
+    font-weight: 700;
+    color: #1f2937;
 }
 
-/* デフォルトのイベント表示を非表示 */
-:deep(.fc-daygrid-day-events) {
-    display: none !important;
+.dark :deep(.fc-toolbar-title) {
+    color: #f3f4f6;
 }
 
-/* カスタムコンテンツコンテナ - 日付番号の下に配置 */
-:deep(.custom-day-content) {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 4px;
-    gap: 4px;
-    min-height: 0;
-    overflow: hidden;
-    order: 2;
-    width: 100%;
-}
-
-/* スケジュールセクション（上半分） */
-:deep(.schedules-section) {
-    flex: 1 1 50% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    overflow-y: auto;
-    min-height: 60px !important;
-    max-height: none;
-    border-bottom: 4px solid #9ca3af !important;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    background-color: rgba(249, 250, 251, 0.5);
-    position: relative;
-}
-
-/* 分割線をより明確にするための疑似要素 */
-:deep(.schedules-section::after) {
-    content: "";
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background-color: #6b7280;
-    border-top: 1px solid #4b5563;
-}
-
-:deep(.calendar-schedule-item) {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 4px;
-    border-radius: 3px;
-    font-size: 0.85rem;
-    color: white;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-:deep(.calendar-schedule-item:hover) {
-    opacity: 0.8;
-}
-
-:deep(.schedule-time) {
-    font-weight: bold;
-    white-space: nowrap;
-}
-
-:deep(.schedule-title) {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* 入浴予定者セクション（下半分） */
-:deep(.calendar-residents-section) {
-    flex: 1 1 50% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    min-height: 50px !important;
-    max-height: none;
-    padding-top: 8px;
-    border-top: 4px solid #9ca3af !important;
-    margin-top: 0;
-    background-color: rgba(243, 244, 246, 0.5);
-    position: relative;
-}
-
-/* 分割線をより明確にするための疑似要素 */
-:deep(.calendar-residents-section::before) {
-    content: "";
-    position: absolute;
-    top: -4px;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background-color: #6b7280;
-    border-bottom: 1px solid #4b5563;
-}
-
-:deep(.residents-label) {
-    font-size: 0.75rem;
-    font-weight: bold;
-    color: #6b7280;
-    margin-bottom: 2px;
-}
-
-:deep(.residents-list) {
-    font-size: 0.85rem;
+/* ボタンのカスタマイズ */
+:deep(.fc-button) {
+    background-color: white;
+    border: 1px solid #e5e7eb;
     color: #374151;
-    line-height: 1.4;
-    word-break: break-word;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
 }
 
-/* 今日の日付を強調 */
-/* 当日のセルの透明な膜（背景）を削除 */
+:deep(.fc-button:hover) {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+:deep(.fc-button-primary:not(:disabled).fc-button-active),
+:deep(.fc-button-primary:not(:disabled):active) {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.dark :deep(.fc-button) {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.dark :deep(.fc-button:hover) {
+    background-color: #4b5563;
+}
+
+/* 曜日ヘッダー */
+:deep(.fc-col-header-cell) {
+    padding: 0.75rem 0;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.fc-col-header-cell-cushion) {
+    color: #6b7280;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.dark :deep(.fc-col-header-cell) {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+}
+
+.dark :deep(.fc-col-header-cell-cushion) {
+    color: #9ca3af;
+}
+
+/* 日付セルフレーム */
+:deep(.fc-daygrid-day-frame) {
+    min-height: 120px !important;
+    transition: background-color 0.2s;
+}
+
+/* 今日のセル */
 :deep(.fc-day-today) {
     background-color: transparent !important;
 }
 
-:deep(.fc-day-today .fc-daygrid-day-bg) {
-    display: none !important;
+/* スクロールバーのカスタマイズ */
+:deep(::-webkit-scrollbar) {
+    width: 4px;
+    height: 4px;
 }
 
-:deep(.fc-day-today .fc-daygrid-day-number) {
-    background-color: #3b82f6;
-    color: white;
-    border-radius: 4px;
+:deep(::-webkit-scrollbar-track) {
+    background: transparent;
 }
 
-/* ダークモード対応 */
-.dark :deep(.fc-daygrid-day-number) {
-    background-color: #374151;
-    color: #f9fafb;
-    border-bottom-color: #4b5563;
+:deep(::-webkit-scrollbar-thumb) {
+    background: #d1d5db;
+    border-radius: 2px;
 }
 
-.dark :deep(.day-content) {
-    background-color: #1f2937;
+:deep(::-webkit-scrollbar-thumb:hover) {
+    background: #9ca3af;
 }
 
-.dark :deep(.calendar-residents-section) {
-    border-top-color: #4b5563;
-}
-
-.dark :deep(.residents-label) {
-    color: #9ca3af;
-}
-
-.dark :deep(.residents-list) {
-    color: #e5e7eb;
-}
-
-.dark :deep(.fc-day-today .fc-daygrid-day-number) {
-    background-color: #2563eb;
-    color: white;
+.dark :deep(::-webkit-scrollbar-thumb) {
+    background: #4b5563;
 }
 </style>
