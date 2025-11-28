@@ -281,7 +281,21 @@ const calendarOptions = computed(() => ({
     headerToolbar: {
         left: "prev,next today",
         center: "title",
-        right: "",
+        right: "dayGridMonth,customWeek,customDay", // 標準のdayGridMonthとカスタムボタンを併用
+    },
+    customButtons: {
+        customWeek: {
+            text: '週',
+            click: () => {
+                router.get(route('calendar.week'), { date: currentDate.value });
+            }
+        },
+        customDay: {
+            text: '日',
+            click: () => {
+                router.get(route('calendar.day'), { date: currentDate.value });
+            }
+        }
     },
     buttonText: {
         today: "今日",

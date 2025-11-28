@@ -101,7 +101,21 @@ const calendarOptions = computed(() => ({
     headerToolbar: {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay',
+        right: 'customMonth,timeGridWeek,customDay',
+    },
+    customButtons: {
+        customMonth: {
+            text: '月',
+            click: () => {
+                router.get(route('calendar.index'), { date: currentDate.value });
+            }
+        },
+        customDay: {
+            text: '日',
+            click: () => {
+                router.get(route('calendar.day'), { date: currentDate.value });
+            }
+        }
     },
     buttonText: {
         today: '今日',
@@ -120,6 +134,8 @@ const calendarOptions = computed(() => ({
     slotMaxTime: '22:00:00',
     slotDuration: '00:30:00',
     firstDay: 1, // 月曜日始まり
+    allDaySlot: false, // 終日スロットを非表示（必要に応じて有効化）
+    dayHeaderFormat: { weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true },
 }))
 
 // スケジュール作成成功時の処理
@@ -183,12 +199,20 @@ const closeScheduleModal = () => {
     <AuthenticatedLayout>
         <Head title="週間カレンダー" />
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <h1 class="text-2xl font-bold mb-6">週間カレンダー</h1>
+        <div class="py-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+            <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- ヘッダーエリア -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 tracking-tight">週間カレンダー</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">週ごとのスケジュールを確認できます</p>
+                    </div>
+                </div>
 
+                <!-- カレンダーメインエリア -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="p-6">
                         <!-- カレンダー表示 -->
                         <div class="calendar-container">
                             <FullCalendar ref="calendarRef" :options="calendarOptions" @datesSet="handleWeekChange" />
@@ -222,9 +246,151 @@ const closeScheduleModal = () => {
     </AuthenticatedLayout>
 </template>
 
-<style>
+<style scoped>
+/* カレンダーコンテナ */
 .calendar-container {
-    margin-top: 1rem;
+    font-family: 'Inter', sans-serif;
+}
+
+/* FullCalendarの全体スタイル調整 */
+:deep(.fc) {
+    --fc-border-color: #f3f4f6;
+    --fc-today-bg-color: rgba(59, 130, 246, 0.05);
+    --fc-neutral-bg-color: #f9fafb;
+    --fc-page-bg-color: #ffffff;
+}
+
+.dark :deep(.fc) {
+    --fc-border-color: #374151;
+    --fc-neutral-bg-color: #1f2937;
+    --fc-page-bg-color: #1f2937;
+}
+
+/* ヘッダーツールバー */
+:deep(.fc-header-toolbar) {
+    margin-bottom: 1.5rem !important;
+}
+
+:deep(.fc-toolbar-title) {
+    font-size: 1.5rem !important;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.dark :deep(.fc-toolbar-title) {
+    color: #f3f4f6;
+}
+
+/* ボタンのカスタマイズ */
+:deep(.fc-button) {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+:deep(.fc-button:hover) {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    color: #111827;
+}
+
+:deep(.fc-button-primary:not(:disabled).fc-button-active),
+:deep(.fc-button-primary:not(:disabled):active) {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.dark :deep(.fc-button) {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #e5e7eb;
+}
+
+.dark :deep(.fc-button:hover) {
+    background-color: #4b5563;
+}
+
+/* 曜日ヘッダー */
+:deep(.fc-col-header-cell) {
+    padding: 0.75rem 0;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+:deep(.fc-col-header-cell-cushion) {
+    color: #6b7280;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.dark :deep(.fc-col-header-cell) {
+    background-color: #1f2937;
+    border-bottom-color: #374151;
+}
+
+.dark :deep(.fc-col-header-cell-cushion) {
+    color: #9ca3af;
+}
+
+/* タイムグリッドのスロット */
+:deep(.fc-timegrid-slot) {
+    height: 3rem; /* スロットの高さを少し広げる */
+}
+
+:deep(.fc-timegrid-slot-label) {
+    font-size: 0.75rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* イベントスタイル（TimeGrid用） */
+:deep(.fc-timegrid-event) {
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: none;
+    padding: 2px;
+    transition: transform 0.1s;
+}
+
+:deep(.fc-timegrid-event:hover) {
+    transform: scale(1.02);
+    z-index: 5;
+}
+
+:deep(.fc-event-main) {
+    padding: 2px 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* スクロールバーのカスタマイズ */
+:deep(::-webkit-scrollbar) {
+    width: 6px;
+    height: 6px;
+}
+
+:deep(::-webkit-scrollbar-track) {
+    background: transparent;
+}
+
+:deep(::-webkit-scrollbar-thumb) {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+:deep(::-webkit-scrollbar-thumb:hover) {
+    background: #9ca3af;
+}
+
+.dark :deep(::-webkit-scrollbar-thumb) {
+    background: #4b5563;
 }
 </style>
 
