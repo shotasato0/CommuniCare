@@ -26,6 +26,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    title: {
+        type: String,
+        default: "スケジュール作成",
+    },
 });
 
 const emit = defineEmits(["close", "success"]);
@@ -152,7 +156,7 @@ const close = () => {
                 <h2
                     class="text-xl font-semibold text-gray-900 dark:text-gray-100"
                 >
-                    スケジュール作成
+                    {{ title }}
                 </h2>
                 <button
                     @click="close"

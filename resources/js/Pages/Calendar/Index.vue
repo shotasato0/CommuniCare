@@ -29,8 +29,10 @@ const calendarKey = ref(0); // コンポーネント再生成用のキー
 const showScheduleForm = ref(false);
 const formInitialDate = ref(null);
 const formInitialResidentId = ref(null);
+const formTitle = ref("スケジュール作成");
 
-// スケジュール詳細モーダルの表示状態
+// ... (中略) ...
+
 const showScheduleModal = ref(false);
 const selectedSchedule = ref(null);
 
@@ -142,6 +144,9 @@ const renderDayCellContent = (info) => {
     const dateStr = dayjs(info.date).format("YYYY-MM-DD");
     const dayData = eventsByDate.value[dateStr];
     
+    // Debug log
+    // console.log(`Render ${dateStr}:`, dayData ? `Found ${dayData.schedules.length} schedules` : 'No data');
+
     const isToday = dateStr === dayjs().format("YYYY-MM-DD");
     const isDarkMode = document.documentElement.classList.contains("dark");
 
@@ -151,7 +156,7 @@ const renderDayCellContent = (info) => {
     
     // 1. 日付番号エリア
     const headerDiv = document.createElement("div");
-    headerDiv.className = "flex justify-between items-start p-1.5";
+    headerDiv.className = "flex justify-between items-start p-1.5 border-b border-gray-100 dark:border-gray-700";
     
     // 日付番号
     const dayNumberSpan = document.createElement("span");
@@ -173,13 +178,22 @@ const renderDayCellContent = (info) => {
     headerDiv.appendChild(dayNumberSpan);
     container.appendChild(headerDiv);
 
-    // 2. カスタムコンテンツエリア
+    // 2. カスタムコンテンツエリア（上下分割）
     const contentContainer = document.createElement("div");
-    contentContainer.className = "flex-1 flex flex-col px-1 pb-1 gap-1 min-h-0 overflow-hidden w-full";
+    contentContainer.className = "flex-1 flex flex-col min-h-0 overflow-hidden w-full";
 
-    // スケジュールリスト
+    // 上部：スケジュールリスト（赤枠）
     const schedulesSection = document.createElement("div");
-    schedulesSection.className = "flex flex-col gap-1 overflow-y-auto flex-1 min-h-0";
+    schedulesSection.className = "flex flex-col gap-1 p-1 overflow-y-auto flex-1 min-h-0 border-2 border-red-400 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors";
+
+    // 上部クリックイベント
+    schedulesSection.addEventListener("click", (e) => {
+        e.stopPropagation(); // FullCalendarのdateClickを防止
+        formInitialDate.value = dateStr;
+        formInitialResidentId.value = null;
+        formTitle.value = "スケジュール作成";
+        showScheduleForm.value = true;
+    });
 
     if (dayData && dayData.schedules.length > 0) {
         dayData.schedules.forEach((schedule) => {
@@ -221,33 +235,42 @@ const renderDayCellContent = (info) => {
     }
     contentContainer.appendChild(schedulesSection);
 
-    // 入浴予定者セクション（下部に控えめに表示）
+    // 下部：入浴予定者セクション（青枠、見出しなし）
+    const residentsSection = document.createElement("div");
+    residentsSection.className = "h-[40%] min-h-[40px] bg-blue-50/50 dark:bg-blue-900/10 p-1 overflow-hidden flex flex-col border-2 border-blue-400 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors";
+    
+    // 下部クリックイベント
+    residentsSection.addEventListener("click", (e) => {
+        e.stopPropagation(); // FullCalendarのdateClickを防止
+        formInitialDate.value = dateStr;
+        formInitialResidentId.value = null;
+        formTitle.value = "入浴スケジュール作成";
+        showScheduleForm.value = true;
+    });
+    
+    // リスト
+    const residentsContainer = document.createElement("div");
+    residentsContainer.className = "flex flex-wrap gap-1 content-start overflow-y-auto flex-1";
+    
     if (dayData && dayData.residents.size > 0) {
-        const residentsSection = document.createElement("div");
-        residentsSection.className = "mt-auto pt-1 border-t border-gray-100 dark:border-gray-700";
-
-        const residentsContainer = document.createElement("div");
-        residentsContainer.className = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400";
-        
-        // アイコン
-        const icon = document.createElement("i");
-        icon.className = "bi bi-droplet-fill text-blue-400 text-[10px]";
-        residentsContainer.appendChild(icon);
-
-        const listSpan = document.createElement("span");
-        listSpan.className = "truncate";
-        const residentsList = Array.from(dayData.residents)
-            .map((residentId) => {
-                const resident = residents.value.find((r) => r.id === residentId);
-                return resident ? resident.name : "";
-            })
-            .filter(Boolean);
-        listSpan.textContent = residentsList.join(", ");
-        
-        residentsContainer.appendChild(listSpan);
-        residentsSection.appendChild(residentsContainer);
-        contentContainer.appendChild(residentsSection);
+        Array.from(dayData.residents).forEach((residentId) => {
+            const resident = residents.value.find((r) => r.id === residentId);
+            if (resident) {
+                const badge = document.createElement("span");
+                badge.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 shadow-sm";
+                badge.innerText = resident.name;
+                residentsContainer.appendChild(badge);
+            }
+        });
+    } else {
+        const emptyText = document.createElement("span");
+        emptyText.className = "text-[10px] text-gray-400 italic pl-1";
+        emptyText.innerText = "-";
+        residentsContainer.appendChild(emptyText);
     }
+    
+    residentsSection.appendChild(residentsContainer);
+    contentContainer.appendChild(residentsSection);
 
     container.appendChild(contentContainer);
 
@@ -506,6 +529,7 @@ const closeScheduleModal = () => {
             :initial-resident-id="formInitialResidentId"
             :residents="residents"
             :schedule-types="scheduleTypes"
+            :title="formTitle"
             @close="closeScheduleForm"
             @success="handleScheduleCreated"
         />
@@ -617,9 +641,24 @@ const closeScheduleModal = () => {
 }
 
 /* 日付セルフレーム */
+/* 日付セルフレーム - 強制的にFlex縦並び */
 :deep(.fc-daygrid-day-frame) {
-    min-height: 120px !important;
-    transition: background-color 0.2s;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 150px !important; /* 高さを確保 */
+    position: relative;
+}
+
+:deep(.fc-daygrid-day-events) {
+    display: none !important; /* デフォルトイベント非表示 */
+}
+
+:deep(.fc-daygrid-day-top) {
+    display: flex !important; /* 表示する（カスタムコンテンツの親となるため） */
+    flex-direction: column !important;
+    flex: 1 !important; /* セル全体に広げる */
+    padding: 0 !important; /* デフォルトのパディングを削除 */
 }
 
 /* 今日のセル */
