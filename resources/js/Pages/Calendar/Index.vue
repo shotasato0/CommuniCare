@@ -184,7 +184,7 @@ const renderDayCellContent = (info) => {
 
     // 上部：スケジュールリスト（赤枠）
     const schedulesSection = document.createElement("div");
-    schedulesSection.className = "flex flex-col gap-1 p-1 overflow-y-auto flex-1 min-h-0 border-2 border-red-400 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors";
+    schedulesSection.className = "flex flex-col gap-1 p-1 overflow-y-auto h-[40%] min-h-[40px] border-2 border-red-400 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors";
 
     // 上部クリックイベント
     schedulesSection.addEventListener("click", (e) => {
