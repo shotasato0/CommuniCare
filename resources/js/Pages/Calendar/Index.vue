@@ -127,13 +127,15 @@ const eventsByDate = computed(() => {
         
         if (!grouped[date]) {
             grouped[date] = {
-                schedules: [],
-                residents: new Set(),
+                regularSchedules: [],
+                bathSchedules: [],
             };
         }
-        grouped[date].schedules.push(event);
+        
         if (event.extendedProps?.resident_id) {
-            grouped[date].residents.add(event.extendedProps.resident_id);
+            grouped[date].bathSchedules.push(event);
+        } else {
+            grouped[date].regularSchedules.push(event);
         }
     });
     return grouped;
@@ -195,8 +197,8 @@ const renderDayCellContent = (info) => {
         showScheduleForm.value = true;
     });
 
-    if (dayData && dayData.schedules.length > 0) {
-        dayData.schedules.forEach((schedule) => {
+    if (dayData && dayData.regularSchedules.length > 0) {
+        dayData.regularSchedules.forEach((schedule) => {
             const scheduleItem = document.createElement("div");
             // モダンなピル型デザイン
             scheduleItem.className = "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-white cursor-pointer hover:opacity-90 transition-all shadow-sm transform hover:scale-[1.02]";
@@ -248,19 +250,48 @@ const renderDayCellContent = (info) => {
         showScheduleForm.value = true;
     });
     
-    // リスト
+    // リスト（入浴スケジュールもピル型で表示）
     const residentsContainer = document.createElement("div");
-    residentsContainer.className = "flex flex-wrap gap-1 content-start overflow-y-auto flex-1";
+    residentsContainer.className = "flex flex-col gap-1 overflow-y-auto flex-1"; // flex-colに変更
     
-    if (dayData && dayData.residents.size > 0) {
-        Array.from(dayData.residents).forEach((residentId) => {
-            const resident = residents.value.find((r) => r.id === residentId);
-            if (resident) {
-                const badge = document.createElement("span");
-                badge.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 shadow-sm";
-                badge.innerText = resident.name;
-                residentsContainer.appendChild(badge);
-            }
+    if (dayData && dayData.bathSchedules.length > 0) {
+        dayData.bathSchedules.forEach((schedule) => {
+            const scheduleItem = document.createElement("div");
+            // モダンなピル型デザイン（青系）
+            scheduleItem.className = "flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-white cursor-pointer hover:opacity-90 transition-all shadow-sm transform hover:scale-[1.02]";
+            scheduleItem.style.backgroundColor = schedule.backgroundColor || "#3B82F6";
+            scheduleItem.style.borderLeft = `3px solid ${schedule.borderColor || 'rgba(0,0,0,0.1)'}`;
+            scheduleItem.setAttribute("data-event-id", schedule.id);
+
+            const timeSpan = document.createElement("span");
+            timeSpan.className = "font-bold whitespace-nowrap opacity-90 text-[10px]";
+            timeSpan.textContent = dayjs(schedule.start).format("HH:mm");
+
+            const titleSpan = document.createElement("span");
+            titleSpan.className = "flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium";
+            // 入浴スケジュールの場合は居住者名を表示する方が親切かもしれないが、一旦タイトル（スケジュール名）を表示
+            // 必要に応じて resident.name を取得して表示することも可能
+            titleSpan.textContent = schedule.extendedProps?.schedule_type_name || schedule.title;
+
+            scheduleItem.appendChild(timeSpan);
+            scheduleItem.appendChild(titleSpan);
+
+            // クリックイベント
+            scheduleItem.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const fcEvent = {
+                    id: schedule.id,
+                    title: schedule.title,
+                    start: schedule.start,
+                    end: schedule.end,
+                    backgroundColor: schedule.backgroundColor,
+                    borderColor: schedule.borderColor,
+                    extendedProps: schedule.extendedProps,
+                };
+                handleEventClick({ event: fcEvent });
+            });
+
+            residentsContainer.appendChild(scheduleItem);
         });
     } else {
         const emptyText = document.createElement("span");
