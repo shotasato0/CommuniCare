@@ -49,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
 
     // カレンダー
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar/week', [CalendarController::class, 'week'])->name('calendar.week');
+    Route::get('/calendar/day/{date?}', [CalendarController::class, 'day'])->name('calendar.day');
 
     // スケジュール
     Route::get('/calendar/schedules', [ScheduleController::class, 'index'])->name('calendar.schedules.index');

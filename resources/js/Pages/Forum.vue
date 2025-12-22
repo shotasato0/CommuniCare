@@ -364,7 +364,7 @@ const openModal = (imageSrc) => {
             />
 
             <!-- メインコンテンツエリア -->
-            <div class="flex-1 p-4">
+            <div class="flex-1 p-4 forum-main-content">
                 <!-- サイドバーのトグルボタンと検索フォーム -->
                 <div class="flex items-center mb-4 relative">
                     <h1
@@ -679,7 +679,7 @@ const openModal = (imageSrc) => {
     </AuthenticatedLayout>
 </template>
 
-<style>
+<style scoped>
 /* サイドバーが表示されている場合、ボディのスクロールを禁止 */
 body.no-scroll {
     overflow: hidden;
@@ -719,7 +719,7 @@ body.no-scroll {
         width: 220px; /* iPadサイズではサイドバーを狭くする */
     }
 
-    .flex-1 {
+    .forum-main-content {
         margin-left: 220px; /* サイドバーの幅分余白を調整 */
     }
 }
@@ -730,14 +730,14 @@ body.no-scroll {
         width: 250px; /* 通常のサイドバー幅 */
     }
 
-    .flex-1 {
+    .forum-main-content {
         margin-left: 250px; /* 通常の余白 */
     }
 }
 
 /* 全画面表示専用（デスクトップサイズ以上） */
 @media (min-width: 1366px) {
-    .flex-1 {
+    .forum-main-content {
         margin-left: 280px; /* サイドバー幅より広い余白を設定 */
         margin-right: 280px; /* サイドバー幅より広い余白を設定 */
     }

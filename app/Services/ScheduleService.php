@@ -36,7 +36,6 @@ class ScheduleService
             ->with([
                 'calendarDate',
                 'resident',
-                'scheduleType',
                 'creator' => function ($q) use ($currentTenantId) {
                     $q->select('id', 'name', 'tenant_id')
                       ->where('tenant_id', $currentTenantId);
@@ -61,10 +60,6 @@ class ScheduleService
             $query->where('resident_id', $filters['resident_id']);
         }
 
-        // 種別IDでフィルタリング
-        if (isset($filters['schedule_type_id'])) {
-            $query->where('schedule_type_id', $filters['schedule_type_id']);
-        }
 
         return $query->orderBy('start_time')->paginate($perPage);
     }
@@ -87,28 +82,26 @@ class ScheduleService
         $calendarDate = $this->ensureCalendarDate($validated['date'], $currentTenantId);
 
         return DB::transaction(function () use ($validated, $currentTenantId, $currentUser, $calendarDate) {
-            // 利用者のテナント境界チェック
-            $resident = Resident::findOrFail($validated['resident_id']);
-            $this->validateTenantBoundary($resident);
+            // 利用者のテナント境界チェック（resident_idが指定されている場合）
+            if (isset($validated['resident_id']) && $validated['resident_id'] !== null) {
+                $resident = Resident::findOrFail($validated['resident_id']);
+                $this->validateTenantBoundary($resident);
 
-            // 種別のテナント境界チェック
-            $scheduleType = ScheduleType::findOrFail($validated['schedule_type_id']);
-            $this->validateTenantBoundary($scheduleType);
-
-            // 詳細な重複チェック（M2：時間帯の重複検証）
-            $this->validateNoConflict(
-                $validated['resident_id'],
-                $calendarDate->id,
-                $validated['start_time'],
-                $validated['end_time']
-            );
+                // 詳細な重複チェック（M2：時間帯の重複検証）
+                $this->validateNoConflict(
+                    $validated['resident_id'],
+                    $calendarDate->id,
+                    $validated['start_time'],
+                    $validated['end_time']
+                );
+            }
 
             // スケジュール作成
             $schedule = Schedule::create([
                 'tenant_id' => $currentTenantId,
                 'calendar_date_id' => $calendarDate->id,
-                'resident_id' => $validated['resident_id'],
-                'schedule_type_id' => $validated['schedule_type_id'],
+                'resident_id' => $validated['resident_id'] ?? null,
+                'schedule_name' => $validated['schedule_name'],
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
                 'memo' => $validated['memo'] ?? null,
@@ -118,7 +111,7 @@ class ScheduleService
             Log::info('スケジュールを作成しました', [
                 'schedule_id' => $schedule->id,
                 'tenant_id' => $currentTenantId,
-                'resident_id' => $validated['resident_id'],
+                'schedule_name' => $validated['schedule_name'],
                 'date' => $validated['date'],
             ]);
 
@@ -197,10 +190,6 @@ class ScheduleService
             $resident = Resident::findOrFail($validated['resident_id']);
             $this->validateTenantBoundary($resident);
 
-            // 種別のテナント境界チェック
-            $scheduleType = ScheduleType::findOrFail($validated['schedule_type_id']);
-            $this->validateTenantBoundary($scheduleType);
-
             // 詳細な重複チェック（M2：時間帯の重複検証）
             $this->validateNoConflict(
                 $validated['resident_id'],
@@ -214,7 +203,7 @@ class ScheduleService
             $schedule->update([
                 'calendar_date_id' => $calendarDate->id,
                 'resident_id' => $validated['resident_id'],
-                'schedule_type_id' => $validated['schedule_type_id'],
+                'schedule_name' => $validated['schedule_name'] ?? $schedule->schedule_name,
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
                 'memo' => $validated['memo'] ?? null,

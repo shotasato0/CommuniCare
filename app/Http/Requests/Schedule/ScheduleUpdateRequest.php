@@ -39,13 +39,6 @@ class ScheduleUpdateRequest extends FormRequest
                     $query->where('tenant_id', $tenantId);
                 }),
             ],
-            'schedule_type_id' => [
-                'required',
-                'exists:schedule_types,id',
-                Rule::exists('schedule_types', 'id')->where(function ($query) use ($tenantId) {
-                    $query->where('tenant_id', $tenantId);
-                }),
-            ],
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'memo' => 'nullable|string|max:1000',
@@ -65,8 +58,6 @@ class ScheduleUpdateRequest extends FormRequest
             'date.date_format' => '日付はYYYY-MM-DD形式で入力してください。',
             'resident_id.required' => '利用者の指定は必須です。',
             'resident_id.exists' => '指定された利用者は存在しないか、アクセスできません。',
-            'schedule_type_id.required' => 'スケジュール種別の指定は必須です。',
-            'schedule_type_id.exists' => '指定されたスケジュール種別は存在しないか、アクセスできません。',
             'start_time.required' => '開始時刻は必須です。',
             'start_time.date_format' => '開始時刻はHH:MM形式で入力してください。',
             'end_time.required' => '終了時刻は必須です。',

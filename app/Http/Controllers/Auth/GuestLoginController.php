@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class GuestLoginController extends Controller
 {
@@ -39,6 +40,22 @@ class GuestLoginController extends Controller
         ]
     );
 
+    // ロールを取得または作成
+    $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+
+    // ゲストユーザーにロールが割り当てられていない場合は割り当てる
+    // リレーションを明示的にロードしてからチェック
+    $guestUser->load('roles');
+    if ($guestUser->roles->isEmpty()) {
+        $guestUser->assignRole($userRole);
+        // ロールを再読み込み
+        $guestUser->refresh();
+        Log::info('ゲストユーザーにロールを割り当てました', [
+            'user_id' => $guestUser->id,
+            'role' => 'user',
+            'roles' => $guestUser->getRoleNames()->toArray(),
+        ]);
+    }
 
     // ゲストユーザーとしてログイン
     Auth::login($guestUser);

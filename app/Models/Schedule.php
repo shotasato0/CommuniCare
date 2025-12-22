@@ -15,6 +15,7 @@ class Schedule extends Model
         'tenant_id',
         'calendar_date_id',
         'resident_id',
+        'schedule_name',
         'schedule_type_id',
         'start_time',
         'end_time',
@@ -44,7 +45,7 @@ class Schedule extends Model
     }
 
     /**
-     * 種別とのリレーション
+     * スケジュールタイプとのリレーション
      */
     public function scheduleType()
     {
