@@ -15,7 +15,8 @@ const guestDomain =
 const isGuestUrl = ref(currentUrl.includes(`${guestDomain}/login`));
 
 const isAdminMode = ref(
-    new URLSearchParams(window.location.search).has("admin")
+    new URLSearchParams(window.location.search).has("admin") ||
+        new URLSearchParams(window.location.search).has("/admin")
 );
 
 // フォームデータにusername_idを使用
