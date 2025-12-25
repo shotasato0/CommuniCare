@@ -16,7 +16,7 @@
      public function tenant()
      {
 -        return $this->belongsTo(config('tenancy.tenant_model'), BelongsToTenant::$tenantIdColumn);
-+        return $this->belongsTo(config('tenancy.tenant_model'), $model::$tenantIdColumn);
++        return $this->belongsTo(config('tenancy.tenant_model'), static::$tenantIdColumn);
      }
  
      public static function bootBelongsToTenant()
