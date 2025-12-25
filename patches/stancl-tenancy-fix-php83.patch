@@ -1,0 +1,50 @@
+--- a/src/Database/TenantScope.php	2025-12-25 17:34:38
++++ b/src/Database/TenantScope.php	2025-12-25 17:34:41
+@@ -17,7 +17,7 @@
+             return;
+         }
+ 
+-        $builder->where($model->qualifyColumn(BelongsToTenant::$tenantIdColumn), tenant()->getTenantKey());
++        $builder->where($model->qualifyColumn($model::$tenantIdColumn), tenant()->getTenantKey());
+     }
+ 
+     public function extend(Builder $builder)
+--- a/src/Database/Concerns/BelongsToTenant.php	2025-12-25 17:34:38
++++ b/src/Database/Concerns/BelongsToTenant.php	2025-12-25 17:37:10
+@@ -16,7 +16,7 @@
+ 
+     public function tenant()
+     {
+-        return $this->belongsTo(config('tenancy.tenant_model'), BelongsToTenant::$tenantIdColumn);
++        return $this->belongsTo(config('tenancy.tenant_model'), static::$tenantIdColumn);
+     }
+ 
+     public static function bootBelongsToTenant()
+@@ -24,9 +24,9 @@
+         static::addGlobalScope(new TenantScope);
+ 
+         static::creating(function ($model) {
+-            if (! $model->getAttribute(BelongsToTenant::$tenantIdColumn) && ! $model->relationLoaded('tenant')) {
++            if (! $model->getAttribute($model::$tenantIdColumn) && ! $model->relationLoaded('tenant')) {
+                 if (tenancy()->initialized) {
+-                    $model->setAttribute(BelongsToTenant::$tenantIdColumn, tenant()->getTenantKey());
++                    $model->setAttribute($model::$tenantIdColumn, tenant()->getTenantKey());
+                     $model->setRelation('tenant', tenant());
+                 }
+             }
+--- a/src/Database/Concerns/HasScopedValidationRules.php	2025-12-25 17:34:38
++++ b/src/Database/Concerns/HasScopedValidationRules.php	2025-12-25 17:34:44
+@@ -11,11 +11,11 @@
+ {
+     public function unique($table, $column = 'NULL')
+     {
+-        return (new Unique($table, $column))->where(BelongsToTenant::$tenantIdColumn, $this->getTenantKey());
++        return (new Unique($table, $column))->where(static::$tenantIdColumn, $this->getTenantKey());
+     }
+ 
+     public function exists($table, $column = 'NULL')
+     {
+-        return (new Exists($table, $column))->where(BelongsToTenant::$tenantIdColumn, $this->getTenantKey());
++        return (new Exists($table, $column))->where(static::$tenantIdColumn, $this->getTenantKey());
+     }
+ }
