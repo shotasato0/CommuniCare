@@ -20,6 +20,7 @@ return [
         '127.0.0.1',
         'localhost',
         'communi-care.jp',//本番のセントラルドメイン
+        'www.communi-care.jp',
     ],
 
     /**

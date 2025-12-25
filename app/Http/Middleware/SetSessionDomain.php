@@ -40,8 +40,8 @@ class SetSessionDomain
      */
     protected function resolveDomain(string $host): ?string
     {
-        // communi-care.jp ドメインおよびサブドメインを許可
-        if (preg_match('/^.+\.communi-care\.jp$/', $host)) {
+        // communi-care.jp ドメイン（www含む）およびサブドメインを許可
+        if (preg_match('/(^|.+\.)communi-care\.jp$/', $host)) {
             return $host;
         }
 
