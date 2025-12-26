@@ -14,8 +14,9 @@ const guestDomain =
     import.meta.env.VITE_GUEST_TENANT_URL || "http://guestdemo.localhost";
 const isGuestUrl = ref(currentUrl.includes(`${guestDomain}/login`));
 
+const searchParams = new URLSearchParams(window.location.search);
 const isAdminMode = ref(
-    new URLSearchParams(window.location.search).has("admin")
+    searchParams.has("admin") || searchParams.has("/admin")
 );
 
 // フォームデータにusername_idを使用
