@@ -45,7 +45,7 @@ class CalendarController extends Controller
         // 月間データなので全件取得（perPageをnullにすることで全件取得）
         $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
         // Paginatorからコレクションを取得
-        $schedules = $schedulesPaginator->getCollection();
+        $schedules = collect($schedulesPaginator->items());
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
@@ -126,7 +126,7 @@ class CalendarController extends Controller
         ];
         $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
         // Paginatorからコレクションを取得
-        $schedules = $schedulesPaginator->getCollection();
+        $schedules = collect($schedulesPaginator->items());
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
@@ -193,7 +193,7 @@ class CalendarController extends Controller
         ];
         $schedulesPaginator = $this->scheduleService->getSchedules($filters, PHP_INT_MAX);
         // Paginatorからコレクションを取得
-        $schedules = $schedulesPaginator->getCollection();
+        $schedules = collect($schedulesPaginator->items());
 
         // FullCalendar用のイベント形式に変換
         $events = $schedules->map(function ($schedule) {
