@@ -76,7 +76,7 @@ class AttachmentController extends Controller
                         }
                         Storage::disk('public')->put($attachment->file_path, $content);
                         if (config('attachments.debug_log')) {
-                            \Log::info('Attachment self-heal: copied from central to tenant FS', [
+                            Log::info('Attachment self-heal: copied from central to tenant FS', [
                                 'attachment_id' => $attachment->id,
                                 'path' => $attachment->file_path,
                                 'tenant_id' => optional($tenant)->id,
@@ -90,7 +90,7 @@ class AttachmentController extends Controller
                         // 念のためテナントを再初期化
                         try { tenancy()->initialize($tenant); } catch (\Throwable $ignored) {}
                     }
-                    \Log::error('Attachment self-heal failed', [
+                    Log::error('Attachment self-heal failed', [
                         'attachment_id' => $attachment->id,
                         'path' => $attachment->file_path,
                         'error' => $e->getMessage()
