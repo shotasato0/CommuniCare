@@ -12,6 +12,7 @@ use App\Exceptions\Custom\PostOwnershipException;
 use App\Traits\SecurityValidationTrait;
 use App\Traits\TenantBoundaryCheckTrait;
 use App\Services\AttachmentService;
+use App\Repositories\IPostRepository;
 use Illuminate\Support\Facades\Log;
 
 class PostService
@@ -19,10 +20,14 @@ class PostService
     use SecurityValidationTrait, TenantBoundaryCheckTrait;
     
     private AttachmentService $attachmentService;
+    private IPostRepository $postRepository;
     
-    public function __construct(AttachmentService $attachmentService)
-    {
+    public function __construct(
+        AttachmentService $attachmentService,
+        IPostRepository $postRepository
+    ) {
         $this->attachmentService = $attachmentService;
+        $this->postRepository = $postRepository;
     }
     /**
      * 投稿を作成する
@@ -37,7 +42,7 @@ class PostService
             $imgPath = $this->handleImageUpload($request);
             
             // 投稿を作成
-            $post = Post::create([
+            $post = $this->postRepository->create([
                 'user_id' => Auth::id(),
                 'title' => $validated['title'],
                 'message' => $validated['message'],
@@ -73,13 +78,23 @@ class PostService
     public function deletePost(int $postId): void
     {
         DB::transaction(function () use ($postId) {
-            $post = Post::findOrFail($postId);
+            $currentUser = Auth::user();
+            $post = $this->postRepository->findByTenant($currentUser->tenant_id, $postId);
+            
+            if (!$post) {
+                throw new TenantViolationException(
+                    currentTenantId: $currentUser->tenant_id,
+                    resourceTenantId: '',
+                    resourceType: 'post',
+                    resourceId: $postId
+                );
+            }
             
             // セキュリティチェック: 投稿の所有者またはテナントが一致するかチェック
             $this->validatePostOwnership($post);
 
             // この投稿を引用している投稿のフラグを更新
-            $this->updateQuotingPosts($postId);
+            $this->postRepository->updateQuotingPosts($postId);
 
             // 添付ファイル（統一システム）を物理削除
             foreach ($post->attachments as $attachment) {
@@ -100,7 +115,7 @@ class PostService
             }
 
             // 投稿を完全削除
-            $post->forceDelete();
+            $this->postRepository->forceDelete($post);
         });
     }
 
@@ -135,14 +150,6 @@ class PostService
         }
     }
 
-    /**
-     * 引用している投稿のフラグを更新
-     */
-    private function updateQuotingPosts(int $postId): void
-    {
-        Post::where('quoted_post_id', $postId)
-            ->update(['quoted_post_deleted' => true]);
-    }
 
     /**
      * 統一ファイル添付システムでファイルを処理
@@ -197,7 +204,7 @@ class PostService
         // テナント境界チェック
         $this->validateTenantAccess($post);
         
-        $attachment = $post->attachments()->findOrFail($attachmentId);
+        $attachment = $this->postRepository->getAttachment($attachmentId, $post);
         $this->attachmentService->deleteAttachment($attachment);
     }
     
@@ -226,61 +233,7 @@ class PostService
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        $query = Post::where('forum_id', $forumId)
-            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック追加
-            ->with([
-                'user' => function($query) use ($currentUser) {
-                    $query->select('id', 'name', 'tenant_id')
-                          ->where('tenant_id', $currentUser->tenant_id);
-                },
-                'quotedPost' => function($query) use ($currentUser) {
-                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->with(['user' => function($query) use ($currentUser) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $currentUser->tenant_id);
-                          }]);
-                },
-                'attachments' => function($query) use ($currentUser) {
-                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->where('is_safe', true);
-                },
-                'comments' => function($query) use ($currentUser) {
-                    $query->select('id', 'post_id', 'user_id', 'message', 'tenant_id', 'created_at')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->with([
-                              'user' => function($query) use ($currentUser) {
-                                  $query->select('id', 'name', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id);
-                              },
-                              'attachments' => function($query) use ($currentUser) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id)
-                                        ->where('is_safe', true);
-                              }
-                          ])
-                          ->latest()
-                          ->limit(10); // コメント数制限
-                },
-                'likes' => function($query) use ($currentUser) {
-                    $query->select('id', 'post_id', 'user_id', 'tenant_id')
-                          ->where('tenant_id', $currentUser->tenant_id);
-                }
-            ])
-            ->withCount(['likes' => function($query) use ($currentUser) {
-                $query->where('tenant_id', $currentUser->tenant_id);
-            }])
-            ->select('id', 'user_id', 'forum_id', 'title', 'message', 'quoted_post_id', 'tenant_id', 'like_count', 'created_at', 'updated_at');
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('message', 'like', '%' . $search . '%');
-            });
-        }
-
-        return $query->latest()->paginate($perPage);
+        return $this->postRepository->getByForum($forumId, $currentUser->tenant_id, $search, $perPage);
     }
 
     /**
@@ -313,77 +266,7 @@ class PostService
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        $post = Post::where('id', $postId)
-            ->where('tenant_id', $currentUser->tenant_id) // テナント境界チェック
-            ->with([
-                'user' => function($query) use ($currentUser) {
-                    $query->select('id', 'name', 'email', 'tenant_id')
-                          ->where('tenant_id', $currentUser->tenant_id);
-                },
-                'quotedPost' => function($query) use ($currentUser) {
-                    $query->select('id', 'title', 'message', 'user_id', 'tenant_id', 'created_at')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->with([
-                              'user' => function($query) use ($currentUser) {
-                                  $query->select('id', 'name', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id);
-                              },
-                              'attachments' => function($query) use ($currentUser) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id)
-                                        ->where('is_safe', true);
-                              }
-                          ]);
-                },
-                'attachments' => function($query) use ($currentUser) {
-                    $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id', 'created_at')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->where('is_safe', true)
-                          ->orderBy('created_at', 'asc');
-                },
-                'comments' => function($query) use ($currentUser) {
-                    $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at', 'updated_at')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->with([
-                              'user' => function($query) use ($currentUser) {
-                                  $query->select('id', 'name', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id);
-                              },
-                              'attachments' => function($query) use ($currentUser) {
-                                  $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
-                                        ->where('tenant_id', $currentUser->tenant_id)
-                                        ->where('is_safe', true);
-                              },
-                              'children' => function($query) use ($currentUser) {
-                                  $query->select('id', 'post_id', 'user_id', 'message', 'parent_id', 'tenant_id', 'created_at')
-                                        ->where('tenant_id', $currentUser->tenant_id)
-                                        ->with([
-                                            'user' => function($query) use ($currentUser) {
-                                                $query->select('id', 'name', 'tenant_id')
-                                                      ->where('tenant_id', $currentUser->tenant_id);
-                                            },
-                                            'attachments' => function($query) use ($currentUser) {
-                                                $query->select('id', 'attachable_id', 'attachable_type', 'original_name', 'file_name', 'file_size', 'mime_type', 'file_type', 'tenant_id')
-                                                      ->where('tenant_id', $currentUser->tenant_id)
-                                                      ->where('is_safe', true);
-                                            }
-                                        ])
-                                        ->latest();
-                              }
-                          ])
-                          ->whereNull('parent_id') // トップレベルコメントのみ
-                          ->latest();
-                },
-                'likes' => function($query) use ($currentUser) {
-                    $query->select('id', 'post_id', 'user_id', 'tenant_id', 'created_at')
-                          ->where('tenant_id', $currentUser->tenant_id)
-                          ->with(['user' => function($query) use ($currentUser) {
-                              $query->select('id', 'name', 'tenant_id')
-                                    ->where('tenant_id', $currentUser->tenant_id);
-                          }]);
-                }
-            ])
-            ->first();
+        $post = $this->postRepository->getPostDetails($postId, $currentUser->tenant_id);
 
         // テナント境界チェック後にログ記録
         if ($post) {
@@ -398,9 +281,43 @@ class PostService
 
     /**
      * IDによる投稿取得（リダイレクト用の基本情報）
+     * テナント境界チェック付き
      */
     public function getPostById(int $postId): Post
     {
-        return Post::findOrFail($postId);
+        $currentUser = Auth::user();
+        $post = $this->postRepository->findByTenant($currentUser->tenant_id, $postId);
+        
+        if (!$post) {
+            throw new TenantViolationException(
+                currentTenantId: $currentUser->tenant_id,
+                resourceTenantId: '',
+                resourceType: 'post',
+                resourceId: $postId
+            );
+        }
+        
+        return $post;
+    }
+
+    /**
+     * リダイレクトパラメータを構築
+     *
+     * @param Post $post
+     * @return array
+     */
+    public function buildRedirectParams(Post $post): array
+    {
+        $user = Auth::user();
+        $redirectParams = [
+            'forum_id' => $post->forum_id,
+        ];
+
+        // ユーザーが部署に所属している場合、active_unit_idも追加
+        if ($user->unit_id) {
+            $redirectParams['active_unit_id'] = $user->unit_id;
+        }
+
+        return $redirectParams;
     }
 }
