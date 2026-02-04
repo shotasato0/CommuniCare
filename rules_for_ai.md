@@ -125,15 +125,15 @@ git commit および git push を実行する前に、必ずユーザーに確�
 
 禁止（明示許可がない限り不可）
 
-main, master, develop, release/\* への push/rebase
+main, develop, release/\* への push/rebase
 
 ユーザー確認なしでの git commit/git push の実行
 
 マージ時の PR 作成必須
 
-main, master, develop, release/\* へのマージを行う場合は、必ず事前に Pull Request を作成し、レビューを経てからマージする。
+main, develop, release/\* へのマージを行う場合は、必ず事前に Pull Request を作成し、レビューを経てからマージする。
 
-直接マージ（`git merge` を main/master に直接実行）は禁止。
+直接マージ（`git merge` を main に直接実行）は禁止。
 
 マージ前の確認事項:
 
@@ -503,7 +503,7 @@ EOF
 
 ## 作成後の運用
 
--   ドキュメント作成後は、即座に master/main ブランチにマージすることを推奨します
+-   ドキュメント作成後は、即座に main ブランチにマージすることを推奨します
 -   ローカルだけに残すのではなく、チーム全体で共有できるようにします
 -   ブランチ名は `docs/troubleshooting-{問題名}` または `docs/add-troubleshooting-{問題名}` を使用します
 
