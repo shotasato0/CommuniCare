@@ -5,4 +5,5 @@ return [
     App\Providers\CustomServiceProvider::class,
     App\Providers\RouteServiceProvider::class,
     App\Providers\TenancyServiceProvider::class,
+    App\Providers\RepositoryServiceProvider::class,
 ];
