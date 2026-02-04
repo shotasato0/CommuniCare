@@ -7,7 +7,6 @@ use App\Services\PostService;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
 
@@ -24,17 +23,7 @@ class PostController extends Controller
     {
         try {
             $post = $this->postService->createPost($request);
-            $user = Auth::user();
-
-            // 投稿作成後、適切なパラメータでフォーラムにリダイレクト
-            $redirectParams = [
-                'forum_id' => $post->forum_id,
-            ];
-
-            // ユーザーが部署に所属している場合、active_unit_idも追加
-            if ($user->unit_id) {
-                $redirectParams['active_unit_id'] = $user->unit_id;
-            }
+            $redirectParams = $this->postService->buildRedirectParams($post);
 
             return redirect()->route('forum.index', $redirectParams)
                 ->with('success', '投稿を作成しました。');
@@ -50,17 +39,9 @@ class PostController extends Controller
         try {
             // 削除前に投稿情報を取得（リダイレクト用）
             $post = $this->postService->getPostById($id);
-            $forumId = $post->forum_id;
+            $redirectParams = $this->postService->buildRedirectParams($post);
 
             $this->postService->deletePost($id);
-
-            $user = Auth::user();
-            $redirectParams = ['forum_id' => $forumId];
-
-            // ユーザーが部署に所属している場合、active_unit_idも追加
-            if ($user->unit_id) {
-                $redirectParams['active_unit_id'] = $user->unit_id;
-            }
 
             return redirect()->route('forum.index', $redirectParams)
                 ->with('success', '投稿を削除しました。');
