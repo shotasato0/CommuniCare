@@ -14,17 +14,18 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
-    @routes
-    @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
-    @inertiaHead
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Scripts -->
+    <script>
+        window.Ziggy = @json(new \Tighten\Ziggy\Ziggy());
+    </script>
+    @vite(['resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased">
-    @inertia
+    <div id="app" data-page="{{ json_encode($page) }}"></div>
 </body>
 
 </html>
