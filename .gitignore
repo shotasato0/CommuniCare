@@ -7,6 +7,8 @@
 # Ignore all generated/storage files (tenant FS, attachments, caches, etc.)
 /storage/**
 !/storage/.gitignore
+/src/storage/**
+!/src/storage/.gitignore
 /vendor
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
