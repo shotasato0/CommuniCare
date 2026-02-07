@@ -29,14 +29,14 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "App\\": "src/app/",
+            "Database\\Factories\\": "src/database/factories/",
+            "Database\\Seeders\\": "src/database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "src/tests/"
         }
     },
     "scripts": {
@@ -59,7 +59,7 @@
     "extra": {
         "patches": {
             "stancl/tenancy": {
-                "Fix PHP 8.3 static trait property access warnings": "patches/stancl-tenancy-fix-php83.patch"
+                "Fix PHP 8.3 static trait property access warnings": "src/patches/stancl-tenancy-fix-php83.patch"
             }
         },
         "laravel": {

@@ -8,6 +8,8 @@
 /storage/**
 !/storage/.gitignore
 /vendor
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
 .env
 .env.backup
 .env.production
