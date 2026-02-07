@@ -67,6 +67,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // すべての例外をログに記録（reportメソッドは常に呼び出される）
+        $exceptions->report(function (\Throwable $e) {
+            Log::error('Unhandled exception', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => substr($e->getTraceAsString(), 0, 2000),
+            ]);
+            // 親クラスのreportメソッドも呼び出す
+            return false; // falseを返すと、デフォルトのreport処理も実行される
+        });
+        
         // カスタム例外のハンドリング
         $exceptions->render(function (AuthenticationException $e) {
             if (request()->expectsJson() || request()->wantsJson()) {

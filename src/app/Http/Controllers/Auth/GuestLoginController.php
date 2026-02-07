@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Stancl\Tenancy\Database\Models\Domain;
 
 class GuestLoginController extends Controller
 {
@@ -25,7 +26,30 @@ class GuestLoginController extends Controller
     $initialSessionId = session()->getId();
     $guestPassword = 'temporary_password'; // ゲスト用の一時パスワード
     $guestUsernameId = 'guest' . $initialSessionId . bin2hex(random_bytes(3)); // 一意なゲストID
-    $tenantId = tenancy()->tenant->id; // テナントIDを取得
+    
+    // テナントIDを取得（tenancy 未初期化時のフォールバックを用意）
+    $tenantId = tenant('id');
+    if (!$tenantId) {
+        $host = $request->getHost();
+        // ホスト名の簡易バリデーション（Host ヘッダ汚染対策）
+        if (is_string($host) && preg_match('/^[A-Za-z0-9.-]+$/', $host)) {
+            // ドメイン→テナントIDの解決
+            $domain = \Stancl\Tenancy\Database\Models\Domain::where('domain', $host)->first();
+            $tenantId = $domain ? $domain->tenant_id : null;
+        } else {
+            $tenantId = null;
+        }
+    }
+    
+    // テナントIDが取得できない場合はエラー
+    if (!$tenantId) {
+        Log::error('ゲストログイン: テナントIDが取得できません', [
+            'host' => $request->getHost(),
+        ]);
+        return back()->withErrors([
+            'message' => 'テナントが見つかりません。',
+        ]);
+    }
 
     // ゲストユーザーを作成または更新
     $guestUser = User::updateOrCreate(
