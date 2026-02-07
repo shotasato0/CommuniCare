@@ -1,0 +1,1 @@
+import{_ as t}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{o as e,f as o}from"./app-BGfmsnWH.js";const c={},n={class:"title-font sm:text-3xl text-2xl mb-2 font-light text-blue-900 dark:text-blue-300 tracking-widest"};function r(s,a){return e(),o("h1",n," CommuniCare ")}const _=t(c,[["render",r]]);export{_ as A};
