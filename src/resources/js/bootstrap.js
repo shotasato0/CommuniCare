@@ -13,3 +13,7 @@ if (token) {
         "CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token"
     );
 }
+
+// Ziggyのroute()関数をグローバルに利用可能にする
+// window.Ziggyが利用可能になった後、route()関数を構築
+// app.jsで設定されるため、ここでは準備のみ

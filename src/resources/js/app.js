@@ -5,9 +5,14 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
-import { ZiggyVue } from "../../vendor/tightenco/ziggy";
+import { ZiggyVue, route } from "../../vendor/tightenco/ziggy";
 import { createI18n } from "vue-i18n"; // vue-i18nをインポート
 import ja from "../../lang/ja.json"; // Laravelのlangディレクトリからja.jsonを読み込み
+
+// Ziggyのroute()関数をグローバルに利用可能にする
+if (typeof window.Ziggy !== 'undefined') {
+    window.route = route;
+}
 
 import SlideUpDown from "vue-slide-up-down"; // vue-slide-up-downをインポート
 import { useDialog } from "./composables/dialog"; // dialog.jsのインポート
