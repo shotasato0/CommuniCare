@@ -490,4 +490,3 @@ throw new TenantViolationException(
 3. **テスト**: `RefreshDatabase` は使用禁止。SQLiteメモリDBを使用
 4. **コード品質**: Laravel Pint + PHPStan + ESLint で自動チェック
 5. **仕様書**: `docs/codex/*` を「正」として参照し、矛盾する実装は禁止
-
