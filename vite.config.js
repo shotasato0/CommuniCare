@@ -6,7 +6,7 @@ export default defineConfig(() => {
     return {
         plugins: [
             laravel({
-                input: "resources/js/app.js",
+                input: "src/resources/js/app.js",
                 refresh: true,
             }),
             vue({
@@ -19,7 +19,7 @@ export default defineConfig(() => {
             }),
         ],
         build: {
-            outDir: "public/build",
+            outDir: "src/public/build",
         },
         base: "/build/", // 相対パスを指定
     };
