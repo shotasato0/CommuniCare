@@ -11,7 +11,7 @@ use App\Http\Middleware\SetTenantCookie;
 use App\Http\Middleware\SetSessionDomain;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Illuminate\Auth\AuthenticationException;
@@ -69,7 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // すべての例外をログに記録（reportメソッドは常に呼び出される）
         $exceptions->report(function (\Throwable $e) {
-            Log::error('Unhandled exception', [
+            Logs::error('Unhandled exception', [
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
