@@ -6,7 +6,7 @@ use App\Http\Requests\Post\PostStoreRequest;
 use App\Services\PostService;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
@@ -24,7 +24,7 @@ class PostController extends Controller
     {
         try {
             // デバッグ情報
-            Log::info('=== PostController::store Debug ===', [
+            Logs::info('=== PostController::store Debug ===', [
                 'hasFile_files' => $request->hasFile('files'),
                 'hasFile_image' => $request->hasFile('image'),
                 'files_count' => $request->hasFile('files') ? count($request->file('files')) : 0,
@@ -48,7 +48,7 @@ class PostController extends Controller
             return redirect()->route('forum.index', $redirectParams)
                 ->with('success', '投稿を作成しました。');
         } catch (\Exception $e) {
-            Log::error('投稿の作成に失敗しました', ['exception' => $e, 'message' => $e->getMessage()]);
+            Logs::error('投稿の作成に失敗しました', ['exception' => $e, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', '投稿の作成に失敗しました。');
         }
@@ -74,15 +74,15 @@ class PostController extends Controller
             return redirect()->route('forum.index', $redirectParams)
                 ->with('success', '投稿を削除しました。');
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反による投稿削除試行', $e->getLogContext());
+            Logs::critical('テナント境界違反による投稿削除試行', $e->getLogContext());
             return redirect()->route('forum.index')
                 ->with('error', $e->getUserMessage());
         } catch (PostOwnershipException $e) {
-            Log::warning('投稿所有権違反による削除試行', $e->getLogContext());
+            Logs::warning('投稿所有権違反による削除試行', $e->getLogContext());
             return redirect()->route('forum.index')
                 ->with('error', $e->getUserMessage());
         } catch (\Exception $e) {
-            Log::error('投稿の削除に失敗しました', ['exception' => $e, 'post_id' => $id, 'message' => $e->getMessage()]);
+            Logs::error('投稿の削除に失敗しました', ['exception' => $e, 'post_id' => $id, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', '投稿の削除に失敗しました。');
         }
@@ -110,13 +110,13 @@ class PostController extends Controller
                 'attachments' => $attachments
             ]);
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるファイル添付試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるファイル添付試行', $e->getLogContext());
             return response()->json([
                 'success' => false,
                 'message' => $e->getUserMessage()
             ], 403);
         } catch (\Exception $e) {
-            Log::error('ファイル添付に失敗', ['post_id' => $post->id, 'exception' => $e]);
+            Logs::error('ファイル添付に失敗', ['post_id' => $post->id, 'exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'ファイルの添付に失敗しました。'
@@ -137,13 +137,13 @@ class PostController extends Controller
                 'message' => 'ファイルを削除しました。'
             ]);
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるファイル削除試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるファイル削除試行', $e->getLogContext());
             return response()->json([
                 'success' => false,
                 'message' => $e->getUserMessage()
             ], 403);
         } catch (\Exception $e) {
-            Log::error('ファイル削除に失敗', ['post_id' => $post->id, 'attachment_id' => $attachmentId, 'exception' => $e]);
+            Logs::error('ファイル削除に失敗', ['post_id' => $post->id, 'attachment_id' => $attachmentId, 'exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'ファイルの削除に失敗しました。'

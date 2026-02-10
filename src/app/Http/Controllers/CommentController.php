@@ -7,7 +7,7 @@ use App\Models\Post;
 use App\Services\CommentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 use App\Http\Requests\Comment\CommentStoreRequest;
 use App\Exceptions\Custom\TenantViolationException;
 
@@ -36,11 +36,11 @@ class CommentController extends Controller
             return redirect()->route('forum.index', $redirectParams)
                 ->with('success', 'コメントを投稿しました。');
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるコメント作成試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるコメント作成試行', $e->getLogContext());
             return redirect()->route('forum.index')
                 ->with('error', $e->getUserMessage());
         } catch (\Exception $e) {
-            Log::error('コメントの作成に失敗しました', ['exception' => $e, 'message' => $e->getMessage()]);
+            Logs::error('コメントの作成に失敗しました', ['exception' => $e, 'message' => $e->getMessage()]);
             return redirect()->route('forum.index')
                 ->with('error', 'コメントの作成に失敗しました。');
         }
@@ -54,11 +54,11 @@ class CommentController extends Controller
             return redirect()->back()
                 ->with('success', 'コメントを削除しました。');
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるコメント削除試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるコメント削除試行', $e->getLogContext());
             return redirect()->back()
                 ->with('error', $e->getUserMessage());
         } catch (\Exception $e) {
-            Log::error('コメントの削除に失敗しました', ['exception' => $e, 'comment_id' => $id, 'message' => $e->getMessage()]);
+            Logs::error('コメントの削除に失敗しました', ['exception' => $e, 'comment_id' => $id, 'message' => $e->getMessage()]);
             return redirect()->back()
                 ->with('error', 'コメントの削除に失敗しました。');
         }
@@ -86,13 +86,13 @@ class CommentController extends Controller
                 'attachments' => $attachments
             ]);
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるファイル添付試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるファイル添付試行', $e->getLogContext());
             return response()->json([
                 'success' => false,
                 'message' => $e->getUserMessage()
             ], 403);
         } catch (\Exception $e) {
-            Log::error('ファイル添付に失敗', ['comment_id' => $comment->id, 'exception' => $e]);
+            Logs::error('ファイル添付に失敗', ['comment_id' => $comment->id, 'exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'ファイルの添付に失敗しました。'
@@ -113,13 +113,13 @@ class CommentController extends Controller
                 'message' => 'ファイルを削除しました。'
             ]);
         } catch (TenantViolationException $e) {
-            Log::critical('テナント境界違反によるファイル削除試行', $e->getLogContext());
+            Logs::critical('テナント境界違反によるファイル削除試行', $e->getLogContext());
             return response()->json([
                 'success' => false,
                 'message' => $e->getUserMessage()
             ], 403);
         } catch (\Exception $e) {
-            Log::error('ファイル削除に失敗', ['comment_id' => $comment->id, 'attachment_id' => $attachmentId, 'exception' => $e]);
+            Logs::error('ファイル削除に失敗', ['comment_id' => $comment->id, 'attachment_id' => $attachmentId, 'exception' => $e]);
             return response()->json([
                 'success' => false,
                 'message' => 'ファイルの削除に失敗しました。'
