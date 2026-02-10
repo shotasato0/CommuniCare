@@ -10,8 +10,11 @@
 /src/storage/**
 !/src/storage/.gitignore
 /vendor
+/src/vendor
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
+/src/bootstrap/cache/*
+!/src/bootstrap/cache/.gitignore
 .env
 .env.backup
 .env.production
@@ -33,3 +36,4 @@ yarn-error.log
 !/.cursor/settings.json
 my.cnf
 !database/migrations/*.php
+!src/database/migrations/*.php
