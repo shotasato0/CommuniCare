@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\User;
 use App\Exceptions\Custom\TenantViolationException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 use Illuminate\Database\Eloquent\Model;
 
 trait TenantBoundaryCheckTrait
@@ -119,7 +119,7 @@ trait TenantBoundaryCheckTrait
             $logContext['stack_trace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5);
         }
         
-        Log::critical("テナントセキュリティ違反検出", $logContext);
+        Logs::critical("テナントセキュリティ違反検出", $logContext);
     }
 
     /**

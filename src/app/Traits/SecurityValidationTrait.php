@@ -5,7 +5,7 @@ namespace App\Traits;
 use App\Models\User;
 use App\Exceptions\Custom\TenantViolationException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 
 trait SecurityValidationTrait
 {
@@ -44,7 +44,7 @@ trait SecurityValidationTrait
             'user_agent' => request()->userAgent(),
         ], $context);
         
-        Log::warning("セキュリティイベント: {$message}", $logContext);
+        Logs::warning("セキュリティイベント: {$message}", $logContext);
     }
 
     /**
@@ -103,7 +103,7 @@ trait SecurityValidationTrait
     {
         $user = $this->getCurrentUser();
         
-        Log::info("ユーザーアクション監査", array_merge([
+        Logs::info("ユーザーアクション監査", array_merge([
             'user_id' => $user->id,
             'tenant_id' => $user->tenant_id,
             'action' => $action,
