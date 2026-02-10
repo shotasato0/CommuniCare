@@ -17,7 +17,7 @@
 
 ### web
 - **用途**: 一般ユーザー（テナントドメイン経由）のアクセス
-- **ログファイル**: `storage/logs/communicare.web.log`
+- **ログファイル**: `storage/logs/communicare.web-YYYY-MM-DD.log`
 - **判定条件**: 
   - Web環境
   - ゲストドメインでない
@@ -25,21 +25,21 @@
 
 ### guest
 - **用途**: ゲストユーザー（ゲストドメイン経由）のアクセス
-- **ログファイル**: `storage/logs/communicare.guest.log`
+- **ログファイル**: `storage/logs/communicare.guest-YYYY-MM-DD.log`
 - **判定条件**:
   - Web環境
   - ゲストドメイン（`config('guest.domains.' . config('app.env'))`）に一致
 
 ### admin
 - **用途**: 管理者機能へのアクセス
-- **ログファイル**: `storage/logs/communicare.admin.log`
+- **ログファイル**: `storage/logs/communicare.admin-YYYY-MM-DD.log`
 - **判定条件**:
   - Web環境
   - ルート名が `admin.` で始まる、またはパスが `admin/` で始まる
 
 ### console
 - **用途**: CLIコマンド（artisan、queue worker等）
-- **ログファイル**: `storage/logs/communicare.console.log`
+- **ログファイル**: `storage/logs/communicare.console-YYYY-MM-DD.log`
 - **判定条件**:
   - CLI環境（`app()->runningInConsole()`）
 
@@ -98,7 +98,7 @@ LOG_CHANNELS=web,console
 ```php
 'web' => [
     'driver' => 'daily',
-    'path' => storage_path('logs/communicare.web.log'),
+    'path' => storage_path('logs/communicare.web'), // 拡張子なし（dailyドライバが自動的に追加）
     'level' => env('LOG_LEVEL', 'debug'),
     'days' => env('LOG_DAILY_DAYS', 14), // 14日間保持
     'replace_placeholders' => true,
@@ -140,10 +140,10 @@ Logs::error('エラー', ['exception' => $e]);
 
 ```
 storage/logs/
-├── communicare.web.log-2026-02-07.log
-├── communicare.guest.log-2026-02-07.log
-├── communicare.admin.log-2026-02-07.log
-└── communicare.console.log-2026-02-07.log
+├── communicare.web-2026-02-07.log
+├── communicare.guest-2026-02-07.log
+├── communicare.admin-2026-02-07.log
+└── communicare.console-2026-02-07.log
 ```
 
 日付ローテーションにより、日付ごとにファイルが分割されます。

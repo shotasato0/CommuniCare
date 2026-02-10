@@ -142,7 +142,7 @@ return [
 
         'web' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/communicare.web.log'),
+            'path' => storage_path('logs/communicare.web'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
@@ -150,7 +150,7 @@ return [
 
         'guest' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/communicare.guest.log'),
+            'path' => storage_path('logs/communicare.guest'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
@@ -158,7 +158,7 @@ return [
 
         'admin' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/communicare.admin.log'),
+            'path' => storage_path('logs/communicare.admin'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
@@ -166,7 +166,7 @@ return [
 
         'console' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/communicare.console.log'),
+            'path' => storage_path('logs/communicare.console'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => env('LOG_DAILY_DAYS', 14),
             'replace_placeholders' => true,
