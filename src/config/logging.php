@@ -127,6 +127,51 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Contextual Log Channels
+        |--------------------------------------------------------------------------
+        |
+        | コンテキスト（実行環境・入口）ごとにログを分離するチャンネル
+        | 各チャンネルは daily ドライバで日付ローテーションされます。
+        | 
+        | 環境変数 LOG_CHANNELS で有効なチャンネルを指定可能
+        | 例: LOG_CHANNELS="web,guest,admin,console" または "web"（単一チャンネル）
+        |
+        */
+
+        'web' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/communicare.web.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'guest' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/communicare.guest.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'admin' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/communicare.admin.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
+        'console' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/communicare.console.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => env('LOG_DAILY_DAYS', 14),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];
