@@ -6,7 +6,7 @@ use App\Models\Attachment;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -131,7 +131,7 @@ class AttachmentService
             }
             // 物理実体が存在しない → 過去の保存が中央FS/他テナントにあり欠損の可能性
             // 安全のため今回のアップロードを新規保存として扱う（self-healは別途コマンドで実施）
-            Log::warning('AttachmentService: Duplicate hash found but file missing on tenant FS, saving new copy', [
+            Logs::warning('AttachmentService: Duplicate hash found but file missing on tenant FS, saving new copy', [
                 'existing_attachment_id' => $existingAttachment->id,
                 'existing_path' => $existingPath,
                 'tenant_id' => $currentUser->tenant_id,
@@ -142,7 +142,7 @@ class AttachmentService
         }
         
         // Laravel Storage使用（まずは一時領域へ保存）
-        if (config('attachments.debug_log')) Log::info('AttachmentService: Attempting to save file', [
+        if (config('attachments.debug_log')) Logs::info('AttachmentService: Attempting to save file', [
             'filePath' => $tempPath,
             'originalName' => $originalName,
             'fileSize' => $file->getSize()
@@ -165,7 +165,7 @@ class AttachmentService
             $exists = Storage::disk('public')->exists($actualFilePath);
             $size = $exists ? Storage::disk('public')->size($actualFilePath) : 0;
             
-            if (config('attachments.debug_log')) Log::info('AttachmentService: File saved successfully', [
+            if (config('attachments.debug_log')) Logs::info('AttachmentService: File saved successfully', [
                 'actualFilePath' => $actualFilePath,
                 'file_exists' => $exists,
                 'file_size' => $size
@@ -176,7 +176,7 @@ class AttachmentService
             }
         
         } catch (\Exception $e) {
-            Log::error('AttachmentService: File save failed', [
+            Logs::error('AttachmentService: File save failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -210,19 +210,19 @@ class AttachmentService
                     }
                     Storage::disk('public')->move($tempPath, $finalPath);
                     $attachment->update(['file_path' => $finalPath]);
-                    if (config('attachments.debug_log')) Log::info('AttachmentService: Finalized attachment file move', [
+                    if (config('attachments.debug_log')) Logs::info('AttachmentService: Finalized attachment file move', [
                         'id' => $attachment->id,
                         'from' => $tempPath,
                         'to' => $finalPath
                     ]);
                 } else {
-                    if (config('attachments.debug_log')) Log::warning('AttachmentService: Temp file missing at finalize time', [
+                    if (config('attachments.debug_log')) Logs::warning('AttachmentService: Temp file missing at finalize time', [
                         'id' => $attachment->id,
                         'tempPath' => $tempPath
                     ]);
                 }
             } catch (\Throwable $e) {
-                Log::error('AttachmentService: Finalize move failed', [
+                Logs::error('AttachmentService: Finalize move failed', [
                     'id' => $attachment->id,
                     'from' => $tempPath,
                     'to' => $finalPath,

@@ -12,7 +12,7 @@ use App\Exceptions\Custom\PostOwnershipException;
 use App\Traits\SecurityValidationTrait;
 use App\Traits\TenantBoundaryCheckTrait;
 use App\Services\AttachmentService;
-use Illuminate\Support\Facades\Log;
+use App\Facades\Logs;
 
 class PostService
 {
@@ -91,7 +91,7 @@ class PostService
                 try {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($post->img);
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::warning('Failed to delete legacy post image', [
+                    Logs::warning('Failed to delete legacy post image', [
                         'post_id' => $post->id,
                         'img' => $post->img,
                         'error' => $e->getMessage(),
@@ -149,7 +149,7 @@ class PostService
      */
     private function handleFileAttachments(PostStoreRequest $request, Post $post): void
     {
-        if (config('attachments.debug_log')) Log::info('=== handleFileAttachments Debug ===', [
+        if (config('attachments.debug_log')) Logs::info('=== handleFileAttachments Debug ===', [
             'hasFile_image' => $request->hasFile('image'),
             'hasFile_files' => $request->hasFile('files'),
             'post_id' => $post->id
@@ -157,7 +157,7 @@ class PostService
         
         // レガシー画像フィールドの処理（後方互換性）
         if ($request->hasFile('image')) {
-            if (config('attachments.debug_log')) Log::info('Calling uploadSingleFile for image');
+            if (config('attachments.debug_log')) Logs::info('Calling uploadSingleFile for image');
             $this->attachmentService->uploadSingleFile(
                 $request->file('image'),
                 'App\\Models\\Post',
@@ -167,7 +167,7 @@ class PostService
         
         // 新しい統一ファイル添付システム
         if ($request->hasFile('files')) {
-            if (config('attachments.debug_log')) Log::info('Calling uploadFiles for files array', [
+            if (config('attachments.debug_log')) Logs::info('Calling uploadFiles for files array', [
                 'files_count' => count($request->file('files'))
             ]);
             $this->attachmentService->uploadFiles(
