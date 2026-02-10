@@ -14080,3 +14080,29 @@ Stack trace:
 [2026-02-08 09:01:22] local.INFO: SetSessionDomain:   
 [2026-02-08 09:01:46] local.INFO: SetSessionDomain: guestdemo.localhost  
 [2026-02-08 09:04:22] local.INFO: SetSessionDomain:   
+[2026-02-11 07:53:10] local.INFO: SetSessionDomain:   
+[2026-02-11 07:57:52] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:57:56] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:57:57] local.INFO: ゲストユーザーにロールを割り当てました {"user_id":118,"role":"user","roles":["user"]} 
+[2026-02-11 07:57:57] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:57:57] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:57:59] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:00] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:03] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:03] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:05] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:05] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:06] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:06] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:07] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:07] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:09] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:09] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:12] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:12] local.INFO: === PostController::store Debug === {"hasFile_files":false,"hasFile_image":false,"files_count":0,"image_name":null,"all_files":[]} 
+[2026-02-11 07:58:12] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:12] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:16] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:16] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:58:16] local.INFO: SetSessionDomain: guestdemo.localhost  
+[2026-02-11 07:59:54] local.INFO: SetSessionDomain:   
