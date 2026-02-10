@@ -28,5 +28,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+!/.vscode/settings.json
+/.cursor
+!/.cursor/settings.json
 my.cnf
 !database/migrations/*.php
