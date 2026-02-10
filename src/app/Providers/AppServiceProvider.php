@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Unit;
 use App\Models\User;
+use App\Services\ContextualLogService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // コンテキスト対応ログサービスをシングルトンとして登録
+        $this->app->singleton('contextual.log', function ($app) {
+            return new ContextualLogService();
+        });
     }
 
     /**
