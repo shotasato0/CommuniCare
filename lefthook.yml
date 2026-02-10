@@ -7,36 +7,36 @@ pre-commit:
     # PHP Linting & Code Style
     php-lint:
       glob: "*.php"
-      run: ./vendor/bin/sail php -l {staged_files}
+      run: cd src && ./vendor/bin/sail php -l {staged_files}
       stage_fixed: true
 
     # Laravel Pint (Code Style Fixer)  
     pint:
       glob: "*.php"
-      run: ./vendor/bin/sail pint {staged_files}
+      run: cd src && ./vendor/bin/sail pint {staged_files}
       stage_fixed: true
 
     # PHPStan Static Analysis
     phpstan:
       glob: "*.php"
-      run: ./vendor/bin/sail php vendor/bin/phpstan analyse {staged_files} --memory-limit=1G
+      run: cd src && ./vendor/bin/sail php vendor/bin/phpstan analyse {staged_files} --memory-limit=1G
       fail_text: "PHPStan found issues. Please fix them before committing."
 
     # セキュリティテスト (Unit Security Tests)
     security-tests:
-      run: ./vendor/bin/sail test tests/Unit/SecurityFunctionTest.php --stop-on-failure
+      run: cd src && ./vendor/bin/sail test tests/Unit/SecurityFunctionTest.php --stop-on-failure
       fail_text: "セキュリティテストに失敗しました。修正してからコミットしてください。"
 
     # Frontend Linting
     eslint:
       glob: "*.{js,vue,ts}"
-      run: npm run lint {staged_files}
+      run: cd src && npm run lint {staged_files}
       stage_fixed: true
 
     # Vue.js Type Check
     vue-tsc:
       glob: "*.{vue,ts}"
-      run: npm run type-check
+      run: cd src && npm run type-check
       fail_text: "Vue.js type check failed. Please fix type issues."
 
 pre-push:
@@ -44,22 +44,22 @@ pre-push:
   commands:
     # 全体テストスイート実行
     unit-tests:
-      run: ./vendor/bin/sail test --testsuite=Unit --stop-on-failure
+      run: cd src && ./vendor/bin/sail test --testsuite=Unit --stop-on-failure
       fail_text: "Unit tests failed. Push aborted."
 
     # テナント境界チェック専用テスト
     tenant-boundary-check:
-      run: ./vendor/bin/sail test tests/Unit/SecurityFunctionTest.php --stop-on-failure
+      run: cd src && ./vendor/bin/sail test tests/Unit/SecurityFunctionTest.php --stop-on-failure
       fail_text: "テナント境界チェックに失敗しました。セキュリティ問題を修正してください。"
 
     # フロントエンドビルドテスト
     frontend-build:
-      run: npm run build
+      run: cd src && npm run build
       fail_text: "フロントエンドビルドに失敗しました。"
 
     # マルチテナント整合性チェック
     tenant-consistency:
-      run: ./vendor/bin/sail artisan tenant:check-consistency
+      run: cd src && ./vendor/bin/sail artisan tenant:check-consistency
       fail_text: "マルチテナント整合性チェックに失敗しました。"
 
 # スキップ設定

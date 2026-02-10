@@ -6,7 +6,7 @@
 
 CommuniCare は、介護施設の運営を効率化するために、職員間のスムーズなコミュニケーションと利用者様の情報を一元管理するプラットフォームです。
 
-![サービスのメインビジュアル](public/images/hero-section.png)
+![サービスのメインビジュアル](src/public/images/hero-section.png)
 
 ---
 
@@ -44,7 +44,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 | 掲示板機能                                          |
 | --------------------------------------------------- |
-| ![掲示板機能](public/images/feature_forum_page.png) |
+| ![掲示板機能](src/public/images/feature_forum_page.png) |
 
 -   **投稿機能:** 職員が情報を共有するために投稿を作成可能。
 -   **返信機能:** 各投稿に対して返信ができ、双方向のコミュニケーションを実現。
@@ -55,7 +55,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 | 左サイドバー                                                                                                                                   | 右サイドバー                                                                                 |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| ![左サイドバー](public/images/feature_sidebar_left.png)                                                                                        | ![右サイドバー](public/images/feature_sidebar_right.png)                                     |
+| ![左サイドバー](src/public/images/feature_sidebar_left.png)                                                                                        | ![右サイドバー](src/public/images/feature_sidebar_right.png)                                     |
 | 掲示板ごとの部署一覧が表示され、現在選択中の部署がグレーで強調される。掲示板にアクセスすると、自身の所属する部署の掲示板が自動的に表示される。 | 掲示板に関連する職員の一覧が表示され、職員名やアイコンをクリックすると詳細情報を確認できる。 |
 
 ---
@@ -64,7 +64,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 | 職員ページ                                          | 職員詳細モーダル                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
-| ![職員ページ](public/images/feature_users_page.png) | ![職員詳細モーダル](public/images/feature_users_datail_modal.png) |
+| ![職員ページ](src/public/images/feature_users_page.png) | ![職員詳細モーダル](src/public/images/feature_users_datail_modal.png) |
 
 職員の一覧を表示し、部署ごとに絞り込んで閲覧が可能。 **職員名をクリックすると、その職員の詳細情報をモーダルウィンドウで確認可能。** 管理者は職員の登録・削除が可能。
 
@@ -74,7 +74,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 | 利用者ページ                                              | 利用者詳細ページ                                                |
 | --------------------------------------------------------- | --------------------------------------------------------------- |
-| ![利用者ページ](public/images/feature_residents_page.png) | ![利用者詳細ページ](public/images/feature_residents_detail.png) |
+| ![利用者ページ](src/public/images/feature_residents_page.png) | ![利用者詳細ページ](src/public/images/feature_residents_detail.png) |
 
 利用者の一覧を表示し、部署ごとに絞り込んで閲覧が可能。 **利用者名をクリックすると、詳細情報ページへ移動。** サービス内容、支援状況、備考などの利用者情報の確認や編集が可能。また、管理者は利用者の登録・削除が可能。
 
@@ -84,7 +84,7 @@ CommuniCare は、介護施設の運営を効率化するために、職員間�
 
 | 管理ページ                                                                               | 部署管理                                                     |
 | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| ![管理ページ](public/images/feature_management_page.png)                                 | ![部署管理](public/images/feature_department_management.png) |
+| ![管理ページ](src/public/images/feature_management_page.png)                                 | ![部署管理](src/public/images/feature_department_management.png) |
 | ログイン中のユーザー情報とログイン状態を表示。管理者は部署管理（新規登録・削除）が可能。 | 部署の新規登録や削除を行うことができる管理画面。             |
 
 ---
@@ -106,7 +106,7 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 この仕様変更により、現在サブドメインを利用した管理環境の作成機能は**一時的に停止しています**。本来想定していた「ユーザーが自身でサブドメインを用いた独立した管理環境を作成する」という実装は、レンタルサーバーの制約により一部制限されていますが、今後の開発で改善を検討しています。
 
-![サブドメイン登録機能が無効であることを示すスクリーンショット](public/images/subdomain_registration_disabled.png)
+![サブドメイン登録機能が無効であることを示すスクリーンショット](src/public/images/subdomain_registration_disabled.png)
 
 なお、**運営側で専用のテナントやサブドメインを登録することは可能**です。登録を希望される方は、**X（旧 Twitter）の DM** にてお問い合わせください。
 
@@ -249,23 +249,24 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 ## ディレクトリ構成
 
 ```
-├── app/                 # アプリケーション本体
-│   ├── Console/         # Artisanコマンド（バッチ処理）
-│   ├── Http/            # コントローラー・ミドルウェア・リクエスト
-│   ├── Models/          # データベースモデル
-│   ├── Providers/       # サービスプロバイダ（マルチテナンシー管理含む）
-├── bootstrap/           # フレームワークの起動設定
-├── config/              # アプリケーションの環境設定
-├── database/            # データベース関連（マイグレーション・シーダー）
-├── public/              # 公開ディレクトリ（エントリーポイント）
-├── resources/           # フロントエンド（Vue.js, Blade）
-├── routes/              # ルーティング定義
-├── storage/             # ストレージ・ログ・キャッシュ
-├── tests/               # 自動テスト（Unit & Feature）
+├── src/                 # アプリケーションルートディレクトリ
+│   ├── app/             # アプリケーション本体
+│   │   ├── Console/     # Artisanコマンド（バッチ処理）
+│   │   ├── Http/        # コントローラー・ミドルウェア・リクエスト
+│   │   ├── Models/      # データベースモデル
+│   │   └── Providers/  # サービスプロバイダ（マルチテナンシー管理含む）
+│   ├── bootstrap/       # フレームワークの起動設定
+│   ├── config/          # アプリケーションの環境設定
+│   ├── database/        # データベース関連（マイグレーション・シーダー）
+│   ├── public/          # 公開ディレクトリ（エントリーポイント）
+│   ├── resources/       # フロントエンド（Vue.js, Blade）
+│   ├── routes/          # ルーティング定義
+│   ├── storage/         # ストレージ・ログ・キャッシュ
+│   ├── tests/           # 自動テスト（Unit & Feature）
+│   ├── composer.json    # PHPパッケージ管理
+│   ├── package.json     # フロントエンド依存関係
+│   └── vite.config.js   # フロントエンドビルド設定
 ├── docker-compose.yml   # 開発環境用Docker設定
-├── composer.json        # PHPパッケージ管理
-├── package.json         # フロントエンド依存関係
-├── vite.config.js       # フロントエンドビルド設定
 ```
 
 ---
@@ -274,7 +275,7 @@ CommuniCare は、**介護事業所ごとの独立した情報管理を可能に
 
 | ER 図                                       |
 | ------------------------------------------- |
-| ![ER図](public/images/communicare_ERD2.png) |
+| ![ER図](src/public/images/communicare_ERD2.png) |
 
 ## インフラ構成図
 
