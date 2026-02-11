@@ -101,7 +101,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->guest(route('login'));
         });
         $exceptions->render(function (TenantViolationException $e) {
-            Log::critical('テナント境界違反が発生しました', $e->getLogContext());
+            Logs::critical('テナント境界違反が発生しました', $e->getLogContext());
             
             if (request()->expectsJson() || request()->wantsJson()) {
                 return response()->json([
@@ -115,7 +115,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (PostOwnershipException $e) {
-            Log::warning('投稿所有権違反が発生しました', $e->getLogContext());
+            Logs::warning('投稿所有権違反が発生しました', $e->getLogContext());
             
             if (request()->expectsJson() || request()->wantsJson()) {
                 return response()->json([
