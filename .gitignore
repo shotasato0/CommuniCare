@@ -7,10 +7,20 @@
 # Ignore all generated/storage files (tenant FS, attachments, caches, etc.)
 /storage/**
 !/storage/.gitignore
+/src/storage/**
+!/src/storage/.gitignore
 /vendor
+/src/vendor
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+/src/bootstrap/cache/*
+!/src/bootstrap/cache/.gitignore
 .env
 .env.backup
 .env.production
+/src/.env
+/src/.env.production
+/src/.env.backup
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -21,5 +31,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+!/.vscode/settings.json
+/.cursor
+!/.cursor/settings.json
 my.cnf
 !database/migrations/*.php
+!src/database/migrations/*.php

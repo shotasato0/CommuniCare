@@ -1,0 +1,17 @@
+{
+    "_hash": "5d7d206eb736f9d9d241402ac386c0a4dd9ad730bc1232916d61dd7909d1d527",
+    "patches": {
+        "stancl/tenancy": [
+            {
+                "package": "stancl/tenancy",
+                "description": "Fix PHP 8.3 static trait property access warnings",
+                "url": "patches/stancl-tenancy-fix-php83.patch",
+                "sha256": "47c95e49176a12fc9435c173981be30032d0871f94ac5d189290097e1a8c1a88",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
