@@ -97,19 +97,16 @@ class ContextualLogService
 
     /**
      * 管理者ルートかどうかを判定
+     * ルート名が null の場合でも、パスが admin/ で始まれば管理者ルートとして扱う
      */
     protected function isAdminRoute(?string $routeName, string $routePath): bool
     {
-        if (!$routeName) {
-            return false;
-        }
-
-        // ルート名で判定
-        if (str_starts_with($routeName, 'admin.')) {
+        // ルート名で判定（null の場合はスキップ）
+        if ($routeName !== null && str_starts_with($routeName, 'admin.')) {
             return true;
         }
 
-        // パスで判定
+        // パスで判定（名前のないルートも admin/ で始まれば管理者ルート）
         if (str_starts_with($routePath, 'admin/')) {
             return true;
         }
