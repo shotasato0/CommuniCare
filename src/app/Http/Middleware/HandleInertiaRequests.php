@@ -4,8 +4,6 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Inertia\Inertia;
-use Inertia\Support\Header;
 use Illuminate\Support\Facades\DB;
 
 class HandleInertiaRequests extends Middleware
@@ -18,61 +16,19 @@ class HandleInertiaRequests extends Middleware
     protected $rootView = 'app';
 
     /**
-     * Determine the current asset version.
-     */
-    public function version(Request $request): string|null
-    {
-        return parent::version($request);
-    }
-
-    /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * Wraps $next so that Inertia\Response is converted to HTTP response before parent runs.
+     * This keeps the recommended pattern: only override share() (and optionally version()/rootView).
      */
     public function handle($request, \Closure $next)
     {
-        // Inertiaミドルウェアのロジックを実行
-        Inertia::version(function () use ($request) {
-            return $this->version($request);
-        });
-
-        Inertia::share($this->share($request));
-        Inertia::setRootView($this->rootView($request));
-
-        $response = $next($request);
-        
-        // Inertia\Responseの場合はHTTPレスポンスに変換（親クラスのhandleメソッドがheadersにアクセスする前に変換）
-        if ($response instanceof \Inertia\Response) {
-            $response = $response->toResponse($request);
-        }
-
-        // HTTPレスポンスの場合のみ、ヘッダーを設定
-        if ($response instanceof \Illuminate\Http\Response || $response instanceof \Symfony\Component\HttpFoundation\Response) {
-            $response->headers->set('Vary', Header::INERTIA);
-        }
-
-        if (! $request->header(Header::INERTIA)) {
+        return parent::handle($request, function ($request) use ($next) {
+            $response = $next($request);
+            if ($response instanceof \Inertia\Response) {
+                return $response->toResponse($request);
+            }
             return $response;
-        }
-
-        if ($response instanceof \Illuminate\Http\Response || $response instanceof \Symfony\Component\HttpFoundation\Response) {
-            if ($request->method() === 'GET' && $request->header(Header::VERSION, '') !== Inertia::getVersion()) {
-                $response = parent::onVersionChange($request, $response);
-            }
-
-            if ($response->isOk() && empty($response->getContent())) {
-                $response = parent::onEmptyResponse($request, $response);
-            }
-
-            if ($response->getStatusCode() === 302 && in_array($request->method(), ['PUT', 'PATCH', 'DELETE'])) {
-                $response->setStatusCode(303);
-            }
-        }
-
-        return $response;
+        });
     }
 
     /**
