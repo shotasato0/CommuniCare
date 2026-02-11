@@ -76,8 +76,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 2000),
             ]);
-            // 親クラスのreportメソッドも呼び出す
-            return false; // falseを返すと、デフォルトのreport処理も実行される
+            // return しないことで、カスタムLogs::error()の後にデフォルトのreport処理（laravel.log）も実行される
         });
         
         // カスタム例外のハンドリング
