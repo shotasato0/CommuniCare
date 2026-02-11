@@ -67,8 +67,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // すべての例外をログに記録（reportメソッドは常に呼び出される）
+        // 未処理の例外のみログに記録。return false で Laravel のデフォルト report を止め二重ログを防ぐ。
+        // TenantViolationException / PostOwnershipException は render 側で適切なレベルでログするためここでは記録しない。
         $exceptions->report(function (\Throwable $e) {
+            if ($e instanceof TenantViolationException || $e instanceof PostOwnershipException) {
+                return false;
+            }
             Logs::error('Unhandled exception', [
                 'exception' => get_class($e),
                 'message' => $e->getMessage(),
@@ -76,7 +80,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 'line' => $e->getLine(),
                 'trace' => substr($e->getTraceAsString(), 0, 2000),
             ]);
-            // return しないことで、カスタムLogs::error()の後にデフォルトのreport処理（laravel.log）も実行される
+            return false;
         });
         
         // カスタム例外のハンドリング
