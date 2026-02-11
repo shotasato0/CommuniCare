@@ -17,8 +17,8 @@ class ContextualLogService
 {
     /**
      * 利用可能なログチャンネルのリスト
-     * 環境変数 LOG_CHANNELS でカンマ区切りで指定可能（例: "web,guest,admin,console"）
-     * 指定がない場合は全チャンネルを使用
+     * config/logging.php の contextual_channels（LOG_CHANNELS 環境変数）でカンマ区切り指定可能
+     * 例: "web,guest,admin,console"。指定がない場合は全チャンネルを使用。
      */
     protected array $availableChannels;
 
@@ -29,8 +29,8 @@ class ContextualLogService
 
     public function __construct()
     {
-        // 環境変数から利用可能なチャンネルを取得
-        $channels = env('LOG_CHANNELS', 'web,guest,admin,console');
+        // config 経由で利用可能なチャンネルを取得（config:cache 環境でも正しく動作）
+        $channels = config('logging.contextual_channels', 'web,guest,admin,console');
         $this->availableChannels = array_map('trim', explode(',', $channels));
         
         // デフォルトチャンネル（最初のチャンネル、または'web'）
