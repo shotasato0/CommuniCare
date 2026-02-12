@@ -2,9 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Middleware;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Inertia\Middleware;
+use Inertia\Response;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -24,7 +27,7 @@ class HandleInertiaRequests extends Middleware
     {
         return parent::handle($request, function ($request) use ($next) {
             $response = $next($request);
-            if ($response instanceof \Inertia\Response) {
+            if ($response instanceof Response) {
                 return $response->toResponse($request);
             }
             return $response;
@@ -48,7 +51,7 @@ class HandleInertiaRequests extends Middleware
             }
         } catch (\Exception $e) {
             // データベース接続エラーなどの場合は、エラーをログに記録して続行
-            \Illuminate\Support\Facades\Log::warning('HandleInertiaRequests: Failed to query tenant', [
+            Log::warning('HandleInertiaRequests: Failed to query tenant', [
                 'error' => $e->getMessage(),
             ]);
         }
@@ -58,14 +61,14 @@ class HandleInertiaRequests extends Middleware
         try {
             if ($request->user()) {
                 $tenantId = $request->user()->tenant_id;
-                $admin = \App\Models\User::role('admin')
+                $admin = User::role('admin')
                     ->where('tenant_id', $tenantId)
                     ->first();
                 $currentAdminId = $admin ? $admin->id : null;
             }
         } catch (\Exception $e) {
             // データベース接続エラーなどの場合は、エラーをログに記録して続行
-            \Illuminate\Support\Facades\Log::warning('HandleInertiaRequests: Failed to query admin', [
+            Log::warning('HandleInertiaRequests: Failed to query admin', [
                 'error' => $e->getMessage(),
             ]);
         }
@@ -89,7 +92,7 @@ class HandleInertiaRequests extends Middleware
             }
         } catch (\Exception $e) {
             // セッションが利用できない場合は、デフォルト値を使用
-            \Illuminate\Support\Facades\Log::warning('HandleInertiaRequests: Session not available', [
+            Log::warning('HandleInertiaRequests: Session not available', [
                 'error' => $e->getMessage(),
             ]);
         }

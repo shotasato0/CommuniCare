@@ -17,6 +17,7 @@
     "require-dev": {
         "askdkc/breezejp": "^2.3",
         "barryvdh/laravel-debugbar": "^3.13",
+        "barryvdh/laravel-ide-helper": "^3.6",
         "cweagans/composer-patches": "^2.0",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.1",
