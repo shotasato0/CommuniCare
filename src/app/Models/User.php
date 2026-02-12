@@ -7,6 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder role(string|int|array $roles, ?string $guard = null)
+ * @method bool hasRole(string|int|array $roles, ?string $guard = null)
+ */
 class User extends Authenticatable
 {
     use HasRoles, HasFactory, Notifiable;
