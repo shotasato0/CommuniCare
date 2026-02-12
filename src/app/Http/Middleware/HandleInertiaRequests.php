@@ -61,7 +61,7 @@ class HandleInertiaRequests extends Middleware
         try {
             if ($request->user()) {
                 $tenantId = $request->user()->tenant_id;
-                $admin = User::role('admin')
+                $admin = User::admins()
                     ->where('tenant_id', $tenantId)
                     ->first();
                 $currentAdminId = $admin ? $admin->id : null;
