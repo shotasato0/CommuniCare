@@ -2,10 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 
 /**
  * コンテキストに応じて自動的にログチャンネルを選択するサービス
@@ -78,8 +79,7 @@ class ContextualLogService
             // 認証済みユーザーが管理者ロールを持っているかチェック
             if (Auth::check()) {
                 $user = Auth::user();
-                // hasRoleメソッドはSpatie\Permission\Traits\HasRolesトレイトで提供される
-                if ($user && method_exists($user, 'hasRole') && $user->hasRole('admin')) {
+                if ($user instanceof User && $user->hasRole('admin')) {
                     // 管理者ロールを持つが、管理者専用ルートでない場合は'web'チャンネル
                     // （管理者も一般機能を使う場合があるため）
                     return $this->getChannelIfAvailable('web', $this->defaultChannel);
