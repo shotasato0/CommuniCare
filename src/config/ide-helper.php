@@ -33,6 +33,10 @@ return [
     | files in it, should you need additional files for your project; e.g.
     | `.phpstorm.meta.php/laravel_ide_Helper.php'.
     |
+    | Note: After running ide-helper:meta, check .phpstorm.meta.php for any
+    | absolute paths (e.g. filesystems.links.*) and remove them to avoid
+    | leaking local paths into the repository.
+    |
     */
     'meta_filename' => '.phpstorm.meta.php',
 
