@@ -121,13 +121,20 @@ class PostService
 
     /**
      * 投稿の所有権を検証
+     *
+     * deletePost から呼ぶ場合は findByTenant で取得した投稿を渡すためテナント一致は保証されているが、
+     * 本メソッドが他の経路（他ソースから取得した Post）で呼ばれる可能性に備え、
+     * 防御的プログラミングとしてテナント境界チェックを残している。
+     *
+     * @param Post $post
+     * @return void
      */
     private function validatePostOwnership(Post $post): void
     {
         /** @var User $currentUser */
         $currentUser = Auth::user();
         
-        // まずテナント境界をチェック（必須条件）
+        // テナント境界チェック（必須条件）。findByTenant 経由では冗長だが、他経路呼び出しに備えて実施
         if ($post->tenant_id !== $currentUser->tenant_id) {
             throw new TenantViolationException(
                 currentTenantId: $currentUser->tenant_id,
