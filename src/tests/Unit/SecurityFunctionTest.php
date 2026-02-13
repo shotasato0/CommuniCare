@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use App\Services\PostService;
+use App\Services\AttachmentService;
 use App\Services\ForumService;
+use App\Repositories\IPostRepository;
 use App\Exceptions\Custom\TenantViolationException;
 use App\Exceptions\Custom\PostOwnershipException;
 use Mockery;
@@ -25,7 +27,10 @@ class SecurityFunctionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->postService = new PostService();
+        $this->postService = new PostService(
+            Mockery::mock(AttachmentService::class),
+            Mockery::mock(IPostRepository::class)
+        );
     }
 
     /**

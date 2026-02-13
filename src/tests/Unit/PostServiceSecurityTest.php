@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Post;
 use App\Services\PostService;
 use App\Services\AttachmentService;
+use App\Repositories\IPostRepository;
 use Illuminate\Support\Facades\Auth;
 use Tests\Support\UserStub;
 use Mockery;
@@ -17,7 +18,10 @@ class PostServiceSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new PostService(Mockery::mock(AttachmentService::class));
+        $this->service = new PostService(
+            Mockery::mock(AttachmentService::class),
+            Mockery::mock(IPostRepository::class)
+        );
     }
 
     public function test_can_delete_post_returns_false_when_unauthenticated(): void

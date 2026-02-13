@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use PHPUnit\Framework\TestCase;
 use App\Services\PostService;
 use App\Services\AttachmentService;
+use App\Repositories\IPostRepository;
 use App\Http\Requests\Post\PostStoreRequest;
 use Illuminate\Http\UploadedFile;
 use Mockery;
@@ -25,9 +26,10 @@ class PostServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // 依存注入：AttachmentService をモックで渡す（テスト制御性向上）
+        // 依存注入：AttachmentService と IPostRepository をモックで渡す（テスト制御性向上）
         $attachmentServiceMock = Mockery::mock(AttachmentService::class);
-        $this->postService = new PostService($attachmentServiceMock);
+        $postRepositoryMock = Mockery::mock(IPostRepository::class);
+        $this->postService = new PostService($attachmentServiceMock, $postRepositoryMock);
     }
 
     public function test_service_class_instantiation()
@@ -217,9 +219,8 @@ class PostServiceTest extends TestCase
         
         $imageMethod = $reflection->getMethod('handleImageUpload');
         $this->assertTrue($imageMethod->isPrivate());
-        
-        $updateMethod = $reflection->getMethod('updateQuotingPosts');
-        $this->assertTrue($updateMethod->isPrivate());
+
+        // updateQuotingPosts は PostRepository に委譲されているため PostService には存在しない
     }
 
     /**

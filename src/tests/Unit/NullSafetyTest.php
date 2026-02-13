@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use App\Services\PostService;
+use App\Services\AttachmentService;
 use App\Services\ForumService;
+use App\Repositories\IPostRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Mockery;
@@ -26,7 +28,10 @@ class NullSafetyTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->postService = new PostService();
+        $this->postService = new PostService(
+            Mockery::mock(AttachmentService::class),
+            Mockery::mock(IPostRepository::class)
+        );
         $this->forumService = new ForumService();
     }
 
