@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\Post;
 use App\Models\Attachment;
-use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PostRepository implements IPostRepository
