@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+require_once __DIR__ . '/../../stubs/helpers.php';
+
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,10 +45,10 @@ class HandleInertiaRequests extends Middleware
     {
         $tenant = null;
         try {
-            if (tenant()) {
+            if (\tenant()) {
                 $tenant = DB::table('tenants')
                     ->select('id', 'business_name')
-                    ->where('id', tenant('id'))
+                    ->where('id', \tenant('id'))
                     ->first();
             }
         } catch (\Exception $e) {
