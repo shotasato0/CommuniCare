@@ -1,0 +1,1 @@
+const n=(g,i,t,a)=>{const e=g.target.files[0];if(!e)return;if(!["image/jpeg","image/png","image/gif","image/webp"].includes(e.type)){a.value="対応していないファイル形式です。png, jpg, gif, webpのいずれかを選択してください。",setTimeout(()=>{a.value=null},8e3);return}i.value=e,t.value=URL.createObjectURL(e)};export{n as h};

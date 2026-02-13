@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 移動元と移動先のディレクトリを設定
-SRC_DIR="database/migrations/tenant"
-DEST_DIR="database/migrations"
+SRC_DIR="src/database/migrations/tenant"
+DEST_DIR="src/database/migrations"
 
 # migrations直下のファイルリストを取得
 EXISTING_FILES=$(ls $DEST_DIR)

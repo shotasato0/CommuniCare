@@ -1,4 +1,4 @@
 [submodule "external/app-bath-table"]
-	path = external/app-bath-table
+	path = src/external/app-bath-table
 	url = https://github.com/shotasato0/app-bath-table.git
 
