@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-require_once __DIR__ . '/../../stubs/helpers.php';
+require_once __DIR__ . '/../../stubs/ide/tenant.php';
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -61,8 +61,9 @@ class HandleInertiaRequests extends Middleware
         $currentAdminId = null;
 
         try {
-            if ($request->user()) {
-                $tenantId = $request->user()->tenant_id;
+            $user = $request->user();
+            if ($user) {
+                $tenantId = $user->tenant_id;
                 /** @var User|null $admin */
                 $admin = User::admins()
                     ->where('tenant_id', $tenantId)
