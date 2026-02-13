@@ -58,11 +58,7 @@
         ]
     },
     "extra": {
-        "patches": {
-            "stancl/tenancy": {
-                "Fix PHP 8.3 static trait property access warnings": "patches/stancl-tenancy-fix-php83.patch"
-            }
-        },
+        "patches": {},
         "laravel": {
             "dont-discover": []
         }

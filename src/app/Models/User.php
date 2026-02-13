@@ -5,11 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder role(string|int|array $roles, ?string $guard = null)
+ * @method static \Illuminate\Database\Eloquent\Builder admins()
+ * @method bool hasRole(string|int|array $roles, ?string $guard = null)
+ */
 class User extends Authenticatable
 {
     use HasRoles, HasFactory, Notifiable;
+
+    /**
+     * 管理者ロールを持つユーザーにスコープ
+     */
+    public function scopeAdmins(Builder $query): Builder
+    {
+        return $query->whereHas('roles', fn ($q) => $q->where('name', 'admin'));
+    }
 
     protected $appends = [
         'icon_url',

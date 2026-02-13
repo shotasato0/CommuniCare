@@ -43,10 +43,10 @@ class HandleInertiaRequests extends Middleware
     {
         $tenant = null;
         try {
-            if (tenant()) {
+            if (\tenant()) {
                 $tenant = DB::table('tenants')
                     ->select('id', 'business_name')
-                    ->where('id', tenant('id'))
+                    ->where('id', \tenant('id'))
                     ->first();
             }
         } catch (\Exception $e) {
@@ -59,9 +59,11 @@ class HandleInertiaRequests extends Middleware
         $currentAdminId = null;
 
         try {
-            if ($request->user()) {
-                $tenantId = $request->user()->tenant_id;
-                $admin = User::role('admin')
+            $user = $request->user();
+            if ($user) {
+                $tenantId = $user->tenant_id;
+                /** @var User|null $admin */
+                $admin = User::admins()
                     ->where('tenant_id', $tenantId)
                     ->first();
                 $currentAdminId = $admin ? $admin->id : null;
