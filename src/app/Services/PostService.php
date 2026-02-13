@@ -303,18 +303,19 @@ class PostService
     /**
      * リダイレクトパラメータを構築
      *
+     * 認証済みユーザーのコンテキストで呼び出す想定。未認証の場合は forum_id のみ返す。
+     *
      * @param Post $post
      * @return array
      */
     public function buildRedirectParams(Post $post): array
     {
-        $user = Auth::user();
         $redirectParams = [
             'forum_id' => $post->forum_id,
         ];
 
-        // ユーザーが部署に所属している場合、active_unit_idも追加
-        if ($user->unit_id) {
+        $user = Auth::user();
+        if ($user && $user->unit_id) {
             $redirectParams['active_unit_id'] = $user->unit_id;
         }
 
