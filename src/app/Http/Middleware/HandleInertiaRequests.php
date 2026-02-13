@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-require_once __DIR__ . '/../../stubs/ide/tenant.php';
+require_once __DIR__ . '/../../../stubs/ide/tenant.php';
 
 use App\Models\User;
 use Illuminate\Http\Request;
