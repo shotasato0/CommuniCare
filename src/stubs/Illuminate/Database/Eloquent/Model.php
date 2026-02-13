@@ -7,6 +7,7 @@
  * is provided by the Laravel framework in vendor/.
  *
  * @see \Illuminate\Database\Eloquent\Model
+ * @property int $id
  */
 namespace Illuminate\Database\Eloquent;
 

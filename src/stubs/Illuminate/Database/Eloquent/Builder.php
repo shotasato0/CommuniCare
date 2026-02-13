@@ -29,4 +29,29 @@ class Builder
     {
         return $this;
     }
+
+    /**
+     * Add a basic where clause to the query.
+     *
+     * @param  \Closure|string|array  $column
+     * @param  mixed  $operator
+     * @param  mixed  $value
+     * @param  string  $boolean
+     * @return static
+     */
+    public function where($column, $operator = null, $value = null, string $boolean = 'and')
+    {
+        return $this;
+    }
+
+    /**
+     * Execute the query and get the first result.
+     *
+     * @param  array|string  $columns
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function first($columns = ['*'])
+    {
+        return null;
+    }
 }

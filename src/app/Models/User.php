@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
+ * @property int $id
  * @method static \Illuminate\Database\Eloquent\Builder role(string|int|array $roles, ?string $guard = null)
  * @method static \Illuminate\Database\Eloquent\Builder admins()
  * @method bool hasRole(string|int|array $roles, ?string $guard = null)
