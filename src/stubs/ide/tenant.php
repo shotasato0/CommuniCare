@@ -2,17 +2,13 @@
 
 /**
  * IDE stub for Stancl Tenancy helper functions
- *
- * This file is for static analysis only. The actual implementation
- * is provided by stancl/tenancy in vendor/.
+ * 静的解析専用。実装は vendor/stancl/tenancy にあります。
  *
  * @see vendor/stancl/tenancy/src/helpers.php
  */
 
 if (! function_exists('tenant')) {
     /**
-     * Get the current tenant or a key from the current tenant's storage.
-     *
      * @param  string|null  $key
      * @return \Stancl\Tenancy\Contracts\Tenant|null|mixed
      */
