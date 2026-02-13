@@ -62,7 +62,7 @@ class ServicePerformanceTest extends TestCase
         
         $this->residentService = new ResidentService();
         $this->unitService = new UnitService();
-        $this->postService = new PostService();
+        $this->postService = app(PostService::class);
         $this->forumService = new ForumService();
     }
     
